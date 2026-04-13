@@ -397,12 +397,20 @@ export default function ParentDashboardScreen({
     }
 
     if (editingTask) {
-      await supabase
+      const { error } = await supabase
         .from("otetsudai_tasks")
         .update(payload)
         .eq("id", editingTask.id);
+      if (error) {
+        Alert.alert("エラー", `更新失敗: ${error.message}`);
+        return;
+      }
     } else {
-      await supabase.from("otetsudai_tasks").insert(payload);
+      const { error } = await supabase.from("otetsudai_tasks").insert(payload);
+      if (error) {
+        Alert.alert("エラー", `作成失敗: ${error.message}`);
+        return;
+      }
     }
     setTaskFormVisible(false);
     await loadData();
