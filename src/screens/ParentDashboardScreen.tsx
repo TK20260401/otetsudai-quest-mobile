@@ -805,49 +805,49 @@ export default function ParentDashboardScreen({
                     (task.special_difficulty === 3 && !familySettings.special_quest_star3_enabled)
                   );
                   return (
-                  <View
-                    key={task.id}
-                    style={[
-                      styles.taskCard,
-                      styles.specialTaskCard,
-                      (!task.is_active || starDisabled) && styles.taskInactive,
-                    ]}
-                  >
-                    <View style={styles.taskInfo}>
-                      <Text style={styles.taskIcon}>
-                        {getTaskIcon(task.title)}
-                      </Text>
-                      <View style={{ flex: 1 }}>
-                        <Text style={[styles.taskTitle, { color: "#92400e" }]}>
-                          {"★".repeat(task.special_difficulty || 1)} {task.title}
+                    <View
+                      key={task.id}
+                      style={[
+                        styles.taskCard,
+                        styles.specialTaskCard,
+                        (!task.is_active || starDisabled) && styles.taskInactive,
+                      ]}
+                    >
+                      <View style={styles.taskInfo}>
+                        <Text style={styles.taskIcon}>
+                          {getTaskIcon(task.title)}
                         </Text>
-                        <Text style={styles.taskSub}>
-                          💰 {task.reward_amount}円
-                          {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
-                        </Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.taskTitle, { color: "#92400e" }]}>
+                            {"★".repeat(task.special_difficulty || 1)} {task.title}
+                          </Text>
+                          <Text style={styles.taskSub}>
+                            💰 {task.reward_amount}円
+                            {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.taskActions}>
+                        <TouchableOpacity
+                          style={styles.taskActionBtn}
+                          onPress={() => openTaskForm(task)}
+                        >
+                          <Text>✏️</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.taskActionBtn}
+                          onPress={() => handleToggleTask(task)}
+                        >
+                          <Text>{task.is_active ? "⏸️" : "▶️"}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.taskActionBtn}
+                          onPress={() => handleDeleteTask(task.id)}
+                        >
+                          <Text>🗑️</Text>
+                        </TouchableOpacity>
                       </View>
                     </View>
-                    <View style={styles.taskActions}>
-                      <TouchableOpacity
-                        style={styles.taskActionBtn}
-                        onPress={() => openTaskForm(task)}
-                      >
-                        <Text>✏️</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.taskActionBtn}
-                        onPress={() => handleToggleTask(task)}
-                      >
-                        <Text>{task.is_active ? "⏸️" : "▶️"}</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.taskActionBtn}
-                        onPress={() => handleDeleteTask(task.id)}
-                      >
-                        <Text>🗑️</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
                   );
                 })}
               </>

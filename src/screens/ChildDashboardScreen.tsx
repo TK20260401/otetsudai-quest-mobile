@@ -21,6 +21,7 @@ import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
 import type { Task, Wallet, Transaction, Badge, FamilySettings } from "../lib/types";
 import CharacterSvg from "../components/CharacterSvg";
+import { RubyText } from "../components/Ruby";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
@@ -399,11 +400,11 @@ export default function ChildDashboardScreen({
             </View>
             {levelInfo.next ? (
               <Text style={styles.levelNext} adjustsFontSizeToFit numberOfLines={1}>
-                つぎのレベルまで あと {levelInfo.remaining.toLocaleString()}えん
+                次のレベルまで あと {levelInfo.remaining.toLocaleString()}円
               </Text>
             ) : (
               <Text style={[styles.levelNext, { color: colors.amber, fontWeight: "bold" }]} adjustsFontSizeToFit numberOfLines={1}>
-                さいこうレベル たっせい！ 🎊
+                最高レベル 達成！ 🎊
               </Text>
             )}
           </View>
@@ -412,7 +413,7 @@ export default function ChildDashboardScreen({
         {/* Stamp Notifications */}
         {stampNotifs.length > 0 && (
           <View style={styles.stampCard}>
-            <Text style={styles.sectionTitle}>おやからのメッセージ</Text>
+            <RubyText style={styles.sectionTitle} parts={[["親", "おや"], "からのメッセージ"]} />
             {stampNotifs.map((s) => {
               const stampDef = s.stamp ? getStampById(s.stamp) : null;
               return (
@@ -442,24 +443,24 @@ export default function ChildDashboardScreen({
         {/* Wallet */}
         {wallet && (
           <View style={styles.walletCard}>
-            <Text style={styles.walletTitle}>おさいふ</Text>
+            <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
             <Text style={styles.walletTotal} adjustsFontSizeToFit numberOfLines={1}>
               {(
                 wallet.spending_balance +
                 wallet.saving_balance +
                 wallet.invest_balance
               ).toLocaleString()}
-              えん
+              円
             </Text>
             <View style={styles.walletRow}>
               <View style={[styles.walletItem, { borderColor: colors.spend }]}>
-                <Text style={styles.walletLabel}>つかう</Text>
+                <RubyText style={styles.walletLabel} parts={[["使", "つか"], "う"]} />
                 <Text style={[styles.walletAmount, { color: colors.spend }]}>
                   {wallet.spending_balance.toLocaleString()}
                 </Text>
               </View>
               <View style={[styles.walletItem, { borderColor: colors.save }]}>
-                <Text style={styles.walletLabel}>ためる</Text>
+                <RubyText style={styles.walletLabel} parts={[["貯", "た"], "める"]} />
                 <Text style={[styles.walletAmount, { color: colors.save }]}>
                   {wallet.saving_balance.toLocaleString()}
                 </Text>
@@ -467,7 +468,7 @@ export default function ChildDashboardScreen({
               <View
                 style={[styles.walletItem, { borderColor: colors.invest }]}
               >
-                <Text style={styles.walletLabel}>ふやす</Text>
+                <RubyText style={styles.walletLabel} parts={[["増", "ふ"], "やす"]} />
                 <Text style={[styles.walletAmount, { color: colors.invest }]}>
                   {wallet.invest_balance.toLocaleString()}
                 </Text>
@@ -479,7 +480,7 @@ export default function ChildDashboardScreen({
         {/* そうび（バッジ → 装備として表示） */}
         {badges.length > 0 && (
           <View style={styles.badgeCard}>
-            <Text style={styles.sectionTitle}>⚔️ そうび</Text>
+            <RubyText style={styles.sectionTitle} parts={["⚔️ ", ["装備", "そうび"]]} />
             <View style={styles.badgeRow}>
               {badges.map((b) => {
                 const def = BADGE_DEFINITIONS[b.badge_type];
@@ -530,7 +531,7 @@ export default function ChildDashboardScreen({
                 tab === "history" && styles.tabTextActive,
               ]}
             >
-              りれき
+              履歴
             </Text>
           </TouchableOpacity>
         </View>
@@ -541,7 +542,7 @@ export default function ChildDashboardScreen({
             {/* ★特別クエスト */}
             {tasks.filter((t) => t.is_special && isSpecialActive(t)).length > 0 && (
               <>
-                <Text style={styles.specialSectionTitle}>★ とくべつクエスト</Text>
+                <RubyText style={styles.specialSectionTitle} parts={["★ ", ["特別", "とくべつ"], "クエスト"]} />
                 {tasks
                   .filter((t) => t.is_special && isSpecialActive(t))
                   .map((task) => (
@@ -565,10 +566,10 @@ export default function ChildDashboardScreen({
                           <Text style={styles.specialQuestTitle}>{task.title}</Text>
                           <View style={styles.rewardRow}>
                             <Text style={styles.specialQuestReward}>
-                              💰 {task.reward_amount}えん
+                              💰 {task.reward_amount}円
                             </Text>
                             {task.proposal_status === "pending" && (
-                              <Text style={styles.pendingBadge}>⏳ リクエストちゅう</Text>
+                              <Text style={styles.pendingBadge}>⏳ リクエスト中</Text>
                             )}
                           </View>
                           {task.description && (
@@ -612,10 +613,10 @@ export default function ChildDashboardScreen({
                           <Text style={styles.questTitle}>{task.title}</Text>
                           <View style={styles.rewardRow}>
                             <Text style={styles.questReward}>
-                              💰 {task.reward_amount}えん
+                              💰 {task.reward_amount}円
                             </Text>
                             {task.proposal_status === "pending" && (
-                              <Text style={styles.pendingBadge}>⏳ リクエストちゅう</Text>
+                              <Text style={styles.pendingBadge}>⏳ リクエスト中</Text>
                             )}
                           </View>
                           {task.price_change_comment && (
@@ -651,7 +652,7 @@ export default function ChildDashboardScreen({
 
             {tasks.length === 0 && (
               <Text style={styles.emptyText}>
-                クエストがまだないよ。おやにたのんでね！
+                クエストがまだないよ。親にたのんでね！
               </Text>
             )}
           </View>
@@ -663,7 +664,7 @@ export default function ChildDashboardScreen({
             {/* 返信済みメッセージ履歴 */}
             {repliedMessages.length > 0 && (
               <View style={styles.repliedSection}>
-                <Text style={styles.repliedTitle}>💬 おやとの やりとり</Text>
+                <RubyText style={styles.repliedTitle} parts={["💬 ", ["親", "おや"], "との やりとり"]} />
                 {repliedMessages.map((log: any) => {
                   const cStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)
@@ -676,12 +677,12 @@ export default function ChildDashboardScreen({
                       <Text style={styles.repliedTaskName}>🎯 {log.task?.title}</Text>
                       {pStamp && (
                         <Text style={styles.repliedParent}>
-                          おや: {pStamp.emoji} {pStamp.label}
+                          親: {pStamp.emoji} {pStamp.label}
                           {log.approval_message ? ` 「${log.approval_message}」` : ""}
                         </Text>
                       )}
                       <Text style={styles.repliedChild}>
-                        じぶん: {cStamp ? `${cStamp.emoji} ${cStamp.label}` : ""}
+                        自分: {cStamp ? `${cStamp.emoji} ${cStamp.label}` : ""}
                         {log.child_reaction_message ? ` 「${log.child_reaction_message}」` : ""}
                       </Text>
                     </View>
@@ -691,7 +692,7 @@ export default function ChildDashboardScreen({
             )}
 
             {transactions.length === 0 && repliedMessages.length === 0 ? (
-              <Text style={styles.emptyText}>まだりれきがないよ</Text>
+              <Text style={styles.emptyText}>まだ履歴がないよ</Text>
             ) : transactions.length === 0 ? null : (
               transactions.map((tx) => (
                 <View key={tx.id} style={styles.historyItem}>
