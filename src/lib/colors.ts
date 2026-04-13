@@ -19,4 +19,8 @@ export const colors = {
   spend: "#ef4444", // red
   save: "#3b82f6", // blue
   invest: "#22c55e", // green
+  // Special quest colors
+  gold: "#d97706",
+  goldLight: "#fef3c7",
+  goldBorder: "#f59e0b",
 };

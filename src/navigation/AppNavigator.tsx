@@ -4,11 +4,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getSession } from "../lib/session";
 import { colors } from "../lib/colors";
+import LandingScreen from "../screens/LandingScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ChildDashboardScreen from "../screens/ChildDashboardScreen";
 import ParentDashboardScreen from "../screens/ParentDashboardScreen";
 
 export type RootStackParamList = {
+  Landing: undefined;
   Login: undefined;
   ChildDashboard: { childId: string };
   ParentDashboard: undefined;
@@ -29,8 +31,8 @@ export default function AppNavigator() {
   }, []);
 
   async function checkSession() {
-    // 常にログイン画面から開始
-    setInitialRoute("Login");
+    // 常にランディング画面から開始
+    setInitialRoute("Landing");
   }
 
   if (!initialRoute) {
@@ -54,6 +56,7 @@ export default function AppNavigator() {
         initialRouteName={initialRoute}
         screenOptions={{ headerShown: false }}
       >
+        <Stack.Screen name="Landing" component={LandingWrapper} />
         <Stack.Screen name="Login" component={LoginWrapper} />
         <Stack.Screen
           name="ChildDashboard"
@@ -66,6 +69,16 @@ export default function AppNavigator() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+// Wrapper for LandingScreen
+function LandingWrapper({ navigation }: { navigation: any }) {
+  return (
+    <LandingScreen
+      onSignup={() => navigation.navigate("Login")}
+      onLogin={() => navigation.navigate("Login")}
+    />
   );
 }
 

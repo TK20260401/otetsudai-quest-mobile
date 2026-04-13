@@ -28,6 +28,11 @@ export type Task = {
   proposal_status: "pending" | "approved" | "rejected";
   proposed_reward: number | null;
   proposal_message: string | null;
+  price_change_comment: string | null;
+  is_special: boolean;
+  special_difficulty: number | null;
+  start_date: string | null;
+  end_date: string | null;
   created_at: string;
 };
 
@@ -43,6 +48,9 @@ export type TaskLog = {
   approval_stamp: string | null;
   approval_message: string | null;
   reject_reason: string | null;
+  child_reaction_stamp: string | null;
+  child_reaction_message: string | null;
+  child_reaction_at: string | null;
   task?: Task;
   child?: User;
 };

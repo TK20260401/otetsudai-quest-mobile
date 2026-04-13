@@ -10,8 +10,6 @@ import {
   ActivityIndicator,
   TextInput,
   Modal,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
@@ -19,6 +17,8 @@ import { getSession, clearSession } from "../lib/session";
 import { colors } from "../lib/colors";
 import { getTaskIcon } from "../lib/task-icons";
 import { STAMPS } from "../lib/stamps";
+import { getChildStampById } from "../lib/child-stamps";
+import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task, TaskLog, User, Wallet, SpendRequest } from "../lib/types";
 
 type PendingLog = TaskLog & { task: Task; child: User };
@@ -35,8 +35,11 @@ export default function ParentDashboardScreen({
   const [pendingLogs, setPendingLogs] = useState<PendingLog[]>([]);
   const [pendingSpends, setPendingSpends] = useState<SpendRequest[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [priceRequests, setPriceRequests] = useState<Task[]>([]);
+  const [recentApproved, setRecentApproved] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const keyboardHeight = useKeyboardHeight();
   const [tab, setTab] = useState<"approve" | "tasks" | "children">("approve");
 
   // Approval dialog
@@ -50,9 +53,14 @@ export default function ParentDashboardScreen({
   const [taskForm, setTaskForm] = useState({
     title: "",
     description: "",
-    reward_amount: "100",
+    reward_amount: "10",
     recurrence: "once" as "once" | "daily" | "weekly",
     assigned_child_id: "",
+    price_change_comment: "",
+    is_special: false,
+    special_difficulty: 1,
+    start_date: "",
+    end_date: "",
   });
 
   const loadData = useCallback(async () => {
@@ -129,7 +137,21 @@ export default function ParentDashboardScreen({
     setWallets(walletMap);
     setPendingLogs((logsRes.data as PendingLog[]) || []);
     setPendingSpends((spendRes.data as SpendRequest[]) || []);
-    setTasks(taskRes.data || []);
+    const allTasks = taskRes.data || [];
+    setTasks(allTasks);
+    setPriceRequests(allTasks.filter((t: Task) => t.proposal_status === "pending" && t.proposed_reward));
+
+    // 最近の承認済みログ（子ども返信確認用）
+    if (childIds.length > 0) {
+      const { data: approvedData } = await supabase
+        .from("otetsudai_task_logs")
+        .select("*, task:otetsudai_tasks(title, reward_amount), child:child_id(name)")
+        .in("child_id", childIds)
+        .eq("status", "approved")
+        .order("approved_at", { ascending: false })
+        .limit(10);
+      setRecentApproved(approvedData || []);
+    }
     setLoading(false);
   }, []);
 
@@ -267,15 +289,25 @@ export default function ParentDashboardScreen({
         reward_amount: String(task.reward_amount),
         recurrence: task.recurrence,
         assigned_child_id: task.assigned_child_id || "",
+        price_change_comment: "",
+        is_special: task.is_special || false,
+        special_difficulty: task.special_difficulty || 1,
+        start_date: task.start_date || "",
+        end_date: task.end_date || "",
       });
     } else {
       setEditingTask(null);
       setTaskForm({
         title: "",
         description: "",
-        reward_amount: "100",
+        reward_amount: "10",
         recurrence: "once",
         assigned_child_id: "",
+        price_change_comment: "",
+        is_special: false,
+        special_difficulty: 1,
+        start_date: "",
+        end_date: "",
       });
     }
     setTaskFormVisible(true);
@@ -286,16 +318,37 @@ export default function ParentDashboardScreen({
       Alert.alert("エラー", "クエストめいをいれてください");
       return;
     }
-    const payload = {
+    const newAmount = parseInt(taskForm.reward_amount) || 10;
+    if (taskForm.is_special && newAmount < 50) {
+      Alert.alert("エラー", "★とくべつクエストのほうしゅうは 50えん いじょうにしてください");
+      return;
+    }
+
+    // 値下げ時はコメント必須
+    if (editingTask && newAmount < editingTask.reward_amount && !taskForm.price_change_comment.trim()) {
+      Alert.alert("⚠️ コメントひっす", "おだちんを下げるときは、りゆうをいれてください");
+      return;
+    }
+
+    const payload: Record<string, unknown> = {
       family_id: familyId,
       title: taskForm.title,
       description: taskForm.description || null,
-      reward_amount: parseInt(taskForm.reward_amount) || 100,
-      recurrence: taskForm.recurrence,
+      reward_amount: newAmount,
+      recurrence: taskForm.is_special ? "once" : taskForm.recurrence,
       assigned_child_id: taskForm.assigned_child_id || null,
       is_active: true,
       created_by: userId,
+      is_special: taskForm.is_special,
+      special_difficulty: taskForm.is_special ? taskForm.special_difficulty : null,
+      start_date: taskForm.is_special && taskForm.start_date ? taskForm.start_date : null,
+      end_date: taskForm.is_special && taskForm.end_date ? taskForm.end_date : null,
     };
+
+    // 金額変更時のコメント
+    if (editingTask && newAmount !== editingTask.reward_amount && taskForm.price_change_comment.trim()) {
+      payload.price_change_comment = taskForm.price_change_comment.trim();
+    }
 
     if (editingTask) {
       await supabase
@@ -329,6 +382,47 @@ export default function ParentDashboardScreen({
       .update({ is_active: !task.is_active })
       .eq("id", task.id);
     await loadData();
+  }
+
+  async function handleApprovePriceRequest(task: Task) {
+    await supabase
+      .from("otetsudai_tasks")
+      .update({
+        reward_amount: task.proposed_reward,
+        proposal_status: "approved",
+        price_change_comment: `おだちん ${task.reward_amount}→${task.proposed_reward}えん にアップ！`,
+      })
+      .eq("id", task.id);
+    Alert.alert("✅ しょうにん", `${task.title}のおだちんを${task.proposed_reward}えんにしました`);
+    await loadData();
+  }
+
+  async function handleRejectPriceRequest(task: Task) {
+    Alert.prompt(
+      "❌ きゃっか",
+      "りゆうをいれてください",
+      [
+        { text: "キャンセル", style: "cancel" },
+        {
+          text: "きゃっか",
+          style: "destructive",
+          onPress: async (reason?: string) => {
+            await supabase
+              .from("otetsudai_tasks")
+              .update({
+                proposal_status: "rejected",
+                proposed_reward: null,
+                price_change_comment: reason || "いまの きんがくで がんばろう！",
+              })
+              .eq("id", task.id);
+            await loadData();
+          },
+        },
+      ],
+      "plain-text",
+      "",
+      "default"
+    );
   }
 
   function handleLogout() {
@@ -482,10 +576,100 @@ export default function ParentDashboardScreen({
               </>
             )}
 
-            {pendingCount === 0 && (
+            {/* Price requests */}
+            {priceRequests.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
+                  💰 ねあげリクエスト ({priceRequests.length})
+                </Text>
+                {priceRequests.map((task) => (
+                  <View key={task.id} style={styles.approvalCard}>
+                    <View style={styles.approvalInfo}>
+                      <Text style={styles.approvalIcon}>
+                        {getTaskIcon(task.title)}
+                      </Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.approvalTitle}>{task.title}</Text>
+                        <Text style={styles.approvalSub}>
+                          {task.reward_amount}えん → {task.proposed_reward}えん
+                        </Text>
+                        {task.proposal_message && (
+                          <Text style={{ fontSize: 12, color: "#047857", marginTop: 2 }}>
+                            💬 「{task.proposal_message}」
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                    <View style={styles.approvalActions}>
+                      <TouchableOpacity
+                        style={styles.approveButton}
+                        onPress={() => handleApprovePriceRequest(task)}
+                      >
+                        <Text style={styles.approveText}>OK</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.rejectButton}
+                        onPress={() => handleRejectPriceRequest(task)}
+                      >
+                        <Text style={styles.rejectText}>NG</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </>
+            )}
+
+            {pendingCount === 0 && priceRequests.length === 0 && (
               <Text style={styles.emptyText}>
                 しょうにんまちはありません
               </Text>
+            )}
+
+            {/* 最近のしょうにん（子ども返信表示） */}
+            {recentApproved.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
+                  ✅ さいきんの しょうにん
+                </Text>
+                {recentApproved.map((log: any) => {
+                  const childStamp = log.child_reaction_stamp
+                    ? getChildStampById(log.child_reaction_stamp)
+                    : null;
+                  const hasReaction = !!log.child_reaction_at;
+                  return (
+                    <View key={log.id} style={[styles.approvalCard, { opacity: 1 }]}>
+                      <View style={styles.approvalInfo}>
+                        <Text style={styles.approvalIcon}>
+                          {hasReaction ? "✅" : "⏳"}
+                        </Text>
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.approvalTitle}>
+                            {log.task?.title}
+                          </Text>
+                          <Text style={styles.approvalSub}>
+                            🧒 {log.child?.name} ・ 💰 {log.task?.reward_amount}えん
+                          </Text>
+                          {childStamp && (
+                            <Text style={{ fontSize: 13, marginTop: 4 }}>
+                              {childStamp.emoji} {childStamp.label}
+                            </Text>
+                          )}
+                          {log.child_reaction_message && (
+                            <Text style={{ fontSize: 12, color: colors.primaryDark, marginTop: 2 }}>
+                              💬 「{log.child_reaction_message}」
+                            </Text>
+                          )}
+                          {!hasReaction && (
+                            <Text style={{ fontSize: 11, color: colors.gray, marginTop: 2 }}>
+                              ⏳ こどもの おへんじまち
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </View>
+                  );
+                })}
+              </>
             )}
           </View>
         )}
@@ -493,13 +677,84 @@ export default function ParentDashboardScreen({
         {/* === Tasks Tab === */}
         {tab === "tasks" && (
           <View style={styles.section}>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => openTaskForm()}
-            >
-              <Text style={styles.addButtonText}>+ あたらしいクエスト</Text>
-            </TouchableOpacity>
-            {tasks.map((task) => (
+            <View style={{ flexDirection: "row", gap: 8, marginBottom: 12 }}>
+              <TouchableOpacity
+                style={[styles.addButton, { flex: 1, marginBottom: 0 }]}
+                onPress={() => openTaskForm()}
+              >
+                <Text style={styles.addButtonText}>+ クエスト</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.addButton, { flex: 1, marginBottom: 0, backgroundColor: "#d97706" }]}
+                onPress={() => {
+                  openTaskForm();
+                  setTimeout(() => {
+                    setTaskForm((prev) => ({
+                      ...prev,
+                      is_special: true,
+                      reward_amount: "50",
+                      special_difficulty: 1,
+                    }));
+                  }, 0);
+                }}
+              >
+                <Text style={styles.addButtonText}>+ ★とくべつ</Text>
+              </TouchableOpacity>
+            </View>
+            {/* ★特別クエスト */}
+            {tasks.filter((t) => t.is_special).length > 0 && (
+              <>
+                <Text style={styles.specialLabel}>★ とくべつクエスト</Text>
+                {tasks.filter((t) => t.is_special).map((task) => (
+                  <View
+                    key={task.id}
+                    style={[
+                      styles.taskCard,
+                      styles.specialTaskCard,
+                      !task.is_active && styles.taskInactive,
+                    ]}
+                  >
+                    <View style={styles.taskInfo}>
+                      <Text style={styles.taskIcon}>
+                        {getTaskIcon(task.title)}
+                      </Text>
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.taskTitle, { color: "#92400e" }]}>
+                          {"★".repeat(task.special_difficulty || 1)} {task.title}
+                        </Text>
+                        <Text style={styles.taskSub}>
+                          💰 {task.reward_amount}えん
+                          {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.taskActions}>
+                      <TouchableOpacity
+                        style={styles.taskActionBtn}
+                        onPress={() => openTaskForm(task)}
+                      >
+                        <Text>✏️</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.taskActionBtn}
+                        onPress={() => handleToggleTask(task)}
+                      >
+                        <Text>{task.is_active ? "⏸️" : "▶️"}</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.taskActionBtn}
+                        onPress={() => handleDeleteTask(task.id)}
+                      >
+                        <Text>🗑️</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </>
+            )}
+
+            {/* 通常クエスト */}
+            {tasks.filter((t) => !t.is_special).map((task) => (
               <View
                 key={task.id}
                 style={[
@@ -638,13 +893,14 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setApprovalTarget(null)}
       >
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <View style={{ flex: 1 }}>
           <ScrollView
-            contentContainerStyle={styles.modalOverlay}
+            contentContainerStyle={[
+              styles.modalOverlay,
+              keyboardHeight > 0 && { paddingBottom: keyboardHeight },
+            ]}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
           >
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>しょうにん</Text>
@@ -705,7 +961,7 @@ export default function ParentDashboardScreen({
               </View>
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
 
       {/* === Task Form Modal === */}
@@ -715,13 +971,14 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setTaskFormVisible(false)}
       >
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <View style={{ flex: 1 }}>
           <ScrollView
-            contentContainerStyle={styles.modalOverlay}
+            contentContainerStyle={[
+              styles.modalOverlay,
+              keyboardHeight > 0 && { paddingBottom: keyboardHeight },
+            ]}
             keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
           >
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>
@@ -746,7 +1003,78 @@ export default function ParentDashboardScreen({
                 placeholder="くわしいやりかた"
               />
 
-              <Text style={styles.formLabel}>ほうしゅう（えん）</Text>
+              {/* ★とくべつクエスト トグル */}
+              <TouchableOpacity
+                style={[
+                  styles.specialToggle,
+                  taskForm.is_special && styles.specialToggleActive,
+                ]}
+                onPress={() => {
+                  const next = !taskForm.is_special;
+                  setTaskForm({
+                    ...taskForm,
+                    is_special: next,
+                    reward_amount: next && parseInt(taskForm.reward_amount) < 50
+                      ? "50"
+                      : taskForm.reward_amount,
+                  });
+                }}
+              >
+                <Text style={[
+                  styles.specialToggleText,
+                  taskForm.is_special && styles.specialToggleTextActive,
+                ]}>
+                  {taskForm.is_special ? "★ とくべつクエスト ON" : "★ とくべつクエストにする"}
+                </Text>
+              </TouchableOpacity>
+
+              {/* 特別クエスト: 難易度 */}
+              {taskForm.is_special && (
+                <>
+                  <Text style={styles.formLabel}>なんいど</Text>
+                  <View style={styles.recurrenceRow}>
+                    {[1, 2, 3].map((d) => (
+                      <TouchableOpacity
+                        key={d}
+                        style={[
+                          styles.difficultyBtn,
+                          taskForm.special_difficulty === d && styles.difficultyActive,
+                        ]}
+                        onPress={() => setTaskForm({ ...taskForm, special_difficulty: d })}
+                      >
+                        <Text style={[
+                          styles.difficultyText,
+                          taskForm.special_difficulty === d && styles.difficultyTextActive,
+                        ]}>
+                          {"★".repeat(d)}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <Text style={styles.formLabel}>きかん（かいし）</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={taskForm.start_date}
+                    onChangeText={(t) => setTaskForm({ ...taskForm, start_date: t })}
+                    placeholder="2026-04-13（きょうからなら くうらん）"
+                    keyboardType="default"
+                  />
+
+                  <Text style={styles.formLabel}>きかん（おわり）</Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={taskForm.end_date}
+                    onChangeText={(t) => setTaskForm({ ...taskForm, end_date: t })}
+                    placeholder="2026-04-20（きげんなしなら くうらん）"
+                    keyboardType="default"
+                  />
+                </>
+              )}
+
+              <Text style={styles.formLabel}>
+                ほうしゅう（えん）{taskForm.is_special ? " ※50えん〜" : ""}
+              </Text>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.reward_amount}
@@ -756,33 +1084,56 @@ export default function ParentDashboardScreen({
                 keyboardType="number-pad"
               />
 
-              <Text style={styles.formLabel}>くりかえし</Text>
-              <View style={styles.recurrenceRow}>
-                {(["once", "daily", "weekly"] as const).map((r) => (
-                  <TouchableOpacity
-                    key={r}
-                    style={[
-                      styles.recurrenceBtn,
-                      taskForm.recurrence === r && styles.recurrenceActive,
-                    ]}
-                    onPress={() => setTaskForm({ ...taskForm, recurrence: r })}
-                  >
-                    <Text
-                      style={[
-                        styles.recurrenceText,
-                        taskForm.recurrence === r &&
-                          styles.recurrenceTextActive,
-                      ]}
-                    >
-                      {r === "once"
-                        ? "1かい"
-                        : r === "daily"
-                          ? "まいにち"
-                          : "まいしゅう"}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              {editingTask && parseInt(taskForm.reward_amount) !== editingTask.reward_amount && (
+                <>
+                  <Text style={styles.formLabel}>
+                    {parseInt(taskForm.reward_amount) < editingTask.reward_amount
+                      ? "⚠️ ねさげの りゆう（ひっす）"
+                      : "💬 きんがく へんこうの コメント"}
+                  </Text>
+                  <TextInput
+                    style={styles.formInput}
+                    value={taskForm.price_change_comment}
+                    onChangeText={(t) =>
+                      setTaskForm({ ...taskForm, price_change_comment: t })
+                    }
+                    placeholder="こどもに つたえる メッセージ"
+                    multiline
+                  />
+                </>
+              )}
+
+              {!taskForm.is_special && (
+                <>
+                  <Text style={styles.formLabel}>くりかえし</Text>
+                  <View style={styles.recurrenceRow}>
+                    {(["once", "daily", "weekly"] as const).map((r) => (
+                      <TouchableOpacity
+                        key={r}
+                        style={[
+                          styles.recurrenceBtn,
+                          taskForm.recurrence === r && styles.recurrenceActive,
+                        ]}
+                        onPress={() => setTaskForm({ ...taskForm, recurrence: r })}
+                      >
+                        <Text
+                          style={[
+                            styles.recurrenceText,
+                            taskForm.recurrence === r &&
+                              styles.recurrenceTextActive,
+                          ]}
+                        >
+                          {r === "once"
+                            ? "1かい"
+                            : r === "daily"
+                              ? "まいにち"
+                              : "まいしゅう"}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
+              )}
 
               <Text style={styles.formLabel}>だれに？</Text>
               <View style={styles.recurrenceRow}>
@@ -849,7 +1200,7 @@ export default function ParentDashboardScreen({
               </View>
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -938,6 +1289,60 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   rejectText: { color: colors.slate, fontWeight: "bold", fontSize: 14 },
+
+  // Special quest
+  specialLabel: {
+    fontSize: 15,
+    fontWeight: "bold" as const,
+    color: "#d97706",
+    marginBottom: 6,
+    marginTop: 4,
+  },
+  specialTaskCard: {
+    backgroundColor: "#fef3c7",
+    borderWidth: 1,
+    borderColor: "#f59e0b",
+  },
+  specialToggle: {
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderStyle: "dashed" as const,
+    alignItems: "center" as const,
+    marginBottom: 4,
+  },
+  specialToggleActive: {
+    backgroundColor: "#fef3c7",
+    borderColor: "#f59e0b",
+    borderStyle: "solid" as const,
+  },
+  specialToggleText: {
+    fontSize: 14,
+    color: colors.slate,
+    fontWeight: "600" as const,
+  },
+  specialToggleTextActive: {
+    color: "#92400e",
+  },
+  difficultyBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: colors.grayLight,
+  },
+  difficultyActive: {
+    backgroundColor: "#fef3c7",
+    borderWidth: 1,
+    borderColor: "#f59e0b",
+  },
+  difficultyText: {
+    fontSize: 16,
+    color: colors.gray,
+  },
+  difficultyTextActive: {
+    color: "#d97706",
+  },
 
   // Task cards
   addButton: {
