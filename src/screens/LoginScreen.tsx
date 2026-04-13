@@ -13,6 +13,7 @@ import { supabase } from "../lib/supabase";
 import type { Family, User } from "../lib/types";
 import { verifyPin, loginAsUser, signIn } from "../services/auth";
 import { colors } from "../lib/colors";
+import { rf } from "../lib/responsive";
 
 type LoginStep = "family" | "member" | "pin" | "admin";
 
@@ -199,8 +200,8 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       <View style={styles.card}>
         {/* Header */}
         <Text style={styles.icon}>⚔️</Text>
-        <Text style={styles.title}>おこづかいクエスト</Text>
-        <Text style={styles.subtitle}>
+        <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>おこづかいクエスト</Text>
+        <Text style={styles.subtitle} adjustsFontSizeToFit numberOfLines={1}>
           クエストをクリアしてコインをかせごう！
         </Text>
 
@@ -241,10 +242,10 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 style={styles.selectButton}
                 onPress={() => handleUserSelect(m)}
               >
-                <Text style={styles.selectText}>
+                <Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit>
                   {m.role === "parent" ? "👨‍👩‍👧‍👦" : "🧒"} {m.name}
                 </Text>
-                <Text style={styles.roleText}>
+                <Text style={styles.roleText} numberOfLines={1}>
                   {m.role === "parent" ? "おやこうざ" : "こどもこうざ"}
                 </Text>
               </TouchableOpacity>
@@ -316,7 +317,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 24,
+    fontSize: rf(24),
     fontWeight: "bold",
     textAlign: "center",
     color: colors.primaryDark,
@@ -358,12 +359,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   selectText: {
-    fontSize: 18,
+    fontSize: rf(18),
     color: colors.slateDark,
+    flexShrink: 1,
   },
   roleText: {
-    fontSize: 12,
+    fontSize: rf(12),
     color: colors.slate,
+    marginLeft: 4,
   },
   pinInput: {
     borderWidth: 2,

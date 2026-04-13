@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../lib/colors";
+import { rf } from "../lib/responsive";
 
 type Props = {
   onSignup: () => void;
@@ -33,13 +34,21 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
     >
       <View style={[styles.hero, isTablet && { maxWidth: 480, alignSelf: "center", width: "100%" }]}>
         <Text style={[styles.icon, isSmallScreen && { fontSize: 48, marginBottom: 4 }]}>⚔️</Text>
-        <Text style={[styles.title, isTablet && { fontSize: 38 }, isSmallScreen && { fontSize: 26 }]}>
+        <Text
+          style={[styles.title, isTablet && { fontSize: 38 }, isSmallScreen && { fontSize: 26 }]}
+          adjustsFontSizeToFit
+          numberOfLines={1}
+        >
           おこづかいクエスト
         </Text>
-        <Text style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]}>
+        <Text
+          style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]}
+          adjustsFontSizeToFit
+          numberOfLines={1}
+        >
           クエストをクリアして コインを かせごう！
         </Text>
-        <Text style={styles.description}>
+        <Text style={styles.description} adjustsFontSizeToFit numberOfLines={2}>
           お手伝い＝クエスト！稼いで、貯めて、増やすマネー冒険アプリ
         </Text>
 
@@ -123,20 +132,23 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: {
-    fontSize: 32,
+    fontSize: rf(32),
     fontWeight: "800",
     color: "#065f46",
     marginBottom: 4,
+    textAlign: "center",
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: rf(16),
     color: colors.primary,
     marginBottom: 2,
+    textAlign: "center",
   },
   description: {
-    fontSize: 12,
+    fontSize: rf(12),
     color: colors.slate,
     marginBottom: 28,
+    textAlign: "center",
   },
   buttons: {
     width: "100%",
@@ -168,12 +180,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   buttonPrimaryText: {
-    fontSize: 18,
+    fontSize: rf(18),
     fontWeight: "bold",
     color: colors.white,
   },
   buttonOutlineText: {
-    fontSize: 18,
+    fontSize: rf(18),
     fontWeight: "bold",
     color: "#047857",
   },

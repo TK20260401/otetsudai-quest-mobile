@@ -11,6 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { colors } from "../lib/colors";
+import { rf } from "../lib/responsive";
 import { CHILD_STAMPS } from "../lib/child-stamps";
 import { getStampById } from "../lib/stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
@@ -88,7 +89,7 @@ export default function ChildReactionModal({ logs, onAllDone }: Props) {
             </Text>
           )}
 
-          <Text style={styles.header}>📩 おやからの メッセージ</Text>
+          <Text style={styles.header} adjustsFontSizeToFit numberOfLines={1}>📩 おやからの メッセージ</Text>
 
           {/* 親メッセージ表示 */}
           <View style={styles.parentCard}>
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   header: {
-    fontSize: 22,
+    fontSize: rf(22),
     fontWeight: "bold",
     color: colors.slateDark,
     textAlign: "center",

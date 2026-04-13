@@ -34,11 +34,21 @@ otetsudai-quest-mobile/
 │   │   ├── supabase.ts          # Supabase クライアント初期化
 │   │   ├── types.ts             # 型定義（Web版と同一）
 │   │   ├── session.ts           # セッション管理（AsyncStorage）
+│   │   ├── responsive.ts         # レスポンシブフォントサイズユーティリティ
 │   │   ├── colors.ts            # テーマカラー定義（特別クエスト金色含む）
 │   │   ├── levels.ts            # レベルアップシステム（7段階）
 │   │   ├── badges.ts            # バッジ判定・付与ロジック（5種類）
 │   │   ├── task-icons.ts        # タスク名→アイコン絵文字マッピング
 │   │   └── stamps.ts            # 承認スタンプ定義（8種類）
+│   ├── components/
+│   │   ├── CharacterSvg.tsx     # レベル別キャラクターSVG
+│   │   ├── LevelUpModal.tsx     # レベルアップ演出モーダル
+│   │   ├── ChildReactionModal.tsx # 子ども返信モーダル
+│   │   └── PriceRequestModal.tsx  # 値上げリクエストモーダル
+│   ├── migrations/
+│   │   ├── add_special_quest.sql      # 特別クエストカラム追加
+│   │   ├── add_pricing_and_reaction.sql # 値上げ・返信機能追加
+│   │   └── add_family_settings.sql    # 家族設定テーブル追加
 │   └── services/
 │       └── auth.ts              # 認証サービス（PIN照合・ログイン）
 ```
@@ -94,7 +104,7 @@ npx expo start --tunnel
 - バッジ自動判定（クエスト完了時）
 
 ### Phase 3: 親ダッシュボード + クエスト承認・管理
-- 3タブ構成（しょうにん / クエスト / こども）
+- 3タブ構成（承認 / クエスト / 子ども）
 - 承認キュー
   - クエスト完了の承認/却下（スタンプ8種 + メッセージ入力）
   - つかいたいリクエストの承認/却下
@@ -115,14 +125,19 @@ npx expo start --tunnel
   - 難易度表示（★〜★★★）
   - 通常クエストの上に優先表示
   - 期間外の特別クエストは自動非表示
+  - 家族設定に基づく表示/非表示制御
 - 親画面
-  - 「+ ★とくべつ」ボタンでワンタッチ作成
+  - 「+ ★特別」ボタンでワンタッチ作成
   - 難易度（★1〜3）選択
-  - 開始日・終了日設定
+  - カレンダーによる開始日・終了日選択
   - 最低報酬 50円バリデーション
-  - 特別クエストは「くりかえし」設定不要（自動で1回）
+  - 特別クエストは「繰り返し」設定不要（自動で1回）
   - タスク一覧で金色背景で視覚区別
-- DB変更: `otetsudai_tasks` に `is_special`, `special_difficulty`, `start_date`, `end_date` カラム追加
+  - **特別クエスト設定パネル**: 全体ON/OFF + 難易度別（★/★★/★★★）ON/OFFトグル
+    - OFFにした難易度のクエストは親画面でグレーアウト、子ども画面で非表示
+- DB変更:
+  - `otetsudai_tasks` に `is_special`, `special_difficulty`, `start_date`, `end_date` カラム追加
+  - `otetsudai_family_settings` テーブル新規作成（家族単位の設定）
 
 | 比較 | 通常クエスト | ★特別クエスト |
 |------|------------|--------------|

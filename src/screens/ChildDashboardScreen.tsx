@@ -13,12 +13,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
 import { colors } from "../lib/colors";
+import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
 import { getLevelProgress, getCurrentLevel } from "../lib/levels";
 import type { Level } from "../lib/levels";
 import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
-import type { Task, Wallet, Transaction, Badge } from "../lib/types";
+import type { Task, Wallet, Transaction, Badge, FamilySettings } from "../lib/types";
 import CharacterSvg from "../components/CharacterSvg";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
@@ -63,6 +64,8 @@ export default function ChildDashboardScreen({
   const [unreadLogs, setUnreadLogs] = useState<
     { id: string; taskTitle: string; rewardAmount: number; parentStamp: string | null; parentMessage: string | null }[]
   >([]);
+  // 特別クエスト設定
+  const [familySettings, setFamilySettings] = useState<FamilySettings | null>(null);
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -189,6 +192,14 @@ export default function ChildDashboardScreen({
       .limit(10);
     setRepliedMessages(replied || []);
 
+    // 特別クエスト設定を読み込み
+    const { data: settingsData } = await supabase
+      .from("otetsudai_family_settings")
+      .select("*")
+      .eq("family_id", session.familyId)
+      .single();
+    if (settingsData) setFamilySettings(settingsData);
+
     setLoading(false);
   }, [childId]);
 
@@ -293,9 +304,16 @@ export default function ChildDashboardScreen({
     );
   }
 
-  // ★特別クエスト: 期間内かどうか判定
+  // ★特別クエスト: 期間内かどうか＋設定を加味した判定
   function isSpecialActive(task: Task): boolean {
     if (!task.is_special) return false;
+    // 設定によるフィルタ
+    if (familySettings) {
+      if (!familySettings.special_quest_enabled) return false;
+      if (task.special_difficulty === 1 && !familySettings.special_quest_star1_enabled) return false;
+      if (task.special_difficulty === 2 && !familySettings.special_quest_star2_enabled) return false;
+      if (task.special_difficulty === 3 && !familySettings.special_quest_star3_enabled) return false;
+    }
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     if (task.start_date && new Date(task.start_date) > today) return false;
@@ -358,7 +376,7 @@ export default function ChildDashboardScreen({
             <Text style={styles.appearanceText}>{levelInfo.current.appearance}</Text>
           </View>
           <View style={styles.levelInfo}>
-            <Text style={styles.levelTitle}>
+            <Text style={styles.levelTitle} adjustsFontSizeToFit numberOfLines={1}>
               Lv.{levelInfo.current.level} {levelInfo.current.title}
             </Text>
             {/* セリフ吹き出し */}
@@ -380,11 +398,11 @@ export default function ChildDashboardScreen({
               />
             </View>
             {levelInfo.next ? (
-              <Text style={styles.levelNext}>
+              <Text style={styles.levelNext} adjustsFontSizeToFit numberOfLines={1}>
                 つぎのレベルまで あと {levelInfo.remaining.toLocaleString()}えん
               </Text>
             ) : (
-              <Text style={[styles.levelNext, { color: colors.amber, fontWeight: "bold" }]}>
+              <Text style={[styles.levelNext, { color: colors.amber, fontWeight: "bold" }]} adjustsFontSizeToFit numberOfLines={1}>
                 さいこうレベル たっせい！ 🎊
               </Text>
             )}
@@ -425,7 +443,7 @@ export default function ChildDashboardScreen({
         {wallet && (
           <View style={styles.walletCard}>
             <Text style={styles.walletTitle}>おさいふ</Text>
-            <Text style={styles.walletTotal}>
+            <Text style={styles.walletTotal} adjustsFontSizeToFit numberOfLines={1}>
               {(
                 wallet.spending_balance +
                 wallet.saving_balance +
@@ -787,7 +805,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: rf(18),
     fontWeight: "bold",
     color: colors.primaryDark,
     flex: 1,
@@ -840,7 +858,7 @@ const styles = StyleSheet.create({
     textAlign: "center" as const,
   },
   levelInfo: { flex: 1 },
-  levelTitle: { fontSize: 15, fontWeight: "bold" as const, color: colors.slateDark },
+  levelTitle: { fontSize: rf(15), fontWeight: "bold" as const, color: colors.slateDark },
   speechBubble: {
     backgroundColor: "rgba(255,255,255,0.7)",
     borderRadius: 8,
@@ -886,7 +904,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   walletTotal: {
-    fontSize: 28,
+    fontSize: rf(28),
     fontWeight: "bold",
     color: colors.slateDark,
     marginBottom: 12,

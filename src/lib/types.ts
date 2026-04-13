@@ -94,6 +94,16 @@ export type SpendRequest = {
   child?: User;
 };
 
+export type FamilySettings = {
+  id: string;
+  family_id: string;
+  special_quest_enabled: boolean;
+  special_quest_star1_enabled: boolean;
+  special_quest_star2_enabled: boolean;
+  special_quest_star3_enabled: boolean;
+  updated_at: string;
+};
+
 export type Badge = {
   id: string;
   child_id: string;

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { supabase } from "../lib/supabase";
 import { colors } from "../lib/colors";
+import { rf } from "../lib/responsive";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task } from "../lib/types";
 
@@ -61,7 +62,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
           keyboardDismissMode="interactive"
         >
           <View style={styles.card}>
-            <Text style={styles.title}>💰 ねあげリクエスト</Text>
+            <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>💰 ねあげリクエスト</Text>
             <Text style={styles.taskName}>{task.title}</Text>
 
             <View style={styles.currentRow}>
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: rf(20),
     fontWeight: "bold",
     color: colors.slateDark,
     textAlign: "center",

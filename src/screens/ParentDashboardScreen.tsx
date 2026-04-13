@@ -10,16 +10,20 @@ import {
   ActivityIndicator,
   TextInput,
   Modal,
+  Platform,
+  Switch,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
 import { colors } from "../lib/colors";
+import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
 import { STAMPS } from "../lib/stamps";
 import { getChildStampById } from "../lib/child-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
-import type { Task, TaskLog, User, Wallet, SpendRequest } from "../lib/types";
+import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings } from "../lib/types";
 
 type PendingLog = TaskLog & { task: Task; child: User };
 
@@ -62,6 +66,13 @@ export default function ParentDashboardScreen({
     start_date: "",
     end_date: "",
   });
+
+  // Date picker
+  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
+  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
+
+  // 特別クエスト設定
+  const [familySettings, setFamilySettings] = useState<FamilySettings | null>(null);
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -152,6 +163,29 @@ export default function ParentDashboardScreen({
         .limit(10);
       setRecentApproved(approvedData || []);
     }
+
+    // 特別クエスト設定を読み込み
+    if (familyIds.length > 0) {
+      const fid = familyIds[0];
+      const { data: settingsData } = await supabase
+        .from("otetsudai_family_settings")
+        .select("*")
+        .eq("family_id", fid)
+        .single();
+
+      if (settingsData) {
+        setFamilySettings(settingsData);
+      } else {
+        // レコードがなければデフォルトで作成
+        const { data: newSettings } = await supabase
+          .from("otetsudai_family_settings")
+          .insert({ family_id: fid })
+          .select()
+          .single();
+        if (newSettings) setFamilySettings(newSettings);
+      }
+    }
+
     setLoading(false);
   }, []);
 
@@ -216,12 +250,12 @@ export default function ParentDashboardScreen({
 
   async function handleReject(logId: string) {
     const reasons = [
-      "🔄 やりなおし",
-      "もうすこし ていねいに",
-      "さいごまで やろう",
-      "じかんを かけてね",
+      "🔄 やり直し",
+      "もう少し丁寧に",
+      "最後までやろう",
+      "時間をかけてね",
     ];
-    Alert.alert("やりなおし", "りゆうをえらんでね", [
+    Alert.alert("やり直し", "理由を選んでね", [
       ...reasons.map((r) => ({
         text: r,
         onPress: async () => {
@@ -240,7 +274,7 @@ export default function ParentDashboardScreen({
   async function handleApproveSpend(req: SpendRequest) {
     const childWallet = wallets[req.child_id];
     if (!childWallet || childWallet.spending_balance < req.amount) {
-      Alert.alert("エラー", "ざんだかがたりません");
+      Alert.alert("エラー", "残高が足りません");
       return;
     }
 
@@ -280,6 +314,16 @@ export default function ParentDashboardScreen({
   }
 
   // --- Task CRUD ---
+  async function updateFamilySettings(updates: Partial<FamilySettings>) {
+    if (!familySettings) return;
+    const newSettings = { ...familySettings, ...updates };
+    setFamilySettings(newSettings);
+    await supabase
+      .from("otetsudai_family_settings")
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq("id", familySettings.id);
+  }
+
   function openTaskForm(task?: Task) {
     if (task) {
       setEditingTask(task);
@@ -310,23 +354,25 @@ export default function ParentDashboardScreen({
         end_date: "",
       });
     }
+    setShowStartDatePicker(false);
+    setShowEndDatePicker(false);
     setTaskFormVisible(true);
   }
 
   async function handleSaveTask() {
     if (!taskForm.title) {
-      Alert.alert("エラー", "クエストめいをいれてください");
+      Alert.alert("エラー", "クエスト名を入れてください");
       return;
     }
     const newAmount = parseInt(taskForm.reward_amount) || 10;
     if (taskForm.is_special && newAmount < 50) {
-      Alert.alert("エラー", "★とくべつクエストのほうしゅうは 50えん いじょうにしてください");
+      Alert.alert("エラー", "★特別クエストの報酬は50円以上にしてください");
       return;
     }
 
     // 値下げ時はコメント必須
     if (editingTask && newAmount < editingTask.reward_amount && !taskForm.price_change_comment.trim()) {
-      Alert.alert("⚠️ コメントひっす", "おだちんを下げるときは、りゆうをいれてください");
+      Alert.alert("⚠️ コメント必須", "報酬を下げるときは、理由を入れてください");
       return;
     }
 
@@ -363,10 +409,10 @@ export default function ParentDashboardScreen({
   }
 
   async function handleDeleteTask(taskId: string) {
-    Alert.alert("さくじょ", "このクエストをさくじょしますか？", [
+    Alert.alert("削除", "このクエストを削除しますか？", [
       { text: "キャンセル", style: "cancel" },
       {
-        text: "さくじょ",
+        text: "削除",
         style: "destructive",
         onPress: async () => {
           await supabase.from("otetsudai_tasks").delete().eq("id", taskId);
@@ -390,21 +436,21 @@ export default function ParentDashboardScreen({
       .update({
         reward_amount: task.proposed_reward,
         proposal_status: "approved",
-        price_change_comment: `おだちん ${task.reward_amount}→${task.proposed_reward}えん にアップ！`,
+        price_change_comment: `報酬 ${task.reward_amount}→${task.proposed_reward}円にアップ！`,
       })
       .eq("id", task.id);
-    Alert.alert("✅ しょうにん", `${task.title}のおだちんを${task.proposed_reward}えんにしました`);
+    Alert.alert("✅ 承認", `${task.title}の報酬を${task.proposed_reward}円にしました`);
     await loadData();
   }
 
   async function handleRejectPriceRequest(task: Task) {
     Alert.prompt(
-      "❌ きゃっか",
-      "りゆうをいれてください",
+      "❌ 却下",
+      "理由を入れてください",
       [
         { text: "キャンセル", style: "cancel" },
         {
-          text: "きゃっか",
+          text: "却下",
           style: "destructive",
           onPress: async (reason?: string) => {
             await supabase
@@ -412,7 +458,7 @@ export default function ParentDashboardScreen({
               .update({
                 proposal_status: "rejected",
                 proposed_reward: null,
-                price_change_comment: reason || "いまの きんがくで がんばろう！",
+                price_change_comment: reason || "今の金額で頑張ろう！",
               })
               .eq("id", task.id);
             await loadData();
@@ -446,10 +492,10 @@ export default function ParentDashboardScreen({
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle} numberOfLines={1}>
-          👨‍👩‍👧‍👦 おや
+          👨‍👩‍👧‍👦 親
         </Text>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>← もどる</Text>
+          <Text style={styles.logoutText}>← 戻る</Text>
         </TouchableOpacity>
       </View>
 
@@ -462,7 +508,7 @@ export default function ParentDashboardScreen({
           <Text
             style={[styles.tabText, tab === "approve" && styles.tabTextActive]}
           >
-            しょうにん{pendingCount > 0 ? ` (${pendingCount})` : ""}
+            承認{pendingCount > 0 ? ` (${pendingCount})` : ""}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -485,7 +531,7 @@ export default function ParentDashboardScreen({
               tab === "children" && styles.tabTextActive,
             ]}
           >
-            こども
+            子ども
           </Text>
         </TouchableOpacity>
       </View>
@@ -503,7 +549,7 @@ export default function ParentDashboardScreen({
             {pendingLogs.length > 0 && (
               <>
                 <Text style={styles.sectionTitle}>
-                  ⏳ クエスト かんりょう ({pendingLogs.length})
+                  ⏳ クエスト完了 ({pendingLogs.length})
                 </Text>
                 {pendingLogs.map((log) => (
                   <View key={log.id} style={styles.approvalCard}>
@@ -517,7 +563,7 @@ export default function ParentDashboardScreen({
                         </Text>
                         <Text style={styles.approvalSub}>
                           🧒 {(log.child as any)?.name} ・ 💰{" "}
-                          {log.task?.reward_amount}えん
+                          {log.task?.reward_amount}円
                         </Text>
                       </View>
                     </View>
@@ -526,13 +572,13 @@ export default function ParentDashboardScreen({
                         style={styles.approveButton}
                         onPress={() => setApprovalTarget(log)}
                       >
-                        <Text style={styles.approveText}>しょうにん</Text>
+                        <Text style={styles.approveText}>承認</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.rejectButton}
                         onPress={() => handleReject(log.id)}
                       >
-                        <Text style={styles.rejectText}>やりなおし</Text>
+                        <Text style={styles.rejectText}>やり直し</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -544,7 +590,7 @@ export default function ParentDashboardScreen({
             {pendingSpends.length > 0 && (
               <>
                 <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
-                  🛒 つかいたい リクエスト ({pendingSpends.length})
+                  🛒 使いたいリクエスト ({pendingSpends.length})
                 </Text>
                 {pendingSpends.map((req) => (
                   <View key={req.id} style={styles.approvalCard}>
@@ -553,7 +599,7 @@ export default function ParentDashboardScreen({
                       <View style={{ flex: 1 }}>
                         <Text style={styles.approvalTitle}>{req.purpose}</Text>
                         <Text style={styles.approvalSub}>
-                          🧒 {(req.child as any)?.name} ・ {req.amount}えん
+                          🧒 {(req.child as any)?.name} ・ {req.amount}円
                         </Text>
                       </View>
                     </View>
@@ -580,7 +626,7 @@ export default function ParentDashboardScreen({
             {priceRequests.length > 0 && (
               <>
                 <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
-                  💰 ねあげリクエスト ({priceRequests.length})
+                  💰 値上げリクエスト ({priceRequests.length})
                 </Text>
                 {priceRequests.map((task) => (
                   <View key={task.id} style={styles.approvalCard}>
@@ -591,7 +637,7 @@ export default function ParentDashboardScreen({
                       <View style={{ flex: 1 }}>
                         <Text style={styles.approvalTitle}>{task.title}</Text>
                         <Text style={styles.approvalSub}>
-                          {task.reward_amount}えん → {task.proposed_reward}えん
+                          {task.reward_amount}円 → {task.proposed_reward}円
                         </Text>
                         {task.proposal_message && (
                           <Text style={{ fontSize: 12, color: "#047857", marginTop: 2 }}>
@@ -621,15 +667,15 @@ export default function ParentDashboardScreen({
 
             {pendingCount === 0 && priceRequests.length === 0 && (
               <Text style={styles.emptyText}>
-                しょうにんまちはありません
+                承認待ちはありません
               </Text>
             )}
 
-            {/* 最近のしょうにん（子ども返信表示） */}
+            {/* 最近の承認（子ども返信表示） */}
             {recentApproved.length > 0 && (
               <>
                 <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
-                  ✅ さいきんの しょうにん
+                  ✅ 最近の承認
                 </Text>
                 {recentApproved.map((log: any) => {
                   const childStamp = log.child_reaction_stamp
@@ -647,7 +693,7 @@ export default function ParentDashboardScreen({
                             {log.task?.title}
                           </Text>
                           <Text style={styles.approvalSub}>
-                            🧒 {log.child?.name} ・ 💰 {log.task?.reward_amount}えん
+                            🧒 {log.child?.name} ・ 💰 {log.task?.reward_amount}円
                           </Text>
                           {childStamp && (
                             <Text style={{ fontSize: 13, marginTop: 4 }}>
@@ -661,7 +707,7 @@ export default function ParentDashboardScreen({
                           )}
                           {!hasReaction && (
                             <Text style={{ fontSize: 11, color: colors.gray, marginTop: 2 }}>
-                              ⏳ こどもの おへんじまち
+                              ⏳ 子どもの返事待ち
                             </Text>
                           )}
                         </View>
@@ -677,6 +723,52 @@ export default function ParentDashboardScreen({
         {/* === Tasks Tab === */}
         {tab === "tasks" && (
           <View style={styles.section}>
+            {/* ★特別クエスト設定パネル */}
+            {familySettings && (
+              <View style={styles.settingsPanel}>
+                <Text style={styles.settingsPanelTitle}>★ 特別クエスト設定</Text>
+                <View style={styles.settingsRow}>
+                  <Text style={styles.settingsLabel}>特別クエスト全体</Text>
+                  <Switch
+                    value={familySettings.special_quest_enabled}
+                    onValueChange={(v) => updateFamilySettings({ special_quest_enabled: v })}
+                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
+                    thumbColor={familySettings.special_quest_enabled ? colors.primary : "#f4f3f4"}
+                  />
+                </View>
+                <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
+                  <Text style={styles.settingsLabel}>★ 簡単</Text>
+                  <Switch
+                    value={familySettings.special_quest_star1_enabled}
+                    onValueChange={(v) => updateFamilySettings({ special_quest_star1_enabled: v })}
+                    disabled={!familySettings.special_quest_enabled}
+                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
+                    thumbColor={familySettings.special_quest_star1_enabled ? colors.primary : "#f4f3f4"}
+                  />
+                </View>
+                <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
+                  <Text style={styles.settingsLabel}>★★ 普通</Text>
+                  <Switch
+                    value={familySettings.special_quest_star2_enabled}
+                    onValueChange={(v) => updateFamilySettings({ special_quest_star2_enabled: v })}
+                    disabled={!familySettings.special_quest_enabled}
+                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
+                    thumbColor={familySettings.special_quest_star2_enabled ? colors.primary : "#f4f3f4"}
+                  />
+                </View>
+                <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
+                  <Text style={styles.settingsLabel}>★★★ 難しい</Text>
+                  <Switch
+                    value={familySettings.special_quest_star3_enabled}
+                    onValueChange={(v) => updateFamilySettings({ special_quest_star3_enabled: v })}
+                    disabled={!familySettings.special_quest_enabled}
+                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
+                    thumbColor={familySettings.special_quest_star3_enabled ? colors.primary : "#f4f3f4"}
+                  />
+                </View>
+              </View>
+            )}
+
             <View style={{ flexDirection: "row", gap: 8, marginBottom: 12 }}>
               <TouchableOpacity
                 style={[styles.addButton, { flex: 1, marginBottom: 0 }]}
@@ -698,20 +790,27 @@ export default function ParentDashboardScreen({
                   }, 0);
                 }}
               >
-                <Text style={styles.addButtonText}>+ ★とくべつ</Text>
+                <Text style={styles.addButtonText}>+ ★特別</Text>
               </TouchableOpacity>
             </View>
             {/* ★特別クエスト */}
             {tasks.filter((t) => t.is_special).length > 0 && (
               <>
-                <Text style={styles.specialLabel}>★ とくべつクエスト</Text>
-                {tasks.filter((t) => t.is_special).map((task) => (
+                <Text style={styles.specialLabel}>★ 特別クエスト</Text>
+                {tasks.filter((t) => t.is_special).map((task) => {
+                  const starDisabled = familySettings && (
+                    !familySettings.special_quest_enabled ||
+                    (task.special_difficulty === 1 && !familySettings.special_quest_star1_enabled) ||
+                    (task.special_difficulty === 2 && !familySettings.special_quest_star2_enabled) ||
+                    (task.special_difficulty === 3 && !familySettings.special_quest_star3_enabled)
+                  );
+                  return (
                   <View
                     key={task.id}
                     style={[
                       styles.taskCard,
                       styles.specialTaskCard,
-                      !task.is_active && styles.taskInactive,
+                      (!task.is_active || starDisabled) && styles.taskInactive,
                     ]}
                   >
                     <View style={styles.taskInfo}>
@@ -723,7 +822,7 @@ export default function ParentDashboardScreen({
                           {"★".repeat(task.special_difficulty || 1)} {task.title}
                         </Text>
                         <Text style={styles.taskSub}>
-                          💰 {task.reward_amount}えん
+                          💰 {task.reward_amount}円
                           {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
                         </Text>
                       </View>
@@ -749,7 +848,8 @@ export default function ParentDashboardScreen({
                       </TouchableOpacity>
                     </View>
                   </View>
-                ))}
+                  );
+                })}
               </>
             )}
 
@@ -769,12 +869,12 @@ export default function ParentDashboardScreen({
                   <View style={{ flex: 1 }}>
                     <Text style={styles.taskTitle}>{task.title}</Text>
                     <Text style={styles.taskSub}>
-                      💰 {task.reward_amount}えん ・{" "}
+                      💰 {task.reward_amount}円 ・{" "}
                       {task.recurrence === "daily"
-                        ? "まいにち"
+                        ? "毎日"
                         : task.recurrence === "weekly"
-                          ? "まいしゅう"
-                          : "1かい"}
+                          ? "毎週"
+                          : "1回"}
                     </Text>
                   </View>
                 </View>
@@ -815,7 +915,7 @@ export default function ParentDashboardScreen({
                 <View key={child.id} style={styles.childCard}>
                   <Text style={styles.childName}>🧒 {child.name}</Text>
                   <Text style={styles.childTotal}>
-                    {total.toLocaleString()}えん
+                    {total.toLocaleString()}円
                   </Text>
                   {w && (
                     <View style={styles.walletRow}>
@@ -825,7 +925,7 @@ export default function ParentDashboardScreen({
                           { borderColor: colors.spend },
                         ]}
                       >
-                        <Text style={styles.walletLabel}>つかう</Text>
+                        <Text style={styles.walletLabel}>使う</Text>
                         <Text
                           style={[
                             styles.walletAmount,
@@ -841,7 +941,7 @@ export default function ParentDashboardScreen({
                           { borderColor: colors.save },
                         ]}
                       >
-                        <Text style={styles.walletLabel}>ためる</Text>
+                        <Text style={styles.walletLabel}>貯める</Text>
                         <Text
                           style={[
                             styles.walletAmount,
@@ -857,7 +957,7 @@ export default function ParentDashboardScreen({
                           { borderColor: colors.invest },
                         ]}
                       >
-                        <Text style={styles.walletLabel}>ふやす</Text>
+                        <Text style={styles.walletLabel}>増やす</Text>
                         <Text
                           style={[
                             styles.walletAmount,
@@ -871,9 +971,9 @@ export default function ParentDashboardScreen({
                   )}
                   {w && (
                     <Text style={styles.ratioText}>
-                      わりあい: つかう{" "}
+                      割合: 使う{" "}
                       {100 - (w.save_ratio ?? 0) - (w.invest_ratio ?? 0)}% /
-                      ためる {w.save_ratio ?? 0}% / ふやす{" "}
+                      貯める {w.save_ratio ?? 0}% / 増やす{" "}
                       {w.invest_ratio ?? 0}%
                     </Text>
                   )}
@@ -903,17 +1003,17 @@ export default function ParentDashboardScreen({
             keyboardDismissMode="interactive"
           >
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>しょうにん</Text>
+              <Text style={styles.modalTitle} adjustsFontSizeToFit numberOfLines={1}>承認</Text>
               <Text style={styles.modalSub}>
                 {(approvalTarget?.child as any)?.name} -{" "}
                 {approvalTarget?.task?.title}
               </Text>
               <Text style={styles.modalReward}>
-                💰 {approvalTarget?.task?.reward_amount}えん
+                💰 {approvalTarget?.task?.reward_amount}円
               </Text>
 
               {/* Stamps */}
-              <Text style={styles.stampLabel}>スタンプをえらんでね</Text>
+              <Text style={styles.stampLabel}>スタンプを選んでね</Text>
               <View style={styles.stampGrid}>
                 {STAMPS.map((s) => (
                   <TouchableOpacity
@@ -935,7 +1035,7 @@ export default function ParentDashboardScreen({
               {/* Message */}
               <TextInput
                 style={styles.messageInput}
-                placeholder="ひとこと メッセージ（なくてもOK）"
+                placeholder="一言メッセージ（なくてもOK）"
                 value={approvalMessage}
                 onChangeText={setApprovalMessage}
                 maxLength={100}
@@ -956,7 +1056,7 @@ export default function ParentDashboardScreen({
                   style={styles.modalApprove}
                   onPress={handleApprove}
                 >
-                  <Text style={styles.modalApproveText}>✓ しょうにん</Text>
+                  <Text style={styles.modalApproveText}>✓ 承認</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -971,21 +1071,21 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setTaskFormVisible(false)}
       >
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)" }}>
           <ScrollView
             contentContainerStyle={[
-              styles.modalOverlay,
+              styles.taskFormScrollContent,
               keyboardHeight > 0 && { paddingBottom: keyboardHeight },
             ]}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="interactive"
           >
             <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {editingTask ? "クエストへんしゅう" : "あたらしいクエスト"}
+              <Text style={styles.modalTitle} adjustsFontSizeToFit numberOfLines={1}>
+                {editingTask ? "クエスト編集" : "新しいクエスト"}
               </Text>
 
-              <Text style={styles.formLabel}>クエストめい</Text>
+              <Text style={styles.formLabel}>クエスト名</Text>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.title}
@@ -993,7 +1093,7 @@ export default function ParentDashboardScreen({
                 placeholder="おふろそうじ、しゅくだい など"
               />
 
-              <Text style={styles.formLabel}>せつめい（なくてもOK）</Text>
+              <Text style={styles.formLabel}>説明（なくてもOK）</Text>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.description}
@@ -1024,14 +1124,14 @@ export default function ParentDashboardScreen({
                   styles.specialToggleText,
                   taskForm.is_special && styles.specialToggleTextActive,
                 ]}>
-                  {taskForm.is_special ? "★ とくべつクエスト ON" : "★ とくべつクエストにする"}
+                  {taskForm.is_special ? "★ 特別クエスト ON" : "★ 特別クエストにする"}
                 </Text>
               </TouchableOpacity>
 
               {/* 特別クエスト: 難易度 */}
               {taskForm.is_special && (
                 <>
-                  <Text style={styles.formLabel}>なんいど</Text>
+                  <Text style={styles.formLabel}>難易度</Text>
                   <View style={styles.recurrenceRow}>
                     {[1, 2, 3].map((d) => (
                       <TouchableOpacity
@@ -1052,28 +1152,81 @@ export default function ParentDashboardScreen({
                     ))}
                   </View>
 
-                  <Text style={styles.formLabel}>きかん（かいし）</Text>
-                  <TextInput
-                    style={styles.formInput}
-                    value={taskForm.start_date}
-                    onChangeText={(t) => setTaskForm({ ...taskForm, start_date: t })}
-                    placeholder="2026-04-13（きょうからなら くうらん）"
-                    keyboardType="default"
-                  />
+                  <Text style={styles.formLabel}>期間（開始）</Text>
+                  <TouchableOpacity
+                    style={styles.datePickerButton}
+                    onPress={() => setShowStartDatePicker(true)}
+                  >
+                    <Text style={styles.datePickerText}>
+                      {taskForm.start_date
+                        ? `📅 ${taskForm.start_date}`
+                        : "📅 タップして選ぶ（今日からなら なしでOK）"}
+                    </Text>
+                    {taskForm.start_date ? (
+                      <TouchableOpacity
+                        onPress={() => setTaskForm({ ...taskForm, start_date: "" })}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Text style={styles.dateClearText}>✕</Text>
+                      </TouchableOpacity>
+                    ) : null}
+                  </TouchableOpacity>
+                  {showStartDatePicker && (
+                    <DateTimePicker
+                      value={taskForm.start_date ? new Date(taskForm.start_date) : new Date()}
+                      mode="date"
+                      display={Platform.OS === "ios" ? "inline" : "default"}
+                      locale="ja-JP"
+                      onChange={(_event, selectedDate) => {
+                        setShowStartDatePicker(Platform.OS === "ios");
+                        if (selectedDate) {
+                          const dateStr = selectedDate.toISOString().split("T")[0];
+                          setTaskForm({ ...taskForm, start_date: dateStr });
+                        }
+                      }}
+                    />
+                  )}
 
-                  <Text style={styles.formLabel}>きかん（おわり）</Text>
-                  <TextInput
-                    style={styles.formInput}
-                    value={taskForm.end_date}
-                    onChangeText={(t) => setTaskForm({ ...taskForm, end_date: t })}
-                    placeholder="2026-04-20（きげんなしなら くうらん）"
-                    keyboardType="default"
-                  />
+                  <Text style={styles.formLabel}>期間（終わり）</Text>
+                  <TouchableOpacity
+                    style={styles.datePickerButton}
+                    onPress={() => setShowEndDatePicker(true)}
+                  >
+                    <Text style={styles.datePickerText}>
+                      {taskForm.end_date
+                        ? `📅 ${taskForm.end_date}`
+                        : "📅 タップして選ぶ（期限なしなら なしでOK）"}
+                    </Text>
+                    {taskForm.end_date ? (
+                      <TouchableOpacity
+                        onPress={() => setTaskForm({ ...taskForm, end_date: "" })}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Text style={styles.dateClearText}>✕</Text>
+                      </TouchableOpacity>
+                    ) : null}
+                  </TouchableOpacity>
+                  {showEndDatePicker && (
+                    <DateTimePicker
+                      value={taskForm.end_date ? new Date(taskForm.end_date) : new Date()}
+                      mode="date"
+                      display={Platform.OS === "ios" ? "inline" : "default"}
+                      locale="ja-JP"
+                      minimumDate={taskForm.start_date ? new Date(taskForm.start_date) : undefined}
+                      onChange={(_event, selectedDate) => {
+                        setShowEndDatePicker(Platform.OS === "ios");
+                        if (selectedDate) {
+                          const dateStr = selectedDate.toISOString().split("T")[0];
+                          setTaskForm({ ...taskForm, end_date: dateStr });
+                        }
+                      }}
+                    />
+                  )}
                 </>
               )}
 
-              <Text style={styles.formLabel}>
-                ほうしゅう（えん）{taskForm.is_special ? " ※50えん〜" : ""}
+              <Text style={styles.formLabel} adjustsFontSizeToFit numberOfLines={1}>
+                報酬（円）{taskForm.is_special ? " ※50円〜" : ""}
               </Text>
               <TextInput
                 style={styles.formInput}
@@ -1088,8 +1241,8 @@ export default function ParentDashboardScreen({
                 <>
                   <Text style={styles.formLabel}>
                     {parseInt(taskForm.reward_amount) < editingTask.reward_amount
-                      ? "⚠️ ねさげの りゆう（ひっす）"
-                      : "💬 きんがく へんこうの コメント"}
+                      ? "⚠️ 値下げの理由（必須）"
+                      : "💬 金額変更のコメント"}
                   </Text>
                   <TextInput
                     style={styles.formInput}
@@ -1097,7 +1250,7 @@ export default function ParentDashboardScreen({
                     onChangeText={(t) =>
                       setTaskForm({ ...taskForm, price_change_comment: t })
                     }
-                    placeholder="こどもに つたえる メッセージ"
+                    placeholder="子どもに伝えるメッセージ"
                     multiline
                   />
                 </>
@@ -1105,7 +1258,7 @@ export default function ParentDashboardScreen({
 
               {!taskForm.is_special && (
                 <>
-                  <Text style={styles.formLabel}>くりかえし</Text>
+                  <Text style={styles.formLabel}>繰り返し</Text>
                   <View style={styles.recurrenceRow}>
                     {(["once", "daily", "weekly"] as const).map((r) => (
                       <TouchableOpacity
@@ -1124,10 +1277,10 @@ export default function ParentDashboardScreen({
                           ]}
                         >
                           {r === "once"
-                            ? "1かい"
+                            ? "1回"
                             : r === "daily"
-                              ? "まいにち"
-                              : "まいしゅう"}
+                              ? "毎日"
+                              : "毎週"}
                         </Text>
                       </TouchableOpacity>
                     ))}
@@ -1135,7 +1288,7 @@ export default function ParentDashboardScreen({
                 </>
               )}
 
-              <Text style={styles.formLabel}>だれに？</Text>
+              <Text style={styles.formLabel}>誰に？</Text>
               <View style={styles.recurrenceRow}>
                 <TouchableOpacity
                   style={[
@@ -1154,7 +1307,7 @@ export default function ParentDashboardScreen({
                         styles.recurrenceTextActive,
                     ]}
                   >
-                    みんな
+                    全員
                   </Text>
                 </TouchableOpacity>
                 {children.map((c) => (
@@ -1194,7 +1347,7 @@ export default function ParentDashboardScreen({
                   onPress={handleSaveTask}
                 >
                   <Text style={styles.modalApproveText}>
-                    {editingTask ? "ほぞん" : "つくる"}
+                    {editingTask ? "保存" : "作成"}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1291,6 +1444,31 @@ const styles = StyleSheet.create({
   rejectText: { color: colors.slate, fontWeight: "bold", fontSize: 14 },
 
   // Special quest
+  // 特別クエスト設定パネル
+  settingsPanel: {
+    backgroundColor: colors.white,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: "#fcd34d",
+  },
+  settingsPanelTitle: {
+    fontSize: rf(15),
+    fontWeight: "bold",
+    color: "#92400e",
+    marginBottom: 12,
+  },
+  settingsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 6,
+  },
+  settingsLabel: {
+    fontSize: rf(14),
+    color: colors.slateDark,
+  },
   specialLabel: {
     fontSize: 15,
     fontWeight: "bold" as const,
@@ -1417,14 +1595,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
   },
+  taskFormScrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 20,
+  },
   modalContent: {
     backgroundColor: colors.white,
     borderRadius: 16,
     padding: 20,
-    maxHeight: "90%",
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: rf(18),
     fontWeight: "bold",
     color: colors.slateDark,
     textAlign: "center",
@@ -1497,7 +1679,7 @@ const styles = StyleSheet.create({
 
   // Task form
   formLabel: {
-    fontSize: 14,
+    fontSize: rf(14),
     fontWeight: "600",
     color: colors.slateDark,
     marginTop: 12,
@@ -1510,6 +1692,26 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 15,
     backgroundColor: colors.grayLight,
+  },
+  datePickerButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 10,
+    padding: 12,
+    backgroundColor: colors.grayLight,
+  },
+  datePickerText: {
+    fontSize: 14,
+    color: colors.slateDark,
+    flex: 1,
+  },
+  dateClearText: {
+    fontSize: 16,
+    color: colors.slate,
+    paddingLeft: 8,
   },
   recurrenceRow: {
     flexDirection: "row",

@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { colors } from "../lib/colors";
+import { rf } from "../lib/responsive";
 import type { Level } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
 
@@ -127,7 +128,7 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
 
           {/* しんかした！ */}
           <Animated.View style={{ opacity: textFade }}>
-            <Text style={styles.evolveTitle}>⚡ しんかした！ ⚡</Text>
+            <Text style={styles.evolveTitle} adjustsFontSizeToFit numberOfLines={1}>⚡ しんかした！ ⚡</Text>
           </Animated.View>
 
           {/* Before → After */}
@@ -158,9 +159,9 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
 
           {/* 新レベル情報 */}
           <Animated.View style={[styles.infoBox, { opacity: textFade }]}>
-            <Text style={styles.newTitle}>{newLevel.title}</Text>
-            <Text style={styles.newAppearance}>「{newLevel.appearance}」をてにいれた！</Text>
-            <Text style={styles.newGreeting}>「{newLevel.greetingActive}」</Text>
+            <Text style={styles.newTitle} adjustsFontSizeToFit numberOfLines={1}>{newLevel.title}</Text>
+            <Text style={styles.newAppearance} adjustsFontSizeToFit numberOfLines={1}>「{newLevel.appearance}」をてにいれた！</Text>
+            <Text style={styles.newGreeting} adjustsFontSizeToFit numberOfLines={2}>「{newLevel.greetingActive}」</Text>
           </Animated.View>
 
           {/* 閉じるボタン */}
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   evolveTitle: {
-    fontSize: 24,
+    fontSize: rf(24),
     fontWeight: "bold",
     color: "#FFD700",
     marginBottom: 16,
@@ -256,13 +257,13 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,215,0,0.3)",
   },
   newTitle: {
-    fontSize: 20,
+    fontSize: rf(20),
     fontWeight: "bold",
     color: "#FFFFFF",
     marginBottom: 4,
   },
   newAppearance: {
-    fontSize: 14,
+    fontSize: rf(14),
     color: "#FFD700",
     marginBottom: 8,
   },
