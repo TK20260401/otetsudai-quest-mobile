@@ -21,7 +21,7 @@ import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
 import type { Task, Wallet, Transaction, Badge, FamilySettings } from "../lib/types";
 import CharacterSvg from "../components/CharacterSvg";
-import { RubyText, RubyStr } from "../components/Ruby";
+import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
@@ -406,13 +406,9 @@ export default function ChildDashboardScreen({
               />
             </View>
             {levelInfo.next ? (
-              <Text style={styles.levelNext} adjustsFontSizeToFit numberOfLines={1}>
-                次のレベルまで あと {levelInfo.remaining.toLocaleString()}円
-              </Text>
+              <AutoRubyText text={`次のレベルまで あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={6} />
             ) : (
-              <Text style={[styles.levelNext, { color: colors.amber, fontWeight: "bold" }]} adjustsFontSizeToFit numberOfLines={1}>
-                最高レベル 達成！ 🎊
-              </Text>
+              <AutoRubyText text="最高レベル 達成！ 🎊" style={[styles.levelNext, { color: colors.amber, fontWeight: "bold" }]} rubySize={6} />
             )}
           </View>
         </View>
@@ -532,14 +528,11 @@ export default function ChildDashboardScreen({
             style={[styles.tabButton, tab === "history" && styles.tabActive]}
             onPress={() => setTab("history")}
           >
-            <Text
-              style={[
-                styles.tabText,
-                tab === "history" && styles.tabTextActive,
-              ]}
-            >
-              履歴
-            </Text>
+            <RubyText
+              style={tab === "history" ? styles.tabTextActive : styles.tabText}
+              parts={[["履歴", "りれき"]]}
+              rubySize={6}
+            />
           </TouchableOpacity>
         </View>
 
@@ -570,7 +563,7 @@ export default function ChildDashboardScreen({
                           {getTaskIcon(task.title)}
                         </Text>
                         <View style={styles.questDetails}>
-                          <Text style={styles.specialQuestTitle}>{task.title}</Text>
+                          <AutoRubyText text={task.title} style={styles.specialQuestTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
                             <Text style={styles.specialQuestReward}>
                               💰 {task.reward_amount}円
@@ -617,7 +610,7 @@ export default function ChildDashboardScreen({
                           {getTaskIcon(task.title)}
                         </Text>
                         <View style={styles.questDetails}>
-                          <Text style={styles.questTitle}>{task.title}</Text>
+                          <AutoRubyText text={task.title} style={styles.questTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
                             <Text style={styles.questReward}>
                               💰 {task.reward_amount}円
@@ -699,7 +692,7 @@ export default function ChildDashboardScreen({
             )}
 
             {transactions.length === 0 && repliedMessages.length === 0 ? (
-              <Text style={styles.emptyText}>まだ履歴がないよ</Text>
+              <AutoRubyText text="まだ履歴がないよ" style={styles.emptyText} rubySize={6} />
             ) : transactions.length === 0 ? null : (
               transactions.map((tx) => (
                 <View key={tx.id} style={styles.historyItem}>
