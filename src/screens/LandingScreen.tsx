@@ -13,7 +13,7 @@ import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
 
 type Props = {
-  onSignup: () => void;
+  onSignup?: () => void;
   onLogin: () => void;
 };
 
@@ -56,22 +56,11 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
           <TouchableOpacity
             style={[styles.button, styles.buttonPrimary]}
-            onPress={onSignup}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.buttonIconText}>⚔️</Text>
-            <Text style={[styles.buttonPrimaryText, isTablet && { fontSize: 20 }]} adjustsFontSizeToFit numberOfLines={1}>
-              新規スタート
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.buttonOutline]}
             onPress={onLogin}
             activeOpacity={0.8}
           >
             <Text style={styles.buttonIconText}>🔑</Text>
-            <Text style={[styles.buttonOutlineText, isTablet && { fontSize: 20 }]}>
+            <Text style={[styles.buttonPrimaryText, isTablet && { fontSize: 20 }]} adjustsFontSizeToFit numberOfLines={1}>
               ログイン
             </Text>
           </TouchableOpacity>
