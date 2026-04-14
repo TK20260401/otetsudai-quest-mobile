@@ -449,9 +449,9 @@ export default function ChildDashboardScreen({
             <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
             <Text style={styles.walletTotal} adjustsFontSizeToFit numberOfLines={1}>
               {(
-                wallet.spending_balance +
-                wallet.saving_balance +
-                wallet.invest_balance
+                (wallet.spending_balance ?? 0) +
+                (wallet.saving_balance ?? 0) +
+                (wallet.invest_balance ?? 0)
               ).toLocaleString()}
               円
             </Text>
@@ -459,13 +459,13 @@ export default function ChildDashboardScreen({
               <View style={[styles.walletItem, { borderColor: colors.spend }]}>
                 <RubyText style={styles.walletLabel} parts={[["使", "つか"], "う"]} />
                 <Text style={[styles.walletAmount, { color: colors.spend }]}>
-                  {wallet.spending_balance.toLocaleString()}
+                  {(wallet.spending_balance ?? 0).toLocaleString()}
                 </Text>
               </View>
               <View style={[styles.walletItem, { borderColor: colors.save }]}>
                 <RubyText style={styles.walletLabel} parts={[["貯", "た"], "める"]} />
                 <Text style={[styles.walletAmount, { color: colors.save }]}>
-                  {wallet.saving_balance.toLocaleString()}
+                  {(wallet.saving_balance ?? 0).toLocaleString()}
                 </Text>
               </View>
               <View
@@ -473,7 +473,7 @@ export default function ChildDashboardScreen({
               >
                 <RubyText style={styles.walletLabel} parts={[["増", "ふ"], "やす"]} />
                 <Text style={[styles.walletAmount, { color: colors.invest }]}>
-                  {wallet.invest_balance.toLocaleString()}
+                  {(wallet.invest_balance ?? 0).toLocaleString()}
                 </Text>
               </View>
             </View>
