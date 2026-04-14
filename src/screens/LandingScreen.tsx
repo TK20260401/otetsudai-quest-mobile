@@ -104,7 +104,6 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         </View>
       </View>
 
-      <Text style={styles.footer}>おこづかいクエスト v0.9.6</Text>
       <View style={styles.legalRow}>
         <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/terms")}>
           <RubyText style={styles.legalLink} parts={[["利用規約", "りようきやく"]]} rubySize={6} />
@@ -228,12 +227,6 @@ function createStyles(p: Palette) {
     featureDesc: {
       fontSize: 10,
       lineHeight: 16,
-    },
-    footer: {
-      textAlign: "center",
-      fontSize: 11,
-      color: p.textMuted,
-      marginTop: 24,
     },
     legalRow: {
       flexDirection: "row",
