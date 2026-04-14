@@ -49,6 +49,37 @@ export function RubyText({
   );
 }
 
+/**
+ * マーカー記法 "[漢字|よみ]" を含むテキストをルビ付きで表示
+ * 例: "[駆|か]け[出|だ]し" → 駆(か)け出(だ)し
+ */
+export function RubyStr({
+  text,
+  style,
+  rubySize = 8,
+}: {
+  text: string;
+  style?: any;
+  rubySize?: number;
+}) {
+  if (!text) return null;
+  const parts: (string | [string, string])[] = [];
+  const regex = /\[([^\]|]+)\|([^\]]+)\]/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push([match[1], match[2]]);
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return <RubyText parts={parts} style={style} rubySize={rubySize} />;
+}
+
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",

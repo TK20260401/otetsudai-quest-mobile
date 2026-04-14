@@ -12,6 +12,7 @@ import { colors } from "../lib/colors";
 import { rf } from "../lib/responsive";
 import type { Level } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
+import { RubyStr } from "./Ruby";
 
 type Props = {
   visible: boolean;
@@ -159,9 +160,17 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
 
           {/* 新レベル情報 */}
           <Animated.View style={[styles.infoBox, { opacity: textFade }]}>
-            <Text style={styles.newTitle} adjustsFontSizeToFit numberOfLines={1}>{newLevel.title}</Text>
-            <Text style={styles.newAppearance} adjustsFontSizeToFit numberOfLines={1}>「{newLevel.appearance}」をてにいれた！</Text>
-            <Text style={styles.newGreeting} adjustsFontSizeToFit numberOfLines={2}>「{newLevel.greetingActive}」</Text>
+            <RubyStr text={newLevel.title} style={styles.newTitle} rubySize={8} />
+            <View style={{ flexDirection: "row", alignItems: "flex-end", flexWrap: "wrap", justifyContent: "center" }}>
+              <Text style={styles.newAppearance}>「</Text>
+              <RubyStr text={newLevel.appearance} style={styles.newAppearance} rubySize={6} />
+              <Text style={styles.newAppearance}>」を[手|て]に[入|い]れた！</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "flex-end", flexWrap: "wrap", justifyContent: "center", marginTop: 8 }}>
+              <Text style={styles.newGreeting}>「</Text>
+              <RubyStr text={newLevel.greetingActive} style={styles.newGreeting} rubySize={6} />
+              <Text style={styles.newGreeting}>」</Text>
+            </View>
           </Animated.View>
 
           {/* 閉じるボタン */}

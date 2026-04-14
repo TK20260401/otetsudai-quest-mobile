@@ -21,7 +21,7 @@ import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
 import type { Task, Wallet, Transaction, Badge, FamilySettings } from "../lib/types";
 import CharacterSvg from "../components/CharacterSvg";
-import { RubyText } from "../components/Ruby";
+import { RubyText, RubyStr } from "../components/Ruby";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
@@ -374,21 +374,28 @@ export default function ChildDashboardScreen({
         ]}>
           <View style={styles.characterColumn}>
             <CharacterSvg level={levelInfo.current.level} mood={mood} size={100} />
-            <Text style={styles.appearanceText}>{levelInfo.current.appearance}</Text>
+            <RubyStr text={levelInfo.current.appearance} style={styles.appearanceText} rubySize={6} />
           </View>
           <View style={styles.levelInfo}>
-            <Text style={styles.levelTitle} adjustsFontSizeToFit numberOfLines={1}>
-              Lv.{levelInfo.current.level} {levelInfo.current.title}
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+              <Text style={styles.levelTitle}>Lv.{levelInfo.current.level} </Text>
+              <RubyStr text={levelInfo.current.title} style={styles.levelTitle} rubySize={7} />
+            </View>
             {/* セリフ吹き出し */}
             <View style={styles.speechBubble}>
-              <Text style={styles.speechText}>
-                「{mood === "active"
-                  ? levelInfo.current.greetingActive
-                  : mood === "lonely"
-                    ? levelInfo.current.greetingLonely
-                    : levelInfo.current.greeting}」
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "flex-end", flexWrap: "wrap" }}>
+                <Text style={styles.speechText}>「</Text>
+                <RubyStr
+                  text={mood === "active"
+                    ? levelInfo.current.greetingActive
+                    : mood === "lonely"
+                      ? levelInfo.current.greetingLonely
+                      : levelInfo.current.greeting}
+                  style={styles.speechText}
+                  rubySize={6}
+                />
+                <Text style={styles.speechText}>」</Text>
+              </View>
             </View>
             <View style={styles.progressBar}>
               <View
