@@ -133,12 +133,21 @@ const RUBY_DICT: [string, string][] = [
   ["誰", "だれ"], ["入", "い"], ["番号", "ばんごう"], ["画面", "がめん"],
   ["認", "みと"], ["貯金箱", "ちょきんばこ"], ["並", "なら"], ["記録", "きろく"],
   ["右下", "みぎした"], ["話", "はなし"], ["教", "おし"], ["迷", "まよ"],
-  ["続", "つづ"], ["皿", "さら"], ["世話", "せわ"], ["終", "お"],
+  ["続", "つづ"], ["皿洗", "さらあら"], ["皿", "さら"], ["世話", "せわ"], ["終", "お"],
+  ["洗", "あら"],
 ].sort((a, b) => b[0].length - a[0].length) as [string, string][];
 
+// ひらがな→漢字の逆引き辞書（ひらがなテキストを漢字＋ルビに変換）
+// 1文字の読みは過剰マッチするため除外（2文字以上のみ）
+const REVERSE_DICT: [string, string, string][] = RUBY_DICT
+  .filter(([, reading]) => reading.length >= 2)
+  .map(([kanji, reading]) => [reading, kanji, reading] as [string, string, string])
+  .sort((a, b) => b[0].length - a[0].length);
+
 /**
- * プレーンテキストの漢字を辞書ベースで自動ルビ変換して表示
- * DBから取得したクエストタイトル等に使用
+ * テキスト（漢字 or ひらがな混在）を辞書ベースで自動ルビ変換して表示
+ * 1. まず漢字にマッチ → ルビ付き表示
+ * 2. 次にひらがなにマッチ → 漢字＋ルビに変換
  */
 export function AutoRubyText({
   text,
@@ -154,6 +163,7 @@ export function AutoRubyText({
   let remaining = text;
   while (remaining.length > 0) {
     let matched = false;
+    // 漢字マッチ（既に漢字で書かれているテキスト）
     for (const [kanji, reading] of RUBY_DICT) {
       if (remaining.startsWith(kanji)) {
         parts.push([kanji, reading]);
@@ -163,8 +173,18 @@ export function AutoRubyText({
       }
     }
     if (!matched) {
+      // ひらがなマッチ（ひらがなテキストを漢字に変換）
+      for (const [reading, kanji, ruby] of REVERSE_DICT) {
+        if (remaining.startsWith(reading)) {
+          parts.push([kanji, ruby]);
+          remaining = remaining.slice(reading.length);
+          matched = true;
+          break;
+        }
+      }
+    }
+    if (!matched) {
       if (parts.length > 0 && typeof parts[parts.length - 1] === "string") {
-        (parts[parts.length - 1] as string) + remaining[0];
         parts[parts.length - 1] = (parts[parts.length - 1] as string) + remaining[0];
       } else {
         parts.push(remaining[0]);
