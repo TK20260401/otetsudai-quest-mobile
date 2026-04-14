@@ -481,33 +481,34 @@ export default function ChildDashboardScreen({
         )}
 
         {/* そうび（バッジ → 装備として表示） */}
-        {badges.length > 0 && (
-          <View style={styles.badgeCard}>
-            <RubyText style={styles.sectionTitle} parts={["⚔️ ", ["装備", "そうび"]]} />
-            <View style={styles.badgeRow}>
-              {badges.map((b) => {
-                const def = BADGE_DEFINITIONS[b.badge_type];
-                return def ? (
-                  <View key={b.id} style={styles.equipItem}>
-                    <View style={styles.equipIconWrap}>
-                      <Text style={styles.badgeEmoji}>{def.emoji}</Text>
-                    </View>
-                    <Text style={styles.badgeLabel}>{def.label}</Text>
+        <View style={styles.badgeCard}>
+          <RubyText style={styles.sectionTitle} parts={["⚔️ ", ["装備", "そうび"]]} />
+          <View style={styles.badgeRow}>
+            {badges.map((b) => {
+              const def = BADGE_DEFINITIONS[b.badge_type];
+              return def ? (
+                <View key={b.id} style={styles.equipItem}>
+                  <View style={styles.equipIconWrap}>
+                    <Text style={styles.badgeEmoji}>{def.emoji}</Text>
                   </View>
-                ) : null;
-              })}
-              {/* 未獲得スロット */}
-              {Array.from({ length: Math.max(0, 5 - badges.length) }).map((_, i) => (
-                <View key={`empty-${i}`} style={styles.equipItem}>
-                  <View style={styles.equipIconEmpty}>
-                    <Text style={styles.equipEmptyText}>？</Text>
-                  </View>
-                  <Text style={styles.badgeLabel}>？？？</Text>
+                  <Text style={styles.badgeLabel}>{def.label}</Text>
                 </View>
-              ))}
-            </View>
+              ) : null;
+            })}
+            {/* 未獲得スロット */}
+            {Array.from({ length: Math.max(0, 5 - badges.length) }).map((_, i) => (
+              <View key={`empty-${i}`} style={styles.equipItem}>
+                <View style={styles.equipIconEmpty}>
+                  <Text style={styles.equipEmptyText}>？</Text>
+                </View>
+                <Text style={styles.badgeLabel}>？？？</Text>
+              </View>
+            ))}
           </View>
-        )}
+          {badges.length === 0 && (
+            <Text style={styles.emptyHint}>クエストをクリアして そうびをあつめよう！</Text>
+          )}
+        </View>
 
         {/* Tabs */}
         <View style={styles.tabRow}>
@@ -539,10 +540,10 @@ export default function ChildDashboardScreen({
         {/* Quest list */}
         {tab === "quests" && (
           <View style={styles.section}>
-            {/* ★特別クエスト */}
-            {tasks.filter((t) => t.is_special && isSpecialActive(t)).length > 0 && (
+            {/* ★特別クエスト — 常時表示 */}
+            <RubyText style={styles.specialSectionTitle} parts={["★ ", ["特別", "とくべつ"], "クエスト"]} />
+            {tasks.filter((t) => t.is_special && isSpecialActive(t)).length > 0 ? (
               <>
-                <RubyText style={styles.specialSectionTitle} parts={["★ ", ["特別", "とくべつ"], "クエスト"]} />
                 {tasks
                   .filter((t) => t.is_special && isSpecialActive(t))
                   .map((task) => (
@@ -593,6 +594,11 @@ export default function ChildDashboardScreen({
                     </View>
                   ))}
               </>
+            ) : (
+              <View style={styles.emptySpecialCard}>
+                <Text style={styles.emptySpecialIcon}>🌟</Text>
+                <Text style={styles.emptyHint}>いまは とくべつクエストは おやすみちゅう。またね！</Text>
+              </View>
             )}
 
             {/* 通常クエスト */}
@@ -1152,6 +1158,25 @@ const styles = StyleSheet.create({
     color: colors.slate,
     fontSize: 14,
     paddingVertical: 24,
+  },
+  emptyHint: {
+    textAlign: "center",
+    color: colors.slate,
+    fontSize: 12,
+    marginTop: 8,
+  },
+  emptySpecialCard: {
+    backgroundColor: "#FFFDF0",
+    borderRadius: 12,
+    padding: 20,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFE4A0",
+    marginBottom: 12,
+  },
+  emptySpecialIcon: {
+    fontSize: 32,
+    marginBottom: 4,
   },
 
   // 返信済みメッセージ履歴
