@@ -6,11 +6,12 @@ import {
   StyleSheet,
   ScrollView,
   useWindowDimensions,
+  Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../lib/colors";
 import { rf } from "../lib/responsive";
-import { RubyText, AutoRubyText } from "../components/Ruby";
+import { RubyText } from "../components/Ruby";
 
 type Props = {
   onSignup?: () => void;
@@ -42,16 +43,16 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         >
           おこづかいクエスト
         </Text>
-        <AutoRubyText
+        <Text
           style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]}
-          text="クエストをクリアして コインを 稼ごう！"
-          rubySize={7}
-        />
-        <AutoRubyText
-          style={styles.description}
-          text="お手伝い＝クエスト！稼いで、貯めて、増やすマネー冒険アプリ"
-          rubySize={6}
-        />
+          adjustsFontSizeToFit
+          numberOfLines={1}
+        >
+          クエストをクリアして コインを かせごう！
+        </Text>
+        <Text style={styles.description} adjustsFontSizeToFit numberOfLines={2}>
+          お手伝い＝クエスト！稼いで、貯めて、増やすマネー冒険アプリ
+        </Text>
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
           <TouchableOpacity
@@ -71,29 +72,44 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
             <View style={[styles.featureIcon, { backgroundColor: colors.spend }]}>
               <Text style={styles.featureEmoji}>💰</Text>
             </View>
-            <RubyText style={[styles.featureTitle, { color: "#b91c1c" }]} parts={[["使", "つか"], "う"]} />
-            <AutoRubyText style={[styles.featureDesc, { color: "#dc2626" }]} text="稼いだコインで 好きなものを 買おう！" rubySize={6} />
+            <RubyText style={[styles.featureTitle, { color: "#b91c1c" }]} parts={[["使", "つか"], "う"]} rubySize={7} />
+            <Text style={[styles.featureDesc, { color: "#dc2626" }]}>
+              かせいだコインで{"\n"}すきなものを かおう！
+            </Text>
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: "#eff6ff", borderColor: "#bfdbfe" }]}>
             <View style={[styles.featureIcon, { backgroundColor: colors.save }]}>
               <Text style={styles.featureEmoji}>🐷</Text>
             </View>
-            <RubyText style={[styles.featureTitle, { color: "#1d4ed8" }]} parts={[["貯", "た"], "める"]} />
-            <AutoRubyText style={[styles.featureDesc, { color: "#2563eb" }]} text="貯金して 大きな 夢を 叶えよう！" rubySize={6} />
+            <RubyText style={[styles.featureTitle, { color: "#1d4ed8" }]} parts={[["貯", "た"], "める"]} rubySize={7} />
+            <Text style={[styles.featureDesc, { color: "#2563eb" }]}>
+              ちょきんして{"\n"}おおきな ゆめを{"\n"}かなえよう！
+            </Text>
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: "#f0fdf4", borderColor: "#bbf7d0" }]}>
             <View style={[styles.featureIcon, { backgroundColor: colors.invest }]}>
               <Text style={styles.featureEmoji}>🌱</Text>
             </View>
-            <RubyText style={[styles.featureTitle, { color: "#15803d" }]} parts={[["増", "ふ"], "やす"]} />
-            <AutoRubyText style={[styles.featureDesc, { color: "#16a34a" }]} text="コインを育てて もっと 増やそう！" rubySize={6} />
+            <RubyText style={[styles.featureTitle, { color: "#15803d" }]} parts={[["増", "ふ"], "やす"]} rubySize={7} />
+            <Text style={[styles.featureDesc, { color: "#16a34a" }]}>
+              コインをそだてて{"\n"}もっと ふやそう！
+            </Text>
           </View>
         </View>
       </View>
 
-      <Text style={styles.footer}>おこづかいクエスト v0.9.4</Text>
+      <Text style={styles.footer}>おこづかいクエスト v0.9.6</Text>
+      <View style={styles.legalRow}>
+        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank.vercel.app/terms")}>
+          利用規約
+        </Text>
+        <Text style={styles.legalSep}>|</Text>
+        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank.vercel.app/privacy")}>
+          プライバシーポリシー
+        </Text>
+      </View>
     </ScrollView>
   );
 }
@@ -213,5 +229,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: colors.slate,
     marginTop: 24,
+  },
+  legalRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  legalLink: {
+    fontSize: 11,
+    color: colors.primary,
+    textDecorationLine: "underline",
+  },
+  legalSep: {
+    fontSize: 11,
+    color: colors.slate,
   },
 });

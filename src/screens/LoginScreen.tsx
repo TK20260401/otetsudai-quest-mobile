@@ -35,6 +35,11 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
   const [adminLoading, setAdminLoading] = useState(false);
+  const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+
+  // Family add
+  const [newFamilyName, setNewFamilyName] = useState("");
+  const [addingFamily, setAddingFamily] = useState(false);
 
   useEffect(() => {
     loadFamilies();
@@ -112,12 +117,39 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         setAdminLoading(false);
         return;
       }
-      await loginAsUser(adminUser, adminUser.family_id || "", authData.user.id);
-      onLoginSuccess();
+      setAdminLoggedIn(true);
+      await loadFamilies();
     } catch {
       setError("ログインに失敗しました");
     }
     setAdminLoading(false);
+  }
+
+  async function handleAddFamily() {
+    if (!newFamilyName.trim()) return;
+    setAddingFamily(true);
+    try {
+      const { data: familyData } = await supabase
+        .from("otetsudai_families")
+        .insert({ name: newFamilyName.trim() })
+        .select()
+        .single();
+      if (familyData) {
+        await supabase.from("otetsudai_family_settings").insert({
+          family_id: familyData.id,
+          special_quest_enabled: true,
+          special_quest_star1_enabled: true,
+          special_quest_star2_enabled: true,
+          special_quest_star3_enabled: true,
+        });
+      }
+      setNewFamilyName("");
+      Alert.alert("追加しました", `${newFamilyName.trim()} を追加しました`);
+      await loadFamilies();
+    } catch {
+      Alert.alert("エラー", "家族の追加に失敗しました");
+    }
+    setAddingFamily(false);
   }
 
   function goBack() {
@@ -144,7 +176,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     );
   }
 
-  // Admin login
+  // Admin login / family management
   if (step === "admin") {
     return (
       <ScrollView
@@ -152,39 +184,79 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.card}>
-          <Text style={styles.icon}>🔧</Text>
-          <Text style={styles.titleAdmin}>管理者ログイン</Text>
+          {!adminLoggedIn ? (
+            <>
+              <Text style={styles.icon}>🔧</Text>
+              <Text style={styles.titleAdmin}>管理者ログイン</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="メールアドレス"
-            value={adminEmail}
-            onChangeText={setAdminEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="パスワード"
-            value={adminPassword}
-            onChangeText={setAdminPassword}
-            secureTextEntry
-            onSubmitEditing={handleAdminLogin}
-          />
+              <TextInput
+                style={styles.input}
+                placeholder="メールアドレス"
+                value={adminEmail}
+                onChangeText={setAdminEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="パスワード"
+                value={adminPassword}
+                onChangeText={setAdminPassword}
+                secureTextEntry
+                onSubmitEditing={handleAdminLogin}
+              />
 
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+              {error ? <Text style={styles.error}>{error}</Text> : null}
 
-          <TouchableOpacity
-            style={[styles.button, styles.buttonAdmin]}
-            onPress={handleAdminLogin}
-            disabled={adminLoading || !adminEmail || !adminPassword}
-          >
-            <Text style={styles.buttonText}>
-              {adminLoading ? "ログインちゅう..." : "ログイン"}
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonAdmin]}
+                onPress={handleAdminLogin}
+                disabled={adminLoading || !adminEmail || !adminPassword}
+              >
+                <Text style={styles.buttonText}>
+                  {adminLoading ? "ログインちゅう..." : "ログイン"}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <Text style={styles.icon}>🏠</Text>
+              <Text style={styles.titleAdmin}>家族管理</Text>
 
-          <TouchableOpacity style={styles.backButton} onPress={goBack}>
+              {/* 家族一覧 */}
+              {families.map((f) => (
+                <View key={f.id} style={styles.familyRow}>
+                  <Text style={styles.familyName}>🏠 {f.name}</Text>
+                </View>
+              ))}
+
+              {/* 家族追加 */}
+              <View style={styles.addFamilyRow}>
+                <TextInput
+                  style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                  placeholder="新しい家族名（例: 田中家）"
+                  value={newFamilyName}
+                  onChangeText={setNewFamilyName}
+                />
+              </View>
+              <TouchableOpacity
+                style={[styles.button, styles.buttonPrimary, { marginTop: 8 }]}
+                onPress={handleAddFamily}
+                disabled={addingFamily || !newFamilyName.trim()}
+              >
+                <Text style={styles.buttonText}>
+                  {addingFamily ? "追加中..." : "＋ 家族を追加"}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          <TouchableOpacity style={styles.backButton} onPress={() => {
+            setAdminLoggedIn(false);
+            setAdminEmail("");
+            setAdminPassword("");
+            goBack();
+          }}>
             <Text style={styles.backText}>← もどる</Text>
           </TouchableOpacity>
         </View>
@@ -424,5 +496,22 @@ const styles = StyleSheet.create({
   adminLinkText: {
     fontSize: 12,
     color: colors.gray,
+  },
+  familyRow: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 8,
+    backgroundColor: colors.grayLight,
+  },
+  familyName: {
+    fontSize: 16,
+    color: colors.slateDark,
+  },
+  addFamilyRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 12,
   },
 });
