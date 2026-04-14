@@ -9,13 +9,33 @@ type Props = {
 };
 
 /**
- * 漢字の上にルビ（ふりがな）を表示するコンポーネント
- * インラインで使えるように inline-flex 相当にする
+ * ルビ付きテキストのレイアウト方針 (A案):
+ *
+ * 全セグメント（ルビ有り/無し）を同じ高さのコンテナに入れる。
+ * - paddingTop でルビ領域を確保（ルビ無しセグメントにも同じ padding）
+ * - ルビは position: absolute で上部に配置
+ * - 本文テキストはコンテナ下部に自然配置
+ * → 全セグメントの高さが揃い、ベースラインが一致
  */
+
+/** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
+  const rubySpace = rubySize + 2;
   return (
-    <View style={styles.container}>
-      <Text style={[styles.ruby, { fontSize: rubySize }]}>{ruby}</Text>
+    <View style={{ paddingTop: rubySpace, alignItems: "center" }}>
+      <Text
+        style={{
+          position: "absolute",
+          top: 0,
+          fontSize: rubySize,
+          color: "#64748b",
+          lineHeight: rubySize + 2,
+          textAlign: "center",
+          width: "100%",
+        }}
+      >
+        {ruby}
+      </Text>
       <Text style={style}>{kanji}</Text>
     </View>
   );
@@ -34,15 +54,31 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
+  const rubySpace = rubySize + 2;
   return (
-    <View style={styles.textRow}>
+    <View style={baseStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <Text key={i} style={style}>
-            {part}
-          </Text>
+          <View key={i} style={{ paddingTop: rubySpace }}>
+            <Text style={style}>{part}</Text>
+          </View>
         ) : (
-          <Ruby key={i} kanji={part[0]} ruby={part[1]} style={style} rubySize={rubySize} />
+          <View key={i} style={{ paddingTop: rubySpace, alignItems: "center" }}>
+            <Text
+              style={{
+                position: "absolute",
+                top: 0,
+                fontSize: rubySize,
+                color: "#64748b",
+                lineHeight: rubySize + 2,
+                textAlign: "center",
+                width: "100%",
+              }}
+            >
+              {part[1]}
+            </Text>
+            <Text style={style}>{part[0]}</Text>
+          </View>
         )
       )}
     </View>
@@ -206,21 +242,10 @@ export function AutoRubyText({
   return <RubyText parts={parts} style={style} rubySize={rubySize} />;
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginBottom: 2,
-  },
-  ruby: {
-    color: "#64748b",
-    lineHeight: 11,
-    marginBottom: -1,
-  },
+const baseStyles = StyleSheet.create({
   textRow: {
     flexDirection: "row",
     alignItems: "flex-end",
     flexWrap: "wrap",
-    rowGap: 6,
   },
 });

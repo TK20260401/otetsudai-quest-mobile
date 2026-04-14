@@ -8,12 +8,16 @@ import LandingScreen from "../screens/LandingScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ChildDashboardScreen from "../screens/ChildDashboardScreen";
 import ParentDashboardScreen from "../screens/ParentDashboardScreen";
+import WalletDetailScreen from "../screens/WalletDetailScreen";
+import SpendRequestScreen from "../screens/SpendRequestScreen";
 
 export type RootStackParamList = {
   Landing: undefined;
   Login: undefined;
   ChildDashboard: { childId: string };
   ParentDashboard: undefined;
+  WalletDetail: { childId: string; walletId: string };
+  SpendRequest: { childId: string; walletId: string; spendingBalance: number };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -67,6 +71,15 @@ export default function AppNavigator() {
         <Stack.Screen
           name="ParentDashboard"
           component={ParentDashboardScreen}
+        />
+        <Stack.Screen
+          name="WalletDetail"
+          component={WalletDetailScreen}
+        />
+        <Stack.Screen
+          name="SpendRequest"
+          component={SpendRequestScreen}
+          options={{ presentation: "modal" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -18,7 +18,7 @@ import { getLevelProgress, getCurrentLevel } from "../lib/levels";
 import type { Level } from "../lib/levels";
 import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
-import type { Task, Wallet, Transaction, Badge, FamilySettings } from "../lib/types";
+import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest } from "../lib/types";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
 import LevelUpModal from "../components/LevelUpModal";
@@ -70,6 +70,8 @@ export default function ChildDashboardScreen({
   >([]);
   // 特別クエスト設定
   const [familySettings, setFamilySettings] = useState<FamilySettings | null>(null);
+  // つかうリクエスト状況
+  const [recentSpendRequests, setRecentSpendRequests] = useState<SpendRequest[]>([]);
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -77,7 +79,7 @@ export default function ChildDashboardScreen({
 
     setChildName(session.name);
 
-    const [taskRes, walletRes, txRes, badgeRes, stampRes] = await Promise.all([
+    const [taskRes, walletRes, txRes, badgeRes, stampRes, spendRes] = await Promise.all([
       supabase
         .from("otetsudai_tasks")
         .select("*")
@@ -110,12 +112,20 @@ export default function ChildDashboardScreen({
         .is("child_reaction_at", null)
         .order("approved_at", { ascending: false })
         .limit(5),
+      // つかうリクエスト状況
+      supabase
+        .from("otetsudai_spend_requests")
+        .select("*")
+        .eq("child_id", childId)
+        .order("created_at", { ascending: false })
+        .limit(3),
     ]);
 
     setTasks(taskRes.data || []);
     setWallet(walletRes.data);
     setTransactions(txRes.data || []);
     setBadges(badgeRes.data || []);
+    setRecentSpendRequests(spendRes.data || []);
 
     // Stamp notifications from parents
     const stamps = (stampRes.data || []).map((s: any) => ({
@@ -444,7 +454,13 @@ export default function ChildDashboardScreen({
 
         {/* Wallet */}
         {wallet && (
-          <View style={styles.walletCard}>
+          <TouchableOpacity
+            style={styles.walletCard}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
+            accessibilityLabel="おさいふの くわしい じょうほう"
+            accessibilityRole="button"
+          >
             <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
             <Text style={styles.walletTotal} adjustsFontSizeToFit numberOfLines={1}>
               {(
@@ -476,6 +492,42 @@ export default function ChildDashboardScreen({
                 </Text>
               </View>
             </View>
+            <Text style={styles.walletHint}>くわしく →</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* つかうリクエスト状況 */}
+        {recentSpendRequests.length > 0 && (
+          <View style={styles.spendStatusSection}>
+            {recentSpendRequests.map((req) => (
+              <View
+                key={req.id}
+                style={[
+                  styles.spendStatusCard,
+                  req.status === "pending" && { backgroundColor: palette.accentLight },
+                  req.status === "approved" && { backgroundColor: palette.greenLight },
+                  req.status === "rejected" && { backgroundColor: palette.redLight },
+                ]}
+              >
+                <Text style={styles.spendStatusIcon}>
+                  {req.status === "pending" ? "⏳" : req.status === "approved" ? "✅" : "❌"}
+                </Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.spendStatusText} numberOfLines={1}>
+                    {req.purpose} — {req.amount}えん
+                  </Text>
+                  <Text style={styles.spendStatusLabel}>
+                    {req.status === "pending"
+                      ? "しんせいちゅう"
+                      : req.status === "approved" && req.payment_status === "pending_payment"
+                      ? "しょうにんずみ おかねをまってね"
+                      : req.status === "approved" && req.payment_status === "paid"
+                      ? "おかね もらったよ！"
+                      : "きょかされませんでした"}
+                  </Text>
+                </View>
+              </View>
+            ))}
           </View>
         )}
 
@@ -930,6 +982,37 @@ function createStyles(p: Palette) {
   },
   walletLabel: { fontSize: 12, color: p.textMuted, marginBottom: 2, lineHeight: 20 },
   walletAmount: { fontSize: 16, fontWeight: "bold" },
+  walletHint: {
+    fontSize: 12,
+    color: p.textMuted,
+    textAlign: "right",
+    marginTop: 8,
+  },
+
+  // Spend request status
+  spendStatusSection: {
+    marginHorizontal: 12,
+    marginBottom: 8,
+    gap: 6,
+  },
+  spendStatusCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 10,
+    padding: 10,
+    gap: 8,
+  },
+  spendStatusIcon: { fontSize: 18 },
+  spendStatusText: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: p.textStrong,
+  },
+  spendStatusLabel: {
+    fontSize: 11,
+    color: p.textMuted,
+    marginTop: 1,
+  },
 
   // Badges
   // Stamp notifications
