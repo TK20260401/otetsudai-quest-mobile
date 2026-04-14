@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
@@ -70,14 +72,17 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
 
   return (
     <Modal visible animationType="slide" transparent={false}>
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
         <ScrollView
           ref={scrollRef}
           contentContainerStyle={[
             styles.scrollContent,
             {
               paddingTop: insets.top + 20,
-              paddingBottom: keyboardHeight > 0 ? keyboardHeight + 40 : insets.bottom + 60,
+              paddingBottom: insets.bottom + 60,
             },
           ]}
           keyboardShouldPersistTaps="handled"
@@ -183,7 +188,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             </TouchableOpacity>
           )}
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
