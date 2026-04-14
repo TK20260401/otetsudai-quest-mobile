@@ -102,11 +102,11 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
 
       <Text style={styles.footer}>おこづかいクエスト v0.9.6</Text>
       <View style={styles.legalRow}>
-        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank.vercel.app/terms")}>
+        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/terms")}>
           利用規約
         </Text>
         <Text style={styles.legalSep}>|</Text>
-        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank.vercel.app/privacy")}>
+        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/privacy")}>
           プライバシーポリシー
         </Text>
       </View>
