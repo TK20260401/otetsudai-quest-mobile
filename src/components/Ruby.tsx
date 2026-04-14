@@ -199,15 +199,17 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     justifyContent: "flex-end",
+    marginBottom: 2,
   },
   ruby: {
-    color: "#888",
-    lineHeight: 10,
-    marginBottom: -2,
+    color: "#999",
+    lineHeight: 11,
+    marginBottom: -1,
   },
   textRow: {
     flexDirection: "row",
     alignItems: "flex-end",
     flexWrap: "wrap",
+    rowGap: 6,
   },
 });

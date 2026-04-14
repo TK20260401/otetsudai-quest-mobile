@@ -119,20 +119,22 @@ const styles = StyleSheet.create({
     fontSize: rf(32),
     fontWeight: "800",
     color: "#065f46",
-    marginBottom: 4,
+    marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: rf(16),
+    fontSize: rf(15),
     color: colors.primary,
-    marginBottom: 2,
+    marginBottom: 6,
     textAlign: "center",
+    lineHeight: rf(24),
   },
   description: {
     fontSize: rf(12),
     color: colors.slate,
     marginBottom: 28,
     textAlign: "center",
+    lineHeight: rf(20),
   },
   buttons: {
     width: "100%",
@@ -199,10 +201,12 @@ const styles = StyleSheet.create({
   featureTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    marginBottom: 2,
+    marginBottom: 4,
+    lineHeight: 20,
   },
   featureDesc: {
     fontSize: 10,
+    lineHeight: 16,
   },
   footer: {
     textAlign: "center",

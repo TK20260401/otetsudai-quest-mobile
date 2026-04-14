@@ -862,8 +862,9 @@ const styles = StyleSheet.create({
   appearanceText: {
     fontSize: 9,
     color: colors.slate,
-    marginTop: -2,
+    marginTop: 2,
     textAlign: "center" as const,
+    lineHeight: 14,
   },
   levelInfo: { flex: 1, overflow: "hidden" as const },
   levelTitle: { fontSize: rf(14), fontWeight: "bold" as const, color: colors.slateDark },
@@ -878,6 +879,7 @@ const styles = StyleSheet.create({
   speechText: {
     fontSize: 12,
     color: "#374151",
+    lineHeight: 20,
   },
   progressBar: {
     height: 8,
@@ -890,7 +892,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: 4,
   },
-  levelNext: { fontSize: 11, color: colors.slate, marginTop: 4 },
+  levelNext: { fontSize: 11, color: colors.slate, marginTop: 4, lineHeight: 18 },
 
   // Wallet
   walletCard: {
@@ -928,7 +930,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
   },
-  walletLabel: { fontSize: 12, color: colors.slate, marginBottom: 2 },
+  walletLabel: { fontSize: 12, color: colors.slate, marginBottom: 2, lineHeight: 20 },
   walletAmount: { fontSize: 16, fontWeight: "bold" },
 
   // Badges
@@ -1066,6 +1068,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold" as const,
     color: colors.slateDark,
+    lineHeight: 26,
   },
   specialQuestReward: {
     fontSize: 14,
@@ -1095,7 +1098,7 @@ const styles = StyleSheet.create({
   questInfo: { flexDirection: "row", alignItems: "center", flex: 1 },
   questIcon: { fontSize: 28, marginRight: 10 },
   questDetails: { flex: 1 },
-  questTitle: { fontSize: 15, fontWeight: "600", color: colors.slateDark },
+  questTitle: { fontSize: 15, fontWeight: "600", color: colors.slateDark, lineHeight: 24 },
   rewardRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
