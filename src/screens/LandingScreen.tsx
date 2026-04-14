@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../lib/colors";
 import { rf } from "../lib/responsive";
+import { RubyText, AutoRubyText } from "../components/Ruby";
 
 type Props = {
   onSignup: () => void;
@@ -59,8 +60,8 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
             activeOpacity={0.8}
           >
             <Text style={styles.buttonIconText}>⚔️</Text>
-            <Text style={[styles.buttonPrimaryText, isTablet && { fontSize: 20 }]}>
-              あたらしく はじめる
+            <Text style={[styles.buttonPrimaryText, isTablet && { fontSize: 20 }]} adjustsFontSizeToFit numberOfLines={1}>
+              新規スタート
             </Text>
           </TouchableOpacity>
 
@@ -81,30 +82,24 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
             <View style={[styles.featureIcon, { backgroundColor: colors.spend }]}>
               <Text style={styles.featureEmoji}>💰</Text>
             </View>
-            <Text style={[styles.featureTitle, { color: "#b91c1c" }]}>つかう</Text>
-            <Text style={[styles.featureDesc, { color: "#dc2626" }]}>
-              かせいだコインで すきなものを かおう！
-            </Text>
+            <RubyText style={[styles.featureTitle, { color: "#b91c1c" }]} parts={[["使", "つか"], "う"]} />
+            <AutoRubyText style={[styles.featureDesc, { color: "#dc2626" }]} text="稼いだコインで 好きなものを 買おう！" rubySize={6} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: "#eff6ff", borderColor: "#bfdbfe" }]}>
             <View style={[styles.featureIcon, { backgroundColor: colors.save }]}>
               <Text style={styles.featureEmoji}>🐷</Text>
             </View>
-            <Text style={[styles.featureTitle, { color: "#1d4ed8" }]}>ためる</Text>
-            <Text style={[styles.featureDesc, { color: "#2563eb" }]}>
-              ちょきんして おおきな ゆめを かなえよう！
-            </Text>
+            <RubyText style={[styles.featureTitle, { color: "#1d4ed8" }]} parts={[["貯", "た"], "める"]} />
+            <AutoRubyText style={[styles.featureDesc, { color: "#2563eb" }]} text="貯金して 大きな 夢を 叶えよう！" rubySize={6} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: "#f0fdf4", borderColor: "#bbf7d0" }]}>
             <View style={[styles.featureIcon, { backgroundColor: colors.invest }]}>
               <Text style={styles.featureEmoji}>🌱</Text>
             </View>
-            <Text style={[styles.featureTitle, { color: "#15803d" }]}>ふやす</Text>
-            <Text style={[styles.featureDesc, { color: "#16a34a" }]}>
-              コインをそだてて もっと ふやそう！
-            </Text>
+            <RubyText style={[styles.featureTitle, { color: "#15803d" }]} parts={[["増", "ふ"], "やす"]} />
+            <AutoRubyText style={[styles.featureDesc, { color: "#16a34a" }]} text="コインを育てて もっと 増やそう！" rubySize={6} />
           </View>
         </View>
       </View>
