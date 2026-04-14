@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Linking,
 } from "react-native";
 import { supabase } from "../lib/supabase";
 import type { Family, User } from "../lib/types";
@@ -356,6 +357,17 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
           </>
         )}
       </View>
+
+      {/* 利用規約・プライバシーポリシー */}
+      <View style={styles.legalRow}>
+        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank.vercel.app/terms")}>
+          利用規約
+        </Text>
+        <Text style={styles.legalSep}>|</Text>
+        <Text style={styles.legalLink} onPress={() => Linking.openURL("https://otetsudai-bank.vercel.app/privacy")}>
+          プライバシーポリシー
+        </Text>
+      </View>
     </ScrollView>
   );
 }
@@ -513,5 +525,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 8,
     marginTop: 12,
+  },
+  legalRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 16,
+  },
+  legalLink: {
+    fontSize: 11,
+    color: colors.primary,
+    textDecorationLine: "underline",
+  },
+  legalSep: {
+    fontSize: 11,
+    color: colors.slate,
   },
 });
