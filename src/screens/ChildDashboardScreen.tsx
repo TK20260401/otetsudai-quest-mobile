@@ -747,7 +747,7 @@ export default function ChildDashboardScreen({
         </View>
       )}
 
-      {/* 子ども返信モーダル（返信必須） */}
+      {/* 子ども返信モーダル */}
       {unreadLogs.length > 0 && (
         <ChildReactionModal
           logs={unreadLogs}
@@ -755,6 +755,7 @@ export default function ChildDashboardScreen({
             setUnreadLogs([]);
             loadData();
           }}
+          onSkip={() => setUnreadLogs([])}
         />
       )}
 

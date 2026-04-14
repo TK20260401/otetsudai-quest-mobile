@@ -27,9 +27,10 @@ type UnreadLog = {
 type Props = {
   logs: UnreadLog[];
   onAllDone: () => void;
+  onSkip?: () => void;
 };
 
-export default function ChildReactionModal({ logs, onAllDone }: Props) {
+export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -173,6 +174,12 @@ export default function ChildReactionModal({ logs, onAllDone }: Props) {
           <Text style={styles.hint}>
             ※ スタンプ か メッセージの どちらかは かならず いれてね
           </Text>
+
+          {onSkip && (
+            <TouchableOpacity style={styles.skipButton} onPress={onSkip}>
+              <Text style={styles.skipText}>あとで へんじする</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
       </View>
     </Modal>
@@ -316,5 +323,15 @@ const styles = StyleSheet.create({
     color: colors.slate,
     textAlign: "center",
     marginTop: 8,
+  },
+  skipButton: {
+    marginTop: 16,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  skipText: {
+    fontSize: 13,
+    color: colors.slate,
+    textDecorationLine: "underline",
   },
 });
