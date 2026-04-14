@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -6,14 +6,14 @@ import {
   Modal,
   TouchableOpacity,
   TextInput,
-  Alert,
   ScrollView,
 } from "react-native";
 import { supabase } from "../lib/supabase";
-import { colors } from "../lib/colors";
+import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task } from "../lib/types";
+import { useAppAlert } from "./AppAlert";
 
 type Props = {
   visible: boolean;
@@ -23,6 +23,10 @@ type Props = {
 };
 
 export default function PriceRequestModal({ visible, task, onClose, onSent }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
+
+  const { alert } = useAppAlert();
   const [amount, setAmount] = useState(String(task.reward_amount + 10));
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -32,7 +36,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
   async function handleSend() {
     const proposed = parseInt(amount);
     if (!proposed || proposed <= task.reward_amount) {
-      Alert.alert("⚠️", "いまの おだちんより おおきい きんがくを いれてね");
+      alert("⚠️", "いまの おだちんより おおきい きんがくを いれてね");
       return;
     }
     setSending(true);
@@ -45,7 +49,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
       })
       .eq("id", task.id);
     setSending(false);
-    Alert.alert("📩 リクエストおくったよ！", "おやの へんじを まってね！");
+    alert("📩 リクエストおくったよ！", "おやの へんじを まってね！");
     onSent();
   }
 
@@ -120,92 +124,94 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    padding: 20,
-  },
-  card: {
-    backgroundColor: colors.white,
-    borderRadius: 16,
-    padding: 20,
-  },
-  title: {
-    fontSize: rf(20),
-    fontWeight: "bold",
-    color: colors.slateDark,
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  taskName: {
-    fontSize: 16,
-    color: colors.slate,
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  currentRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: colors.grayLight,
-    borderRadius: 10,
-    padding: 12,
-  },
-  currentLabel: { fontSize: 14, color: colors.slate },
-  currentAmount: { fontSize: 18, fontWeight: "bold", color: colors.slateDark },
-  arrowRow: { alignItems: "center", marginVertical: 4 },
-  arrow: { fontSize: 24, color: colors.primary },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#ecfdf5",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  inputLabel: { fontSize: 14, color: colors.primary, flex: 1 },
-  amountInput: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: colors.primaryDark,
-    width: 80,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
-    padding: 4,
-  },
-  yen: { fontSize: 16, color: colors.primary, marginLeft: 4 },
-  messageInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 14,
-    minHeight: 50,
-    marginBottom: 16,
-    backgroundColor: colors.grayLight,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  cancelButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  cancelText: { fontSize: 16, color: colors.slate },
-  sendButton: {
-    flex: 2,
-    padding: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    backgroundColor: colors.primary,
-  },
-  sendText: { fontSize: 16, fontWeight: "bold", color: colors.white },
-});
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      padding: 20,
+    },
+    card: {
+      backgroundColor: p.white,
+      borderRadius: 16,
+      padding: 20,
+    },
+    title: {
+      fontSize: rf(20),
+      fontWeight: "bold",
+      color: p.textStrong,
+      textAlign: "center",
+      marginBottom: 8,
+    },
+    taskName: {
+      fontSize: 16,
+      color: p.textMuted,
+      textAlign: "center",
+      marginBottom: 16,
+    },
+    currentRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: p.surfaceMuted,
+      borderRadius: 10,
+      padding: 12,
+    },
+    currentLabel: { fontSize: 14, color: p.textMuted },
+    currentAmount: { fontSize: 18, fontWeight: "bold", color: p.textStrong },
+    arrowRow: { alignItems: "center", marginVertical: 4 },
+    arrow: { fontSize: 24, color: p.primary },
+    inputRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: p.primaryLight,
+      borderRadius: 10,
+      padding: 12,
+      marginBottom: 12,
+      borderWidth: 2,
+      borderColor: p.primary,
+    },
+    inputLabel: { fontSize: 14, color: p.primary, flex: 1 },
+    amountInput: {
+      fontSize: 22,
+      fontWeight: "bold",
+      color: p.primaryDark,
+      width: 80,
+      borderBottomWidth: 2,
+      borderBottomColor: p.primary,
+      padding: 4,
+    },
+    yen: { fontSize: 16, color: p.primary, marginLeft: 4 },
+    messageInput: {
+      borderWidth: 1,
+      borderColor: p.border,
+      borderRadius: 10,
+      padding: 12,
+      fontSize: 14,
+      minHeight: 50,
+      marginBottom: 16,
+      backgroundColor: p.surfaceMuted,
+    },
+    buttonRow: {
+      flexDirection: "row",
+      gap: 10,
+    },
+    cancelButton: {
+      flex: 1,
+      padding: 14,
+      borderRadius: 10,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: p.border,
+    },
+    cancelText: { fontSize: 16, color: p.textMuted },
+    sendButton: {
+      flex: 2,
+      padding: 14,
+      borderRadius: 10,
+      alignItems: "center",
+      backgroundColor: p.primary,
+    },
+    sendText: { fontSize: 16, fontWeight: "bold", color: p.white },
+  });
+}

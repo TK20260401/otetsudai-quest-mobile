@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   ScrollView,
   RefreshControl,
   ActivityIndicator,
@@ -12,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
-import { colors } from "../lib/colors";
+import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
 import { getLevelProgress, getCurrentLevel } from "../lib/levels";
@@ -26,6 +25,7 @@ import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
 import { getChildStampById } from "../lib/child-stamps";
+import { useAppAlert } from "../components/AppAlert";
 
 export default function ChildDashboardScreen({
   route,
@@ -35,6 +35,9 @@ export default function ChildDashboardScreen({
   navigation: any;
 }) {
   const { childId } = route.params;
+  const { alert } = useAppAlert();
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
   const [childName, setChildName] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -255,9 +258,9 @@ export default function ChildDashboardScreen({
   }
 
   function handleReset() {
-    Alert.alert(
+    alert(
       "🔄 データリセット",
-      "おさいふ・クエストログ・バッジをぜんぶリセットします。もとにもどせません。",
+      "おさいふ・クエストログ・バッジを ぜんぶ リセットします。もとに もどせません。",
       [
         { text: "やめる", style: "cancel" },
         {
@@ -267,7 +270,6 @@ export default function ChildDashboardScreen({
             const session = await getSession();
             if (!session) return;
 
-            // 財布を0に
             await supabase
               .from("otetsudai_wallets")
               .update({
@@ -277,19 +279,16 @@ export default function ChildDashboardScreen({
               })
               .eq("child_id", childId);
 
-            // タスクログ削除
             await supabase
               .from("otetsudai_task_logs")
               .delete()
               .eq("child_id", childId);
 
-            // バッジ削除
             await supabase
               .from("otetsudai_badges")
               .delete()
               .eq("child_id", childId);
 
-            // トランザクション削除
             if (wallet) {
               await supabase
                 .from("otetsudai_transactions")
@@ -297,7 +296,7 @@ export default function ChildDashboardScreen({
                 .eq("wallet_id", wallet.id);
             }
 
-            Alert.alert("✅ リセットかんりょう", "データをリセットしました");
+            alert("✅ リセットかんりょう", "データを リセットしました");
             await loadData();
           },
         },
@@ -340,7 +339,7 @@ export default function ChildDashboardScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={palette.primary} />
       </View>
     );
   }
@@ -408,7 +407,7 @@ export default function ChildDashboardScreen({
             {levelInfo.next ? (
               <AutoRubyText text={`次のレベルまで あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={6} />
             ) : (
-              <AutoRubyText text="最高レベル 達成！ 🎊" style={[styles.levelNext, { color: colors.amber, fontWeight: "bold" }]} rubySize={6} />
+              <AutoRubyText text="最高レベル 達成！ 🎊" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} />
             )}
           </View>
         </View>
@@ -456,23 +455,23 @@ export default function ChildDashboardScreen({
               円
             </Text>
             <View style={styles.walletRow}>
-              <View style={[styles.walletItem, { borderColor: colors.spend }]}>
+              <View style={[styles.walletItem, { borderColor: palette.walletSpend }]}>
                 <RubyText style={styles.walletLabel} parts={[["使", "つか"], "う"]} />
-                <Text style={[styles.walletAmount, { color: colors.spend }]}>
+                <Text style={[styles.walletAmount, { color: palette.walletSpend }]}>
                   {(wallet.spending_balance ?? 0).toLocaleString()}
                 </Text>
               </View>
-              <View style={[styles.walletItem, { borderColor: colors.save }]}>
+              <View style={[styles.walletItem, { borderColor: palette.walletSave }]}>
                 <RubyText style={styles.walletLabel} parts={[["貯", "た"], "める"]} />
-                <Text style={[styles.walletAmount, { color: colors.save }]}>
+                <Text style={[styles.walletAmount, { color: palette.walletSave }]}>
                   {(wallet.saving_balance ?? 0).toLocaleString()}
                 </Text>
               </View>
               <View
-                style={[styles.walletItem, { borderColor: colors.invest }]}
+                style={[styles.walletItem, { borderColor: palette.walletInvest }]}
               >
                 <RubyText style={styles.walletLabel} parts={[["増", "ふ"], "やす"]} />
-                <Text style={[styles.walletAmount, { color: colors.invest }]}>
+                <Text style={[styles.walletAmount, { color: palette.walletInvest }]}>
                   {(wallet.invest_balance ?? 0).toLocaleString()}
                 </Text>
               </View>
@@ -605,7 +604,7 @@ export default function ChildDashboardScreen({
             {tasks.filter((t) => !t.is_special).length > 0 && (
               <>
                 {tasks.filter((t) => t.is_special && isSpecialActive(t)).length > 0 && (
-                  <Text style={[styles.sectionTitle, { marginTop: 16 }]}>クエスト</Text>
+                  <AutoRubyText text="クエスト" style={[styles.sectionTitle, { marginTop: 16 }]} rubySize={7} />
                 )}
                 {tasks
                   .filter((t) => !t.is_special)
@@ -657,9 +656,7 @@ export default function ChildDashboardScreen({
             )}
 
             {tasks.length === 0 && (
-              <Text style={styles.emptyText}>
-                クエストがまだないよ。親にたのんでね！
-              </Text>
+              <AutoRubyText text="クエストが まだないよ。親に たのんでね！" style={styles.emptyText} rubySize={7} />
             )}
           </View>
         )}
@@ -683,12 +680,12 @@ export default function ChildDashboardScreen({
                       <Text style={styles.repliedTaskName}>🎯 {log.task?.title}</Text>
                       {pStamp && (
                         <Text style={styles.repliedParent}>
-                          親: {pStamp.emoji} {pStamp.label}
+                          おや: {pStamp.emoji} {pStamp.label}
                           {log.approval_message ? ` 「${log.approval_message}」` : ""}
                         </Text>
                       )}
                       <Text style={styles.repliedChild}>
-                        自分: {cStamp ? `${cStamp.emoji} ${cStamp.label}` : ""}
+                        じぶん: {cStamp ? `${cStamp.emoji} ${cStamp.label}` : ""}
                         {log.child_reaction_message ? ` 「${log.child_reaction_message}」` : ""}
                       </Text>
                     </View>
@@ -724,7 +721,7 @@ export default function ChildDashboardScreen({
                       styles.historyAmount,
                       {
                         color:
-                          tx.type === "earn" ? colors.primary : colors.spend,
+                          tx.type === "earn" ? palette.primary : palette.walletSpend,
                       },
                     ]}
                   >
@@ -791,16 +788,17 @@ export default function ChildDashboardScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(p: Palette) {
+  return StyleSheet.create({
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.slateLight,
+    backgroundColor: p.surfaceMuted,
   },
   container: {
     flex: 1,
-    backgroundColor: colors.slateLight,
+    backgroundColor: p.surfaceMuted,
   },
   header: {
     flexDirection: "row",
@@ -808,23 +806,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: p.border,
   },
   headerTitle: {
     fontSize: rf(18),
     fontWeight: "bold",
-    color: colors.primaryDark,
+    color: p.primaryDark,
     flex: 1,
   },
   logoutButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
   },
-  logoutText: { fontSize: 14, color: colors.slate },
+  logoutText: { fontSize: 14, color: p.textMuted },
   scroll: { flex: 1 },
 
   // キャラクター育成
@@ -836,23 +834,23 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    shadowColor: colors.black,
+    shadowColor: p.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
   levelCardActive: {
-    backgroundColor: "#ecfdf5",
-    borderColor: "#6ee7b7",
+    backgroundColor: p.primaryLight,
+    borderColor: p.borderStrong,
   },
   levelCardNormal: {
-    backgroundColor: "#fffbeb",
-    borderColor: "#fcd34d",
+    backgroundColor: p.accentLight,
+    borderColor: p.goldBorder,
   },
   levelCardLonely: {
-    backgroundColor: "#eff6ff",
-    borderColor: "#93c5fd",
+    backgroundColor: p.walletSaveBg,
+    borderColor: p.walletSaveBorder,
   },
   characterColumn: {
     alignItems: "center" as const,
@@ -861,13 +859,13 @@ const styles = StyleSheet.create({
   },
   appearanceText: {
     fontSize: 9,
-    color: colors.slate,
+    color: p.textMuted,
     marginTop: 2,
     textAlign: "center" as const,
     lineHeight: 14,
   },
   levelInfo: { flex: 1, overflow: "hidden" as const },
-  levelTitle: { fontSize: rf(14), fontWeight: "bold" as const, color: colors.slateDark },
+  levelTitle: { fontSize: rf(14), fontWeight: "bold" as const, color: p.textStrong },
   speechBubble: {
     backgroundColor: "rgba(255,255,255,0.7)",
     borderRadius: 8,
@@ -878,30 +876,30 @@ const styles = StyleSheet.create({
   },
   speechText: {
     fontSize: 12,
-    color: "#374151",
+    color: p.textStrong,
     lineHeight: 20,
   },
   progressBar: {
     height: 8,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
     borderRadius: 4,
     overflow: "hidden" as const,
   },
   progressFill: {
     height: 8,
-    backgroundColor: colors.primary,
+    backgroundColor: p.primary,
     borderRadius: 4,
   },
-  levelNext: { fontSize: 11, color: colors.slate, marginTop: 4, lineHeight: 18 },
+  levelNext: { fontSize: 11, color: p.textMuted, marginTop: 4, lineHeight: 18 },
 
   // Wallet
   walletCard: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     margin: 12,
     marginBottom: 0,
     padding: 16,
     borderRadius: 12,
-    shadowColor: colors.black,
+    shadowColor: p.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -910,13 +908,13 @@ const styles = StyleSheet.create({
   walletTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: colors.slate,
+    color: p.textMuted,
     marginBottom: 4,
   },
   walletTotal: {
     fontSize: rf(28),
     fontWeight: "bold",
-    color: colors.slateDark,
+    color: p.textStrong,
     marginBottom: 12,
   },
   walletRow: {
@@ -930,35 +928,35 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
   },
-  walletLabel: { fontSize: 12, color: colors.slate, marginBottom: 2, lineHeight: 20 },
+  walletLabel: { fontSize: 12, color: p.textMuted, marginBottom: 2, lineHeight: 20 },
   walletAmount: { fontSize: 16, fontWeight: "bold" },
 
   // Badges
   // Stamp notifications
   stampCard: {
-    backgroundColor: colors.amberLight,
+    backgroundColor: p.accentLight,
     margin: 12,
     marginBottom: 0,
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.amber,
+    borderColor: p.accent,
   },
   stampNotif: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderRadius: 10,
     padding: 10,
     marginBottom: 6,
   },
   stampNotifEmoji: { fontSize: 32, marginRight: 10 },
-  stampNotifTask: { fontSize: 13, color: colors.slate },
-  stampNotifLabel: { fontSize: 15, fontWeight: "bold", color: colors.slateDark },
-  stampNotifMsg: { fontSize: 13, color: colors.primaryDark, marginTop: 2 },
+  stampNotifTask: { fontSize: 13, color: p.textMuted },
+  stampNotifLabel: { fontSize: 15, fontWeight: "bold", color: p.textStrong },
+  stampNotifMsg: { fontSize: 13, color: p.primaryDark, marginTop: 2 },
 
   badgeCard: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     margin: 12,
     marginBottom: 0,
     padding: 16,
@@ -967,20 +965,20 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: colors.slateDark,
+    color: p.textStrong,
     marginBottom: 8,
   },
   badgeRow: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   badgeEmoji: { fontSize: 24 },
-  badgeLabel: { fontSize: 9, color: colors.slate, textAlign: "center" as const },
+  badgeLabel: { fontSize: 9, color: p.textMuted, textAlign: "center" as const },
   equipItem: { alignItems: "center" as const, width: 60 },
   equipIconWrap: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#fef3c7",
+    backgroundColor: p.goldLight,
     borderWidth: 2,
-    borderColor: colors.amber,
+    borderColor: p.accent,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     marginBottom: 4,
@@ -989,9 +987,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: p.border,
     borderStyle: "dashed" as const,
     alignItems: "center" as const,
     justifyContent: "center" as const,
@@ -999,7 +997,7 @@ const styles = StyleSheet.create({
   },
   equipEmptyText: {
     fontSize: 18,
-    color: colors.gray,
+    color: p.textMuted,
   },
 
   // Tabs
@@ -1007,7 +1005,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     margin: 12,
     marginBottom: 0,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
     borderRadius: 10,
     padding: 3,
   },
@@ -1017,9 +1015,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  tabActive: { backgroundColor: colors.white },
-  tabText: { fontSize: 14, color: colors.slate },
-  tabTextActive: { color: colors.slateDark, fontWeight: "bold" },
+  tabActive: { backgroundColor: p.white },
+  tabText: { fontSize: 14, color: p.textMuted },
+  tabTextActive: { color: p.textStrong, fontWeight: "bold" },
 
   // Quests
   section: { margin: 12, marginBottom: 0 },
@@ -1027,17 +1025,17 @@ const styles = StyleSheet.create({
   specialSectionTitle: {
     fontSize: 17,
     fontWeight: "bold" as const,
-    color: colors.gold,
+    color: p.gold,
     marginBottom: 8,
   },
   specialQuestCard: {
-    backgroundColor: colors.goldLight,
+    backgroundColor: p.goldLight,
     borderWidth: 2,
-    borderColor: colors.goldBorder,
+    borderColor: p.goldBorder,
     padding: 14,
     borderRadius: 14,
     marginBottom: 10,
-    shadowColor: colors.gold,
+    shadowColor: p.gold,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
@@ -1051,14 +1049,14 @@ const styles = StyleSheet.create({
   },
   specialStars: {
     fontSize: 16,
-    color: colors.gold,
+    color: p.gold,
     letterSpacing: 2,
   },
   specialCountdown: {
     fontSize: 12,
     fontWeight: "bold" as const,
-    color: colors.red,
-    backgroundColor: "#fef2f2",
+    color: p.red,
+    backgroundColor: p.redLight,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 6,
@@ -1067,21 +1065,21 @@ const styles = StyleSheet.create({
   specialQuestTitle: {
     fontSize: 16,
     fontWeight: "bold" as const,
-    color: colors.slateDark,
+    color: p.textStrong,
     lineHeight: 26,
   },
   specialQuestReward: {
     fontSize: 14,
     fontWeight: "bold" as const,
-    color: colors.gold,
+    color: p.gold,
   },
   specialQuestDesc: {
     fontSize: 12,
-    color: colors.slate,
+    color: p.textMuted,
     marginTop: 2,
   },
   specialClearButton: {
-    backgroundColor: colors.gold,
+    backgroundColor: p.gold,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
@@ -1090,7 +1088,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     padding: 14,
     borderRadius: 12,
     marginBottom: 8,
@@ -1098,25 +1096,25 @@ const styles = StyleSheet.create({
   questInfo: { flexDirection: "row", alignItems: "center", flex: 1 },
   questIcon: { fontSize: 28, marginRight: 10 },
   questDetails: { flex: 1 },
-  questTitle: { fontSize: 15, fontWeight: "600", color: colors.slateDark, lineHeight: 24 },
+  questTitle: { fontSize: 15, fontWeight: "600", color: p.textStrong, lineHeight: 24 },
   rewardRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
     gap: 6,
     marginTop: 2,
   },
-  questReward: { fontSize: 13, color: colors.amber },
+  questReward: { fontSize: 13, color: p.accent },
   pendingBadge: {
     fontSize: 10,
-    color: colors.slate,
-    backgroundColor: colors.grayLight,
+    color: p.textMuted,
+    backgroundColor: p.surfaceMuted,
     paddingHorizontal: 6,
     paddingVertical: 1,
     borderRadius: 4,
   },
   priceComment: {
     fontSize: 11,
-    color: colors.primaryDark,
+    color: p.primaryDark,
     marginTop: 2,
   },
   questActions: {
@@ -1125,19 +1123,19 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   clearButton: {
-    backgroundColor: colors.amber,
+    backgroundColor: p.accent,
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 10,
   },
-  clearButtonText: { color: colors.white, fontWeight: "bold" as const, fontSize: 14 },
+  clearButtonText: { color: p.white, fontWeight: "bold" as const, fontSize: 14 },
   priceUpButton: {
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
-    backgroundColor: "#ecfdf5",
+    backgroundColor: p.primaryLight,
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: p.primary,
   },
   priceUpText: { fontSize: 12 },
 
@@ -1145,36 +1143,36 @@ const styles = StyleSheet.create({
   historyItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     padding: 12,
     borderRadius: 10,
     marginBottom: 6,
   },
   historyType: { fontSize: 22, marginRight: 10 },
   historyInfo: { flex: 1 },
-  historyDesc: { fontSize: 14, color: colors.slateDark },
-  historyDate: { fontSize: 11, color: colors.gray, marginTop: 2 },
+  historyDesc: { fontSize: 14, color: p.textStrong },
+  historyDate: { fontSize: 11, color: p.textMuted, marginTop: 2 },
   historyAmount: { fontSize: 16, fontWeight: "bold" },
 
   emptyText: {
     textAlign: "center",
-    color: colors.slate,
+    color: p.textMuted,
     fontSize: 14,
     paddingVertical: 24,
   },
   emptyHint: {
     textAlign: "center",
-    color: colors.slate,
+    color: p.textMuted,
     fontSize: 12,
     marginTop: 8,
   },
   emptySpecialCard: {
-    backgroundColor: "#FFFDF0",
+    backgroundColor: p.accentLight,
     borderRadius: 12,
     padding: 20,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#FFE4A0",
+    borderColor: p.goldBorder,
     marginBottom: 12,
   },
   emptySpecialIcon: {
@@ -1189,31 +1187,31 @@ const styles = StyleSheet.create({
   repliedTitle: {
     fontSize: 15,
     fontWeight: "bold" as const,
-    color: colors.slateDark,
+    color: p.textStrong,
     marginBottom: 8,
   },
   repliedCard: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderRadius: 10,
     padding: 12,
     marginBottom: 6,
     borderLeftWidth: 3,
-    borderLeftColor: colors.primary,
+    borderLeftColor: p.primary,
   },
   repliedTaskName: {
     fontSize: 13,
     fontWeight: "600" as const,
-    color: colors.slateDark,
+    color: p.textStrong,
     marginBottom: 4,
   },
   repliedParent: {
     fontSize: 12,
-    color: colors.slate,
+    color: p.textMuted,
     marginBottom: 2,
   },
   repliedChild: {
     fontSize: 12,
-    color: colors.primaryDark,
+    color: p.primaryDark,
   },
 
   // クエストクリア反応バナー
@@ -1224,11 +1222,11 @@ const styles = StyleSheet.create({
     right: 16,
     flexDirection: "row" as const,
     alignItems: "center" as const,
-    backgroundColor: "#065f46",
+    backgroundColor: p.primaryDark,
     borderRadius: 16,
     padding: 12,
     gap: 10,
-    shadowColor: "#000",
+    shadowColor: p.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -1238,7 +1236,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: "bold" as const,
-    color: "#FFFFFF",
+    color: p.white,
   },
 
   // リセットボタン
@@ -1248,12 +1246,13 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: p.border,
     borderStyle: "dashed" as const,
     alignItems: "center" as const,
   },
   resetText: {
     fontSize: 12,
-    color: colors.gray,
+    color: p.textMuted,
   },
-});
+  });
+}

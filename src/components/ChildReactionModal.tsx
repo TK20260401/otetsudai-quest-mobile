@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
-import { colors } from "../lib/colors";
+import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { CHILD_STAMPS } from "../lib/child-stamps";
 import { getStampById } from "../lib/stamps";
@@ -33,6 +33,9 @@ type Props = {
 };
 
 export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null);
   const [message, setMessage] = useState("");
@@ -193,152 +196,154 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFDF5",
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-  },
-  counter: {
-    fontSize: 13,
-    color: colors.slate,
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  header: {
-    fontSize: rf(22),
-    fontWeight: "bold",
-    color: colors.slateDark,
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  parentCard: {
-    backgroundColor: colors.amberLight,
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: colors.amber,
-    alignItems: "center",
-  },
-  questName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: colors.slateDark,
-    marginBottom: 4,
-  },
-  rewardText: {
-    fontSize: 14,
-    color: colors.amber,
-    marginBottom: 12,
-  },
-  parentStampRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 8,
-  },
-  parentStampEmoji: { fontSize: 40 },
-  parentStampLabel: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.slateDark,
-  },
-  parentMsgBubble: {
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 12,
-    width: "100%",
-    marginTop: 8,
-  },
-  parentMsgText: {
-    fontSize: 15,
-    color: colors.primaryDark,
-    textAlign: "center",
-  },
-  divider: {
-    alignItems: "center",
-    marginVertical: 16,
-  },
-  dividerText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: colors.primary,
-  },
-  sectionLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.slateDark,
-    marginBottom: 8,
-  },
-  stampRow: {
-    gap: 8,
-    paddingBottom: 8,
-  },
-  stampItem: {
-    alignItems: "center",
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    padding: 10,
-    borderWidth: 2,
-    borderColor: colors.border,
-    minWidth: 72,
-  },
-  stampItemSelected: {
-    borderColor: colors.primary,
-    backgroundColor: "#ecfdf5",
-  },
-  stampEmoji: { fontSize: 28 },
-  stampLabel: {
-    fontSize: 10,
-    color: colors.slate,
-    marginTop: 2,
-    textAlign: "center",
-  },
-  stampLabelSelected: {
-    color: colors.primaryDark,
-    fontWeight: "bold",
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 14,
-    fontSize: 15,
-    minHeight: 50,
-    marginTop: 12,
-    marginBottom: 12,
-    backgroundColor: colors.white,
-  },
-  sendButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 14,
-    paddingVertical: 16,
-    alignItems: "center",
-  },
-  sendButtonDisabled: {
-    backgroundColor: colors.gray,
-  },
-  sendText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.white,
-  },
-  hint: {
-    fontSize: 11,
-    color: colors.slate,
-    textAlign: "center",
-    marginTop: 8,
-  },
-  skipButton: {
-    marginTop: 16,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  skipText: {
-    fontSize: 13,
-    color: colors.slate,
-    textDecorationLine: "underline",
-  },
-});
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: p.background,
+    },
+    scrollContent: {
+      paddingHorizontal: 20,
+    },
+    counter: {
+      fontSize: 13,
+      color: p.textMuted,
+      textAlign: "center",
+      marginBottom: 4,
+    },
+    header: {
+      fontSize: rf(22),
+      fontWeight: "bold",
+      color: p.textStrong,
+      textAlign: "center",
+      marginBottom: 16,
+    },
+    parentCard: {
+      backgroundColor: p.accentLight,
+      borderRadius: 16,
+      padding: 20,
+      borderWidth: 1,
+      borderColor: p.accent,
+      alignItems: "center",
+    },
+    questName: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: p.textStrong,
+      marginBottom: 4,
+    },
+    rewardText: {
+      fontSize: 14,
+      color: p.accent,
+      marginBottom: 12,
+    },
+    parentStampRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      marginBottom: 8,
+    },
+    parentStampEmoji: { fontSize: 40 },
+    parentStampLabel: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: p.textStrong,
+    },
+    parentMsgBubble: {
+      backgroundColor: p.white,
+      borderRadius: 12,
+      padding: 12,
+      width: "100%",
+      marginTop: 8,
+    },
+    parentMsgText: {
+      fontSize: 15,
+      color: p.primaryDark,
+      textAlign: "center",
+    },
+    divider: {
+      alignItems: "center",
+      marginVertical: 16,
+    },
+    dividerText: {
+      fontSize: 14,
+      fontWeight: "bold",
+      color: p.primary,
+    },
+    sectionLabel: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: p.textStrong,
+      marginBottom: 8,
+    },
+    stampRow: {
+      gap: 8,
+      paddingBottom: 8,
+    },
+    stampItem: {
+      alignItems: "center",
+      backgroundColor: p.white,
+      borderRadius: 12,
+      padding: 10,
+      borderWidth: 2,
+      borderColor: p.border,
+      minWidth: 72,
+    },
+    stampItemSelected: {
+      borderColor: p.primary,
+      backgroundColor: p.primaryLight,
+    },
+    stampEmoji: { fontSize: 28 },
+    stampLabel: {
+      fontSize: 10,
+      color: p.textMuted,
+      marginTop: 2,
+      textAlign: "center",
+    },
+    stampLabelSelected: {
+      color: p.primaryDark,
+      fontWeight: "bold",
+    },
+    textInput: {
+      borderWidth: 1,
+      borderColor: p.border,
+      borderRadius: 12,
+      padding: 14,
+      fontSize: 15,
+      minHeight: 50,
+      marginTop: 12,
+      marginBottom: 12,
+      backgroundColor: p.white,
+    },
+    sendButton: {
+      backgroundColor: p.primary,
+      borderRadius: 14,
+      paddingVertical: 16,
+      alignItems: "center",
+    },
+    sendButtonDisabled: {
+      backgroundColor: p.textMuted,
+    },
+    sendText: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: p.white,
+    },
+    hint: {
+      fontSize: 11,
+      color: p.textMuted,
+      textAlign: "center",
+      marginTop: 8,
+    },
+    skipButton: {
+      marginTop: 16,
+      paddingVertical: 12,
+      alignItems: "center",
+    },
+    skipText: {
+      fontSize: 13,
+      color: p.textMuted,
+      textDecorationLine: "underline",
+    },
+  });
+}

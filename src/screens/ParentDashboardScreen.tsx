@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Alert,
   ScrollView,
   RefreshControl,
   ActivityIndicator,
@@ -17,13 +16,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
-import { colors } from "../lib/colors";
+import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
 import { STAMPS } from "../lib/stamps";
 import { getChildStampById } from "../lib/child-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings } from "../lib/types";
+import { AutoRubyText, RubyText } from "../components/Ruby";
+import { useAppAlert } from "../components/AppAlert";
 
 type PendingLog = TaskLog & { task: Task; child: User };
 
@@ -32,6 +33,9 @@ export default function ParentDashboardScreen({
 }: {
   navigation: any;
 }) {
+  const { alert } = useAppAlert();
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
   const [familyId, setFamilyId] = useState("");
   const [userId, setUserId] = useState("");
   const [children, setChildren] = useState<User[]>([]);
@@ -250,12 +254,12 @@ export default function ParentDashboardScreen({
 
   async function handleReject(logId: string) {
     const reasons = [
-      "🔄 やり直し",
-      "もう少し丁寧に",
-      "最後までやろう",
-      "時間をかけてね",
+      "🔄 やりなおし",
+      "もうすこし ていねいに",
+      "さいごまで やろう",
+      "じかんを かけてね",
     ];
-    Alert.alert("やり直し", "理由を選んでね", [
+    alert("やりなおし", "りゆうを えらんでね", [
       ...reasons.map((r) => ({
         text: r,
         onPress: async () => {
@@ -274,7 +278,7 @@ export default function ParentDashboardScreen({
   async function handleApproveSpend(req: SpendRequest) {
     const childWallet = wallets[req.child_id];
     if (!childWallet || childWallet.spending_balance < req.amount) {
-      Alert.alert("エラー", "残高が足りません");
+      alert("エラー", "残高が たりません");
       return;
     }
 
@@ -310,6 +314,7 @@ export default function ParentDashboardScreen({
       .from("otetsudai_spend_requests")
       .update({ status: "rejected", reject_reason: "きょかされませんでした" })
       .eq("id", reqId);
+    alert("❌", "リクエストを きょかしませんでした");
     await loadData();
   }
 
@@ -361,18 +366,17 @@ export default function ParentDashboardScreen({
 
   async function handleSaveTask() {
     if (!taskForm.title) {
-      Alert.alert("エラー", "クエスト名を入れてください");
+      alert("エラー", "クエスト名を 入れてください");
       return;
     }
     const newAmount = parseInt(taskForm.reward_amount) || 10;
     if (taskForm.is_special && newAmount < 50) {
-      Alert.alert("エラー", "★特別クエストの報酬は50円以上にしてください");
+      alert("エラー", "★特別クエストの 報酬は 50円以上に してください");
       return;
     }
 
-    // 値下げ時はコメント必須
     if (editingTask && newAmount < editingTask.reward_amount && !taskForm.price_change_comment.trim()) {
-      Alert.alert("⚠️ コメント必須", "報酬を下げるときは、理由を入れてください");
+      alert("⚠️ コメント必須", "報酬を 下げるときは、理由を 入れてください");
       return;
     }
 
@@ -402,13 +406,13 @@ export default function ParentDashboardScreen({
         .update(payload)
         .eq("id", editingTask.id);
       if (error) {
-        Alert.alert("エラー", `更新失敗: ${error.message}`);
+        alert("エラー", `更新失敗: ${error.message}`);
         return;
       }
     } else {
       const { error } = await supabase.from("otetsudai_tasks").insert(payload);
       if (error) {
-        Alert.alert("エラー", `作成失敗: ${error.message}`);
+        alert("エラー", `作成失敗: ${error.message}`);
         return;
       }
     }
@@ -417,10 +421,10 @@ export default function ParentDashboardScreen({
   }
 
   async function handleDeleteTask(taskId: string) {
-    Alert.alert("削除", "このクエストを削除しますか？", [
+    alert("削除", "この クエストを 削除しますか？", [
       { text: "キャンセル", style: "cancel" },
       {
-        text: "削除",
+        text: "削除する",
         style: "destructive",
         onPress: async () => {
           await supabase.from("otetsudai_tasks").delete().eq("id", taskId);
@@ -447,36 +451,29 @@ export default function ParentDashboardScreen({
         price_change_comment: `報酬 ${task.reward_amount}→${task.proposed_reward}円にアップ！`,
       })
       .eq("id", task.id);
-    Alert.alert("✅ 承認", `${task.title}の報酬を${task.proposed_reward}円にしました`);
+    alert("✅ 承認", `${task.title}の 報酬を ${task.proposed_reward}円に しました`);
     await loadData();
   }
 
   async function handleRejectPriceRequest(task: Task) {
-    Alert.prompt(
-      "❌ 却下",
-      "理由を入れてください",
-      [
-        { text: "キャンセル", style: "cancel" },
-        {
-          text: "却下",
-          style: "destructive",
-          onPress: async (reason?: string) => {
-            await supabase
-              .from("otetsudai_tasks")
-              .update({
-                proposal_status: "rejected",
-                proposed_reward: null,
-                price_change_comment: reason || "今の金額で頑張ろう！",
-              })
-              .eq("id", task.id);
-            await loadData();
-          },
+    alert("❌ 却下", `${task.title}の ねあげリクエストを 却下しますか？`, [
+      { text: "キャンセル", style: "cancel" },
+      {
+        text: "却下する",
+        style: "destructive",
+        onPress: async () => {
+          await supabase
+            .from("otetsudai_tasks")
+            .update({
+              proposal_status: "rejected",
+              proposed_reward: null,
+              price_change_comment: "いまの きんがくで がんばろう！",
+            })
+            .eq("id", task.id);
+          await loadData();
         },
-      ],
-      "plain-text",
-      "",
-      "default"
-    );
+      },
+    ]);
   }
 
   function handleLogout() {
@@ -488,7 +485,7 @@ export default function ParentDashboardScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={palette.primary} />
       </View>
     );
   }
@@ -499,11 +496,12 @@ export default function ParentDashboardScreen({
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle} numberOfLines={1}>
-          👨‍👩‍👧‍👦 親
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "flex-end", flex: 1 }}>
+          <Text style={{ fontSize: 18 }}>👨‍👩‍👧‍👦 </Text>
+          <RubyText style={styles.headerTitle} parts={[["親", "おや"]]} rubySize={7} />
+        </View>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>← 戻る</Text>
+          <Text style={styles.logoutText}>← もどる</Text>
         </TouchableOpacity>
       </View>
 
@@ -513,11 +511,11 @@ export default function ParentDashboardScreen({
           style={[styles.tabButton, tab === "approve" && styles.tabActive]}
           onPress={() => setTab("approve")}
         >
-          <Text
-            style={[styles.tabText, tab === "approve" && styles.tabTextActive]}
-          >
-            承認{pendingCount > 0 ? ` (${pendingCount})` : ""}
-          </Text>
+          <AutoRubyText
+            text={`承認${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
+            style={tab === "approve" ? styles.tabTextActive : styles.tabText}
+            rubySize={6}
+          />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, tab === "tasks" && styles.tabActive]}
@@ -556,9 +554,7 @@ export default function ParentDashboardScreen({
             {/* Quest completions */}
             {pendingLogs.length > 0 && (
               <>
-                <Text style={styles.sectionTitle}>
-                  ⏳ クエスト完了 ({pendingLogs.length})
-                </Text>
+                <AutoRubyText text={`⏳ クエスト完了 (${pendingLogs.length})`} style={styles.sectionTitle} rubySize={7} />
                 {pendingLogs.map((log) => (
                   <View key={log.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -597,9 +593,7 @@ export default function ParentDashboardScreen({
             {/* Spend requests */}
             {pendingSpends.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
-                  🛒 使いたいリクエスト ({pendingSpends.length})
-                </Text>
+                <AutoRubyText text={`🛒 使いたいリクエスト (${pendingSpends.length})`} style={[styles.sectionTitle, { marginTop: 16 }]} rubySize={7} />
                 {pendingSpends.map((req) => (
                   <View key={req.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -633,9 +627,7 @@ export default function ParentDashboardScreen({
             {/* Price requests */}
             {priceRequests.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
-                  💰 値上げリクエスト ({priceRequests.length})
-                </Text>
+                <AutoRubyText text={`💰 値上げリクエスト (${priceRequests.length})`} style={[styles.sectionTitle, { marginTop: 16 }]} rubySize={7} />
                 {priceRequests.map((task) => (
                   <View key={task.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -648,7 +640,7 @@ export default function ParentDashboardScreen({
                           {task.reward_amount}円 → {task.proposed_reward}円
                         </Text>
                         {task.proposal_message && (
-                          <Text style={{ fontSize: 12, color: "#047857", marginTop: 2 }}>
+                          <Text style={{ fontSize: 12, color: palette.primaryDark, marginTop: 2 }}>
                             💬 「{task.proposal_message}」
                           </Text>
                         )}
@@ -674,17 +666,13 @@ export default function ParentDashboardScreen({
             )}
 
             {pendingCount === 0 && priceRequests.length === 0 && (
-              <Text style={styles.emptyText}>
-                承認待ちはありません
-              </Text>
+              <AutoRubyText text="承認待ちは ありません" style={styles.emptyText} rubySize={7} />
             )}
 
             {/* 最近の承認（子ども返信表示） */}
             {recentApproved.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 20 }]}>
-                  ✅ 最近の承認
-                </Text>
+                <AutoRubyText text="✅ 最近の承認" style={[styles.sectionTitle, { marginTop: 20 }]} rubySize={7} />
                 {recentApproved.map((log: any) => {
                   const childStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)
@@ -709,14 +697,12 @@ export default function ParentDashboardScreen({
                             </Text>
                           )}
                           {log.child_reaction_message && (
-                            <Text style={{ fontSize: 12, color: colors.primaryDark, marginTop: 2 }}>
+                            <Text style={{ fontSize: 12, color: palette.primaryDark, marginTop: 2 }}>
                               💬 「{log.child_reaction_message}」
                             </Text>
                           )}
                           {!hasReaction && (
-                            <Text style={{ fontSize: 11, color: colors.gray, marginTop: 2 }}>
-                              ⏳ 子どもの返事待ち
-                            </Text>
+                            <AutoRubyText text="⏳ 子どもの 返事待ち" style={{ fontSize: 11, color: palette.textMuted, marginTop: 2 }} rubySize={6} />
                           )}
                         </View>
                       </View>
@@ -734,44 +720,44 @@ export default function ParentDashboardScreen({
             {/* ★特別クエスト設定パネル */}
             {familySettings && (
               <View style={styles.settingsPanel}>
-                <Text style={styles.settingsPanelTitle}>★ 特別クエスト設定</Text>
+                <AutoRubyText text="★ 特別クエスト設定" style={styles.settingsPanelTitle} rubySize={7} />
                 <View style={styles.settingsRow}>
-                  <Text style={styles.settingsLabel}>特別クエスト全体</Text>
+                  <AutoRubyText text="特別クエスト全体" style={styles.settingsLabel} rubySize={6} />
                   <Switch
                     value={familySettings.special_quest_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_enabled: v })}
-                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
-                    thumbColor={familySettings.special_quest_enabled ? colors.primary : "#f4f3f4"}
+                    trackColor={{ false: palette.switchTrackOff, true: palette.switchTrackOn }}
+                    thumbColor={familySettings.special_quest_enabled ? palette.primary : palette.switchThumbOff}
                   />
                 </View>
                 <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
-                  <Text style={styles.settingsLabel}>★ 簡単</Text>
+                  <AutoRubyText text="★ 簡単" style={styles.settingsLabel} rubySize={6} />
                   <Switch
                     value={familySettings.special_quest_star1_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_star1_enabled: v })}
                     disabled={!familySettings.special_quest_enabled}
-                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
-                    thumbColor={familySettings.special_quest_star1_enabled ? colors.primary : "#f4f3f4"}
+                    trackColor={{ false: palette.switchTrackOff, true: palette.switchTrackOn }}
+                    thumbColor={familySettings.special_quest_star1_enabled ? palette.primary : palette.switchThumbOff}
                   />
                 </View>
                 <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
-                  <Text style={styles.settingsLabel}>★★ 普通</Text>
+                  <AutoRubyText text="★★ 普通" style={styles.settingsLabel} rubySize={6} />
                   <Switch
                     value={familySettings.special_quest_star2_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_star2_enabled: v })}
                     disabled={!familySettings.special_quest_enabled}
-                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
-                    thumbColor={familySettings.special_quest_star2_enabled ? colors.primary : "#f4f3f4"}
+                    trackColor={{ false: palette.switchTrackOff, true: palette.switchTrackOn }}
+                    thumbColor={familySettings.special_quest_star2_enabled ? palette.primary : palette.switchThumbOff}
                   />
                 </View>
                 <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
-                  <Text style={styles.settingsLabel}>★★★ 難しい</Text>
+                  <AutoRubyText text="★★★ 難しい" style={styles.settingsLabel} rubySize={6} />
                   <Switch
                     value={familySettings.special_quest_star3_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_star3_enabled: v })}
                     disabled={!familySettings.special_quest_enabled}
-                    trackColor={{ false: "#d1d5db", true: "#6ee7b7" }}
-                    thumbColor={familySettings.special_quest_star3_enabled ? colors.primary : "#f4f3f4"}
+                    trackColor={{ false: palette.switchTrackOff, true: palette.switchTrackOn }}
+                    thumbColor={familySettings.special_quest_star3_enabled ? palette.primary : palette.switchThumbOff}
                   />
                 </View>
               </View>
@@ -785,7 +771,7 @@ export default function ParentDashboardScreen({
                 <Text style={styles.addButtonText}>+ クエスト</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.addButton, { flex: 1, marginBottom: 0, backgroundColor: "#d97706" }]}
+                style={[styles.addButton, { flex: 1, marginBottom: 0, backgroundColor: palette.gold }]}
                 onPress={() => {
                   openTaskForm();
                   setTimeout(() => {
@@ -804,7 +790,7 @@ export default function ParentDashboardScreen({
             {/* ★特別クエスト */}
             {tasks.filter((t) => t.is_special).length > 0 && (
               <>
-                <Text style={styles.specialLabel}>★ 特別クエスト</Text>
+                <AutoRubyText text="★ 特別クエスト" style={styles.specialLabel} rubySize={7} />
                 {tasks.filter((t) => t.is_special).map((task) => {
                   const starDisabled = familySettings && (
                     !familySettings.special_quest_enabled ||
@@ -826,7 +812,7 @@ export default function ParentDashboardScreen({
                           {getTaskIcon(task.title)}
                         </Text>
                         <View style={{ flex: 1 }}>
-                          <Text style={[styles.taskTitle, { color: "#92400e" }]}>
+                          <Text style={[styles.taskTitle, { color: palette.goldText }]}>
                             {"★".repeat(task.special_difficulty || 1)} {task.title}
                           </Text>
                           <Text style={styles.taskSub}>
@@ -930,14 +916,14 @@ export default function ParentDashboardScreen({
                       <View
                         style={[
                           styles.walletItem,
-                          { borderColor: colors.spend },
+                          { borderColor: palette.walletSpendBorder },
                         ]}
                       >
                         <Text style={styles.walletLabel}>使う</Text>
                         <Text
                           style={[
                             styles.walletAmount,
-                            { color: colors.spend },
+                            { color: palette.walletSpendText },
                           ]}
                         >
                           {w.spending_balance.toLocaleString()}
@@ -946,14 +932,14 @@ export default function ParentDashboardScreen({
                       <View
                         style={[
                           styles.walletItem,
-                          { borderColor: colors.save },
+                          { borderColor: palette.walletSaveBorder },
                         ]}
                       >
                         <Text style={styles.walletLabel}>貯める</Text>
                         <Text
                           style={[
                             styles.walletAmount,
-                            { color: colors.save },
+                            { color: palette.walletSaveText },
                           ]}
                         >
                           {w.saving_balance.toLocaleString()}
@@ -962,14 +948,14 @@ export default function ParentDashboardScreen({
                       <View
                         style={[
                           styles.walletItem,
-                          { borderColor: colors.invest },
+                          { borderColor: palette.walletInvestBorder },
                         ]}
                       >
                         <Text style={styles.walletLabel}>増やす</Text>
                         <Text
                           style={[
                             styles.walletAmount,
-                            { color: colors.invest },
+                            { color: palette.walletInvestText },
                           ]}
                         >
                           {w.invest_balance.toLocaleString()}
@@ -1367,39 +1353,40 @@ export default function ParentDashboardScreen({
   );
 }
 
-const styles = StyleSheet.create({
+function createStyles(p: Palette) {
+  return StyleSheet.create({
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.slateLight,
+    backgroundColor: p.surfaceMuted,
   },
-  container: { flex: 1, backgroundColor: colors.slateLight },
+  container: { flex: 1, backgroundColor: p.surfaceMuted },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: p.border,
   },
-  headerTitle: { fontSize: 18, fontWeight: "bold", color: colors.primaryDark, flex: 1 },
+  headerTitle: { fontSize: 18, fontWeight: "bold", color: p.primaryDark, flex: 1 },
   logoutButton: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
   },
-  logoutText: { fontSize: 14, color: colors.slate },
+  logoutText: { fontSize: 14, color: p.textMuted },
   scroll: { flex: 1 },
   section: { padding: 12 },
 
   // Tabs
   tabRow: {
     flexDirection: "row",
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
     margin: 12,
     marginBottom: 0,
     borderRadius: 10,
@@ -1411,60 +1398,60 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  tabActive: { backgroundColor: colors.white },
-  tabText: { fontSize: 13, color: colors.slate },
-  tabTextActive: { color: colors.slateDark, fontWeight: "bold" },
+  tabActive: { backgroundColor: p.white },
+  tabText: { fontSize: 13, color: p.textMuted },
+  tabTextActive: { color: p.textStrong, fontWeight: "bold" },
 
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: colors.slateDark,
+    color: p.textStrong,
     marginBottom: 8,
   },
 
   // Approval cards
   approvalCard: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
   },
   approvalInfo: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   approvalIcon: { fontSize: 28, marginRight: 10 },
-  approvalTitle: { fontSize: 15, fontWeight: "600", color: colors.slateDark },
-  approvalSub: { fontSize: 13, color: colors.slate, marginTop: 2 },
+  approvalTitle: { fontSize: 15, fontWeight: "600", color: p.textStrong },
+  approvalSub: { fontSize: 13, color: p.textMuted, marginTop: 2 },
   approvalActions: { flexDirection: "row", gap: 8 },
   approveButton: {
     flex: 1,
-    backgroundColor: colors.primary,
+    backgroundColor: p.primary,
     borderRadius: 10,
     padding: 10,
     alignItems: "center",
   },
-  approveText: { color: colors.white, fontWeight: "bold", fontSize: 14 },
+  approveText: { color: p.white, fontWeight: "bold", fontSize: 14 },
   rejectButton: {
     flex: 1,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
     borderRadius: 10,
     padding: 10,
     alignItems: "center",
   },
-  rejectText: { color: colors.slate, fontWeight: "bold", fontSize: 14 },
+  rejectText: { color: p.textMuted, fontWeight: "bold", fontSize: 14 },
 
   // Special quest
   // 特別クエスト設定パネル
   settingsPanel: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: "#fcd34d",
+    borderColor: p.goldBorder,
   },
   settingsPanelTitle: {
     fontSize: rf(15),
     fontWeight: "bold",
-    color: "#92400e",
+    color: p.goldText,
     marginBottom: 12,
   },
   settingsRow: {
@@ -1475,72 +1462,72 @@ const styles = StyleSheet.create({
   },
   settingsLabel: {
     fontSize: rf(14),
-    color: colors.slateDark,
+    color: p.textStrong,
   },
   specialLabel: {
     fontSize: 15,
     fontWeight: "bold" as const,
-    color: "#d97706",
+    color: p.gold,
     marginBottom: 6,
     marginTop: 4,
   },
   specialTaskCard: {
-    backgroundColor: "#fef3c7",
+    backgroundColor: p.goldLight,
     borderWidth: 1,
-    borderColor: "#f59e0b",
+    borderColor: p.goldBorder,
   },
   specialToggle: {
     padding: 12,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: p.border,
     borderStyle: "dashed" as const,
     alignItems: "center" as const,
     marginBottom: 4,
   },
   specialToggleActive: {
-    backgroundColor: "#fef3c7",
-    borderColor: "#f59e0b",
+    backgroundColor: p.goldLight,
+    borderColor: p.goldBorder,
     borderStyle: "solid" as const,
   },
   specialToggleText: {
     fontSize: 14,
-    color: colors.slate,
+    color: p.textMuted,
     fontWeight: "600" as const,
   },
   specialToggleTextActive: {
-    color: "#92400e",
+    color: p.goldText,
   },
   difficultyBtn: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
   },
   difficultyActive: {
-    backgroundColor: "#fef3c7",
+    backgroundColor: p.goldLight,
     borderWidth: 1,
-    borderColor: "#f59e0b",
+    borderColor: p.goldBorder,
   },
   difficultyText: {
     fontSize: 16,
-    color: colors.gray,
+    color: p.textMuted,
   },
   difficultyTextActive: {
-    color: "#d97706",
+    color: p.gold,
   },
 
   // Task cards
   addButton: {
-    backgroundColor: colors.amber,
+    backgroundColor: p.accent,
     borderRadius: 12,
     padding: 14,
     alignItems: "center",
     marginBottom: 12,
   },
-  addButtonText: { color: colors.white, fontWeight: "bold", fontSize: 16 },
+  addButtonText: { color: p.white, fontWeight: "bold", fontSize: 16 },
   taskCard: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
@@ -1548,14 +1535,14 @@ const styles = StyleSheet.create({
   taskInactive: { opacity: 0.5 },
   taskInfo: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   taskIcon: { fontSize: 28, marginRight: 10 },
-  taskTitle: { fontSize: 15, fontWeight: "600", color: colors.slateDark },
-  taskSub: { fontSize: 13, color: colors.slate, marginTop: 2 },
+  taskTitle: { fontSize: 15, fontWeight: "600", color: p.textStrong },
+  taskSub: { fontSize: 13, color: p.textMuted, marginTop: 2 },
   taskActions: { flexDirection: "row", gap: 12, justifyContent: "flex-end" },
   taskActionBtn: { padding: 6 },
 
   // Children cards
   childCard: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderRadius: 12,
     padding: 16,
     marginBottom: 10,
@@ -1563,13 +1550,13 @@ const styles = StyleSheet.create({
   childName: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.slateDark,
+    color: p.textStrong,
     marginBottom: 4,
   },
   childTotal: {
     fontSize: 24,
     fontWeight: "bold",
-    color: colors.primaryDark,
+    color: p.primaryDark,
     marginBottom: 12,
   },
   walletRow: { flexDirection: "row", gap: 8 },
@@ -1580,18 +1567,18 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: "center",
   },
-  walletLabel: { fontSize: 12, color: colors.slate, marginBottom: 2 },
+  walletLabel: { fontSize: 12, color: p.textMuted, marginBottom: 2 },
   walletAmount: { fontSize: 16, fontWeight: "bold" },
   ratioText: {
     fontSize: 12,
-    color: colors.gray,
+    color: p.textMuted,
     marginTop: 10,
     textAlign: "center",
   },
 
   emptyText: {
     textAlign: "center",
-    color: colors.slate,
+    color: p.textMuted,
     fontSize: 14,
     paddingVertical: 40,
   },
@@ -1609,34 +1596,34 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: p.white,
     borderRadius: 16,
     padding: 20,
   },
   modalTitle: {
     fontSize: rf(18),
     fontWeight: "bold",
-    color: colors.slateDark,
+    color: p.textStrong,
     textAlign: "center",
     marginBottom: 4,
   },
   modalSub: {
     fontSize: 14,
-    color: colors.slate,
+    color: p.textMuted,
     textAlign: "center",
     marginBottom: 4,
   },
   modalReward: {
     fontSize: 18,
     fontWeight: "bold",
-    color: colors.amber,
+    color: p.accent,
     textAlign: "center",
     marginBottom: 16,
   },
   stampLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: colors.slateDark,
+    color: p.textStrong,
     marginBottom: 8,
   },
   stampGrid: {
@@ -1650,18 +1637,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 8,
     borderRadius: 10,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
   },
   stampSelected: {
-    backgroundColor: colors.amberLight,
+    backgroundColor: p.accentLight,
     borderWidth: 2,
-    borderColor: colors.amber,
+    borderColor: p.accent,
   },
   stampEmoji: { fontSize: 28 },
-  stampText: { fontSize: 9, color: colors.slate, marginTop: 2 },
+  stampText: { fontSize: 9, color: p.textMuted, marginTop: 2 },
   messageInput: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: p.border,
     borderRadius: 10,
     padding: 12,
     fontSize: 14,
@@ -1672,53 +1659,53 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     borderRadius: 10,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
     alignItems: "center",
   },
-  modalCancelText: { color: colors.slate, fontWeight: "bold" },
+  modalCancelText: { color: p.textMuted, fontWeight: "bold" },
   modalApprove: {
     flex: 1,
     padding: 14,
     borderRadius: 10,
-    backgroundColor: colors.primary,
+    backgroundColor: p.primary,
     alignItems: "center",
   },
-  modalApproveText: { color: colors.white, fontWeight: "bold" },
+  modalApproveText: { color: p.white, fontWeight: "bold" },
 
   // Task form
   formLabel: {
     fontSize: rf(14),
     fontWeight: "600",
-    color: colors.slateDark,
+    color: p.textStrong,
     marginTop: 12,
     marginBottom: 4,
   },
   formInput: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: p.border,
     borderRadius: 10,
     padding: 12,
     fontSize: 15,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
   },
   datePickerButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: p.border,
     borderRadius: 10,
     padding: 12,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
   },
   datePickerText: {
     fontSize: 14,
-    color: colors.slateDark,
+    color: p.textStrong,
     flex: 1,
   },
   dateClearText: {
     fontSize: 16,
-    color: colors.slate,
+    color: p.textMuted,
     paddingLeft: 8,
   },
   recurrenceRow: {
@@ -1731,11 +1718,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
     borderRadius: 8,
-    backgroundColor: colors.grayLight,
+    backgroundColor: p.surfaceMuted,
   },
   recurrenceActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: p.primary,
   },
-  recurrenceText: { fontSize: 13, color: colors.slate },
-  recurrenceTextActive: { color: colors.white, fontWeight: "bold" },
-});
+  recurrenceText: { fontSize: 13, color: p.textMuted },
+  recurrenceTextActive: { color: p.white, fontWeight: "bold" },
+  });
+}

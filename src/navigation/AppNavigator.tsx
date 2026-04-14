@@ -3,7 +3,7 @@ import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getSession } from "../lib/session";
-import { colors } from "../lib/colors";
+import { useTheme } from "../theme";
 import LandingScreen from "../screens/LandingScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ChildDashboardScreen from "../screens/ChildDashboardScreen";
@@ -19,6 +19,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
+  const { palette } = useTheme();
   const [initialRoute, setInitialRoute] = useState<
     keyof RootStackParamList | null
   >(null);
@@ -42,10 +43,10 @@ export default function AppNavigator() {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: colors.slateLight,
+          backgroundColor: palette.surfaceMuted,
         }}
       >
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={palette.primary} />
       </View>
     );
   }

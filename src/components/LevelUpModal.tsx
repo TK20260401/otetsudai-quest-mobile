@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { colors } from "../lib/colors";
 import { rf } from "../lib/responsive";
 import type { Level } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
