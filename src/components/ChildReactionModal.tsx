@@ -77,11 +77,13 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             styles.scrollContent,
             {
               paddingTop: insets.top + 20,
-              paddingBottom: keyboardHeight > 0 ? keyboardHeight + 20 : insets.bottom + 20,
+              paddingBottom: keyboardHeight > 0 ? keyboardHeight + 40 : insets.bottom + 60,
             },
           ]}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="interactive"
+          showsVerticalScrollIndicator
+          bounces
         >
           {/* カウンター */}
           {logs.length > 1 && (
