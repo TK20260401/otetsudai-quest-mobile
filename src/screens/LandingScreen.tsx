@@ -109,7 +109,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         </View>
       </View>
 
-      <Text style={styles.footer}>おこづかいクエスト v0.5</Text>
+      <Text style={styles.footer}>おこづかいクエスト v0.9.4</Text>
     </ScrollView>
   );
 }
