@@ -13,7 +13,9 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tk20260401.otetsudaiquest",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,6 +30,12 @@
     },
     "plugins": [
       "@react-native-community/datetimepicker"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "8f2ae789-59cc-469f-b016-f759dd00ecc9"
+      }
+    },
+    "owner": "tk20260401"
   }
 }
