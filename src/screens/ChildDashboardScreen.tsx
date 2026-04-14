@@ -377,9 +377,9 @@ export default function ChildDashboardScreen({
             <RubyStr text={levelInfo.current.appearance} style={styles.appearanceText} rubySize={6} />
           </View>
           <View style={styles.levelInfo}>
-            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+            <View style={{ flexDirection: "row", alignItems: "flex-end", flexWrap: "wrap" }}>
               <Text style={styles.levelTitle}>Lv.{levelInfo.current.level} </Text>
-              <RubyStr text={levelInfo.current.title} style={styles.levelTitle} rubySize={7} />
+              <RubyStr text={levelInfo.current.title} style={styles.levelTitle} rubySize={6} />
             </View>
             {/* セリフ吹き出し */}
             <View style={styles.speechBubble}>
@@ -857,7 +857,7 @@ const styles = StyleSheet.create({
   characterColumn: {
     alignItems: "center" as const,
     marginRight: 8,
-    minWidth: 100,
+    width: 90,
   },
   appearanceText: {
     fontSize: 9,
@@ -865,8 +865,8 @@ const styles = StyleSheet.create({
     marginTop: -2,
     textAlign: "center" as const,
   },
-  levelInfo: { flex: 1 },
-  levelTitle: { fontSize: rf(15), fontWeight: "bold" as const, color: colors.slateDark },
+  levelInfo: { flex: 1, overflow: "hidden" as const },
+  levelTitle: { fontSize: rf(14), fontWeight: "bold" as const, color: colors.slateDark },
   speechBubble: {
     backgroundColor: "rgba(255,255,255,0.7)",
     borderRadius: 8,
