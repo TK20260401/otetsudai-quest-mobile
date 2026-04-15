@@ -27,22 +27,33 @@ otetsudai-quest-mobile/
 │   ├── navigation/
 │   │   └── AppNavigator.tsx     # 画面遷移（Login → Child/Parent Dashboard）
 │   ├── screens/
+│   │   ├── LandingScreen.tsx    # ランディング画面（ログインボタン+機能紹介）
 │   │   ├── LoginScreen.tsx      # ログイン（家族選択→メンバー選択→PIN認証）
 │   │   ├── ChildDashboardScreen.tsx  # 子どもダッシュボード
-│   │   └── ParentDashboardScreen.tsx # 親ダッシュボード
+│   │   ├── ParentDashboardScreen.tsx # 親ダッシュボード
+│   │   ├── WalletDetailScreen.tsx    # ウォレット詳細
+│   │   └── SpendRequestScreen.tsx    # つかうリクエスト
+│   ├── theme/
+│   │   ├── palettes.ts          # 3パレット定義（CUD/WCAG準拠）
+│   │   ├── ThemeContext.tsx      # テーマProvider + useTheme
+│   │   └── index.ts             # テーマエクスポート
 │   ├── lib/
 │   │   ├── supabase.ts          # Supabase クライアント初期化
 │   │   ├── types.ts             # 型定義（Web版と同一）
 │   │   ├── session.ts           # セッション管理（AsyncStorage）
-│   │   ├── responsive.ts         # レスポンシブフォントサイズユーティリティ
-│   │   ├── colors.ts            # テーマカラー定義（特別クエスト金色含む）
+│   │   ├── responsive.ts        # レスポンシブフォントサイズユーティリティ
 │   │   ├── levels.ts            # レベルアップシステム（7段階）
 │   │   ├── badges.ts            # バッジ判定・付与ロジック（5種類）
 │   │   ├── task-icons.ts        # タスク名→アイコン絵文字マッピング
-│   │   └── stamps.ts            # 承認スタンプ定義（8種類）
+│   │   ├── stamps.ts            # 承認スタンプ定義（8種類）
+│   │   └── useReducedMotion.ts  # OS設定連動アニメーション制御
 │   ├── components/
+│   │   ├── Ruby.tsx             # ルビ（振り仮名）コンポーネント群
 │   │   ├── CharacterSvg.tsx     # レベル別キャラクターSVG
 │   │   ├── LevelUpModal.tsx     # レベルアップ演出モーダル
+│   │   ├── BadgeUnlockModal.tsx # バッジ獲得演出モーダル
+│   │   ├── AnimatedButton.tsx   # アニメーション付きボタン
+│   │   ├── AppAlert.tsx         # カスタムアラート（ルビ対応）
 │   │   ├── ChildReactionModal.tsx # 子ども返信モーダル
 │   │   └── PriceRequestModal.tsx  # 値上げリクエストモーダル
 │   ├── migrations/
@@ -147,6 +158,32 @@ npx expo start --tunnel
 | 難易度 | なし | ★〜★★★ |
 | 例 | おさらあらい、ゴミだし | 年末大掃除、お庭の草むしり |
 
+### デザインリニューアル（Phase 1-3完了）
+- **Phase 1**: 全画面ルビ（振り仮名）対応。Alert.alertをカスタムモーダル+AutoRubyTextに置換
+- **Phase 2**: CUD（カラーユニバーサルデザイン）準拠パレット3案設計。朱赤/青/青緑ウォレット色統一
+- **Phase 3**: テーマシステム（ThemeProvider+useTheme）。3パレット（そよかぜ/やさしい森/わくわく冒険）切替対応
+
+### UI/UX/CXブラッシュアップ
+- タッチターゲット48pt+、AnimatedButton（スケール+haptics）
+- アクセシビリティ（accessibilityLabel/Role全画面付与）
+- useReducedMotion（OS設定連動アニメーション制御）
+- BadgeUnlockModal（バッジ獲得演出）
+- クエストクリア確認ダイアログ
+- 全画面ローディング演出、タブアイコン、空状態カード改善
+- ウォレット「💸つかう」ショートカット、装備カウント表示、金額読み上げ対応
+- ウェルカムボーナス（初回100円付与）
+- 週次サマリーカード（クエスト完了数・稼いだ金額）
+- 連続ストリーク🔥表示（連続クエスト日数）
+- テーマ切替UI（ヘッダー3色ボタン、AsyncStorage永続化）
+- ログインエラー表示改善（カード形式）
+
+## TestFlight配布
+
+- Bundle ID: `com.tk20260401.otetsudaiquest`
+- App Store Connect: 「おこづかいクエスト - マネー冒険」
+- EAS Build → Transporter → TestFlightの手動フロー
+- 内部テスト即利用可、外部テストBeta App Review審査済み
+
 ## 未実装（Phase 4〜8 予定）
 
 | Phase | 内容 |
@@ -156,6 +193,14 @@ npx expo start --tunnel
 | Phase 6 | 投資シミュレーション |
 | Phase 7 | AIチャット（コインくん） |
 | Phase 8 | 管理者画面 + ストア公開準備 |
+
+## 変更履歴
+
+| バージョン | 日付 | 内容 |
+|-----------|------|------|
+| v1.0.0 (1) | 2026-04-15 | 初回EASビルド |
+| v1.0.0 (3) | 2026-04-15 | ルビ配置修正、ランディング画面レスポンシブ |
+| v1.0.0 (4) | 2026-04-15 | 環境変数修正（ホワイト画面解消）、ルビ間隔密着化 |
 
 ## Web版との関係
 
