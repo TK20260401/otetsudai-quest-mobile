@@ -51,15 +51,10 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
           parts={["クエストをクリアして コインを ", ["稼", "かせ"], "ごう！"]}
           rubySize={7}
         />
-        <RubyText
+        <AutoRubyText
+          text="お手伝い＝クエスト！稼いで、貯めて、増やすマネー冒険アプリ"
           style={styles.description}
-          parts={["お", ["手伝", "てつだ"], "い＝クエスト！", ["稼", "かせ"], "いで、", ["貯", "た"], "めて、", ["増", "ふ"], "やす"]}
-          rubySize={6}
-        />
-        <RubyText
-          style={styles.description}
-          parts={["マネー", ["冒険", "ぼうけん"], "アプリ"]}
-          rubySize={6}
+          rubySize={5}
         />
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
@@ -141,18 +136,18 @@ function createStyles(p: Palette) {
       textAlign: "center",
     },
     subtitle: {
-      fontSize: rf(15),
+      fontSize: rf(13),
       color: p.primary,
       marginBottom: 6,
       textAlign: "center",
-      lineHeight: rf(24),
+      lineHeight: rf(22),
     },
     description: {
-      fontSize: rf(12),
+      fontSize: rf(11),
       color: p.textMuted,
       marginBottom: 28,
       textAlign: "center",
-      lineHeight: rf(20),
+      lineHeight: rf(18),
     },
     buttons: {
       width: "100%",
@@ -223,8 +218,8 @@ function createStyles(p: Palette) {
       lineHeight: 20,
     },
     featureDesc: {
-      fontSize: 10,
-      lineHeight: 18,
+      fontSize: 9,
+      lineHeight: 16,
     },
     legalRow: {
       flexDirection: "row",
