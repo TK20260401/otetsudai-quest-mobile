@@ -705,7 +705,8 @@ export default function ChildDashboardScreen({
             ) : (
               <View style={styles.emptySpecialCard}>
                 <Text style={styles.emptySpecialIcon}>🌟</Text>
-                <Text style={styles.emptyHint}>いまは とくべつクエストは おやすみちゅう。またね！</Text>
+                <Text style={[styles.emptyHint, { fontWeight: "bold", fontSize: 13 }]}>いまは おやすみちゅう</Text>
+                <Text style={styles.emptyHint}>つぎの とくべつクエストを おたのしみに！</Text>
               </View>
             )}
 
