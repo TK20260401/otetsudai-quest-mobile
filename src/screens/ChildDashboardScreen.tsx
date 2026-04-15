@@ -1231,6 +1231,7 @@ function createStyles(p: Palette) {
     justifyContent: "space-between" as const,
     alignItems: "center" as const,
     marginBottom: 6,
+    paddingTop: 4,
   },
   specialStars: {
     fontSize: 16,

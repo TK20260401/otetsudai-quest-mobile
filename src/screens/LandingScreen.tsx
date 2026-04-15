@@ -46,20 +46,16 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         >
           おこづかいクエスト
         </Text>
-        <Text
+        <AutoRubyText
+          text="クエストをクリアして コインを 稼ごう！"
           style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]}
-          adjustsFontSizeToFit
-          numberOfLines={2}
-        >
-          クエストをクリアして{"\n"}コインを 稼ごう！
-        </Text>
-        <Text
+          rubySize={7}
+        />
+        <AutoRubyText
+          text="お手伝い＝クエスト！稼いで、貯めて、増やすマネー冒険アプリ"
           style={styles.description}
-          adjustsFontSizeToFit
-          numberOfLines={2}
-        >
-          お手伝い＝クエスト！{"\n"}稼いで、貯めて、増やすマネー冒険アプリ
-        </Text>
+          rubySize={6}
+        />
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
           <AnimatedButton
@@ -80,7 +76,9 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>💰</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
-            <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["稼", "かせ"], "いだコインで ", ["好", "す"], "きなものを ", ["買", "か"], "おう！"]} rubySize={5} />
+            <Text style={[styles.featureDesc, { color: palette.walletSpendText }]}>
+              稼いだコインで{"\n"}好きなものを 買おう！
+            </Text>
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletSaveBg, borderColor: palette.walletSaveBorder }]}>
@@ -88,7 +86,9 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>🐷</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["貯", "た"], "める"]} rubySize={7} />
-            <RubyText style={[styles.featureDesc, { color: palette.walletSaveText }]} parts={[["貯金", "ちょきん"], "して ", ["大", "おお"], "きな ", ["夢", "ゆめ"], "を ", ["叶", "かな"], "えよう！"]} rubySize={5} />
+            <Text style={[styles.featureDesc, { color: palette.walletSaveText }]}>
+              貯金して{"\n"}大きな 夢を 叶えよう！
+            </Text>
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletInvestBg, borderColor: palette.walletInvestBorder }]}>
@@ -96,7 +96,9 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>🌱</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletInvestText }]} parts={[["増", "ふ"], "やす"]} rubySize={7} />
-            <RubyText style={[styles.featureDesc, { color: palette.walletInvestText }]} parts={["コインを", ["育", "そだ"], "てて もっと ", ["増", "ふ"], "やそう！"]} rubySize={5} />
+            <Text style={[styles.featureDesc, { color: palette.walletInvestText }]}>
+              コインを育てて{"\n"}もっと 増やそう！
+            </Text>
           </View>
         </View>
       </View>
