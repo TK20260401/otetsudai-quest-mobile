@@ -684,7 +684,11 @@ export default function ParentDashboardScreen({
             )}
 
             {pendingCount === 0 && priceRequests.length === 0 && (
-              <AutoRubyText text="承認待ちは ありません" style={styles.emptyText} rubySize={7} />
+              <View style={styles.emptyCard}>
+                <Text style={{ fontSize: 48, marginBottom: 8 }}>✨</Text>
+                <AutoRubyText text="承認待ちは ありません" style={styles.emptyCardText} rubySize={7} />
+                <Text style={styles.emptyCardSub}>すべて しょりずみです！</Text>
+              </View>
             )}
 
             {/* 最近の承認（子ども返信表示） */}
@@ -1617,6 +1621,25 @@ function createStyles(p: Palette) {
     color: p.textMuted,
     fontSize: 14,
     paddingVertical: 40,
+  },
+  emptyCard: {
+    alignItems: "center" as const,
+    backgroundColor: p.white,
+    borderRadius: 12,
+    padding: 32,
+    marginBottom: 8,
+  },
+  emptyCardText: {
+    textAlign: "center" as const,
+    color: p.textStrong,
+    fontSize: 15,
+    fontWeight: "bold" as const,
+  },
+  emptyCardSub: {
+    textAlign: "center" as const,
+    color: p.textMuted,
+    fontSize: 12,
+    marginTop: 4,
   },
 
   // Modal
