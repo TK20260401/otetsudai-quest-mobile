@@ -518,7 +518,7 @@ export default function ParentDashboardScreen({
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <AutoRubyText
-              text="承認"
+              text="✅ 承認"
               style={tab === "approve" ? styles.tabTextActive : styles.tabText}
               rubySize={6}
             />
@@ -539,7 +539,7 @@ export default function ParentDashboardScreen({
           <Text
             style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}
           >
-            クエスト
+            ⚔️ クエスト
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -555,7 +555,7 @@ export default function ParentDashboardScreen({
               tab === "children" && styles.tabTextActive,
             ]}
           >
-            子ども
+            👦 子ども
           </Text>
         </TouchableOpacity>
       </View>

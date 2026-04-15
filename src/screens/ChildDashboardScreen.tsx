@@ -805,7 +805,11 @@ export default function ChildDashboardScreen({
             )}
 
             {transactions.length === 0 && repliedMessages.length === 0 ? (
-              <AutoRubyText text="まだ履歴がないよ" style={styles.emptyText} rubySize={6} />
+              <View style={styles.emptyCard}>
+                <Text style={{ fontSize: 48, marginBottom: 8 }}>📖</Text>
+                <AutoRubyText text="まだ履歴がないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={6} />
+                <AutoRubyText text="クエストをクリアすると ここに きろくされるよ！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
+              </View>
             ) : transactions.length === 0 ? null : (
               transactions.map((tx) => (
                 <View key={tx.id} style={styles.historyItem}>
