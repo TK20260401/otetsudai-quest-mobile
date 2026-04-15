@@ -77,6 +77,8 @@ export default function ParentDashboardScreen({
 
   // 特別クエスト設定
   const [familySettings, setFamilySettings] = useState<FamilySettings | null>(null);
+  // 週次サマリー
+  const [weeklySummary, setWeeklySummary] = useState({ quests: 0, earned: 0 });
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -188,6 +190,27 @@ export default function ParentDashboardScreen({
           .single();
         if (newSettings) setFamilySettings(newSettings);
       }
+    }
+
+    // 週次サマリー
+    if (familyIds.length > 0) {
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const { data: weeklyLogs } = await supabase
+        .from("otetsudai_task_logs")
+        .select("*, task:otetsudai_tasks(reward_amount, family_id)")
+        .eq("status", "approved")
+        .gte("approved_at", weekStart.toISOString());
+      const familyWeeklyLogs = (weeklyLogs || []).filter(
+        (log: any) => log.task?.family_id && familyIds.includes(log.task.family_id)
+      );
+      setWeeklySummary({
+        quests: familyWeeklyLogs.length,
+        earned: familyWeeklyLogs.reduce(
+          (sum: number, log: any) => sum + (log.task?.reward_amount || 0), 0
+        ),
+      });
     }
 
     setLoading(false);
@@ -566,6 +589,23 @@ export default function ParentDashboardScreen({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* 週次サマリー */}
+        {tab === "approve" && weeklySummary.quests > 0 && (
+          <View style={[styles.section, { backgroundColor: palette.accentLight, borderRadius: 12, padding: 16, marginBottom: 8 }]}>
+            <Text style={{ fontSize: rf(13), fontWeight: "bold", color: palette.textStrong, marginBottom: 8 }}>📊 こんしゅうの かぞく きろく</Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: rf(22), fontWeight: "bold", color: palette.accent }}>{weeklySummary.quests}</Text>
+                <Text style={{ fontSize: rf(11), color: palette.textMuted }}>クエスト</Text>
+              </View>
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: rf(22), fontWeight: "bold", color: palette.accent }}>¥{weeklySummary.earned.toLocaleString()}</Text>
+                <Text style={{ fontSize: rf(11), color: palette.textMuted }}>支払い</Text>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* === Approve Tab === */}
         {tab === "approve" && (
           <View style={styles.section}>

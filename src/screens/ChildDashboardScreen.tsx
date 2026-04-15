@@ -52,7 +52,7 @@ export default function ChildDashboardScreen({
     { id: string; taskTitle: string; stamp: string | null; message: string | null }[]
   >([]);
   const [totalEarned, setTotalEarned] = useState(0);
-  const [weeklySummary, setWeeklySummary] = useState({ quests: 0, earned: 0 });
+  const [weeklySummary, setWeeklySummary] = useState({ quests: 0, earned: 0, streak: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [submitting, setSubmitting] = useState<string | null>(null);
@@ -172,7 +172,33 @@ export default function ChildDashboardScreen({
     const weeklyEarned = (weeklyLogs || []).reduce(
       (sum: number, log: any) => sum + (log.task?.reward_amount || 0), 0
     );
-    setWeeklySummary({ quests: weeklyQuests, earned: weeklyEarned });
+    // ストリーク計算（連続でクエストを完了した日数）
+    const { data: streakLogs } = await supabase
+      .from("otetsudai_task_logs")
+      .select("approved_at")
+      .eq("child_id", childId)
+      .eq("status", "approved")
+      .not("approved_at", "is", null)
+      .order("approved_at", { ascending: false })
+      .limit(90);
+    let streak = 0;
+    if (streakLogs && streakLogs.length > 0) {
+      const days = new Set(
+        streakLogs.map((l: any) => new Date(l.approved_at).toDateString())
+      );
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      // 今日か昨日から遡る
+      let check = new Date(today);
+      if (!days.has(check.toDateString())) {
+        check.setDate(check.getDate() - 1);
+      }
+      while (days.has(check.toDateString())) {
+        streak++;
+        check.setDate(check.getDate() - 1);
+      }
+    }
+    setWeeklySummary({ quests: weeklyQuests, earned: weeklyEarned, streak });
 
     // 機嫌判定：直近3日のクエスト活動
     const threeDaysAgo = new Date();
@@ -543,6 +569,14 @@ export default function ChildDashboardScreen({
                 </Text>
                 <AutoRubyText text="稼いだ" style={{ fontSize: rf(11), color: palette.textMuted }} rubySize={5} />
               </View>
+              {weeklySummary.streak > 0 && (
+                <View style={{ alignItems: "center" }}>
+                  <Text style={{ fontSize: rf(24), fontWeight: "bold", color: palette.accent }}>
+                    🔥{weeklySummary.streak}
+                  </Text>
+                  <AutoRubyText text="連続日" style={{ fontSize: rf(11), color: palette.textMuted }} rubySize={5} />
+                </View>
+              )}
             </View>
           </View>
         )}
