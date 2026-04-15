@@ -266,7 +266,7 @@ export default function ChildDashboardScreen({
     // キャラクターのクリア反応セリフ
     const clearMessages = [
       "やったね！クエストクリア！ ⚔️",
-      "すごい！おやの しょうにんを まってね！",
+      "すごい！親の 承認を まってね！",
       "かっこいい！つぎも がんばろう！",
       "ナイスクリア！きみは つよくなってる！",
     ];
@@ -707,8 +707,8 @@ export default function ChildDashboardScreen({
             ) : (
               <View style={styles.emptySpecialCard}>
                 <Text style={styles.emptySpecialIcon}>🌟</Text>
-                <Text style={[styles.emptyHint, { fontWeight: "bold", fontSize: 13 }]}>いまは おやすみちゅう</Text>
-                <Text style={styles.emptyHint}>つぎの とくべつクエストを おたのしみに！</Text>
+                <Text style={[styles.emptyHint, { fontWeight: "bold", fontSize: 13 }]}>今はお休み中</Text>
+                <Text style={styles.emptyHint}>次の 特別クエストを お楽しみに！</Text>
               </View>
             )}
 

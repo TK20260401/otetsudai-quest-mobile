@@ -287,7 +287,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         {/* Step: Family selection */}
         {step === "family" && (
           <>
-            <Text style={styles.label}>おうちをえらんでね</Text>
+            <Text style={styles.label}>おうちを選んでね</Text>
             {families.map((f) => (
               <TouchableOpacity
                 key={f.id}
