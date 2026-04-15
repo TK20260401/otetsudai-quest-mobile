@@ -52,6 +52,7 @@ export default function ChildDashboardScreen({
     { id: string; taskTitle: string; stamp: string | null; message: string | null }[]
   >([]);
   const [totalEarned, setTotalEarned] = useState(0);
+  const [weeklySummary, setWeeklySummary] = useState({ quests: 0, earned: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [submitting, setSubmitting] = useState<string | null>(null);
@@ -156,6 +157,22 @@ export default function ChildDashboardScreen({
       setPrevLevelRef(newLevel);
       setTotalEarned(newTotal);
     }
+
+    // 週次サマリー：今週のクエスト完了数・稼いだ金額
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    const { data: weeklyLogs } = await supabase
+      .from("otetsudai_task_logs")
+      .select("*, task:otetsudai_tasks(reward_amount)")
+      .eq("child_id", childId)
+      .eq("status", "approved")
+      .gte("approved_at", weekStart.toISOString());
+    const weeklyQuests = weeklyLogs?.length || 0;
+    const weeklyEarned = (weeklyLogs || []).reduce(
+      (sum: number, log: any) => sum + (log.task?.reward_amount || 0), 0
+    );
+    setWeeklySummary({ quests: weeklyQuests, earned: weeklyEarned });
 
     // 機嫌判定：直近3日のクエスト活動
     const threeDaysAgo = new Date();
@@ -484,6 +501,27 @@ export default function ChildDashboardScreen({
                 </View>
               );
             })}
+          </View>
+        )}
+
+        {/* 週次サマリー */}
+        {weeklySummary.quests > 0 && (
+          <View style={[styles.weeklyCard, { backgroundColor: palette.surface, borderColor: palette.border }]}>
+            <Text style={[styles.sectionTitle, { marginBottom: 8 }]}>📊 こんしゅうの きろく</Text>
+            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: rf(24), fontWeight: "bold", color: palette.accent }}>
+                  {weeklySummary.quests}
+                </Text>
+                <AutoRubyText text="クエスト" style={{ fontSize: rf(11), color: palette.textMuted }} rubySize={5} />
+              </View>
+              <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: rf(24), fontWeight: "bold", color: palette.accent }}>
+                  ¥{weeklySummary.earned.toLocaleString()}
+                </Text>
+                <AutoRubyText text="稼いだ" style={{ fontSize: rf(11), color: palette.textMuted }} rubySize={5} />
+              </View>
+            </View>
           </View>
         )}
 
@@ -1116,6 +1154,14 @@ function createStyles(p: Palette) {
     marginTop: 1,
   },
 
+  // Weekly summary
+  weeklyCard: {
+    margin: 12,
+    marginBottom: 0,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
   // Badges
   // Stamp notifications
   stampCard: {
