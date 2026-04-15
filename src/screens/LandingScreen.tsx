@@ -26,6 +26,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
   const styles = useMemo(() => createStyles(palette), [palette]);
   const isTablet = width >= 600;
   const isSmallScreen = height < 700;
+  const isLandscape = width > height;
 
   return (
     <ScrollView
@@ -74,12 +75,16 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>💰</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
-            <View>
-              <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["稼", "かせ"], "いだ"]} rubySize={4} />
-              <Text style={[styles.featureDesc, { color: palette.walletSpendText }]}>コインで</Text>
-              <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["好", "す"], "きなもの"]} rubySize={4} />
-              <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={["を", ["買", "か"], "おう！"]} rubySize={4} />
-            </View>
+            {isLandscape ? (
+              <AutoRubyText text="稼いだコインで好きなものを買おう！" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={4} />
+            ) : (
+              <View>
+                <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["稼", "かせ"], "いだ"]} rubySize={4} />
+                <Text style={[styles.featureDesc, { color: palette.walletSpendText }]}>コインで</Text>
+                <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["好", "す"], "きなもの"]} rubySize={4} />
+                <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={["を", ["買", "か"], "おう！"]} rubySize={4} />
+              </View>
+            )}
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletSaveBg, borderColor: palette.walletSaveBorder }]}>
@@ -87,10 +92,15 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>🐷</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["貯", "た"], "める"]} rubySize={7} />
-            <View>
-              <RubyText style={[styles.featureDesc, { color: palette.walletSaveText }]} parts={[["貯金", "ちょきん"], "して"]} rubySize={4} />
-              <RubyText style={[styles.featureDesc, { color: palette.walletSaveText }]} parts={[["大", "おお"], "きな", ["夢", "ゆめ"], "を", ["叶", "かな"], "えよう！"]} rubySize={4} />
-            </View>
+            {isLandscape ? (
+              <AutoRubyText text="貯金して大きな夢を叶えよう！" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
+            ) : (
+              <View>
+                <RubyText style={[styles.featureDesc, { color: palette.walletSaveText }]} parts={[["貯金", "ちょきん"], "して"]} rubySize={4} />
+                <RubyText style={[styles.featureDesc, { color: palette.walletSaveText }]} parts={[["大", "おお"], "きな", ["夢", "ゆめ"], "を"]} rubySize={4} />
+                <RubyText style={[styles.featureDesc, { color: palette.walletSaveText }]} parts={[["叶", "かな"], "えよう！"]} rubySize={4} />
+              </View>
+            )}
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletInvestBg, borderColor: palette.walletInvestBorder }]}>
@@ -98,10 +108,14 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>🌱</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletInvestText }]} parts={[["増", "ふ"], "やす"]} rubySize={7} />
-            <View>
-              <RubyText style={[styles.featureDesc, { color: palette.walletInvestText }]} parts={["コインを", ["育", "そだ"], "てて"]} rubySize={4} />
-              <RubyText style={[styles.featureDesc, { color: palette.walletInvestText }]} parts={["もっと", ["増", "ふ"], "やそう！"]} rubySize={4} />
-            </View>
+            {isLandscape ? (
+              <AutoRubyText text="コインを育てて もっと増やそう！" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={4} />
+            ) : (
+              <View>
+                <RubyText style={[styles.featureDesc, { color: palette.walletInvestText }]} parts={["コインを", ["育", "そだ"], "てて"]} rubySize={4} />
+                <RubyText style={[styles.featureDesc, { color: palette.walletInvestText }]} parts={["もっと", ["増", "ふ"], "やそう！"]} rubySize={4} />
+              </View>
+            )}
           </View>
         </View>
       </View>
