@@ -661,9 +661,11 @@ export default function ChildDashboardScreen({
                           {"☆".repeat(3 - (task.special_difficulty || 1))}
                         </Text>
                         {task.end_date && (
-                          <Text style={styles.specialCountdown}>
-                            {getCountdownText(task.end_date)}
-                          </Text>
+                          <AutoRubyText
+                            text={getCountdownText(task.end_date)}
+                            style={styles.specialCountdown}
+                            rubySize={6}
+                          />
                         )}
                       </View>
                       <View style={styles.questInfo}>
