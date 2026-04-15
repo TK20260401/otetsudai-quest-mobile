@@ -20,7 +20,7 @@ type Props = {
 
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
-  const rubyHeight = rubySize;
+  const rubyHeight = Math.max(rubySize - 2, 4);
   return (
     <View style={{ paddingTop: rubyHeight, alignItems: "center" }}>
       <Text
@@ -57,7 +57,7 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
-  const rubyHeight = rubySize;
+  const rubyHeight = Math.max(rubySize - 2, 4);
   return (
     <View style={baseStyles.textRow}>
       {parts.map((part, i) =>
