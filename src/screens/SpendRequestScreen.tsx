@@ -108,7 +108,7 @@ export default function SpendRequestScreen({
             />
             <Text style={styles.confirmAmount}>
               {parsedAmount.toLocaleString()}
-              <Text style={styles.confirmYen}>えん</Text>
+              <Text style={styles.confirmYen}>円</Text>
             </Text>
 
             <AutoRubyText text="なにに" style={styles.confirmLabel} rubySize={7} />
@@ -120,7 +120,7 @@ export default function SpendRequestScreen({
 
             <AutoRubyText text="のこり" style={styles.confirmLabel} rubySize={7} />
             <Text style={styles.confirmRemaining}>
-              {remaining.toLocaleString()}えん
+              {remaining.toLocaleString()}円
             </Text>
           </View>
 
@@ -185,7 +185,7 @@ export default function SpendRequestScreen({
           {/* Balance display */}
           <View style={styles.balanceCard}>
             <AutoRubyText
-              text={`つかえる おかね: ${spendingBalance.toLocaleString()}えん`}
+              text={`使えるお金: ${spendingBalance.toLocaleString()}円`}
               style={styles.balanceText}
               rubySize={7}
             />
@@ -196,7 +196,7 @@ export default function SpendRequestScreen({
             <Text style={styles.amountValue}>
               {amount.length > 0 ? parseInt(amount, 10).toLocaleString() : "0"}
             </Text>
-            <Text style={styles.amountYen}>えん</Text>
+            <Text style={styles.amountYen}>円</Text>
           </View>
 
           {overBalance && (

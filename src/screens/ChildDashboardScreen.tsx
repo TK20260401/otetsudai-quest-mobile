@@ -370,7 +370,7 @@ export default function ChildDashboardScreen({
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const end = new Date(endDate);
     const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    if (diff <= 0) return "きょうまで！";
+    if (diff <= 0) return "今日まで！";
     if (diff === 1) return "あと1日！";
     return `あと${diff}日`;
   }
@@ -1243,9 +1243,9 @@ function createStyles(p: Palette) {
     color: p.red,
     backgroundColor: p.redLight,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingTop: 6,
+    paddingBottom: 2,
     borderRadius: 6,
-    overflow: "hidden" as const,
   },
   specialQuestTitle: {
     fontSize: 16,

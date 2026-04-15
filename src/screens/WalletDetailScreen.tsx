@@ -238,7 +238,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletSpendBg,
               },
             ]}
-            accessibilityLabel={`つかう ${spending}えん`}
+            accessibilityLabel={`つかう ${spending}円`}
           >
             <Text style={styles.pocketIcon}>🛒</Text>
             <RubyText
@@ -262,7 +262,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletSaveBg,
               },
             ]}
-            accessibilityLabel={`ためる ${saving}えん`}
+            accessibilityLabel={`ためる ${saving}円`}
           >
             <Text style={styles.pocketIcon}>🐷</Text>
             <RubyText
@@ -286,7 +286,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletInvestBg,
               },
             ]}
-            accessibilityLabel={`ふやす ${invest}えん`}
+            accessibilityLabel={`ふやす ${invest}円`}
           >
             <Text style={styles.pocketIcon}>📈</Text>
             <RubyText
@@ -426,7 +426,7 @@ export default function WalletDetailScreen({
                 </View>
                 <View style={styles.goalAmountRow}>
                   <Text style={styles.goalAmountText}>
-                    {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} えん
+                    {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} 円
                   </Text>
                   <Text style={styles.goalPctText}>{pct}%</Text>
                 </View>
@@ -441,7 +441,7 @@ export default function WalletDetailScreen({
                 ✅ {goal.title}
               </Text>
               <Text style={styles.goalAmountText}>
-                {goal.target_amount.toLocaleString()} えん たっせい！
+                {goal.target_amount.toLocaleString()} 円 達成！
               </Text>
             </View>
           ))}
