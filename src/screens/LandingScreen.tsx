@@ -76,7 +76,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>💰</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
-            <AutoRubyText text="稼いだコインで 好きなものを 買おう！" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={5} />
+            <AutoRubyText text="稼いだコインで 好きなものを 買おう！" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={4} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletSaveBg, borderColor: palette.walletSaveBorder }]}>
@@ -84,7 +84,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>🐷</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["貯", "た"], "める"]} rubySize={7} />
-            <AutoRubyText text="貯金して 大きな夢を叶えよう！" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={5} />
+            <AutoRubyText text="貯金して 大きな夢を叶えよう！" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletInvestBg, borderColor: palette.walletInvestBorder }]}>
@@ -92,7 +92,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <Text style={styles.featureEmoji}>🌱</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletInvestText }]} parts={[["増", "ふ"], "やす"]} rubySize={7} />
-            <AutoRubyText text="コインを育てて もっと増やそう！" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={5} />
+            <AutoRubyText text="コインを育てて もっと増やそう！" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={4} />
           </View>
         </View>
       </View>
@@ -220,6 +220,7 @@ function createStyles(p: Palette) {
     featureDesc: {
       fontSize: 9,
       lineHeight: 16,
+      textAlign: "left" as const,
     },
     legalRow: {
       flexDirection: "row",
