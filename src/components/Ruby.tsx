@@ -20,16 +20,16 @@ type Props = {
 
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
-  const rubySpace = rubySize + 2;
+  const rubyHeight = rubySize + 1;
   return (
-    <View style={{ paddingTop: rubySpace, alignItems: "center" }}>
+    <View style={{ paddingTop: rubyHeight, alignItems: "center" }}>
       <Text
         style={{
           position: "absolute",
           top: 0,
           fontSize: rubySize,
           color: "#64748b",
-          lineHeight: rubySize + 2,
+          lineHeight: rubyHeight,
           textAlign: "center",
           width: "100%",
         }}
@@ -57,23 +57,23 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
-  const rubySpace = rubySize + 2;
+  const rubyHeight = rubySize + 1;
   return (
     <View style={baseStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <View key={i} style={{ paddingTop: rubySpace }}>
+          <View key={i} style={{ paddingTop: rubyHeight }}>
             <Text style={style}>{part}</Text>
           </View>
         ) : (
-          <View key={i} style={{ paddingTop: rubySpace, alignItems: "center" }}>
+          <View key={i} style={{ paddingTop: rubyHeight, alignItems: "center" }}>
             <Text
               style={{
                 position: "absolute",
                 top: 0,
                 fontSize: rubySize,
                 color: "#64748b",
-                lineHeight: rubySize + 2,
+                lineHeight: rubyHeight,
                 textAlign: "center",
                 width: "100%",
               }}
