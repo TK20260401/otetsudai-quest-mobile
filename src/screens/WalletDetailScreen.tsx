@@ -134,11 +134,11 @@ export default function WalletDetailScreen({
   const total = spending + saving + invest;
 
   const filterTabs: { label: string; value: string }[] = [
-    { label: "ぜんぶ", value: "all" },
-    { label: "💰", value: "earn" },
-    { label: "🛒", value: "spend" },
-    { label: "🐷", value: "save" },
-    { label: "📈", value: "invest" },
+    { label: "全部", value: "all" },
+    { label: "💰 稼ぐ", value: "earn" },
+    { label: "🛒 使う", value: "spend" },
+    { label: "🐷 貯める", value: "save" },
+    { label: "📈 増やす", value: "invest" },
   ];
 
   function txTypeEmoji(type: string): string {
@@ -468,7 +468,7 @@ export default function WalletDetailScreen({
         {/* ── 6. Transaction History with Filter ── */}
         <View style={styles.section}>
           <AutoRubyText
-            text="📋 りれき"
+            text="📋 履歴"
             style={styles.sectionTitle}
             rubySize={7}
           />
