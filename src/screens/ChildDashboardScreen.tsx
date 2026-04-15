@@ -578,7 +578,7 @@ export default function ChildDashboardScreen({
 
         {/* そうび（バッジ → 装備として表示） */}
         <View style={styles.badgeCard}>
-          <RubyText style={styles.sectionTitle} parts={["⚔️ ", ["装備", "そうび"]]} />
+          <RubyText style={styles.sectionTitle} parts={["⚔️ ", ["装備", "そうび"], ` (${badges.length}/5)`]} />
           <View style={styles.badgeRow}>
             {badges.map((b) => {
               const def = BADGE_DEFINITIONS[b.badge_type];

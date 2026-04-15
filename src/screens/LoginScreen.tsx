@@ -176,7 +176,9 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   if (loading) {
     return (
       <View style={styles.center}>
+        <Text style={{ fontSize: 48, marginBottom: 12 }}>🔑</Text>
         <ActivityIndicator size="large" color={palette.primary} />
+        <Text style={{ color: palette.textMuted, marginTop: 12, fontSize: 14 }}>よみこみちゅう...</Text>
       </View>
     );
   }

@@ -121,7 +121,9 @@ export default function WalletDetailScreen({
   if (loading) {
     return (
       <View style={styles.center}>
+        <Text style={{ fontSize: 48, marginBottom: 12 }}>💰</Text>
         <ActivityIndicator size="large" color={palette.primary} />
+        <Text style={{ color: palette.textMuted, marginTop: 12, fontSize: 14 }}>おさいふを ひらいてるよ...</Text>
       </View>
     );
   }
