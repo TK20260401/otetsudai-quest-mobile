@@ -450,7 +450,7 @@ export default function ChildDashboardScreen({
               />
             </View>
             {levelInfo.next ? (
-              <AutoRubyText text={`次のレベルまで あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={6} />
+              <Text style={styles.levelNext}>{`次のレベルまで\nあと ${levelInfo.remaining.toLocaleString()}円`}</Text>
             ) : (
               <AutoRubyText text="最高レベル 達成！ 🎊" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} />
             )}
