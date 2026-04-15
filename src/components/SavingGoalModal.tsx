@@ -80,33 +80,33 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
               rubySize={8}
             />
 
-            <Text style={styles.inputLabel}>なにを かいたい？</Text>
+            <Text style={styles.inputLabel}>何を 買いたい？</Text>
             <TextInput
               style={styles.titleInput}
               value={title}
               onChangeText={setTitle}
-              placeholder="なにを かいたい？（れい：ゲーム、じてんしゃ）"
+              placeholder="何を 買いたい？（例：ゲーム、自転車）"
               placeholderTextColor={palette.textMuted}
               maxLength={50}
-              accessibilityLabel="ちょきん もくひょうの なまえ"
+              accessibilityLabel="貯金 目標の 名前"
               onFocus={() => {
                 setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
               }}
             />
 
-            <Text style={styles.inputLabel}>いくら ためる？</Text>
+            <Text style={styles.inputLabel}>いくら 貯める？</Text>
             <View style={styles.amountRow}>
               <TextInput
                 style={styles.amountInput}
                 value={targetAmount}
                 onChangeText={setTargetAmount}
                 keyboardType="number-pad"
-                placeholder="きんがく"
+                placeholder="金額"
                 placeholderTextColor={palette.textMuted}
                 textAlign="center"
-                accessibilityLabel="もくひょう きんがく"
+                accessibilityLabel="目標 金額"
               />
-              <Text style={styles.yen}>えん</Text>
+              <Text style={styles.yen}>円</Text>
             </View>
 
             <View style={styles.buttonRow}>
