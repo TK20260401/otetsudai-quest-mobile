@@ -493,23 +493,26 @@ export default function ParentDashboardScreen({
   const pendingCount = pendingLogs.length + pendingSpends.length;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} accessibilityLabel="おやダッシュボード">
       {/* Header */}
-      <View style={styles.header}>
+      <View style={styles.header} accessibilityRole="header">
         <View style={{ flexDirection: "row", alignItems: "flex-end", flex: 1 }}>
           <Text style={{ fontSize: 18 }}>👨‍👩‍👧‍👦 </Text>
           <RubyText style={styles.headerTitle} parts={[["親", "おや"]]} rubySize={7} />
         </View>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
           <Text style={styles.logoutText}>← もどる</Text>
         </TouchableOpacity>
       </View>
 
       {/* Tabs */}
-      <View style={styles.tabRow}>
+      <View style={styles.tabRow} accessibilityRole="tabbar">
         <TouchableOpacity
           style={[styles.tabButton, tab === "approve" && styles.tabActive]}
           onPress={() => setTab("approve")}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: tab === "approve" }}
+          accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
           <AutoRubyText
             text={`承認${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
@@ -520,6 +523,9 @@ export default function ParentDashboardScreen({
         <TouchableOpacity
           style={[styles.tabButton, tab === "tasks" && styles.tabActive]}
           onPress={() => setTab("tasks")}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: tab === "tasks" }}
+          accessibilityLabel="クエストタブ"
         >
           <Text
             style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}
@@ -530,6 +536,9 @@ export default function ParentDashboardScreen({
         <TouchableOpacity
           style={[styles.tabButton, tab === "children" && styles.tabActive]}
           onPress={() => setTab("children")}
+          accessibilityRole="tab"
+          accessibilityState={{ selected: tab === "children" }}
+          accessibilityLabel="こどもタブ"
         >
           <Text
             style={[
@@ -1374,10 +1383,12 @@ function createStyles(p: Palette) {
   },
   headerTitle: { fontSize: 18, fontWeight: "bold", color: p.primaryDark, flex: 1 },
   logoutButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: p.surfaceMuted,
+    minHeight: 44,
+    justifyContent: "center" as const,
   },
   logoutText: { fontSize: 14, color: p.textMuted },
   scroll: { flex: 1 },
@@ -1524,6 +1535,8 @@ function createStyles(p: Palette) {
     padding: 14,
     alignItems: "center",
     marginBottom: 12,
+    minHeight: 48,
+    justifyContent: "center" as const,
   },
   addButtonText: { color: p.white, fontWeight: "bold", fontSize: 16 },
   taskCard: {
@@ -1538,7 +1551,7 @@ function createStyles(p: Palette) {
   taskTitle: { fontSize: 15, fontWeight: "600", color: p.textStrong },
   taskSub: { fontSize: 13, color: p.textMuted, marginTop: 2 },
   taskActions: { flexDirection: "row", gap: 12, justifyContent: "flex-end" },
-  taskActionBtn: { padding: 6 },
+  taskActionBtn: { padding: 10, minWidth: 44, minHeight: 44, alignItems: "center" as const, justifyContent: "center" as const },
 
   // Children cards
   childCard: {

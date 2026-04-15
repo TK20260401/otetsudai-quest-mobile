@@ -26,6 +26,9 @@ import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
 import { getChildStampById } from "../lib/child-stamps";
 import { useAppAlert } from "../components/AppAlert";
+import AnimatedButton from "../components/AnimatedButton";
+import BadgeUnlockModal from "../components/BadgeUnlockModal";
+import * as Haptics from "expo-haptics";
 
 export default function ChildDashboardScreen({
   route,
@@ -72,6 +75,8 @@ export default function ChildDashboardScreen({
   const [familySettings, setFamilySettings] = useState<FamilySettings | null>(null);
   // つかうリクエスト状況
   const [recentSpendRequests, setRecentSpendRequests] = useState<SpendRequest[]>([]);
+  // バッジ獲得演出
+  const [unlockedBadge, setUnlockedBadge] = useState<{ emoji: string; label: string; description: string } | null>(null);
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -240,6 +245,9 @@ export default function ChildDashboardScreen({
     });
     setSubmitting(null);
 
+    // 成功の触覚フィードバック
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
     // キャラクターのクリア反応セリフ
     const clearMessages = [
       "やったね！クエストクリア！ ⚔️",
@@ -251,7 +259,13 @@ export default function ChildDashboardScreen({
     setQuestClearMsg(msg);
     setTimeout(() => setQuestClearMsg(null), 3000);
 
-    await checkAndAwardBadges(childId);
+    const newBadges = await checkAndAwardBadges(childId);
+    if (newBadges.length > 0) {
+      const def = BADGE_DEFINITIONS[newBadges[0]];
+      if (def) {
+        setUnlockedBadge({ emoji: def.emoji, label: def.label, description: def.description });
+      }
+    }
     await loadData();
 
     // レベルアップ検出（承認前なので実際のレベルアップはloadData後に確認）
@@ -357,13 +371,13 @@ export default function ChildDashboardScreen({
   const levelInfo = getLevelProgress(totalEarned);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle} numberOfLines={1}>
+      <View style={styles.header} accessibilityRole="header">
+        <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
           🧒 {childName}
         </Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
           <Text style={styles.logoutText}>← もどる</Text>
         </TouchableOpacity>
       </View>
@@ -375,12 +389,16 @@ export default function ChildDashboardScreen({
         }
       >
         {/* キャラクター育成 */}
-        <View style={[
-          styles.levelCard,
-          mood === "active" ? styles.levelCardActive :
-          mood === "lonely" ? styles.levelCardLonely :
-          styles.levelCardNormal,
-        ]}>
+        <View
+          style={[
+            styles.levelCard,
+            mood === "active" ? styles.levelCardActive :
+            mood === "lonely" ? styles.levelCardLonely :
+            styles.levelCardNormal,
+          ]}
+          accessibilityLabel={`レベル${levelInfo.current.level} ${levelInfo.next ? `つぎのレベルまで あと${levelInfo.remaining}えん` : "さいこうレベル たっせい"}`}
+          accessibilityRole="summary"
+        >
           <View style={styles.characterColumn}>
             <CharacterSvg level={levelInfo.current.level} mood={mood} size={100} />
             <RubyStr text={levelInfo.current.appearance} style={styles.appearanceText} rubySize={6} />
@@ -562,10 +580,13 @@ export default function ChildDashboardScreen({
         </View>
 
         {/* Tabs */}
-        <View style={styles.tabRow}>
+        <View style={styles.tabRow} accessibilityRole="tabbar">
           <TouchableOpacity
             style={[styles.tabButton, tab === "quests" && styles.tabActive]}
             onPress={() => setTab("quests")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: tab === "quests" }}
+            accessibilityLabel="クエストタブ"
           >
             <Text
               style={[
@@ -579,6 +600,9 @@ export default function ChildDashboardScreen({
           <TouchableOpacity
             style={[styles.tabButton, tab === "history" && styles.tabActive]}
             onPress={() => setTab("history")}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: tab === "history" }}
+            accessibilityLabel="りれきタブ"
           >
             <RubyText
               style={tab === "history" ? styles.tabTextActive : styles.tabText}
@@ -632,15 +656,16 @@ export default function ChildDashboardScreen({
                         </View>
                       </View>
                       <View style={styles.questActions}>
-                        <TouchableOpacity
+                        <AnimatedButton
                           style={styles.specialClearButton}
                           onPress={() => handleComplete(task)}
                           disabled={submitting === task.id}
+                          accessibilityLabel={`とくべつクエスト${task.title}をクリア`}
                         >
                           <Text style={styles.clearButtonText}>
                             {submitting === task.id ? "..." : "★ クリア！"}
                           </Text>
-                        </TouchableOpacity>
+                        </AnimatedButton>
                       </View>
                     </View>
                   ))}
@@ -684,22 +709,24 @@ export default function ChildDashboardScreen({
                         </View>
                       </View>
                       <View style={styles.questActions}>
-                        <TouchableOpacity
+                        <AnimatedButton
                           style={styles.clearButton}
                           onPress={() => handleComplete(task)}
                           disabled={submitting === task.id}
+                          accessibilityLabel={`${task.title}をクリア`}
                         >
                           <Text style={styles.clearButtonText}>
                             {submitting === task.id ? "..." : "クリア！"}
                           </Text>
-                        </TouchableOpacity>
+                        </AnimatedButton>
                         {task.proposal_status !== "pending" && (
-                          <TouchableOpacity
+                          <AnimatedButton
                             style={styles.priceUpButton}
                             onPress={() => setPriceRequestTask(task)}
+                            accessibilityLabel={`${task.title}のねあげリクエスト`}
                           >
                             <Text style={styles.priceUpText}>💰↑</Text>
-                          </TouchableOpacity>
+                          </AnimatedButton>
                         )}
                       </View>
                     </View>
@@ -787,9 +814,11 @@ export default function ChildDashboardScreen({
         )}
 
         {/* 開発用リセット */}
-        <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-          <Text style={styles.resetText}>🔄 データリセット（テスト用）</Text>
-        </TouchableOpacity>
+        {__DEV__ && (
+          <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
+            <Text style={styles.resetText}>🔄 データリセット（テスト用）</Text>
+          </TouchableOpacity>
+        )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -824,6 +853,17 @@ export default function ChildDashboardScreen({
             setPriceRequestTask(null);
             loadData();
           }}
+        />
+      )}
+
+      {/* バッジ獲得演出モーダル */}
+      {unlockedBadge && (
+        <BadgeUnlockModal
+          visible={!!unlockedBadge}
+          emoji={unlockedBadge.emoji}
+          label={unlockedBadge.label}
+          description={unlockedBadge.description}
+          onClose={() => setUnlockedBadge(null)}
         />
       )}
 
@@ -869,10 +909,12 @@ function createStyles(p: Palette) {
     flex: 1,
   },
   logoutButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
     borderRadius: 8,
     backgroundColor: p.surfaceMuted,
+    minHeight: 44,
+    justifyContent: "center" as const,
   },
   logoutText: { fontSize: 14, color: p.textMuted },
   scroll: { flex: 1 },
@@ -1163,9 +1205,11 @@ function createStyles(p: Palette) {
   },
   specialClearButton: {
     backgroundColor: p.gold,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
+    minHeight: 48,
+    justifyContent: "center" as const,
   },
   questCard: {
     flexDirection: "row",
@@ -1207,20 +1251,24 @@ function createStyles(p: Palette) {
   },
   clearButton: {
     backgroundColor: p.accent,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 12,
+    minHeight: 48,
+    justifyContent: "center" as const,
   },
-  clearButtonText: { color: p.white, fontWeight: "bold" as const, fontSize: 14 },
+  clearButtonText: { color: p.white, fontWeight: "bold" as const, fontSize: 15 },
   priceUpButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
     backgroundColor: p.primaryLight,
     borderWidth: 1,
     borderColor: p.primary,
+    minHeight: 40,
+    justifyContent: "center" as const,
   },
-  priceUpText: { fontSize: 12 },
+  priceUpText: { fontSize: 14 },
 
   // History
   historyItem: {

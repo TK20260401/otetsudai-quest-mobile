@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
+import AnimatedButton from "../components/AnimatedButton";
 
 type Props = {
   onSignup?: () => void;
@@ -37,7 +38,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
       showsVerticalScrollIndicator={false}
     >
       <View style={[styles.hero, isTablet && { maxWidth: 480, alignSelf: "center", width: "100%" }]}>
-        <Text style={[styles.icon, isSmallScreen && { fontSize: 48, marginBottom: 4 }]}>⚔️</Text>
+        <Text style={[styles.icon, isSmallScreen && { fontSize: 48, marginBottom: 4 }]} accessibilityLabel="おこづかいクエスト">⚔️</Text>
         <Text
           style={[styles.title, isTablet && { fontSize: 38 }, isSmallScreen && { fontSize: 26 }]}
           adjustsFontSizeToFit
@@ -59,16 +60,16 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         />
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
-          <TouchableOpacity
+          <AnimatedButton
             style={[styles.button, styles.buttonPrimary]}
             onPress={onLogin}
-            activeOpacity={0.8}
+            accessibilityLabel="ログイン"
           >
             <Text style={styles.buttonIconText}>🔑</Text>
             <Text style={[styles.buttonPrimaryText, isTablet && { fontSize: 20 }]} adjustsFontSizeToFit numberOfLines={1}>
               ログイン
             </Text>
-          </TouchableOpacity>
+          </AnimatedButton>
         </View>
 
         <View style={styles.features}>
@@ -105,11 +106,11 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
       </View>
 
       <View style={styles.legalRow}>
-        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/terms")}>
+        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/terms")} accessibilityRole="link" accessibilityLabel="りようきやく">
           <RubyText style={styles.legalLink} parts={[["利用規約", "りようきやく"]]} rubySize={6} />
         </TouchableOpacity>
-        <Text style={styles.legalSep}>|</Text>
-        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/privacy")}>
+        <Text style={styles.legalSep} accessibilityElementsHidden>|</Text>
+        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/privacy")} accessibilityRole="link" accessibilityLabel="プライバシーポリシー">
           <AutoRubyText text="プライバシーポリシー" style={styles.legalLink} rubySize={6} />
         </TouchableOpacity>
       </View>
