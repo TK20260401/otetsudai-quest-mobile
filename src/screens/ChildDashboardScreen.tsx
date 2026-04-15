@@ -496,8 +496,13 @@ export default function ChildDashboardScreen({
             accessibilityLabel="おさいふの くわしい じょうほう"
             accessibilityRole="button"
           >
-            <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
-            <Text style={styles.walletTotal} adjustsFontSizeToFit numberOfLines={1}>
+            <RubyText style={styles.walletTitle} parts={["💰 ", ["財布", "さいふ"]]} />
+            <Text
+              style={styles.walletTotal}
+              adjustsFontSizeToFit
+              numberOfLines={1}
+              accessibilityLabel={`ごうけい ${((wallet.spending_balance ?? 0) + (wallet.saving_balance ?? 0) + (wallet.invest_balance ?? 0)).toLocaleString()}えん`}
+            >
               {(
                 (wallet.spending_balance ?? 0) +
                 (wallet.saving_balance ?? 0) +
