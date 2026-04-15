@@ -29,6 +29,7 @@ import { useAppAlert } from "../components/AppAlert";
 import AnimatedButton from "../components/AnimatedButton";
 import BadgeUnlockModal from "../components/BadgeUnlockModal";
 import * as Haptics from "expo-haptics";
+import { useReducedMotion } from "../lib/useReducedMotion";
 
 export default function ChildDashboardScreen({
   route,
@@ -41,6 +42,7 @@ export default function ChildDashboardScreen({
   const { alert } = useAppAlert();
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
+  const reducedMotion = useReducedMotion();
   const [childName, setChildName] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -232,6 +234,17 @@ export default function ChildDashboardScreen({
     setRefreshing(false);
   }
 
+  function confirmAndComplete(task: Task) {
+    alert(
+      `🎯 『${task.title}』`,
+      "クリアする？",
+      [
+        { text: "やめる", style: "cancel" },
+        { text: "クリア！", onPress: () => handleComplete(task) },
+      ]
+    );
+  }
+
   async function handleComplete(task: Task) {
     setSubmitting(task.id);
 
@@ -246,7 +259,9 @@ export default function ChildDashboardScreen({
     setSubmitting(null);
 
     // 成功の触覚フィードバック
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    if (!reducedMotion) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
 
     // キャラクターのクリア反応セリフ
     const clearMessages = [
@@ -658,7 +673,7 @@ export default function ChildDashboardScreen({
                       <View style={styles.questActions}>
                         <AnimatedButton
                           style={styles.specialClearButton}
-                          onPress={() => handleComplete(task)}
+                          onPress={() => confirmAndComplete(task)}
                           disabled={submitting === task.id}
                           accessibilityLabel={`とくべつクエスト${task.title}をクリア`}
                         >
@@ -711,7 +726,7 @@ export default function ChildDashboardScreen({
                       <View style={styles.questActions}>
                         <AnimatedButton
                           style={styles.clearButton}
-                          onPress={() => handleComplete(task)}
+                          onPress={() => confirmAndComplete(task)}
                           disabled={submitting === task.id}
                           accessibilityLabel={`${task.title}をクリア`}
                         >

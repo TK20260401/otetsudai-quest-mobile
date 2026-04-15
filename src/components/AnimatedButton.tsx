@@ -7,6 +7,7 @@ import {
   ViewStyle,
 } from "react-native";
 import * as Haptics from "expo-haptics";
+import { useReducedMotion } from "../lib/useReducedMotion";
 
 type Props = {
   onPress: () => void;
@@ -19,16 +20,17 @@ type Props = {
   children: React.ReactNode;
 };
 
-/**
- * アニメーション付きボタン
- * タップ時に 0.95 倍にスケールし、離すとバネで戻る。
- */
 const IMPACT_STYLE = {
   light: Haptics.ImpactFeedbackStyle.Light,
   medium: Haptics.ImpactFeedbackStyle.Medium,
   heavy: Haptics.ImpactFeedbackStyle.Heavy,
 } as const;
 
+/**
+ * アニメーション付きボタン
+ * タップ時に 0.95 倍にスケールし、離すとバネで戻る。
+ * OS の「視差効果を減らす」が ON ならアニメーション・haptics を抑制。
+ */
 export default function AnimatedButton({
   onPress,
   style,
@@ -40,27 +42,32 @@ export default function AnimatedButton({
   children,
 }: Props) {
   const scale = useRef(new Animated.Value(1)).current;
+  const reducedMotion = useReducedMotion();
 
   const handlePressIn = useCallback(() => {
-    Animated.spring(scale, {
-      toValue: 0.95,
-      useNativeDriver: true,
-      speed: 50,
-      bounciness: 4,
-    }).start();
-    if (haptic !== "none" && Platform.OS !== "web") {
+    if (!reducedMotion) {
+      Animated.spring(scale, {
+        toValue: 0.95,
+        useNativeDriver: true,
+        speed: 50,
+        bounciness: 4,
+      }).start();
+    }
+    if (haptic !== "none" && !reducedMotion && Platform.OS !== "web") {
       Haptics.impactAsync(IMPACT_STYLE[haptic]);
     }
-  }, [scale, haptic]);
+  }, [scale, haptic, reducedMotion]);
 
   const handlePressOut = useCallback(() => {
-    Animated.spring(scale, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 6,
-    }).start();
-  }, [scale]);
+    if (!reducedMotion) {
+      Animated.spring(scale, {
+        toValue: 1,
+        useNativeDriver: true,
+        speed: 20,
+        bounciness: 6,
+      }).start();
+    }
+  }, [scale, reducedMotion]);
 
   return (
     <TouchableWithoutFeedback
@@ -75,7 +82,7 @@ export default function AnimatedButton({
       <Animated.View
         style={[
           style,
-          { transform: [{ scale }] },
+          !reducedMotion && { transform: [{ scale }] },
           disabled && { opacity: 0.5 },
         ]}
       >

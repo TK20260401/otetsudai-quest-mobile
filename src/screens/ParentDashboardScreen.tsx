@@ -514,11 +514,18 @@ export default function ParentDashboardScreen({
           accessibilityState={{ selected: tab === "approve" }}
           accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
-          <AutoRubyText
-            text={`承認${pendingCount > 0 ? ` (${pendingCount})` : ""}`}
-            style={tab === "approve" ? styles.tabTextActive : styles.tabText}
-            rubySize={6}
-          />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <AutoRubyText
+              text="承認"
+              style={tab === "approve" ? styles.tabTextActive : styles.tabText}
+              rubySize={6}
+            />
+            {pendingCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{pendingCount}</Text>
+              </View>
+            )}
+          </View>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, tab === "tasks" && styles.tabActive]}
@@ -1412,6 +1419,20 @@ function createStyles(p: Palette) {
   tabActive: { backgroundColor: p.white },
   tabText: { fontSize: 13, color: p.textMuted },
   tabTextActive: { color: p.textStrong, fontWeight: "bold" },
+  badge: {
+    backgroundColor: p.red,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    paddingHorizontal: 5,
+  },
+  badgeText: {
+    color: p.white,
+    fontSize: 11,
+    fontWeight: "bold" as const,
+  },
 
   sectionTitle: {
     fontSize: 16,
