@@ -378,7 +378,9 @@ export default function ChildDashboardScreen({
   if (loading) {
     return (
       <View style={styles.center}>
+        <Text style={{ fontSize: 48, marginBottom: 12 }}>⚔️</Text>
         <ActivityIndicator size="large" color={palette.primary} />
+        <Text style={{ color: palette.textMuted, marginTop: 12, fontSize: 14 }}>ぼうけんの じゅんび ちゅう...</Text>
       </View>
     );
   }
@@ -525,7 +527,17 @@ export default function ChildDashboardScreen({
                 </Text>
               </View>
             </View>
-            <Text style={styles.walletHint}>くわしく →</Text>
+            <View style={styles.walletFooter}>
+              <AnimatedButton
+                style={styles.spendShortcut}
+                onPress={() => navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance })}
+                haptic="light"
+                accessibilityLabel="つかうリクエスト"
+              >
+                <Text style={styles.spendShortcutText}>💸 つかう</Text>
+              </AnimatedButton>
+              <Text style={styles.walletHint}>くわしく →</Text>
+            </View>
           </TouchableOpacity>
         )}
 
@@ -609,7 +621,7 @@ export default function ChildDashboardScreen({
                 tab === "quests" && styles.tabTextActive,
               ]}
             >
-              クエスト
+              ⚔️ クエスト
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -621,7 +633,7 @@ export default function ChildDashboardScreen({
           >
             <RubyText
               style={tab === "history" ? styles.tabTextActive : styles.tabText}
-              parts={[["履歴", "りれき"]]}
+              parts={["📖 ", ["履歴", "りれき"]]}
               rubySize={6}
             />
           </TouchableOpacity>
@@ -750,7 +762,11 @@ export default function ChildDashboardScreen({
             )}
 
             {tasks.length === 0 && (
-              <AutoRubyText text="クエストが まだないよ。親に たのんでね！" style={styles.emptyText} rubySize={7} />
+              <View style={styles.emptyCard}>
+                <Text style={{ fontSize: 48, marginBottom: 8 }}>🗺️</Text>
+                <AutoRubyText text="クエストが まだないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={7} />
+                <AutoRubyText text="親に たのんで クエストを つくってもらおう！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
+              </View>
             )}
           </View>
         )}
@@ -1039,11 +1055,28 @@ function createStyles(p: Palette) {
   },
   walletLabel: { fontSize: 12, color: p.textMuted, marginBottom: 2, lineHeight: 20 },
   walletAmount: { fontSize: 16, fontWeight: "bold" },
+  walletFooter: {
+    flexDirection: "row" as const,
+    justifyContent: "space-between" as const,
+    alignItems: "center" as const,
+    marginTop: 10,
+  },
+  spendShortcut: {
+    backgroundColor: p.walletSpend,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    minHeight: 36,
+    justifyContent: "center" as const,
+  },
+  spendShortcutText: {
+    color: p.white,
+    fontSize: 13,
+    fontWeight: "bold" as const,
+  },
   walletHint: {
     fontSize: 12,
     color: p.textMuted,
-    textAlign: "right",
-    marginTop: 8,
   },
 
   // Spend request status
@@ -1305,6 +1338,13 @@ function createStyles(p: Palette) {
     color: p.textMuted,
     fontSize: 14,
     paddingVertical: 24,
+  },
+  emptyCard: {
+    alignItems: "center" as const,
+    backgroundColor: p.white,
+    borderRadius: 12,
+    padding: 24,
+    marginBottom: 8,
   },
   emptyHint: {
     textAlign: "center",
