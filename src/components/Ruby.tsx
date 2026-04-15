@@ -20,18 +20,15 @@ type Props = {
 
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
-  const rubyHeight = Math.max(rubySize - 2, 4);
   return (
-    <View style={{ paddingTop: rubyHeight, alignItems: "center" }}>
+    <View style={{ alignItems: "center" }}>
       <Text
         style={{
-          position: "absolute",
-          top: 0,
           fontSize: rubySize,
           color: "#64748b",
-          lineHeight: rubySize,
+          lineHeight: rubySize + 1,
           textAlign: "center",
-          width: "100%",
+          marginBottom: -2,
         }}
         numberOfLines={1}
         adjustsFontSizeToFit
@@ -57,25 +54,23 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
-  const rubyHeight = Math.max(rubySize - 2, 4);
+  const rubyLineHeight = rubySize + 1;
   return (
     <View style={baseStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <View key={i} style={{ paddingTop: rubyHeight }}>
+          <View key={i} style={{ paddingTop: rubyLineHeight }}>
             <Text style={style}>{part}</Text>
           </View>
         ) : (
-          <View key={i} style={{ paddingTop: rubyHeight, alignItems: "center" }}>
+          <View key={i} style={{ alignItems: "center" }}>
             <Text
               style={{
-                position: "absolute",
-                top: 0,
                 fontSize: rubySize,
                 color: "#64748b",
-                lineHeight: rubySize,
+                lineHeight: rubyLineHeight,
                 textAlign: "center",
-                width: "100%",
+                marginBottom: -2,
               }}
               numberOfLines={1}
               adjustsFontSizeToFit
