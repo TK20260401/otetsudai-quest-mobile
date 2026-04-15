@@ -40,7 +40,7 @@ export default function ChildDashboardScreen({
 }) {
   const { childId } = route.params;
   const { alert } = useAppAlert();
-  const { palette } = useTheme();
+  const { palette, paletteName, setPalette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
   const [childName, setChildName] = useState("");
@@ -411,9 +411,31 @@ export default function ChildDashboardScreen({
         <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
           🧒 {childName}
         </Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
-          <Text style={styles.logoutText}>← もどる</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          {/* テーマ切替 */}
+          <View style={{ flexDirection: "row", gap: 4 }}>
+            {(["breeze", "forest", "adventure"] as const).map((name) => (
+              <TouchableOpacity
+                key={name}
+                onPress={() => setPalette(name)}
+                accessibilityLabel={`テーマ: ${name}`}
+                accessibilityRole="button"
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  backgroundColor: name === "breeze" ? "#4a90a8" : name === "forest" ? "#246b50" : "#6b4fa0",
+                  borderWidth: paletteName === name ? 2 : 0,
+                  borderColor: palette.textStrong,
+                  opacity: paletteName === name ? 1 : 0.4,
+                }}
+              />
+            ))}
+          </View>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
+            <Text style={styles.logoutText}>← もどる</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView
