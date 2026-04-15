@@ -54,7 +54,6 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
-  const rubyLineHeight = rubySize;
   return (
     <View style={baseStyles.textRow}>
       {parts.map((part, i) =>
