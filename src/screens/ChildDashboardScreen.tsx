@@ -1243,8 +1243,8 @@ function createStyles(p: Palette) {
     color: p.red,
     backgroundColor: p.redLight,
     paddingHorizontal: 8,
-    paddingTop: 6,
-    paddingBottom: 2,
+    paddingTop: 10,
+    paddingBottom: 4,
     borderRadius: 6,
   },
   specialQuestTitle: {
