@@ -254,12 +254,12 @@ export default function ParentDashboardScreen({
 
   async function handleReject(logId: string) {
     const reasons = [
-      "🔄 やりなおし",
-      "もうすこし ていねいに",
-      "さいごまで やろう",
-      "じかんを かけてね",
+      "🔄 やり直し",
+      "もう少し 丁寧に",
+      "最後まで やろう",
+      "時間を かけてね",
     ];
-    alert("やりなおし", "りゆうを えらんでね", [
+    alert("やり直し", "理由を 選んでね", [
       ...reasons.map((r) => ({
         text: r,
         onPress: async () => {
