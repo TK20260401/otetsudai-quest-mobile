@@ -20,7 +20,7 @@ type Props = {
 
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
-  const rubyHeight = rubySize + 1;
+  const rubyHeight = rubySize;
   return (
     <View style={{ paddingTop: rubyHeight, alignItems: "center" }}>
       <Text
@@ -29,7 +29,7 @@ export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
           top: 0,
           fontSize: rubySize,
           color: "#64748b",
-          lineHeight: rubyHeight,
+          lineHeight: rubySize,
           textAlign: "center",
           width: "100%",
         }}
@@ -57,7 +57,7 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
-  const rubyHeight = rubySize + 1;
+  const rubyHeight = rubySize;
   return (
     <View style={baseStyles.textRow}>
       {parts.map((part, i) =>
@@ -73,7 +73,7 @@ export function RubyText({
                 top: 0,
                 fontSize: rubySize,
                 color: "#64748b",
-                lineHeight: rubyHeight,
+                lineHeight: rubySize,
                 textAlign: "center",
                 width: "100%",
               }}
