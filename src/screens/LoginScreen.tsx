@@ -125,7 +125,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       setAdminLoggedIn(true);
       await loadFamilies();
     } catch {
-      setError("ログインに しっぱいしました");
+      setError("ログインに 失敗しました");
     }
     setAdminLoading(false);
   }
@@ -498,8 +498,14 @@ function createStyles(p: Palette) {
     error: {
       color: p.red,
       fontSize: 14,
+      fontWeight: "bold",
       textAlign: "center",
       marginBottom: 8,
+      backgroundColor: p.redLight,
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 10,
+      overflow: "hidden",
     },
     backButton: {
       marginBottom: 12,
