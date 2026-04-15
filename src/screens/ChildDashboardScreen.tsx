@@ -438,9 +438,12 @@ export default function ChildDashboardScreen({
     <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
       {/* Header */}
       <View style={styles.header} accessibilityRole="header">
-        <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
-          🧒 {childName}
-        </Text>
+        <View>
+          <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
+            🧒 {childName}
+          </Text>
+          <Text style={{ fontSize: rf(10), color: palette.textMuted }}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
+        </View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           {/* テーマ切替 */}
           <View style={{ flexDirection: "row", gap: 4 }}>
