@@ -76,7 +76,8 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
             <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
             <View>
               <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["稼", "かせ"], "いだコインで"]} rubySize={4} />
-              <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["好", "す"], "きなものを", ["買", "か"], "おう！"]} rubySize={4} />
+              <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["好", "す"], "きなものを"]} rubySize={4} />
+              <RubyText style={[styles.featureDesc, { color: palette.walletSpendText }]} parts={[["買", "か"], "おう！"]} rubySize={4} />
             </View>
           </View>
 
