@@ -309,9 +309,13 @@ export default function ChildDashboardScreen({
     // キャラクターのクリア反応セリフ
     const clearMessages = [
       "やったね！クエストクリア！ ⚔️",
-      "すごい！親の 承認を まってね！",
-      "かっこいい！つぎも がんばろう！",
-      "ナイスクリア！きみは つよくなってる！",
+      "すごい！承認を 待ってね！",
+      "かっこいい！次も 頑張ろう！",
+      "ナイスクリア！きみは 強くなってる！",
+      "さすが冒険者！✨",
+      "完了！コインが もらえるかも！💰",
+      "その調子！レベルアップが 近いよ！",
+      "よくできた！最高だよ！🌟",
     ];
     const msg = clearMessages[Math.floor(Math.random() * clearMessages.length)];
     setQuestClearMsg(msg);
