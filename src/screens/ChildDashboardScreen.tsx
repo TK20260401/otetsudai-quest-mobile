@@ -371,8 +371,8 @@ export default function ChildDashboardScreen({
     const end = new Date(endDate);
     const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     if (diff <= 0) return "きょうまで！";
-    if (diff === 1) return "あと1にち！";
-    return `あと${diff}にち`;
+    if (diff === 1) return "あと1日！";
+    return `あと${diff}日`;
   }
 
   if (loading) {
@@ -564,16 +564,16 @@ export default function ChildDashboardScreen({
                 </Text>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.spendStatusText} numberOfLines={1}>
-                    {req.purpose} — {req.amount}えん
+                    {req.purpose} — {req.amount}円
                   </Text>
                   <Text style={styles.spendStatusLabel}>
                     {req.status === "pending"
-                      ? "しんせいちゅう"
+                      ? "申請中"
                       : req.status === "approved" && req.payment_status === "pending_payment"
-                      ? "しょうにんずみ おかねをまってね"
+                      ? "承認済み お金をまってね"
                       : req.status === "approved" && req.payment_status === "paid"
-                      ? "おかね もらったよ！"
-                      : "きょかされませんでした"}
+                      ? "お金 もらったよ！"
+                      : "許可されませんでした"}
                   </Text>
                 </View>
               </View>
@@ -607,7 +607,7 @@ export default function ChildDashboardScreen({
             ))}
           </View>
           {badges.length === 0 && (
-            <Text style={styles.emptyHint}>クエストをクリアして そうびをあつめよう！</Text>
+            <AutoRubyText text="クエストをクリアして 装備を集めよう！" style={styles.emptyHint} rubySize={6} />
           )}
         </View>
 

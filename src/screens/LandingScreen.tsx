@@ -46,16 +46,20 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         >
           おこづかいクエスト
         </Text>
-        <AutoRubyText
-          text="クエストをクリアして コインを 稼ごう！"
+        <Text
           style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]}
-          rubySize={7}
-        />
-        <AutoRubyText
-          text="お手伝い＝クエスト！稼いで、貯めて、増やすマネー冒険アプリ"
+          adjustsFontSizeToFit
+          numberOfLines={2}
+        >
+          クエストをクリアして{"\n"}コインを 稼ごう！
+        </Text>
+        <Text
           style={styles.description}
-          rubySize={6}
-        />
+          adjustsFontSizeToFit
+          numberOfLines={2}
+        >
+          お手伝い＝クエスト！{"\n"}稼いで、貯めて、増やすマネー冒険アプリ
+        </Text>
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
           <AnimatedButton
