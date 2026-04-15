@@ -28,7 +28,7 @@ export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
           color: "#64748b",
           lineHeight: rubySize,
           textAlign: "center",
-          marginBottom: -Math.round(rubySize * 0.6),
+          marginBottom: -Math.round(rubySize * 0.8),
         }}
         numberOfLines={1}
         adjustsFontSizeToFit
@@ -59,7 +59,7 @@ export function RubyText({
     <View style={baseStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <View key={i} style={{ paddingTop: Math.max(Math.round(rubySize * 0.4), 2) }}>
+          <View key={i} style={{ paddingTop: Math.max(Math.round(rubySize * 0.2), 1) }}>
             <Text style={style}>{part}</Text>
           </View>
         ) : (
@@ -70,7 +70,7 @@ export function RubyText({
                 color: "#64748b",
                 lineHeight: rubyLineHeight,
                 textAlign: "center",
-                marginBottom: -Math.round(rubySize * 0.6),
+                marginBottom: -Math.round(rubySize * 0.8),
               }}
               numberOfLines={1}
               adjustsFontSizeToFit
