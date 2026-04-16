@@ -10,9 +10,9 @@
 - [ ] Expo Goで残り画面確認・修正（ウォレット詳細、つかうリクエスト、履歴タブ等）
 - [ ] EAS Build → Transporter → App Store Connect → TestFlight配信
 
-## Sprint 2 残り
+## Sprint 2 ✅完了
 
-- [ ] #10 アニメーション制御設定（useReducedMotion連携、感覚過負荷回避）
+- [x] #10 アニメーション制御設定（useReducedMotion連携、感覚過負荷回避）— 2026-04-16完了
 
 ## Sprint 3: エージェンシー強化
 
