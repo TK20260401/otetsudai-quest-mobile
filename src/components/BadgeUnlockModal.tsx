@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { rf } from "../lib/responsive";
+import { useReducedMotion } from "../lib/useReducedMotion";
 import * as Haptics from "expo-haptics";
 
 type Props = {
@@ -28,14 +29,25 @@ export default function BadgeUnlockModal({
   const scale = useRef(new Animated.Value(0.3)).current;
   const textFade = useRef(new Animated.Value(0)).current;
   const sparkle = useRef(new Animated.Value(0)).current;
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (visible) {
+      if (!reducedMotion) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+
+      if (reducedMotion) {
+        // アニメーション省略：即座に最終状態
+        scale.setValue(1);
+        textFade.setValue(1);
+        sparkle.setValue(0);
+        return;
+      }
+
       scale.setValue(0.3);
       textFade.setValue(0);
       sparkle.setValue(0);
-
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       Animated.sequence([
         Animated.spring(scale, {
@@ -59,7 +71,7 @@ export default function BadgeUnlockModal({
         })
       ).start();
     }
-  }, [visible, scale, textFade, sparkle]);
+  }, [visible, scale, textFade, sparkle, reducedMotion]);
 
   const sparkleRotate = sparkle.interpolate({
     inputRange: [0, 1],

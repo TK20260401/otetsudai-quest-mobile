@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { rf } from "../lib/responsive";
+import { useReducedMotion } from "../lib/useReducedMotion";
 import type { Level } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
 import { RubyStr } from "./Ruby";
@@ -27,9 +28,19 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
   const scale = useRef(new Animated.Value(0.3)).current;
   const textFade = useRef(new Animated.Value(0)).current;
   const sparkle = useRef(new Animated.Value(0)).current;
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (visible) {
+      if (reducedMotion) {
+        // アニメーション省略：即座に最終状態
+        flash.setValue(0);
+        scale.setValue(1);
+        textFade.setValue(1);
+        sparkle.setValue(0);
+        return;
+      }
+
       // リセット
       flash.setValue(0);
       scale.setValue(0.3);
@@ -82,7 +93,7 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
         useNativeDriver: true,
       }).start();
     }
-  }, [visible]);
+  }, [visible, reducedMotion]);
 
   if (!visible) return null;
 
