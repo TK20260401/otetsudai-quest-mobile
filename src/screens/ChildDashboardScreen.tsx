@@ -1479,7 +1479,7 @@ function createStyles(p: Palette) {
   emptySpecialCard: {
     backgroundColor: p.accentLight,
     borderRadius: 12,
-    padding: 20,
+    padding: 24,
     alignItems: "center",
     borderWidth: 1,
     borderColor: p.goldBorder,

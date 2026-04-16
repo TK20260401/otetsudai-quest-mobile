@@ -144,7 +144,7 @@ function createStyles(p: Palette, width: number) {
     },
     card: {
       backgroundColor: p.white,
-      borderRadius: 18,
+      borderRadius: 16,
       padding: 24,
       width: Math.min(width - 64, 340),
       alignItems: "center",
