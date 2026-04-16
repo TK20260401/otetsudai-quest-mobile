@@ -23,7 +23,6 @@ import { STAMPS } from "../lib/stamps";
 import { getChildStampById } from "../lib/child-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings } from "../lib/types";
-import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 
 type PendingLog = TaskLog & { task: Task; child: User };
@@ -523,7 +522,7 @@ export default function ParentDashboardScreen({
       <View style={styles.header} accessibilityRole="header">
         <View style={styles.headerRow}>
           <Text style={styles.headerEmoji}>👨‍👩‍👧‍👦 </Text>
-          <RubyText style={styles.headerTitle} parts={[["親", "おや"]]} rubySize={7} />
+          <Text style={styles.headerTitle}>親</Text>
         </View>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
           <Text style={styles.logoutText}>← もどる</Text>
@@ -540,11 +539,7 @@ export default function ParentDashboardScreen({
           accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
           <View style={styles.headerBadgeRow}>
-            <AutoRubyText
-              text="✅ 承認"
-              style={tab === "approve" ? styles.tabTextActive : styles.tabText}
-              rubySize={6}
-            />
+            <Text style={tab === "approve" ? styles.tabTextActive : styles.tabText}>✅ 承認</Text>
             {pendingCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{pendingCount}</Text>
@@ -612,7 +607,7 @@ export default function ParentDashboardScreen({
             {/* Quest completions */}
             {pendingLogs.length > 0 && (
               <>
-                <AutoRubyText text={`⏳ クエスト完了 (${pendingLogs.length})`} style={styles.sectionTitle} rubySize={7} />
+                <Text style={styles.sectionTitle}>{`⏳ クエスト完了 (${pendingLogs.length})`}</Text>
                 {pendingLogs.map((log) => (
                   <View key={log.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -651,7 +646,7 @@ export default function ParentDashboardScreen({
             {/* Spend requests */}
             {pendingSpends.length > 0 && (
               <>
-                <AutoRubyText text={`🛒 使いたいリクエスト (${pendingSpends.length})`} style={[styles.sectionTitle, { marginTop: 16 }]} rubySize={7} />
+                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`🛒 使いたいリクエスト (${pendingSpends.length})`}</Text>
                 {pendingSpends.map((req) => (
                   <View key={req.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -685,7 +680,7 @@ export default function ParentDashboardScreen({
             {/* Price requests */}
             {priceRequests.length > 0 && (
               <>
-                <AutoRubyText text={`💰 値上げリクエスト (${priceRequests.length})`} style={[styles.sectionTitle, { marginTop: 16 }]} rubySize={7} />
+                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`💰 値上げリクエスト (${priceRequests.length})`}</Text>
                 {priceRequests.map((task) => (
                   <View key={task.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -734,7 +729,7 @@ export default function ParentDashboardScreen({
             {/* 最近の承認（子ども返信表示） */}
             {recentApproved.length > 0 && (
               <>
-                <AutoRubyText text="✅ 最近の承認" style={[styles.sectionTitle, { marginTop: 20 }]} rubySize={7} />
+                <Text style={[styles.sectionTitle, { marginTop: 20 }]}>✅ 最近の承認</Text>
                 {recentApproved.map((log: any) => {
                   const childStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)
@@ -764,7 +759,7 @@ export default function ParentDashboardScreen({
                             </Text>
                           )}
                           {!hasReaction && (
-                            <AutoRubyText text="⏳ 子どもの 返事待ち" style={styles.pendingText} rubySize={6} />
+                            <Text style={styles.pendingText}>⏳ 子どもの返事待ち</Text>
                           )}
                         </View>
                       </View>
@@ -782,9 +777,9 @@ export default function ParentDashboardScreen({
             {/* ★特別クエスト設定パネル */}
             {familySettings && (
               <View style={styles.settingsPanel}>
-                <AutoRubyText text="★ 特別クエスト設定" style={styles.settingsPanelTitle} rubySize={7} />
+                <Text style={styles.settingsPanelTitle}>★ 特別クエスト設定</Text>
                 <View style={styles.settingsRow}>
-                  <AutoRubyText text="特別クエスト全体" style={styles.settingsLabel} rubySize={6} />
+                  <Text style={styles.settingsLabel}>特別クエスト全体</Text>
                   <Switch
                     value={familySettings.special_quest_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_enabled: v })}
@@ -793,7 +788,7 @@ export default function ParentDashboardScreen({
                   />
                 </View>
                 <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
-                  <AutoRubyText text="★ 簡単" style={styles.settingsLabel} rubySize={6} />
+                  <Text style={styles.settingsLabel}>★ 簡単</Text>
                   <Switch
                     value={familySettings.special_quest_star1_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_star1_enabled: v })}
@@ -803,7 +798,7 @@ export default function ParentDashboardScreen({
                   />
                 </View>
                 <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
-                  <AutoRubyText text="★★ 普通" style={styles.settingsLabel} rubySize={6} />
+                  <Text style={styles.settingsLabel}>★★ 普通</Text>
                   <Switch
                     value={familySettings.special_quest_star2_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_star2_enabled: v })}
@@ -813,7 +808,7 @@ export default function ParentDashboardScreen({
                   />
                 </View>
                 <View style={[styles.settingsRow, !familySettings.special_quest_enabled && { opacity: 0.4 }]}>
-                  <AutoRubyText text="★★★ 難しい" style={styles.settingsLabel} rubySize={6} />
+                  <Text style={styles.settingsLabel}>★★★ 難しい</Text>
                   <Switch
                     value={familySettings.special_quest_star3_enabled}
                     onValueChange={(v) => updateFamilySettings({ special_quest_star3_enabled: v })}
@@ -852,7 +847,7 @@ export default function ParentDashboardScreen({
             {/* ★特別クエスト */}
             {tasks.filter((t) => t.is_special).length > 0 && (
               <>
-                <AutoRubyText text="★ 特別クエスト" style={styles.specialLabel} rubySize={7} />
+                <Text style={styles.specialLabel}>★ 特別クエスト</Text>
                 {tasks.filter((t) => t.is_special).map((task) => {
                   const starDisabled = familySettings && (
                     !familySettings.special_quest_enabled ||

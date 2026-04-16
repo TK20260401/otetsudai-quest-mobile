@@ -475,7 +475,7 @@ export default function ChildDashboardScreen({
         const d = now.getDate();
         const w = ["日", "月", "火", "水", "木", "金", "土"][now.getDay()];
         const wRuby = ["にち", "げつ", "か", "すい", "もく", "きん", "ど"][now.getDay()];
-        return [`${m}`, ["月", "がつ"], `${d}`, ["日", "にち"], " ", [w, wRuby], ["曜日", "ようび"]];
+        return [[`${m}月`, "がつ"], [`${d}日`, "にち"], [`${w}曜日`, `${wRuby}ようび`]];
       })()} rubySize={5} />
 
       <ScrollView
