@@ -426,9 +426,9 @@ export default function ChildDashboardScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>⚔️</Text>
+        <Text style={styles.loadingEmoji}>⚔️</Text>
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={{ color: palette.textMuted, marginTop: 12, fontSize: 14 }}>ぼうけんの じゅんび ちゅう...</Text>
+        <Text style={styles.loadingText}>ぼうけんの じゅんび ちゅう...</Text>
       </View>
     );
   }
@@ -443,11 +443,11 @@ export default function ChildDashboardScreen({
           <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
             🧒 {childName}
           </Text>
-          <Text style={{ fontSize: rf(10), color: palette.textMuted }}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
+          <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
         </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+        <View style={styles.headerActions}>
           {/* テーマ切替 */}
-          <View style={{ flexDirection: "row", gap: 2 }}>
+          <View style={styles.themeRow}>
             {(Object.keys(palettes) as PaletteName[]).map((name) => (
               <TouchableOpacity
                 key={name}
@@ -495,13 +495,13 @@ export default function ChildDashboardScreen({
             <RubyStr text={levelInfo.current.appearance} style={styles.appearanceText} rubySize={6} />
           </View>
           <View style={styles.levelInfo}>
-            <View style={{ flexDirection: "row", alignItems: "flex-end", flexWrap: "wrap" }}>
+            <View style={styles.rowWrap}>
               <Text style={styles.levelTitle}>Lv.{levelInfo.current.level} </Text>
               <RubyStr text={levelInfo.current.title} style={styles.levelTitle} rubySize={6} />
             </View>
             {/* セリフ吹き出し */}
             <View style={styles.speechBubble}>
-              <View style={{ flexDirection: "row", alignItems: "flex-end", flexWrap: "wrap" }}>
+              <View style={styles.rowWrap}>
                 <Text style={styles.speechText}>「</Text>
                 <RubyStr
                   text={mood === "active"
@@ -542,7 +542,7 @@ export default function ChildDashboardScreen({
                   {stampDef && (
                     <Text style={styles.stampNotifEmoji}>{stampDef.emoji}</Text>
                   )}
-                  <View style={{ flex: 1 }}>
+                  <View style={styles.flex1}>
                     <Text style={styles.stampNotifTask}>{s.taskTitle}</Text>
                     {stampDef && (
                       <Text style={styles.stampNotifLabel}>
@@ -565,25 +565,25 @@ export default function ChildDashboardScreen({
         {weeklySummary.quests > 0 && (
           <View style={[styles.weeklyCard, { backgroundColor: palette.surface, borderColor: palette.border }]}>
             <Text style={[styles.sectionTitle, { marginBottom: 8 }]}>📊 こんしゅうの きろく</Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: rf(24), fontWeight: "bold", color: palette.accent }}>
+            <View style={styles.rowAround}>
+              <View style={styles.colCenter}>
+                <Text style={styles.weeklyStatValue}>
                   {weeklySummary.quests}
                 </Text>
-                <AutoRubyText text="クエスト" style={{ fontSize: rf(11), color: palette.textMuted }} rubySize={5} />
+                <AutoRubyText text="クエスト" style={styles.weeklyStatLabel} rubySize={5} />
               </View>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: rf(24), fontWeight: "bold", color: palette.accent }}>
+              <View style={styles.colCenter}>
+                <Text style={styles.weeklyStatValue}>
                   ¥{weeklySummary.earned.toLocaleString()}
                 </Text>
-                <AutoRubyText text="稼いだ" style={{ fontSize: rf(11), color: palette.textMuted }} rubySize={5} />
+                <AutoRubyText text="稼いだ" style={styles.weeklyStatLabel} rubySize={5} />
               </View>
               {weeklySummary.streak > 0 && (
-                <View style={{ alignItems: "center" }}>
-                  <Text style={{ fontSize: rf(24), fontWeight: "bold", color: palette.accent }}>
+                <View style={styles.colCenter}>
+                  <Text style={styles.weeklyStatValue}>
                     🔥{weeklySummary.streak}
                   </Text>
-                  <AutoRubyText text="連続日" style={{ fontSize: rf(11), color: palette.textMuted }} rubySize={5} />
+                  <AutoRubyText text="連続日" style={styles.weeklyStatLabel} rubySize={5} />
                 </View>
               )}
             </View>
@@ -665,7 +665,7 @@ export default function ChildDashboardScreen({
                 <Text style={styles.spendStatusIcon}>
                   {req.status === "pending" ? "⏳" : req.status === "approved" ? "✅" : "❌"}
                 </Text>
-                <View style={{ flex: 1 }}>
+                <View style={styles.flex1}>
                   <Text style={styles.spendStatusText} numberOfLines={1}>
                     {req.purpose} — {req.amount}円
                   </Text>
@@ -874,7 +874,7 @@ export default function ChildDashboardScreen({
 
             {tasks.length === 0 && (
               <View style={styles.emptyCard}>
-                <Text style={{ fontSize: 48, marginBottom: 8 }}>🗺️</Text>
+                <Text style={styles.emptyEmoji}>🗺️</Text>
                 <AutoRubyText text="クエストが まだないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={7} />
                 <AutoRubyText text="親に たのんで クエストを つくってもらおう！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
@@ -917,7 +917,7 @@ export default function ChildDashboardScreen({
 
             {transactions.length === 0 && repliedMessages.length === 0 ? (
               <View style={styles.emptyCard}>
-                <Text style={{ fontSize: 48, marginBottom: 8 }}>📖</Text>
+                <Text style={styles.emptyEmoji}>📖</Text>
                 <AutoRubyText text="まだ履歴がないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={6} />
                 <AutoRubyText text="クエストをクリアすると ここに きろくされるよ！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
@@ -966,7 +966,7 @@ export default function ChildDashboardScreen({
           </TouchableOpacity>
         )}
 
-        <View style={{ height: 40 }} />
+        <View style={styles.bottomSpacer} />
       </ScrollView>
 
       {/* クエストクリア時のキャラ反応（フローティング） */}
@@ -1564,5 +1564,20 @@ function createStyles(p: Palette) {
     fontSize: 12,
     color: p.textMuted,
   },
+
+  // 共通ユーティリティ
+  flex1: { flex: 1 },
+  rowWrap: { flexDirection: "row", alignItems: "flex-end", flexWrap: "wrap" } as const,
+  rowAround: { flexDirection: "row", justifyContent: "space-around" } as const,
+  colCenter: { alignItems: "center" } as const,
+  loadingEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { fontSize: 48, marginBottom: 8 },
+  loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
+  headerDate: { fontSize: rf(10), color: p.textMuted },
+  headerActions: { flexDirection: "row", alignItems: "center", gap: 8 } as const,
+  themeRow: { flexDirection: "row", gap: 2 } as const,
+  weeklyStatValue: { fontSize: rf(24), fontWeight: "bold", color: p.accent } as const,
+  weeklyStatLabel: { fontSize: rf(11), color: p.textMuted },
+  bottomSpacer: { height: 40 },
   });
 }
