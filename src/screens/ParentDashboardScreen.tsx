@@ -726,8 +726,8 @@ export default function ParentDashboardScreen({
             {pendingCount === 0 && priceRequests.length === 0 && (
               <View style={styles.emptyCard}>
                 <Text style={styles.emptyEmoji}>✨</Text>
-                <AutoRubyText text="承認待ちは ありません" style={styles.emptyCardText} rubySize={7} />
-                <Text style={styles.emptyCardSub}>すべて しょりずみです！</Text>
+                <Text style={styles.emptyCardText}>承認待ちはありません</Text>
+                <Text style={styles.emptyCardSub}>全て処理済みです！</Text>
               </View>
             )}
 
