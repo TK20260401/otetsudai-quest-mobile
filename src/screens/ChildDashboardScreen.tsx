@@ -439,7 +439,7 @@ export default function ChildDashboardScreen({
     <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
       {/* Header */}
       <View style={styles.header} accessibilityRole="header">
-        <View>
+        <View style={styles.flex1}>
           <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
             🧒 {childName}
           </Text>
@@ -524,7 +524,7 @@ export default function ChildDashboardScreen({
               />
             </View>
             {levelInfo.next ? (
-              <Text style={styles.levelNext}>{`次のレベルまで\nあと ${levelInfo.remaining.toLocaleString()}円`}</Text>
+              <AutoRubyText text={`次のレベルまで あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} />
             ) : (
               <AutoRubyText text="最高レベル 達成！ 🎊" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} />
             )}
@@ -1573,7 +1573,7 @@ function createStyles(p: Palette) {
   loadingEmoji: { fontSize: 48, marginBottom: 12 },
   emptyEmoji: { fontSize: 48, marginBottom: 8 },
   loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
-  headerDate: { fontSize: rf(10), color: p.textMuted },
+  headerDate: { fontSize: rf(10), color: p.textMuted, marginTop: 2 },
   headerActions: { flexDirection: "row", alignItems: "center", gap: 8 } as const,
   themeRow: { flexDirection: "row", gap: 2 } as const,
   weeklyStatValue: { fontSize: rf(24), fontWeight: "bold", color: p.accent } as const,
