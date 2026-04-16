@@ -2,11 +2,15 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
+  TextInput,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
@@ -82,6 +86,46 @@ export default function ChildDashboardScreen({
   const [recentSpendRequests, setRecentSpendRequests] = useState<SpendRequest[]>([]);
   // バッジ獲得演出
   const [unlockedBadge, setUnlockedBadge] = useState<{ emoji: string; label: string; description: string } | null>(null);
+  // じぶんクエスト提案
+  const [proposalVisible, setProposalVisible] = useState(false);
+  const [proposalTitle, setProposalTitle] = useState("");
+  const [proposalReason, setProposalReason] = useState("");
+  const [proposalReward, setProposalReward] = useState("");
+  const [proposalSubmitting, setProposalSubmitting] = useState(false);
+  // 提案中のクエスト数
+  const pendingProposals = useMemo(() => tasks.filter((t) => t.created_by === childId && t.proposal_status === "pending").length, [tasks, childId]);
+
+  const handleProposalSubmit = useCallback(async () => {
+    if (!proposalTitle.trim()) return;
+    setProposalSubmitting(true);
+    try {
+      const session = await getSession();
+      if (!session) return;
+      await supabase.from("otetsudai_tasks").insert({
+        family_id: session.familyId,
+        title: proposalTitle.trim(),
+        description: proposalReason.trim() || null,
+        reward_amount: 0,
+        proposed_reward: proposalReward ? parseInt(proposalReward, 10) : null,
+        proposal_status: "pending",
+        proposal_message: proposalReason.trim() || null,
+        recurrence: "once",
+        assigned_child_id: childId,
+        is_active: false,
+        created_by: childId,
+        is_special: false,
+      });
+      setProposalVisible(false);
+      setProposalTitle("");
+      setProposalReason("");
+      setProposalReward("");
+      alert("送信しました！", "親がクエストを確認するよ！");
+      loadData();
+    } catch {
+      alert("エラー", "送信に失敗しました");
+    }
+    setProposalSubmitting(false);
+  }, [proposalTitle, proposalReason, proposalReward, childId]);
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -856,6 +900,18 @@ export default function ChildDashboardScreen({
                 <AutoRubyText text="親に たのんで クエストを つくってもらおう！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
             )}
+
+            {/* じぶんクエスト提案 */}
+            <AnimatedButton
+              style={styles.proposalButton}
+              onPress={() => setProposalVisible(true)}
+              accessibilityLabel="じぶんクエストを提案する"
+            >
+              <Text style={styles.proposalButtonText}>💡 じぶんクエストを提案する</Text>
+              {pendingProposals > 0 && (
+                <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
+              )}
+            </AnimatedButton>
           </View>
         )}
 
@@ -999,6 +1055,61 @@ export default function ChildDashboardScreen({
           onClose={() => setLevelUpModal(null)}
         />
       )}
+
+      {/* じぶんクエスト提案モーダル */}
+      <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
+        <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+          <View style={styles.proposalCard}>
+            <Text style={styles.proposalModalTitle}>💡 じぶんクエストを提案</Text>
+            <AutoRubyText text="親に新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} />
+
+            <Text style={styles.proposalLabel}>クエストの名前</Text>
+            <TextInput
+              style={styles.proposalInput}
+              placeholder="れい: おふろそうじ"
+              value={proposalTitle}
+              onChangeText={setProposalTitle}
+              maxLength={30}
+              placeholderTextColor={palette.textMuted}
+            />
+
+            <Text style={styles.proposalLabel}>理由（なぜやりたい？）</Text>
+            <TextInput
+              style={[styles.proposalInput, { minHeight: 60 }]}
+              placeholder="れい: きれいにしたいから"
+              value={proposalReason}
+              onChangeText={setProposalReason}
+              multiline
+              maxLength={100}
+              placeholderTextColor={palette.textMuted}
+            />
+
+            <Text style={styles.proposalLabel}>希望のごほうび（円）</Text>
+            <TextInput
+              style={styles.proposalInput}
+              placeholder="れい: 30"
+              value={proposalReward}
+              onChangeText={setProposalReward}
+              keyboardType="number-pad"
+              maxLength={5}
+              placeholderTextColor={palette.textMuted}
+            />
+
+            <View style={styles.proposalActions}>
+              <TouchableOpacity style={styles.proposalCancel} onPress={() => setProposalVisible(false)}>
+                <Text style={styles.proposalCancelText}>やめる</Text>
+              </TouchableOpacity>
+              <AnimatedButton
+                style={[styles.proposalSubmit, !proposalTitle.trim() && { opacity: 0.5 }]}
+                onPress={handleProposalSubmit}
+                disabled={!proposalTitle.trim() || proposalSubmitting}
+              >
+                <Text style={styles.proposalSubmitText}>{proposalSubmitting ? "送信中..." : "提案する！"}</Text>
+              </AnimatedButton>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1556,5 +1667,63 @@ function createStyles(p: Palette) {
   weeklyStatValue: { fontSize: rf(24), fontWeight: "bold", color: p.accent } as const,
   weeklyStatLabel: { fontSize: rf(11), color: p.textMuted },
   bottomSpacer: { height: 40 },
+
+  // じぶんクエスト提案
+  proposalButton: {
+    margin: 12,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: p.primaryLight,
+    borderWidth: 1,
+    borderColor: p.primary,
+    alignItems: "center" as const,
+    minHeight: 48,
+    justifyContent: "center" as const,
+  },
+  proposalButtonText: { fontSize: 15, fontWeight: "bold" as const, color: p.primaryDark },
+  proposalPending: { fontSize: 11, color: p.textMuted, marginTop: 2 },
+  proposalOverlay: {
+    flex: 1,
+    backgroundColor: p.overlay,
+    justifyContent: "center" as const,
+    padding: 20,
+  },
+  proposalCard: {
+    backgroundColor: p.white,
+    borderRadius: 16,
+    padding: 20,
+  },
+  proposalModalTitle: { fontSize: rf(18), fontWeight: "bold" as const, color: p.textStrong, marginBottom: 4 },
+  proposalModalSub: { fontSize: 12, color: p.textMuted, marginBottom: 16 },
+  proposalLabel: { fontSize: 13, fontWeight: "bold" as const, color: p.textStrong, marginTop: 8, marginBottom: 4 },
+  proposalInput: {
+    borderWidth: 1,
+    borderColor: p.border,
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 15,
+    backgroundColor: p.surfaceMuted,
+  },
+  proposalActions: { flexDirection: "row" as const, gap: 10, marginTop: 16 },
+  proposalCancel: {
+    flex: 1,
+    padding: 14,
+    minHeight: 48,
+    borderRadius: 10,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    backgroundColor: p.surfaceMuted,
+  },
+  proposalCancelText: { fontSize: 16, fontWeight: "bold" as const, color: p.textMuted },
+  proposalSubmit: {
+    flex: 2,
+    padding: 14,
+    minHeight: 48,
+    borderRadius: 10,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    backgroundColor: p.primary,
+  },
+  proposalSubmitText: { fontSize: 16, fontWeight: "bold" as const, color: p.white },
   });
 }

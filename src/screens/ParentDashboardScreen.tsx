@@ -43,6 +43,7 @@ export default function ParentDashboardScreen({
   const [pendingSpends, setPendingSpends] = useState<SpendRequest[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [priceRequests, setPriceRequests] = useState<Task[]>([]);
+  const [questProposals, setQuestProposals] = useState<Task[]>([]);
   const [recentApproved, setRecentApproved] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -155,7 +156,8 @@ export default function ParentDashboardScreen({
     setPendingSpends((spendRes.data as SpendRequest[]) || []);
     const allTasks = taskRes.data || [];
     setTasks(allTasks);
-    setPriceRequests(allTasks.filter((t: Task) => t.proposal_status === "pending" && t.proposed_reward));
+    setPriceRequests(allTasks.filter((t: Task) => t.proposal_status === "pending" && t.proposed_reward && t.is_active));
+    setQuestProposals(allTasks.filter((t: Task) => !t.is_active && t.proposal_status === "pending" && t.created_by !== session?.userId));
 
     // 最近の承認済みログ（子ども返信確認用）
     if (childIds.length > 0) {
@@ -498,6 +500,27 @@ export default function ParentDashboardScreen({
     ]);
   }
 
+  async function handleApproveProposal(task: Task) {
+    const reward = task.proposed_reward || 10;
+    await supabase
+      .from("otetsudai_tasks")
+      .update({
+        is_active: true,
+        reward_amount: reward,
+        proposal_status: "approved",
+      })
+      .eq("id", task.id);
+    await loadData();
+  }
+
+  async function handleRejectProposal(task: Task) {
+    await supabase
+      .from("otetsudai_tasks")
+      .update({ proposal_status: "rejected" })
+      .eq("id", task.id);
+    await loadData();
+  }
+
   function handleLogout() {
     clearSession().then(() => {
       navigation.reset({ index: 0, routes: [{ name: "Login" }] });
@@ -514,7 +537,7 @@ export default function ParentDashboardScreen({
     );
   }
 
-  const pendingCount = pendingLogs.length + pendingSpends.length;
+  const pendingCount = pendingLogs.length + pendingSpends.length + questProposals.length;
 
   return (
     <SafeAreaView style={styles.container} accessibilityLabel="おやダッシュボード">
@@ -718,7 +741,49 @@ export default function ParentDashboardScreen({
               </>
             )}
 
-            {pendingCount === 0 && priceRequests.length === 0 && (
+            {/* じぶんクエスト提案 */}
+            {questProposals.length > 0 && (
+              <>
+                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`💡 じぶんクエスト提案 (${questProposals.length})`}</Text>
+                {questProposals.map((task) => {
+                  const child = children.find((c) => c.id === task.assigned_child_id);
+                  return (
+                    <View key={task.id} style={styles.approvalCard}>
+                      <View style={styles.approvalInfo}>
+                        <Text style={styles.approvalIcon}>💡</Text>
+                        <View style={styles.flex1}>
+                          <Text style={styles.approvalTitle}>{task.title}</Text>
+                          <Text style={styles.approvalSub}>
+                            🧒 {child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}円
+                          </Text>
+                          {task.proposal_message && (
+                            <Text style={styles.subText}>
+                              💬 「{task.proposal_message}」
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                      <View style={styles.approvalActions}>
+                        <TouchableOpacity
+                          style={styles.approveButton}
+                          onPress={() => handleApproveProposal(task)}
+                        >
+                          <Text style={styles.approveText}>承認</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.rejectButton}
+                          onPress={() => handleRejectProposal(task)}
+                        >
+                          <Text style={styles.rejectText}>NG</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  );
+                })}
+              </>
+            )}
+
+            {pendingCount === 0 && priceRequests.length === 0 && questProposals.length === 0 && (
               <View style={styles.emptyCard}>
                 <Text style={styles.emptyEmoji}>✨</Text>
                 <Text style={styles.emptyCardText}>承認待ちはありません</Text>
