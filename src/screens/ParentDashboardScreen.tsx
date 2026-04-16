@@ -22,8 +22,10 @@ import { getTaskIcon } from "../lib/task-icons";
 import { STAMPS } from "../lib/stamps";
 import { getChildStampById } from "../lib/child-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
-import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings } from "../lib/types";
+import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings, FamilyMessage } from "../lib/types";
 import { useAppAlert } from "../components/AppAlert";
+import FamilyStampSendModal from "../components/FamilyStampSendModal";
+import FamilyMessageCard from "../components/FamilyMessageCard";
 
 type PendingLog = TaskLog & { task: Task; child: User };
 
@@ -83,6 +85,10 @@ export default function ParentDashboardScreen({
   const [familySettings, setFamilySettings] = useState<FamilySettings | null>(null);
   // 週次サマリー
   const [weeklySummary, setWeeklySummary] = useState({ quests: 0, earned: 0 });
+  // ファミリースタンプリレー
+  const [familyMessages, setFamilyMessages] = useState<FamilyMessage[]>([]);
+  const [allMembers, setAllMembers] = useState<User[]>([]);
+  const [stampSendVisible, setStampSendVisible] = useState(false);
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -216,6 +222,26 @@ export default function ParentDashboardScreen({
           (sum: number, log: any) => sum + (log.task?.reward_amount || 0), 0
         ),
       });
+    }
+
+    // ファミリースタンプリレー: メンバー一覧 + メッセージ取得
+    if (familyIds.length > 0) {
+      const fid = familyIds[0];
+      const [membersRes, fmsgRes] = await Promise.all([
+        supabase
+          .from("otetsudai_users")
+          .select("*")
+          .eq("family_id", fid)
+          .neq("role", "admin"),
+        supabase
+          .from("otetsudai_family_messages")
+          .select("*, sender:otetsudai_users!sender_id(*), recipient:otetsudai_users!recipient_id(*)")
+          .eq("family_id", fid)
+          .order("created_at", { ascending: false })
+          .limit(20),
+      ]);
+      setAllMembers(membersRes.data || []);
+      setFamilyMessages(fmsgRes.data || []);
     }
 
     setLoading(false);
@@ -627,6 +653,23 @@ export default function ParentDashboardScreen({
                 <Text style={styles.weeklyStatLabel}>支払い</Text>
               </View>
             </View>
+          </View>
+        )}
+
+        {/* ファミリースタンプリレー（承認タブ内） */}
+        {tab === "approve" && (
+          <View style={styles.section}>
+            <FamilyMessageCard messages={familyMessages} currentUserId={userId} />
+            <TouchableOpacity
+              style={[styles.stampRelayBtn, { backgroundColor: palette.primaryLight, borderColor: palette.primary }]}
+              onPress={() => setStampSendVisible(true)}
+              accessibilityLabel="家族にエールを送る"
+              accessibilityRole="button"
+            >
+              <Text style={[styles.stampRelayBtnText, { color: palette.primaryDark }]}>
+                💌 エールを送る
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -1473,6 +1516,20 @@ export default function ParentDashboardScreen({
           </ScrollView>
         </View>
       </Modal>
+      {/* ファミリースタンプ送信モーダル */}
+      {familyId && (
+        <FamilyStampSendModal
+          visible={stampSendVisible}
+          senderId={userId}
+          familyId={familyId}
+          familyMembers={allMembers}
+          onClose={() => setStampSendVisible(false)}
+          onSent={() => {
+            setStampSendVisible(false);
+            loadData();
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -1945,5 +2002,18 @@ function createStyles(p: Palette) {
   recentAmount: { fontSize: 13, marginTop: 4 },
   actionRow: { flexDirection: "row", gap: 8, marginBottom: 12 } as const,
   bottomSpacer: { height: 40 },
+  stampRelayBtn: {
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center" as const,
+    marginTop: 10,
+    borderWidth: 2,
+    minHeight: 52,
+    justifyContent: "center" as const,
+  },
+  stampRelayBtnText: {
+    fontSize: 16,
+    fontWeight: "bold" as const,
+  },
   });
 }

@@ -153,6 +153,18 @@ export type InvestOrder = {
   approved_by: string | null;
 };
 
+export type FamilyMessage = {
+  id: string;
+  family_id: string;
+  sender_id: string;
+  recipient_id: string;
+  stamp_id: string | null;
+  message: string | null;
+  created_at: string;
+  sender?: User;
+  recipient?: User;
+};
+
 export type Session = {
   userId: string;
   familyId: string | null;

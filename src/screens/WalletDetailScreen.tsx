@@ -16,6 +16,7 @@ import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 import SavingGoalModal from "../components/SavingGoalModal";
 import type { Wallet, Transaction, SpendRequest, SavingGoal } from "../lib/types";
+import MoneyTree, { getStage } from "../components/MoneyTree";
 
 export default function WalletDetailScreen({
   route,
@@ -299,6 +300,32 @@ export default function WalletDetailScreen({
             >
               {invest.toLocaleString()}
             </Text>
+          </View>
+        </View>
+
+        {/* ── ふやすの木 ── */}
+        <View style={styles.treeSection}>
+          <MoneyTree investBalance={invest} size={120} />
+          <View style={styles.treeInfo}>
+            <AutoRubyText
+              text={`🌳 ふやすの木: ${getStage(invest).label}`}
+              style={styles.treeLabel}
+              rubySize={6}
+            />
+            {getStage(invest).next && (
+              <AutoRubyText
+                text={`次の成長まで あと ${(getStage(invest).next! - invest).toLocaleString()}円`}
+                style={styles.treeProgress}
+                rubySize={5}
+              />
+            )}
+            {!getStage(invest).next && (
+              <AutoRubyText
+                text="最大まで 成長した！ 🎉"
+                style={[styles.treeProgress, { color: palette.accent, fontWeight: "bold" }]}
+                rubySize={5}
+              />
+            )}
           </View>
         </View>
 
@@ -891,5 +918,34 @@ function createStyles(p: Palette) {
     loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
     headerSpacer: { width: 80 },
     bottomSpacer: { height: 40 },
+    treeSection: {
+      alignItems: "center" as const,
+      backgroundColor: p.surface,
+      borderRadius: 16,
+      padding: 16,
+      marginHorizontal: 12,
+      marginTop: 12,
+      borderWidth: 1,
+      borderColor: p.walletInvestBorder,
+      shadowColor: p.black,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 4,
+      elevation: 2,
+    },
+    treeInfo: {
+      alignItems: "center" as const,
+      marginTop: 8,
+    },
+    treeLabel: {
+      fontSize: rf(14),
+      fontWeight: "bold" as const,
+      color: p.walletInvestText,
+    },
+    treeProgress: {
+      fontSize: 12,
+      color: p.textMuted,
+      marginTop: 4,
+    },
   });
 }

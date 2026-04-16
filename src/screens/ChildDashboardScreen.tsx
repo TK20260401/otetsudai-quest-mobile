@@ -23,12 +23,14 @@ import { getLevelProgress, getCurrentLevel } from "../lib/levels";
 import type { Level } from "../lib/levels";
 import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
-import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest } from "../lib/types";
+import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest, User, FamilyMessage } from "../lib/types";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
+import FamilyStampSendModal from "../components/FamilyStampSendModal";
+import FamilyMessageCard from "../components/FamilyMessageCard";
 import { getChildStampById } from "../lib/child-stamps";
 import { useAppAlert } from "../components/AppAlert";
 import AnimatedButton from "../components/AnimatedButton";
@@ -93,6 +95,11 @@ export default function ChildDashboardScreen({
   const [proposalReason, setProposalReason] = useState("");
   const [proposalReward, setProposalReward] = useState("");
   const [proposalSubmitting, setProposalSubmitting] = useState(false);
+  // ファミリースタンプリレー
+  const [familyMessages, setFamilyMessages] = useState<FamilyMessage[]>([]);
+  const [familyMembers, setFamilyMembers] = useState<User[]>([]);
+  const [stampSendVisible, setStampSendVisible] = useState(false);
+  const [sessionFamilyId, setSessionFamilyId] = useState<string | null>(null);
   // 提案中のクエスト数
   const pendingProposals = useMemo(() => tasks.filter((t) => t.created_by === childId && t.proposal_status === "pending").length, [tasks, childId]);
 
@@ -133,6 +140,7 @@ export default function ChildDashboardScreen({
     if (!session) return;
 
     setChildName(session.name);
+    setSessionFamilyId(session.familyId);
 
     const [taskRes, walletRes, txRes, badgeRes, stampRes, spendRes] = await Promise.all([
       supabase
@@ -310,6 +318,23 @@ export default function ChildDashboardScreen({
       .eq("family_id", session.familyId)
       .single();
     if (settingsData) setFamilySettings(settingsData);
+
+    // ファミリースタンプリレー: メンバー一覧 + メッセージ取得
+    const [membersRes, fmsgRes] = await Promise.all([
+      supabase
+        .from("otetsudai_users")
+        .select("*")
+        .eq("family_id", session.familyId)
+        .neq("role", "admin"),
+      supabase
+        .from("otetsudai_family_messages")
+        .select("*, sender:otetsudai_users!sender_id(*), recipient:otetsudai_users!recipient_id(*)")
+        .eq("family_id", session.familyId)
+        .order("created_at", { ascending: false })
+        .limit(20),
+    ]);
+    setFamilyMembers(membersRes.data || []);
+    setFamilyMessages(fmsgRes.data || []);
 
     setLoading(false);
   }, [childId]);
@@ -635,6 +660,18 @@ export default function ChildDashboardScreen({
             </View>
           </View>
         )}
+
+        {/* ファミリースタンプリレー */}
+        <View>
+          <FamilyMessageCard messages={familyMessages} currentUserId={childId} />
+          <AnimatedButton
+            onPress={() => setStampSendVisible(true)}
+            style={styles.stampRelayBtn}
+            accessibilityLabel="かぞくに エールを おくる"
+          >
+            <Text style={styles.stampRelayBtnText}>💌 エールを おくる</Text>
+          </AnimatedButton>
+        </View>
 
         {/* Wallet */}
         {wallet && (
@@ -1027,6 +1064,21 @@ export default function ChildDashboardScreen({
           <CharacterSvg level={levelInfo.current.level} mood="active" size={48} />
           <Text style={styles.questClearText}>{questClearMsg}</Text>
         </View>
+      )}
+
+      {/* ファミリースタンプ送信モーダル */}
+      {sessionFamilyId && (
+        <FamilyStampSendModal
+          visible={stampSendVisible}
+          senderId={childId}
+          familyId={sessionFamilyId}
+          familyMembers={familyMembers}
+          onClose={() => setStampSendVisible(false)}
+          onSent={() => {
+            setStampSendVisible(false);
+            loadData();
+          }}
+        />
       )}
 
       {/* 子ども返信モーダル */}
@@ -1756,5 +1808,21 @@ function createStyles(p: Palette) {
     backgroundColor: p.primary,
   },
   proposalSubmitText: { fontSize: 16, fontWeight: "bold" as const, color: p.white },
+  stampRelayBtn: {
+    backgroundColor: p.primaryLight,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center" as const,
+    marginTop: 10,
+    borderWidth: 2,
+    borderColor: p.primary,
+    minHeight: 52,
+    justifyContent: "center" as const,
+  },
+  stampRelayBtnText: {
+    fontSize: 16,
+    fontWeight: "bold" as const,
+    color: p.primaryDark,
+  },
   });
 }
