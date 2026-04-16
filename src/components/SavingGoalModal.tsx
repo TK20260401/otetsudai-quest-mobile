@@ -206,11 +206,11 @@ function createStyles(p: Palette) {
       borderRadius: 10,
       alignItems: "center",
       justifyContent: "center",
-      borderWidth: 1,
-      borderColor: p.border,
+      backgroundColor: p.surfaceMuted,
     },
     cancelText: {
       fontSize: 16,
+      fontWeight: "bold",
       color: p.textMuted,
     },
     submitButton: {
