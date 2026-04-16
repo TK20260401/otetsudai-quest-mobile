@@ -313,7 +313,7 @@ function createStyles(p: Palette) {
       minHeight: 50,
       marginTop: 12,
       marginBottom: 12,
-      backgroundColor: p.white,
+      backgroundColor: p.surfaceMuted,
     },
     sendButton: {
       backgroundColor: p.primary,

@@ -164,9 +164,9 @@ function createStyles(p: Palette) {
     titleInput: {
       borderWidth: 1,
       borderColor: p.border,
-      borderRadius: 10,
-      padding: 12,
-      fontSize: 14,
+      borderRadius: 12,
+      padding: 14,
+      fontSize: 15,
       minHeight: 48,
       marginBottom: 16,
       backgroundColor: p.surfaceMuted,

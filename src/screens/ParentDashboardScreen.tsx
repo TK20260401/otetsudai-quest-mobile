@@ -1763,10 +1763,11 @@ function createStyles(p: Palette) {
   messageInput: {
     borderWidth: 1,
     borderColor: p.border,
-    borderRadius: 10,
-    padding: 12,
-    fontSize: 14,
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 15,
     marginBottom: 16,
+    backgroundColor: p.surfaceMuted,
   },
   modalActions: { flexDirection: "row", gap: 10 },
   modalCancel: {
@@ -1797,8 +1798,8 @@ function createStyles(p: Palette) {
   formInput: {
     borderWidth: 1,
     borderColor: p.border,
-    borderRadius: 10,
-    padding: 12,
+    borderRadius: 12,
+    padding: 14,
     fontSize: 15,
     backgroundColor: p.surfaceMuted,
   },
