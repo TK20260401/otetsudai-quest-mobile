@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
 import { useTheme, type Palette } from "../theme";
+import { palettes, type PaletteName } from "../theme/palettes";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
 import { getLevelProgress, getCurrentLevel } from "../lib/levels";
@@ -446,21 +447,22 @@ export default function ChildDashboardScreen({
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           {/* テーマ切替 */}
-          <View style={{ flexDirection: "row", gap: 4 }}>
-            {(["breeze", "forest", "adventure"] as const).map((name) => (
+          <View style={{ flexDirection: "row", gap: 2 }}>
+            {(Object.keys(palettes) as PaletteName[]).map((name) => (
               <TouchableOpacity
                 key={name}
                 onPress={() => setPalette(name)}
-                accessibilityLabel={`テーマ: ${name}`}
+                accessibilityLabel={`テーマ: ${palettes[name].name}`}
                 accessibilityRole="button"
+                hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                 style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: 10,
-                  backgroundColor: name === "breeze" ? "#4a90a8" : name === "forest" ? "#246b50" : "#6b4fa0",
-                  borderWidth: paletteName === name ? 2 : 0,
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  backgroundColor: palettes[name].primary,
+                  borderWidth: paletteName === name ? 2.5 : 0,
                   borderColor: palette.textStrong,
-                  opacity: paletteName === name ? 1 : 0.4,
+                  opacity: paletteName === name ? 1 : 0.5,
                 }}
               />
             ))}

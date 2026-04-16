@@ -137,7 +137,7 @@ function createStyles(p: Palette, width: number) {
   return StyleSheet.create({
     overlay: {
       flex: 1,
-      backgroundColor: "rgba(0,0,0,0.4)",
+      backgroundColor: p.overlay,
       justifyContent: "center",
       alignItems: "center",
       padding: 32,

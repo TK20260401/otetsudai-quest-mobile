@@ -1127,7 +1127,7 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setTaskFormVisible(false)}
       >
-        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.4)" }}>
+        <View style={{ flex: 1, backgroundColor: palette.overlay }}>
           <ScrollView
             contentContainerStyle={[
               styles.taskFormScrollContent,
@@ -1685,7 +1685,7 @@ function createStyles(p: Palette) {
   // Modal
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: p.overlay,
     justifyContent: "center",
     padding: 20,
   },

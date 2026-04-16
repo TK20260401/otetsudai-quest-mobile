@@ -141,7 +141,7 @@ function createStyles(p: Palette) {
   return StyleSheet.create({
     overlay: {
       flex: 1,
-      backgroundColor: "rgba(0,0,0,0.5)",
+      backgroundColor: p.overlay,
       padding: 20,
     },
     card: {
