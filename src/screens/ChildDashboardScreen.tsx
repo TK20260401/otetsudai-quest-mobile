@@ -499,19 +499,15 @@ export default function ChildDashboardScreen({
             </View>
             {/* セリフ吹き出し */}
             <View style={styles.speechBubble}>
-              <View style={styles.rowWrap}>
-                <Text style={styles.speechText}>「</Text>
-                <RubyStr
-                  text={mood === "active"
-                    ? levelInfo.current.greetingActive
-                    : mood === "lonely"
-                      ? levelInfo.current.greetingLonely
-                      : levelInfo.current.greeting}
-                  style={styles.speechText}
-                  rubySize={6}
-                />
-                <Text style={styles.speechText}>」</Text>
-              </View>
+              <RubyStr
+                text={`「${mood === "active"
+                  ? levelInfo.current.greetingActive
+                  : mood === "lonely"
+                    ? levelInfo.current.greetingLonely
+                    : levelInfo.current.greeting}」`}
+                style={styles.speechText}
+                rubySize={6}
+              />
             </View>
             <View style={styles.progressBar}>
               <View
@@ -522,7 +518,10 @@ export default function ChildDashboardScreen({
               />
             </View>
             {levelInfo.next ? (
-              <AutoRubyText text={`次のレベルまで あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} />
+              <View>
+                <AutoRubyText text="次のレベルまで" style={styles.levelNext} rubySize={5} />
+                <AutoRubyText text={`あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} />
+              </View>
             ) : (
               <AutoRubyText text="最高レベル 達成！ 🎊" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} />
             )}
