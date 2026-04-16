@@ -176,9 +176,9 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>🔑</Text>
+        <Text style={styles.icon}>🔑</Text>
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={{ color: palette.textMuted, marginTop: 12, fontSize: 14 }}>よみこみちゅう...</Text>
+        <Text style={styles.loadingText}>よみこみちゅう...</Text>
       </View>
     );
   }
@@ -553,6 +553,11 @@ function createStyles(p: Palette) {
     legalSep: {
       fontSize: 11,
       color: p.textMuted,
+    },
+    loadingText: {
+      color: p.textMuted,
+      marginTop: 12,
+      fontSize: 14,
     },
   });
 }

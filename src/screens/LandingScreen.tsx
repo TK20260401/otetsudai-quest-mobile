@@ -47,11 +47,11 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         >
           おこづかいクエスト
         </Text>
-        <View style={{ alignItems: "center", marginBottom: 6 }}>
+        <View style={styles.subtitleWrap}>
           <Text style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]}>クエストをクリアして</Text>
           <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]} parts={["コインを ", ["稼", "かせ"], "ごう！"]} rubySize={7} />
         </View>
-        <View style={{ alignItems: "center", marginBottom: 28 }}>
+        <View style={styles.descriptionWrap}>
           <RubyText style={styles.description} parts={["お", ["手伝", "てつだ"], "い＝クエスト！"]} rubySize={5} />
           <RubyText style={styles.description} parts={[["稼", "かせ"], "いで、", ["貯", "た"], "めて、", ["増", "ふ"], "やすマネー", ["冒険", "ぼうけん"], "アプリ"]} rubySize={5} />
         </View>
@@ -259,6 +259,14 @@ function createStyles(p: Palette) {
     legalSep: {
       fontSize: 11,
       color: p.textMuted,
+    },
+    subtitleWrap: {
+      alignItems: "center",
+      marginBottom: 6,
+    },
+    descriptionWrap: {
+      alignItems: "center",
+      marginBottom: 28,
     },
   });
 }
