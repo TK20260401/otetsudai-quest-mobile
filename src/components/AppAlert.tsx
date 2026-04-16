@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { AutoRubyText } from "./Ruby";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 
@@ -78,17 +77,9 @@ export function AppAlertProvider({ children }: { children: React.ReactNode }) {
       >
         <View style={styles.overlay}>
           <View style={styles.card}>
-            <AutoRubyText
-              text={state.title}
-              style={styles.title}
-              rubySize={7}
-            />
+            <Text style={styles.title}>{state.title}</Text>
             {state.message ? (
-              <AutoRubyText
-                text={state.message}
-                style={styles.message}
-                rubySize={7}
-              />
+              <Text style={styles.message}>{state.message}</Text>
             ) : null}
             <View
               style={[
@@ -111,15 +102,15 @@ export function AppAlertProvider({ children }: { children: React.ReactNode }) {
                     ]}
                     onPress={() => handlePress(btn)}
                   >
-                    <AutoRubyText
-                      text={btn.text}
+                    <Text
                       style={[
                         styles.buttonText,
                         isCancel && styles.buttonTextCancel,
                         isDestructive && styles.buttonTextDestructive,
                       ]}
-                      rubySize={6}
-                    />
+                    >
+                      {btn.text}
+                    </Text>
                   </TouchableOpacity>
                 );
               })}

@@ -32,7 +32,8 @@ otetsudai-quest-mobile/
 │   │   ├── ChildDashboardScreen.tsx  # 子どもダッシュボード
 │   │   ├── ParentDashboardScreen.tsx # 親ダッシュボード
 │   │   ├── WalletDetailScreen.tsx    # ウォレット詳細
-│   │   └── SpendRequestScreen.tsx    # つかうリクエスト
+│   │   ├── SpendRequestScreen.tsx    # つかうリクエスト
+│   │   └── InvestScreen.tsx         # 投資画面（株の売買）
 │   ├── theme/
 │   │   ├── palettes.ts          # 3パレット定義（CUD/WCAG準拠）
 │   │   ├── ThemeContext.tsx      # テーマProvider + useTheme
@@ -209,6 +210,10 @@ npx expo start --tunnel
 | v0.10.3 | 2026-04-16 | デザイン一貫性改善: dead code削除、テーマボタンをパレット参照+タッチターゲット拡大、オーバーレイ/入力フィールド/ボタン/fontWeight統一、親カードシャドウ追加、インラインスタイルStyleSheet移行 |
 | v0.10.4 | 2026-04-16 | ルビ根本修正（tightStyle密着）、親画面ルビ全解除、ヘッダー重なり修正、セリフ改行修正、ランディングアイコン変更（💴/🧑）、親画面テキスト漢字化 |
 | v0.11.0 | 2026-04-16 | reducedMotion対応（LevelUpModal/BadgeUnlockModal）、スキルツリーUI、じぶんクエスト提案機能（子→親） |
+| v0.12.0 | 2026-04-16 | TestFlightフィードバック#1対応: 貯金目標バリデーション、useFocusEffectでフリーズ修正、カレンダーspinner化、期限なし解除修正、投資画面(InvestScreen)新規追加、WalletDetail投資ボタン追加 |
+| v0.12.1 | 2026-04-16 | ルビ距離修正(iOS: marginTop:-2)、辞書追加(東京/日本/有名/多/運営/音楽/一番/銀行/電車/携帯電話/飛行機/検索等)、DB description_kids漢字化、💰→🪙統一、画面縦固定 |
+| v0.12.2 | 2026-04-16 | ログイン画面: おや/こどもモード選択、新規アカウント作成、「クエストをはじめる！」文言、ランディング説明文改善、親フォームアイコン統一、誰にプルダウン化、報酬直接編集、AppAlertプレーンText化 |
+| v0.12.3 | 2026-04-17 | 家族管理: 削除機能追加、RLSポリシー追加(admin SELECT/DELETE)、辞書「下→した」削除(誤変換防止)、バッジラベル漢字化(初めて/3日連続/1000円達成/貯金マスター) |
 
 ## Web版との関係
 

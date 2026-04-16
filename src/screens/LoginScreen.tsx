@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { supabase } from "../lib/supabase";
 import type { Family, User } from "../lib/types";
-import { verifyPin, loginAsUser, signIn } from "../services/auth";
+import { verifyPin, loginAsUser, signIn, signUp } from "../services/auth";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
@@ -41,6 +41,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const [adminPassword, setAdminPassword] = useState("");
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false); // false=ログイン, true=新規登録
 
   // Family add
   const [newFamilyName, setNewFamilyName] = useState("");
@@ -130,6 +131,63 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     setAdminLoading(false);
   }
 
+  async function handleAdminSignUp() {
+    setError("");
+    if (adminPassword.length < 6) {
+      setError("パスワードは6文字以上にしてください");
+      return;
+    }
+    setAdminLoading(true);
+    try {
+      const { data: authData, error: authError } = await signUp(
+        adminEmail,
+        adminPassword
+      );
+      if (authError) {
+        setError(authError.message);
+        setAdminLoading(false);
+        return;
+      }
+      if (authData.user) {
+        // adminユーザーをDBに登録
+        await supabase.from("otetsudai_users").insert({
+          auth_id: authData.user.id,
+          role: "admin",
+          name: adminEmail.split("@")[0],
+          icon: "👨‍👩‍👧‍👦",
+          display_order: 0,
+        });
+        // 登録後に自動ログイン
+        setAdminLoggedIn(true);
+        await loadFamilies();
+        alert("🎉 登録完了", "家族を追加してはじめましょう！");
+      }
+    } catch {
+      setError("登録に失敗しました");
+    }
+    setAdminLoading(false);
+  }
+
+  function handleDeleteFamily(family: Family) {
+    alert("家族を削除", `「${family.name}」を削除しますか？\n関連するデータも全て削除されます。`, [
+      { text: "キャンセル", style: "cancel" },
+      {
+        text: "削除する",
+        style: "destructive",
+        onPress: async () => {
+          // 関連データを先に削除（FK制約）
+          await supabase.from("otetsudai_family_settings").delete().eq("family_id", family.id);
+          await supabase.from("otetsudai_messages").delete().eq("family_id", family.id);
+          await supabase.from("otetsudai_tasks").delete().eq("family_id", family.id);
+          await supabase.from("otetsudai_users").delete().eq("family_id", family.id);
+          await supabase.from("otetsudai_families").delete().eq("id", family.id);
+          await loadFamilies();
+          alert("削除しました", `${family.name} を削除しました`);
+        },
+      },
+    ]);
+  }
+
   async function handleAddFamily() {
     if (!newFamilyName.trim()) return;
     setAddingFamily(true);
@@ -195,12 +253,14 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         <View style={styles.card}>
           {!adminLoggedIn ? (
             <>
-              <Text style={styles.icon}>🔧</Text>
-              <AutoRubyText text="管理者ログイン" style={styles.titleAdmin} rubySize={7} />
+              <Text style={styles.icon}>{isSignUp ? "📝" : "🔧"}</Text>
+              <Text style={styles.titleAdmin} adjustsFontSizeToFit numberOfLines={1}>
+                {isSignUp ? "新規アカウント作成" : "管理者ログイン"}
+              </Text>
 
               <TextInput
                 style={styles.input}
-                placeholder="メールアドレス（おやようだよ）"
+                placeholder="メールアドレス"
                 value={adminEmail}
                 onChangeText={setAdminEmail}
                 keyboardType="email-address"
@@ -208,22 +268,33 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
               />
               <TextInput
                 style={styles.input}
-                placeholder="パスワード"
+                placeholder={isSignUp ? "パスワード（6文字以上）" : "パスワード"}
                 value={adminPassword}
                 onChangeText={setAdminPassword}
                 secureTextEntry
-                onSubmitEditing={handleAdminLogin}
+                onSubmitEditing={isSignUp ? handleAdminSignUp : handleAdminLogin}
               />
 
               {error ? <Text style={styles.error}>{error}</Text> : null}
 
               <TouchableOpacity
                 style={[styles.button, styles.buttonAdmin]}
-                onPress={handleAdminLogin}
+                onPress={isSignUp ? handleAdminSignUp : handleAdminLogin}
                 disabled={adminLoading || !adminEmail || !adminPassword}
               >
                 <Text style={styles.buttonText}>
-                  {adminLoading ? "ログイン ちゅう..." : "ログイン"}
+                  {adminLoading
+                    ? (isSignUp ? "登録中..." : "ログイン中...")
+                    : (isSignUp ? "アカウント作成" : "ログイン")}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.switchAuthLink}
+                onPress={() => { setIsSignUp(!isSignUp); setError(""); }}
+              >
+                <Text style={styles.switchAuthText}>
+                  {isSignUp ? "ログインに戻る" : "新規登録"}
                 </Text>
               </TouchableOpacity>
             </>
@@ -236,6 +307,12 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
               {families.map((f) => (
                 <View key={f.id} style={styles.familyRow}>
                   <Text style={styles.familyName}>🏠 {f.name}</Text>
+                  <TouchableOpacity
+                    onPress={() => handleDeleteFamily(f)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  >
+                    <Text style={styles.familyDelete}>🗑️</Text>
+                  </TouchableOpacity>
                 </View>
               ))}
 
@@ -530,8 +607,10 @@ function createStyles(p: Palette) {
       overflow: "hidden",
     },
     backButton: {
+      marginTop: 16,
       marginBottom: 12,
-    },
+      alignItems: "center",
+    } as const,
     backText: {
       fontSize: 14,
       color: p.textMuted,
@@ -546,6 +625,16 @@ function createStyles(p: Palette) {
     modeEmoji: { fontSize: 36, marginBottom: 4 },
     modeText: { fontSize: rf(18), fontWeight: "bold" },
     modeHint: { fontSize: 12, color: p.textMuted, marginTop: 4 },
+    switchAuthLink: {
+      marginTop: 16,
+      alignItems: "center",
+      paddingVertical: 8,
+    },
+    switchAuthText: {
+      fontSize: 13,
+      color: p.primary,
+      textDecorationLine: "underline",
+    },
     adminLink: {
       marginTop: 20,
       alignItems: "center",
@@ -555,16 +644,23 @@ function createStyles(p: Palette) {
       color: p.textMuted,
     },
     familyRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       borderWidth: 1,
       borderColor: p.border,
       borderRadius: 12,
       padding: 14,
       marginBottom: 8,
       backgroundColor: p.surfaceMuted,
-    },
+    } as const,
     familyName: {
       fontSize: 16,
       color: p.textStrong,
+      flex: 1,
+    },
+    familyDelete: {
+      fontSize: 18,
     },
     addFamilyRow: {
       flexDirection: "row",
