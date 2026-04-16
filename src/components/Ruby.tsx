@@ -24,7 +24,7 @@ function tightStyle(style: any): TextStyle {
   if (!flat) return {};
   const { lineHeight: _, ...rest } = flat;
   const fontSize = rest.fontSize ?? 14;
-  return { ...rest, lineHeight: Math.ceil(fontSize * 1.15) };
+  return { ...rest, lineHeight: Math.ceil(fontSize * 1.05) };
 }
 
 /** ルビテキストのスタイル */
@@ -32,9 +32,9 @@ function rubyStyle(size: number): TextStyle {
   return {
     fontSize: size,
     color: "#64748b",
-    lineHeight: Math.ceil(size * 1.1),
+    lineHeight: Math.ceil(size * 1.05),
     textAlign: "center",
-    marginBottom: -1,
+    marginBottom: -2,
   };
 }
 
