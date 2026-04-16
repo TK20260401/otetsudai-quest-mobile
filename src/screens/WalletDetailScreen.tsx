@@ -121,9 +121,9 @@ export default function WalletDetailScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>💰</Text>
+        <Text style={styles.loadingEmoji}>💰</Text>
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={{ color: palette.textMuted, marginTop: 12, fontSize: 14 }}>おさいふを ひらいてるよ...</Text>
+        <Text style={styles.loadingText}>おさいふを ひらいてるよ...</Text>
       </View>
     );
   }
@@ -202,7 +202,7 @@ export default function WalletDetailScreen({
           style={styles.headerTitle}
           rubySize={7}
         />
-        <View style={{ width: 80 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView
@@ -526,7 +526,7 @@ export default function WalletDetailScreen({
           )}
         </View>
 
-        <View style={{ height: 40 }} />
+        <View style={styles.bottomSpacer} />
       </ScrollView>
 
       {/* Saving Goal Modal */}
@@ -848,5 +848,9 @@ function createStyles(p: Palette) {
       textAlign: "center",
       paddingVertical: 20,
     },
+    loadingEmoji: { fontSize: 48, marginBottom: 12 },
+    loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
+    headerSpacer: { width: 80 },
+    bottomSpacer: { height: 40 },
   });
 }
