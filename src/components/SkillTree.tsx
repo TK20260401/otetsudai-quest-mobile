@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { BADGE_DEFINITIONS } from "../lib/badges";
+import { AutoRubyText } from "./Ruby";
 import type { Badge } from "../lib/types";
 import type { Palette } from "../theme";
 
@@ -8,8 +9,8 @@ import type { Palette } from "../theme";
 const TREE_ORDER: { key: string; condition: string }[] = [
   { key: "first_task", condition: "1回クエストクリア" },
   { key: "streak_3", condition: "3日連続クリア" },
-  { key: "earned_1000", condition: "合計1,000円" },
-  { key: "saving_master", condition: "貯金目標達成" },
+  { key: "earned_1000", condition: "合計 1,000円" },
+  { key: "saving_master", condition: "貯金目標 達成" },
   { key: "quest_master", condition: "50回クリア" },
 ];
 
@@ -58,21 +59,27 @@ export default function SkillTree({ badges, palette }: Props) {
 
             {/* テキスト */}
             <View style={styles.textColumn}>
-              <Text
+              <AutoRubyText
+                text={def.label}
                 style={[
                   styles.label,
                   { color: earned ? palette.textStrong : palette.textMuted },
                   earned && { fontWeight: "bold" },
                 ]}
-              >
-                {def.label}
-              </Text>
+                rubySize={6}
+              />
               {earned ? (
-                <Text style={[styles.status, { color: palette.accent }]}>獲得済み ✓</Text>
+                <AutoRubyText
+                  text="獲得済み ✓"
+                  style={[styles.status, { color: palette.accent }]}
+                  rubySize={5}
+                />
               ) : (
-                <Text style={[styles.condition, { color: palette.textMuted }]}>
-                  {item.condition}
-                </Text>
+                <AutoRubyText
+                  text={item.condition}
+                  style={[styles.condition, { color: palette.textMuted }]}
+                  rubySize={5}
+                />
               )}
             </View>
           </View>

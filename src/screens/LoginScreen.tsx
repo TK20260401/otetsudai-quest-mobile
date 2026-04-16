@@ -17,7 +17,7 @@ import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 
-type LoginStep = "family" | "member" | "pin" | "admin";
+type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
 
 type Props = {
   onLoginSuccess: () => void;
@@ -27,7 +27,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const { alert } = useAppAlert();
-  const [step, setStep] = useState<LoginStep>("family");
+  const [step, setStep] = useState<LoginStep>("mode");
   const [families, setFamilies] = useState<Family[]>([]);
   const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
   const [members, setMembers] = useState<User[]>([]);
@@ -166,8 +166,10 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       setSelectedFamily(null);
       setMembers([]);
       setStep("family");
+    } else if (step === "family") {
+      setStep("mode");
     } else if (step === "admin") {
-      setStep("family");
+      setStep("mode");
       setAdminEmail("");
       setAdminPassword("");
     }
@@ -284,9 +286,35 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
           クエストをクリアしてコインをかせごう！
         </Text>
 
+        {/* Step: Mode selection */}
+        {step === "mode" && (
+          <>
+            <Text style={styles.label}>どっちのモード？</Text>
+            <TouchableOpacity
+              style={[styles.modeButton, { backgroundColor: palette.primaryLight, borderColor: palette.primary }]}
+              onPress={() => { setStep("family"); loadFamilies(); }}
+            >
+              <Text style={styles.modeEmoji}>🧒</Text>
+              <Text style={[styles.modeText, { color: palette.primaryDark }]}>こどもモード</Text>
+              <Text style={styles.modeHint}>おうちをえらんで ログイン</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modeButton, { backgroundColor: palette.surfaceMuted, borderColor: palette.border }]}
+              onPress={() => setStep("admin")}
+            >
+              <Text style={styles.modeEmoji}>👨‍👩‍👧‍👦</Text>
+              <Text style={[styles.modeText, { color: palette.textStrong }]}>おやモード</Text>
+              <Text style={styles.modeHint}>メール・パスワードで ログイン</Text>
+            </TouchableOpacity>
+          </>
+        )}
+
         {/* Step: Family selection */}
         {step === "family" && (
           <>
+            <TouchableOpacity style={styles.backButton} onPress={goBack}>
+              <Text style={styles.backText}>← もどる</Text>
+            </TouchableOpacity>
             <Text style={styles.label}>おうちを選んでね</Text>
             {families.map((f) => (
               <TouchableOpacity
@@ -297,12 +325,6 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 <Text style={styles.selectText}>🏠 {f.name}</Text>
               </TouchableOpacity>
             ))}
-            <TouchableOpacity
-              style={styles.adminLink}
-              onPress={() => setStep("admin")}
-            >
-              <AutoRubyText text="🔧 管理者ログイン" style={styles.adminLinkText} rubySize={6} />
-            </TouchableOpacity>
           </>
         )}
 
@@ -358,7 +380,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
               style={[styles.button, styles.buttonPrimary]}
               onPress={handlePinLogin}
             >
-              <Text style={styles.buttonText}>ログイン</Text>
+              <Text style={styles.buttonText}>クエストをはじめる！</Text>
             </TouchableOpacity>
           </>
         )}
@@ -514,6 +536,16 @@ function createStyles(p: Palette) {
       fontSize: 14,
       color: p.textMuted,
     },
+    modeButton: {
+      borderWidth: 2,
+      borderRadius: 16,
+      padding: 20,
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    modeEmoji: { fontSize: 36, marginBottom: 4 },
+    modeText: { fontSize: rf(18), fontWeight: "bold" },
+    modeHint: { fontSize: 12, color: p.textMuted, marginTop: 4 },
     adminLink: {
       marginTop: 20,
       alignItems: "center",

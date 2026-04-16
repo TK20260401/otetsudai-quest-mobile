@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -34,6 +34,7 @@ import { useAppAlert } from "../components/AppAlert";
 import AnimatedButton from "../components/AnimatedButton";
 import BadgeUnlockModal from "../components/BadgeUnlockModal";
 import SkillTree from "../components/SkillTree";
+import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
 
@@ -313,9 +314,12 @@ export default function ChildDashboardScreen({
     setLoading(false);
   }, [childId]);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  // 画面フォーカス時にデータ再読み込み（SpendRequest等から戻った時も更新）
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [loadData])
+  );
 
   async function onRefresh() {
     setRefreshing(true);
@@ -359,7 +363,7 @@ export default function ChildDashboardScreen({
       "かっこいい！次も 頑張ろう！",
       "ナイスクリア！きみは 強くなってる！",
       "さすが冒険者！✨",
-      "完了！コインが もらえるかも！💰",
+      "完了！コインが もらえるかも！🪙",
       "その調子！レベルアップが 近いよ！",
       "よくできた！最高だよ！🌟",
     ];
@@ -606,7 +610,7 @@ export default function ChildDashboardScreen({
         {/* 週次サマリー */}
         {weeklySummary.quests > 0 && (
           <View style={[styles.weeklyCard, { backgroundColor: palette.surface, borderColor: palette.border }]}>
-            <Text style={[styles.sectionTitle, { marginBottom: 8 }]}>📊 こんしゅうの きろく</Text>
+            <AutoRubyText text="📊 今週の記録" style={[styles.sectionTitle, { marginBottom: 8 }]} rubySize={6} />
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
                 <Text style={styles.weeklyStatValue}>
@@ -641,7 +645,7 @@ export default function ChildDashboardScreen({
             accessibilityLabel="おさいふの くわしい じょうほう"
             accessibilityRole="button"
           >
-            <RubyText style={styles.walletTitle} parts={["💰 ", ["財布", "さいふ"]]} />
+            <RubyText style={styles.walletTitle} parts={["🪙", ["財布", "さいふ"]]} />
             <Text
               style={styles.walletTotal}
               adjustsFontSizeToFit
@@ -686,7 +690,14 @@ export default function ChildDashboardScreen({
               >
                 <Text style={styles.spendShortcutText}>💸 つかう</Text>
               </AnimatedButton>
-              <Text style={styles.walletHint}>くわしく →</Text>
+              <AnimatedButton
+                style={styles.investShortcut}
+                onPress={() => navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance })}
+                haptic="light"
+                accessibilityLabel="とうしがめん"
+              >
+                <Text style={styles.investShortcutText}>📈 ふやす</Text>
+              </AnimatedButton>
             </View>
           </TouchableOpacity>
         )}
@@ -799,17 +810,21 @@ export default function ChildDashboardScreen({
                         <View style={styles.questDetails}>
                           <AutoRubyText text={task.title} style={styles.specialQuestTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
-                            <Text style={styles.specialQuestReward}>
-                              💰 {task.reward_amount}円
-                            </Text>
+                            <AutoRubyText
+                              text={`🪙${task.reward_amount}円`}
+                              style={styles.specialQuestReward}
+                              rubySize={6}
+                            />
                             {task.proposal_status === "pending" && (
-                              <Text style={styles.pendingBadge}>⏳ リクエスト中</Text>
+                              <AutoRubyText text="⏳ リクエスト中" style={styles.pendingBadge} rubySize={5} />
                             )}
                           </View>
                           {task.description && (
-                            <Text style={styles.specialQuestDesc}>
-                              {task.description}
-                            </Text>
+                            <AutoRubyText
+                              text={task.description}
+                              style={styles.specialQuestDesc}
+                              rubySize={6}
+                            />
                           )}
                         </View>
                       </View>
@@ -831,8 +846,8 @@ export default function ChildDashboardScreen({
             ) : (
               <View style={styles.emptySpecialCard}>
                 <Text style={styles.emptySpecialIcon}>🌟</Text>
-                <Text style={[styles.emptyHint, { fontWeight: "bold", fontSize: 13 }]}>今はお休み中</Text>
-                <Text style={styles.emptyHint}>次の 特別クエストを お楽しみに！</Text>
+                <AutoRubyText text="今はお休み中" style={[styles.emptyHint, { fontWeight: "bold", fontSize: 13 }]} rubySize={4} />
+                <AutoRubyText text="次の特別クエストをお楽しみに！" style={styles.emptyHint} rubySize={4} />
               </View>
             )}
 
@@ -853,17 +868,21 @@ export default function ChildDashboardScreen({
                         <View style={styles.questDetails}>
                           <AutoRubyText text={task.title} style={styles.questTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
-                            <Text style={styles.questReward}>
-                              💰 {task.reward_amount}円
-                            </Text>
+                            <AutoRubyText
+                              text={`🪙${task.reward_amount}円`}
+                              style={styles.questReward}
+                              rubySize={6}
+                            />
                             {task.proposal_status === "pending" && (
-                              <Text style={styles.pendingBadge}>⏳ リクエスト中</Text>
+                              <AutoRubyText text="⏳ リクエスト中" style={styles.pendingBadge} rubySize={5} />
                             )}
                           </View>
                           {task.price_change_comment && (
-                            <Text style={styles.priceComment}>
-                              📝 「{task.price_change_comment}」
-                            </Text>
+                            <AutoRubyText
+                              text={`📝 「${task.price_change_comment}」`}
+                              style={styles.priceComment}
+                              rubySize={5}
+                            />
                           )}
                         </View>
                       </View>
@@ -884,7 +903,7 @@ export default function ChildDashboardScreen({
                             onPress={() => setPriceRequestTask(task)}
                             accessibilityLabel={`${task.title}のねあげリクエスト`}
                           >
-                            <Text style={styles.priceUpText}>💰↑</Text>
+                            <Text style={styles.priceUpText}>🪙↑</Text>
                           </AnimatedButton>
                         )}
                       </View>
@@ -959,7 +978,7 @@ export default function ChildDashboardScreen({
                 <View key={tx.id} style={styles.historyItem}>
                   <Text style={styles.historyType}>
                     {tx.type === "earn"
-                      ? "💰"
+                      ? "🪙"
                       : tx.type === "spend"
                         ? "🛒"
                         : tx.type === "save"
@@ -1273,6 +1292,18 @@ function createStyles(p: Palette) {
     justifyContent: "center" as const,
   },
   spendShortcutText: {
+    color: p.white,
+    fontSize: 13,
+    fontWeight: "bold" as const,
+  },
+  investShortcut: {
+    backgroundColor: p.walletInvest,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 10,
+    minHeight: 36,
+  },
+  investShortcutText: {
     color: p.white,
     fontSize: 13,
     fontWeight: "bold" as const,

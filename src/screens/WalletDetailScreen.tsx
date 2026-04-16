@@ -303,20 +303,36 @@ export default function WalletDetailScreen({
         </View>
 
         {/* ── 3. Spend Request Button ── */}
-        <TouchableOpacity
-          style={styles.spendRequestButton}
-          onPress={() =>
-            navigation.navigate("SpendRequest", {
-              childId,
-              walletId,
-              spendingBalance: wallet?.spending_balance ?? 0,
-            })
-          }
-          accessibilityLabel="つかうリクエストを おくる"
-          activeOpacity={0.8}
-        >
-          <Text style={styles.spendRequestButtonText}>🛒 つかいたい！</Text>
-        </TouchableOpacity>
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.spendRequestButton}
+            onPress={() =>
+              navigation.navigate("SpendRequest", {
+                childId,
+                walletId,
+                spendingBalance: wallet?.spending_balance ?? 0,
+              })
+            }
+            accessibilityLabel="つかうリクエストを おくる"
+            activeOpacity={0.8}
+          >
+            <Text style={styles.spendRequestButtonText}>🛒 つかいたい！</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.investButton}
+            onPress={() =>
+              navigation.navigate("Invest", {
+                childId,
+                walletId,
+                investBalance: wallet?.invest_balance ?? 0,
+              })
+            }
+            accessibilityLabel="とうし がめんを ひらく"
+            activeOpacity={0.8}
+          >
+            <Text style={styles.investButtonText}>📈 ふやす！</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* ── 4. Spend Request Status Cards ── */}
         {recentSpendRequests.length > 0 && (
@@ -649,11 +665,16 @@ function createStyles(p: Palette) {
       fontWeight: "bold",
     },
 
-    // Spend Request Button
-    spendRequestButton: {
-      backgroundColor: p.walletSpend,
+    // Action Row
+    actionRow: {
+      flexDirection: "row",
       marginHorizontal: 12,
       marginTop: 12,
+      gap: 8,
+    },
+    spendRequestButton: {
+      flex: 1,
+      backgroundColor: p.walletSpend,
       borderRadius: 14,
       minHeight: 52,
       alignItems: "center",
@@ -665,7 +686,25 @@ function createStyles(p: Palette) {
       elevation: 3,
     },
     spendRequestButtonText: {
-      fontSize: rf(18),
+      fontSize: rf(16),
+      fontWeight: "bold",
+      color: p.white,
+    },
+    investButton: {
+      flex: 1,
+      backgroundColor: p.walletInvest,
+      borderRadius: 14,
+      minHeight: 52,
+      alignItems: "center",
+      justifyContent: "center",
+      shadowColor: p.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    investButtonText: {
+      fontSize: rf(16),
       fontWeight: "bold",
       color: p.white,
     },
@@ -795,7 +834,7 @@ function createStyles(p: Palette) {
       backgroundColor: p.primary,
     },
     filterTabText: {
-      fontSize: 14,
+      fontSize: 11,
       color: p.textMuted,
     },
     filterTabTextActive: {

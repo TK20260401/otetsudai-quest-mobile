@@ -6,28 +6,28 @@ export const BADGE_DEFINITIONS: Record<
 > = {
   first_task: {
     emoji: "⚔️",
-    label: "はじめてのクエスト",
-    description: "はじめてクエストをクリアしたよ！",
+    label: "初めてのクエスト",
+    description: "初めてクエストをクリアしたよ！",
   },
   streak_3: {
     emoji: "🔥",
-    label: "3にちれんぞく",
-    description: "3日つづけてクエストクリア！",
+    label: "3日連続",
+    description: "3日続けてクエストクリア！",
   },
   earned_1000: {
     emoji: "💰",
-    label: "1000えんたっせい",
-    description: "あわせて1000えんかせいだよ！",
+    label: "1000円達成",
+    description: "合わせて1000円稼いだよ！",
   },
   saving_master: {
     emoji: "🐷",
-    label: "ちょきんマスター",
-    description: "ちょきんもくひょうたっせい！",
+    label: "貯金マスター",
+    description: "貯金目標達成！",
   },
   quest_master: {
     emoji: "🏆",
     label: "クエストマスター",
-    description: "50かいクエストをクリア！すごい！",
+    description: "50回クエストをクリア！すごい！",
   },
 };
 

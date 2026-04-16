@@ -11,20 +11,19 @@ type Props = {
 /**
  * ルビ付きテキストのレイアウト方針:
  *
- * - ルビ文字は漢字の真上に密着配置
+ * - ルビ文字は漢字の真上に近接配置（密着しすぎず離れすぎず）
  * - 呼び出し元のstyleにlineHeightがあっても、ルビ内部では
- *   fontSize * 1.15 に強制してルビ-漢字間の隙間を防止
+ *   fontSize * 1.1 に強制してルビ-漢字間の隙間を統一
  * - ルビ無しセグメントにはpaddingTopでルビ領域分の高さを確保
  * - 全セグメントのベースラインを揃える
  */
 
-/** styleからlineHeightを除去し、fontSizeに密着させる */
+/** styleからlineHeightを除去し、fontSizeに近接させる */
 function tightStyle(style: any): TextStyle {
   const flat = StyleSheet.flatten(style) as TextStyle | undefined;
   if (!flat) return {};
   const { lineHeight: _, ...rest } = flat;
-  const fontSize = rest.fontSize ?? 14;
-  return { ...rest, lineHeight: Math.ceil(fontSize * 1.05) };
+  return { ...rest, includeFontPadding: false } as TextStyle;
 }
 
 /** ルビテキストのスタイル */
@@ -32,10 +31,10 @@ function rubyStyle(size: number): TextStyle {
   return {
     fontSize: size,
     color: "#64748b",
-    lineHeight: Math.ceil(size * 1.05),
     textAlign: "center",
     marginBottom: -2,
-  };
+    includeFontPadding: false,
+  } as TextStyle;
 }
 
 /** 単体ルビコンポーネント（既存API互換） */
@@ -50,7 +49,7 @@ export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
       >
         {ruby}
       </Text>
-      <Text style={tightStyle(style)}>{kanji}</Text>
+      <Text style={[tightStyle(style), { marginTop: -2 }]}>{kanji}</Text>
     </View>
   );
 }
@@ -74,7 +73,7 @@ export function RubyText({
     <View style={layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <View key={i} style={{ paddingTop: rubySize }}>
+          <View key={i} style={{ paddingTop: Math.ceil(rubySize * 0.5) }}>
             <Text style={tight}>{part}</Text>
           </View>
         ) : (
@@ -87,7 +86,7 @@ export function RubyText({
             >
               {part[1]}
             </Text>
-            <Text style={tight}>{part[0]}</Text>
+            <Text style={[tight, { marginTop: -2 }]}>{part[0]}</Text>
           </View>
         )
       )}
@@ -144,9 +143,9 @@ const RUBY_DICT: [string, string][] = [
   ["設定", "せってい"], ["変更", "へんこう"], ["送信", "そうしん"], ["受信", "じゅしん"],
   ["完了", "かんりょう"], ["開始", "かいし"], ["終了", "しゅうりょう"], ["合計", "ごうけい"],
   ["回", "かい"], ["円", "えん"], ["件", "けん"], ["分", "ふん"], ["秒", "びょう"], ["年", "ねん"],
-  ["月", "つき"], ["日", "にち"], ["人", "にん"], ["個", "こ"], ["枚", "まい"],
+  ["月", "つき"], ["日", "にち"], ["人", "ひと"], ["個", "こ"], ["枚", "まい"],
   ["冊", "さつ"], ["株", "かぶ"], ["店", "みせ"], ["数", "かず"], ["別", "べつ"],
-  ["次", "つぎ"], ["前", "まえ"], ["中", "ちゅう"], ["上", "うえ"],
+  ["次", "つぎ"], ["前", "まえ"], ["中", "ちゅう"], ["上", "あ"],
   ["下", "した"], ["使", "つか"], ["作", "つく"], ["決", "き"], ["始", "はじ"],
   ["待", "ま"], ["持", "も"], ["送", "おく"], ["届", "とど"], ["選", "えら"],
   ["考", "かんが"], ["足", "た"], ["頑張", "がんば"], ["稼", "かせ"], ["増", "ふ"],
@@ -190,7 +189,13 @@ const RUBY_DICT: [string, string][] = [
   ["値下", "ねさ"], ["値上", "ねあ"], ["必須", "ひっす"],
   ["却下", "きゃっか"], ["期間", "きかん"], ["期限", "きげん"],
   ["装備", "そうび"], ["特別", "とくべつ"], ["権限", "けんげん"],
-  ["返事", "へんじ"],
+  ["返事", "へんじ"], ["解放", "かいほう"], ["獲得", "かくとく"],
+  ["休", "やす"], ["連続", "れんぞく"], ["楽", "たの"], ["今週", "こんしゅう"], ["記録", "きろく"],
+  ["東京", "とうきょう"], ["日本", "にほん"], ["有名", "ゆうめい"], ["多", "おお"],
+  ["運営", "うんえい"], ["音楽", "おんがく"], ["一番", "いちばん"], ["銀行", "ぎんこう"],
+  ["電車", "でんしゃ"], ["携帯電話", "けいたいでんわ"], ["電気自動車", "でんきじどうしゃ"],
+  ["飛行機", "ひこうき"], ["検索", "けんさく"], ["走", "はし"], ["菓子", "かし"],
+  ["自動車", "じどうしゃ"],
 ].sort((a, b) => b[0].length - a[0].length) as [string, string][];
 
 // ひらがな→漢字の逆引き辞書（ひらがなテキストを漢字＋ルビに変換）

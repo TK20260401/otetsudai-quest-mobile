@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -70,6 +70,10 @@ export default function ParentDashboardScreen({
     start_date: "",
     end_date: "",
   });
+
+  // ScrollView refs for keyboard handling
+  const approvalScrollRef = useRef<ScrollView>(null);
+  const taskFormScrollRef = useRef<ScrollView>(null);
 
   // Date picker
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -562,7 +566,7 @@ export default function ParentDashboardScreen({
           accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
           <View style={styles.headerBadgeRow}>
-            <Text style={tab === "approve" ? styles.tabTextActive : styles.tabText}>✅ 承認</Text>
+            <Text style={tab === "approve" ? styles.tabTextActive : styles.tabText} numberOfLines={1}>✅ 承認</Text>
             {pendingCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{pendingCount}</Text>
@@ -579,6 +583,7 @@ export default function ParentDashboardScreen({
         >
           <Text
             style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}
+            numberOfLines={1}
           >
             ⚔️ クエスト
           </Text>
@@ -595,6 +600,7 @@ export default function ParentDashboardScreen({
               styles.tabText,
               tab === "children" && styles.tabTextActive,
             ]}
+            numberOfLines={1}
           >
             👦 子ども
           </Text>
@@ -610,7 +616,7 @@ export default function ParentDashboardScreen({
         {/* 週次サマリー */}
         {tab === "approve" && weeklySummary.quests > 0 && (
           <View style={[styles.section, { backgroundColor: palette.accentLight, borderRadius: 12, padding: 16, marginBottom: 8 }]}>
-            <Text style={styles.weeklySummaryTitle}>📊 こんしゅうの かぞく きろく</Text>
+            <Text style={styles.weeklySummaryTitle}>📊 今週の家族記録</Text>
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
                 <Text style={styles.weeklyStatValue}>{weeklySummary.quests}</Text>
@@ -642,7 +648,7 @@ export default function ParentDashboardScreen({
                           {log.task?.title}
                         </Text>
                         <Text style={styles.approvalSub}>
-                          🧒 {(log.child as any)?.name} ・ 💰{" "}
+                          🧒 {(log.child as any)?.name} ・ 🪙{" "}
                           {log.task?.reward_amount}円
                         </Text>
                       </View>
@@ -703,7 +709,7 @@ export default function ParentDashboardScreen({
             {/* Price requests */}
             {priceRequests.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`💰 値上げリクエスト (${priceRequests.length})`}</Text>
+                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`🪙 値上げリクエスト (${priceRequests.length})`}</Text>
                 {priceRequests.map((task) => (
                   <View key={task.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -811,7 +817,7 @@ export default function ParentDashboardScreen({
                             {log.task?.title}
                           </Text>
                           <Text style={styles.approvalSub}>
-                            🧒 {log.child?.name} ・ 💰 {log.task?.reward_amount}円
+                            🧒 {log.child?.name} ・ 🪙 {log.task?.reward_amount}円
                           </Text>
                           {childStamp && (
                             <Text style={styles.recentAmount}>
@@ -938,7 +944,7 @@ export default function ParentDashboardScreen({
                             {"★".repeat(task.special_difficulty || 1)} {task.title}
                           </Text>
                           <Text style={styles.taskSub}>
-                            💰 {task.reward_amount}円
+                            🪙 {task.reward_amount}円
                             {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
                           </Text>
                         </View>
@@ -984,14 +990,21 @@ export default function ParentDashboardScreen({
                   </Text>
                   <View style={styles.flex1}>
                     <Text style={styles.taskTitle}>{task.title}</Text>
-                    <Text style={styles.taskSub}>
-                      💰 {task.reward_amount}円 ・{" "}
-                      {task.recurrence === "daily"
-                        ? "毎日"
-                        : task.recurrence === "weekly"
-                          ? "毎週"
-                          : "1回"}
-                    </Text>
+                    <View style={styles.taskSubRow}>
+                      <TouchableOpacity
+                        onPress={() => openTaskForm(task)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Text style={styles.taskRewardTap}>🪙 {task.reward_amount}円 ✏️</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.taskSub}>
+                        {task.recurrence === "daily"
+                          ? "毎日"
+                          : task.recurrence === "weekly"
+                            ? "毎週"
+                            : "1回"}
+                      </Text>
+                    </View>
                   </View>
                 </View>
                 <View style={styles.taskActions}>
@@ -1111,6 +1124,7 @@ export default function ParentDashboardScreen({
       >
         <View style={styles.flex1}>
           <ScrollView
+            ref={approvalScrollRef}
             contentContainerStyle={[
               styles.modalOverlay,
               keyboardHeight > 0 && { paddingBottom: keyboardHeight },
@@ -1125,7 +1139,7 @@ export default function ParentDashboardScreen({
                 {approvalTarget?.task?.title}
               </Text>
               <Text style={styles.modalReward}>
-                💰 {approvalTarget?.task?.reward_amount}円
+                🪙 {approvalTarget?.task?.reward_amount}円
               </Text>
 
               {/* Stamps */}
@@ -1155,6 +1169,9 @@ export default function ParentDashboardScreen({
                 value={approvalMessage}
                 onChangeText={setApprovalMessage}
                 maxLength={100}
+                onFocus={() => {
+                  setTimeout(() => approvalScrollRef.current?.scrollToEnd({ animated: true }), 200);
+                }}
               />
 
               <View style={styles.modalActions}>
@@ -1189,6 +1206,7 @@ export default function ParentDashboardScreen({
       >
         <View style={{ flex: 1, backgroundColor: palette.overlay }}>
           <ScrollView
+            ref={taskFormScrollRef}
             contentContainerStyle={[
               styles.taskFormScrollContent,
               keyboardHeight > 0 && { paddingBottom: keyboardHeight },
@@ -1201,7 +1219,7 @@ export default function ParentDashboardScreen({
                 {editingTask ? "クエスト編集" : "新しいクエスト"}
               </Text>
 
-              <Text style={styles.formLabel}>クエスト名</Text>
+              <Text style={styles.formLabel}>⚔️ クエスト名</Text>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.title}
@@ -1209,7 +1227,7 @@ export default function ParentDashboardScreen({
                 placeholder="おふろそうじ、しゅくだい など"
               />
 
-              <Text style={styles.formLabel}>説明（なくてもOK）</Text>
+              <Text style={styles.formLabel}>📝 説明（なくてもOK）</Text>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.description}
@@ -1247,7 +1265,7 @@ export default function ParentDashboardScreen({
               {/* 特別クエスト: 難易度 */}
               {taskForm.is_special && (
                 <>
-                  <Text style={styles.formLabel}>難易度</Text>
+                  <Text style={styles.formLabel}>⭐ 難易度</Text>
                   <View style={styles.recurrenceRow}>
                     {[1, 2, 3].map((d) => (
                       <TouchableOpacity
@@ -1268,19 +1286,22 @@ export default function ParentDashboardScreen({
                     ))}
                   </View>
 
-                  <Text style={styles.formLabel}>期間（開始）</Text>
+                  <View style={styles.dateRow}>
+                    <Text style={styles.formLabel}>📅 期間（開始）</Text>
+                    <Text style={styles.dateHint}>なしでOK</Text>
+                  </View>
                   <TouchableOpacity
                     style={styles.datePickerButton}
-                    onPress={() => setShowStartDatePicker(true)}
+                    onPress={() => setShowStartDatePicker(!showStartDatePicker)}
                   >
                     <Text style={styles.datePickerText}>
                       {taskForm.start_date
-                        ? `📅 ${taskForm.start_date}`
-                        : "📅 タップして選ぶ（今日からなら なしでOK）"}
+                        ? taskForm.start_date
+                        : "タップして選ぶ"}
                     </Text>
                     {taskForm.start_date ? (
                       <TouchableOpacity
-                        onPress={() => setTaskForm({ ...taskForm, start_date: "" })}
+                        onPress={() => { setTaskForm({ ...taskForm, start_date: "" }); setShowStartDatePicker(false); }}
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                       >
                         <Text style={styles.dateClearText}>✕</Text>
@@ -1291,10 +1312,10 @@ export default function ParentDashboardScreen({
                     <DateTimePicker
                       value={taskForm.start_date ? new Date(taskForm.start_date) : new Date()}
                       mode="date"
-                      display={Platform.OS === "ios" ? "inline" : "default"}
+                      display="spinner"
                       locale="ja-JP"
                       onChange={(_event, selectedDate) => {
-                        setShowStartDatePicker(Platform.OS === "ios");
+                        if (Platform.OS !== "ios") setShowStartDatePicker(false);
                         if (selectedDate) {
                           const dateStr = selectedDate.toISOString().split("T")[0];
                           setTaskForm({ ...taskForm, start_date: dateStr });
@@ -1303,19 +1324,22 @@ export default function ParentDashboardScreen({
                     />
                   )}
 
-                  <Text style={styles.formLabel}>期間（終わり）</Text>
+                  <View style={styles.dateRow}>
+                    <Text style={styles.formLabel}>📅 期間（終わり）</Text>
+                    <Text style={styles.dateHint}>期限なしならなしでOK</Text>
+                  </View>
                   <TouchableOpacity
                     style={styles.datePickerButton}
-                    onPress={() => setShowEndDatePicker(true)}
+                    onPress={() => setShowEndDatePicker(!showEndDatePicker)}
                   >
                     <Text style={styles.datePickerText}>
                       {taskForm.end_date
-                        ? `📅 ${taskForm.end_date}`
-                        : "📅 タップして選ぶ（期限なしなら なしでOK）"}
+                        ? taskForm.end_date
+                        : "タップして選ぶ"}
                     </Text>
                     {taskForm.end_date ? (
                       <TouchableOpacity
-                        onPress={() => setTaskForm({ ...taskForm, end_date: "" })}
+                        onPress={() => { setTaskForm({ ...taskForm, end_date: "" }); setShowEndDatePicker(false); }}
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                       >
                         <Text style={styles.dateClearText}>✕</Text>
@@ -1326,11 +1350,11 @@ export default function ParentDashboardScreen({
                     <DateTimePicker
                       value={taskForm.end_date ? new Date(taskForm.end_date) : new Date()}
                       mode="date"
-                      display={Platform.OS === "ios" ? "inline" : "default"}
+                      display="spinner"
                       locale="ja-JP"
                       minimumDate={taskForm.start_date ? new Date(taskForm.start_date) : undefined}
                       onChange={(_event, selectedDate) => {
-                        setShowEndDatePicker(Platform.OS === "ios");
+                        if (Platform.OS !== "ios") setShowEndDatePicker(false);
                         if (selectedDate) {
                           const dateStr = selectedDate.toISOString().split("T")[0];
                           setTaskForm({ ...taskForm, end_date: dateStr });
@@ -1342,7 +1366,7 @@ export default function ParentDashboardScreen({
               )}
 
               <Text style={styles.formLabel} adjustsFontSizeToFit numberOfLines={1}>
-                報酬（円）{taskForm.is_special ? " ※50円〜" : ""}
+                🪙 報酬（円）{taskForm.is_special ? " ※50円〜" : ""}
               </Text>
               <TextInput
                 style={styles.formInput}
@@ -1374,7 +1398,7 @@ export default function ParentDashboardScreen({
 
               {!taskForm.is_special && (
                 <>
-                  <Text style={styles.formLabel}>繰り返し</Text>
+                  <Text style={styles.formLabel}>🔄 繰り返し</Text>
                   <View style={styles.recurrenceRow}>
                     {(["once", "daily", "weekly"] as const).map((r) => (
                       <TouchableOpacity
@@ -1404,52 +1428,30 @@ export default function ParentDashboardScreen({
                 </>
               )}
 
-              <Text style={styles.formLabel}>誰に？</Text>
-              <View style={styles.recurrenceRow}>
-                <TouchableOpacity
-                  style={[
-                    styles.recurrenceBtn,
-                    taskForm.assigned_child_id === "" &&
-                      styles.recurrenceActive,
-                  ]}
-                  onPress={() =>
-                    setTaskForm({ ...taskForm, assigned_child_id: "" })
-                  }
-                >
-                  <Text
-                    style={[
-                      styles.recurrenceText,
-                      taskForm.assigned_child_id === "" &&
-                        styles.recurrenceTextActive,
-                    ]}
-                  >
-                    全員
-                  </Text>
-                </TouchableOpacity>
-                {children.map((c) => (
-                  <TouchableOpacity
-                    key={c.id}
-                    style={[
-                      styles.recurrenceBtn,
-                      taskForm.assigned_child_id === c.id &&
-                        styles.recurrenceActive,
-                    ]}
-                    onPress={() =>
-                      setTaskForm({ ...taskForm, assigned_child_id: c.id })
-                    }
-                  >
-                    <Text
-                      style={[
-                        styles.recurrenceText,
-                        taskForm.assigned_child_id === c.id &&
-                          styles.recurrenceTextActive,
-                      ]}
-                    >
-                      {c.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              <Text style={styles.formLabel}>👤 誰に？</Text>
+              <TouchableOpacity
+                style={styles.dropdownButton}
+                onPress={() => {
+                  const options = [
+                    { text: "全員", onPress: () => setTaskForm({ ...taskForm, assigned_child_id: "" }) },
+                    ...children.map((c) => ({
+                      text: c.name,
+                      onPress: () => setTaskForm({ ...taskForm, assigned_child_id: c.id }),
+                    })),
+                  ];
+                  alert("誰に？", "クエストの対象を選んでください", [
+                    ...options,
+                    { text: "キャンセル", style: "cancel" as const },
+                  ]);
+                }}
+              >
+                <Text style={styles.dropdownText}>
+                  {taskForm.assigned_child_id
+                    ? children.find((c) => c.id === taskForm.assigned_child_id)?.name || "?"
+                    : "全員"}
+                </Text>
+                <Text style={styles.dropdownArrow}>▼</Text>
+              </TouchableOpacity>
 
               <View style={styles.modalActions}>
                 <TouchableOpacity
@@ -1523,7 +1525,7 @@ function createStyles(p: Palette) {
     alignItems: "center",
   },
   tabActive: { backgroundColor: p.white },
-  tabText: { fontSize: 13, color: p.textMuted },
+  tabText: { fontSize: 12, color: p.textMuted },
   tabTextActive: { color: p.textStrong, fontWeight: "bold" },
   badge: {
     backgroundColor: p.red,
@@ -1681,7 +1683,9 @@ function createStyles(p: Palette) {
   taskInfo: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   taskIcon: { fontSize: 28, marginRight: 10 },
   taskTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong },
-  taskSub: { fontSize: 13, color: p.textMuted, marginTop: 2 },
+  taskSubRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 2 } as const,
+  taskRewardTap: { fontSize: 13, color: p.primary, fontWeight: "600" },
+  taskSub: { fontSize: 13, color: p.textMuted },
   taskActions: { flexDirection: "row", gap: 12, justifyContent: "flex-end" },
   taskActionBtn: { padding: 10, minWidth: 44, minHeight: 44, alignItems: "center" as const, justifyContent: "center" as const },
 
@@ -1759,7 +1763,7 @@ function createStyles(p: Palette) {
 
   // Modal
   modalOverlay: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: p.overlay,
     justifyContent: "center",
     padding: 20,
@@ -1882,6 +1886,28 @@ function createStyles(p: Palette) {
     fontSize: 16,
     color: p.textMuted,
     paddingLeft: 8,
+  },
+  dropdownButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderWidth: 1,
+    borderColor: p.border,
+    borderRadius: 10,
+    padding: 14,
+    backgroundColor: p.surfaceMuted,
+    marginBottom: 12,
+  } as const,
+  dropdownText: { fontSize: 15, color: p.textStrong, fontWeight: "600" },
+  dropdownArrow: { fontSize: 12, color: p.textMuted },
+  dateRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  } as const,
+  dateHint: {
+    fontSize: 11,
+    color: p.textMuted,
   },
   recurrenceRow: {
     flexDirection: "row",

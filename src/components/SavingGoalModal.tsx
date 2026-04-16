@@ -30,19 +30,18 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
   const [title, setTitle] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [titleError, setTitleError] = useState(false);
+  const [amountError, setAmountError] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
   const keyboardHeight = useKeyboardHeight();
 
   async function handleSubmit() {
-    if (!title.trim()) {
-      alert("⚠️", "もくひょうの なまえを いれてね");
-      return;
-    }
+    const noTitle = !title.trim();
     const parsed = parseInt(targetAmount);
-    if (!parsed || parsed <= 0) {
-      alert("⚠️", "きんがくを ただしく いれてね");
-      return;
-    }
+    const noAmount = !parsed || parsed <= 0;
+    setTitleError(noTitle);
+    setAmountError(noAmount);
+    if (noTitle || noAmount) return;
     setSubmitting(true);
     const { error } = await supabase.from("otetsudai_saving_goals").insert({
       child_id: childId,
@@ -58,6 +57,8 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
     alert("🐷 もくひょう できたよ！", "ちょきん がんばろう！");
     setTitle("");
     setTargetAmount("");
+    setTitleError(false);
+    setAmountError(false);
     onCreated();
   }
 
@@ -82,9 +83,9 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
 
             <Text style={styles.inputLabel}>何を 買いたい？</Text>
             <TextInput
-              style={styles.titleInput}
+              style={[styles.titleInput, titleError && styles.inputError]}
               value={title}
-              onChangeText={setTitle}
+              onChangeText={(t) => { setTitle(t); setTitleError(false); }}
               placeholder="何を 買いたい？（例：ゲーム、自転車）"
               placeholderTextColor={palette.textMuted}
               maxLength={50}
@@ -93,13 +94,14 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
                 setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
               }}
             />
+            {titleError && <Text style={styles.errorText}>⚠️ なまえを いれてね</Text>}
 
             <Text style={styles.inputLabel}>いくら 貯める？</Text>
             <View style={styles.amountRow}>
               <TextInput
-                style={styles.amountInput}
+                style={[styles.amountInput, amountError && styles.inputError]}
                 value={targetAmount}
-                onChangeText={setTargetAmount}
+                onChangeText={(t) => { setTargetAmount(t); setAmountError(false); }}
                 keyboardType="number-pad"
                 placeholder="金額"
                 placeholderTextColor={palette.textMuted}
@@ -108,6 +110,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
               />
               <Text style={styles.yen}>円</Text>
             </View>
+            {amountError && <Text style={styles.errorText}>⚠️ きんがくを いれてね</Text>}
 
             <View style={styles.buttonRow}>
               <TouchableOpacity
@@ -226,6 +229,17 @@ function createStyles(p: Palette) {
       fontSize: 16,
       fontWeight: "bold",
       color: p.white,
+    },
+    inputError: {
+      borderColor: "#dc2626",
+      borderWidth: 2,
+    },
+    errorText: {
+      color: "#dc2626",
+      fontSize: 12,
+      fontWeight: "bold",
+      marginTop: -12,
+      marginBottom: 12,
     },
   });
 }
