@@ -508,9 +508,9 @@ export default function ParentDashboardScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 48, marginBottom: 12 }}>👨‍👩‍👧‍👦</Text>
+        <Text style={styles.loadingEmoji}>👨‍👩‍👧‍👦</Text>
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={{ color: palette.textMuted, marginTop: 12, fontSize: 14 }}>よみこみちゅう...</Text>
+        <Text style={styles.loadingText}>よみこみちゅう...</Text>
       </View>
     );
   }
@@ -521,8 +521,8 @@ export default function ParentDashboardScreen({
     <SafeAreaView style={styles.container} accessibilityLabel="おやダッシュボード">
       {/* Header */}
       <View style={styles.header} accessibilityRole="header">
-        <View style={{ flexDirection: "row", alignItems: "flex-end", flex: 1 }}>
-          <Text style={{ fontSize: 18 }}>👨‍👩‍👧‍👦 </Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.headerEmoji}>👨‍👩‍👧‍👦 </Text>
           <RubyText style={styles.headerTitle} parts={[["親", "おや"]]} rubySize={7} />
         </View>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
@@ -539,7 +539,7 @@ export default function ParentDashboardScreen({
           accessibilityState={{ selected: tab === "approve" }}
           accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+          <View style={styles.headerBadgeRow}>
             <AutoRubyText
               text="✅ 承認"
               style={tab === "approve" ? styles.tabTextActive : styles.tabText}
@@ -592,15 +592,15 @@ export default function ParentDashboardScreen({
         {/* 週次サマリー */}
         {tab === "approve" && weeklySummary.quests > 0 && (
           <View style={[styles.section, { backgroundColor: palette.accentLight, borderRadius: 12, padding: 16, marginBottom: 8 }]}>
-            <Text style={{ fontSize: rf(13), fontWeight: "bold", color: palette.textStrong, marginBottom: 8 }}>📊 こんしゅうの かぞく きろく</Text>
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: rf(22), fontWeight: "bold", color: palette.accent }}>{weeklySummary.quests}</Text>
-                <Text style={{ fontSize: rf(11), color: palette.textMuted }}>クエスト</Text>
+            <Text style={styles.weeklySummaryTitle}>📊 こんしゅうの かぞく きろく</Text>
+            <View style={styles.rowAround}>
+              <View style={styles.colCenter}>
+                <Text style={styles.weeklyStatValue}>{weeklySummary.quests}</Text>
+                <Text style={styles.weeklyStatLabel}>クエスト</Text>
               </View>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ fontSize: rf(22), fontWeight: "bold", color: palette.accent }}>¥{weeklySummary.earned.toLocaleString()}</Text>
-                <Text style={{ fontSize: rf(11), color: palette.textMuted }}>支払い</Text>
+              <View style={styles.colCenter}>
+                <Text style={styles.weeklyStatValue}>¥{weeklySummary.earned.toLocaleString()}</Text>
+                <Text style={styles.weeklyStatLabel}>支払い</Text>
               </View>
             </View>
           </View>
@@ -619,7 +619,7 @@ export default function ParentDashboardScreen({
                       <Text style={styles.approvalIcon}>
                         {getTaskIcon(log.task?.title || "")}
                       </Text>
-                      <View style={{ flex: 1 }}>
+                      <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>
                           {log.task?.title}
                         </Text>
@@ -656,7 +656,7 @@ export default function ParentDashboardScreen({
                   <View key={req.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
                       <Text style={styles.approvalIcon}>🛒</Text>
-                      <View style={{ flex: 1 }}>
+                      <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>{req.purpose}</Text>
                         <Text style={styles.approvalSub}>
                           🧒 {(req.child as any)?.name} ・ {req.amount}円
@@ -692,13 +692,13 @@ export default function ParentDashboardScreen({
                       <Text style={styles.approvalIcon}>
                         {getTaskIcon(task.title)}
                       </Text>
-                      <View style={{ flex: 1 }}>
+                      <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>{task.title}</Text>
                         <Text style={styles.approvalSub}>
                           {task.reward_amount}円 → {task.proposed_reward}円
                         </Text>
                         {task.proposal_message && (
-                          <Text style={{ fontSize: 12, color: palette.primaryDark, marginTop: 2 }}>
+                          <Text style={styles.subText}>
                             💬 「{task.proposal_message}」
                           </Text>
                         )}
@@ -725,7 +725,7 @@ export default function ParentDashboardScreen({
 
             {pendingCount === 0 && priceRequests.length === 0 && (
               <View style={styles.emptyCard}>
-                <Text style={{ fontSize: 48, marginBottom: 8 }}>✨</Text>
+                <Text style={styles.emptyEmoji}>✨</Text>
                 <AutoRubyText text="承認待ちは ありません" style={styles.emptyCardText} rubySize={7} />
                 <Text style={styles.emptyCardSub}>すべて しょりずみです！</Text>
               </View>
@@ -746,7 +746,7 @@ export default function ParentDashboardScreen({
                         <Text style={styles.approvalIcon}>
                           {hasReaction ? "✅" : "⏳"}
                         </Text>
-                        <View style={{ flex: 1 }}>
+                        <View style={styles.flex1}>
                           <Text style={styles.approvalTitle}>
                             {log.task?.title}
                           </Text>
@@ -754,17 +754,17 @@ export default function ParentDashboardScreen({
                             🧒 {log.child?.name} ・ 💰 {log.task?.reward_amount}円
                           </Text>
                           {childStamp && (
-                            <Text style={{ fontSize: 13, marginTop: 4 }}>
+                            <Text style={styles.recentAmount}>
                               {childStamp.emoji} {childStamp.label}
                             </Text>
                           )}
                           {log.child_reaction_message && (
-                            <Text style={{ fontSize: 12, color: palette.primaryDark, marginTop: 2 }}>
+                            <Text style={styles.subText}>
                               💬 「{log.child_reaction_message}」
                             </Text>
                           )}
                           {!hasReaction && (
-                            <AutoRubyText text="⏳ 子どもの 返事待ち" style={{ fontSize: 11, color: palette.textMuted, marginTop: 2 }} rubySize={6} />
+                            <AutoRubyText text="⏳ 子どもの 返事待ち" style={styles.pendingText} rubySize={6} />
                           )}
                         </View>
                       </View>
@@ -825,7 +825,7 @@ export default function ParentDashboardScreen({
               </View>
             )}
 
-            <View style={{ flexDirection: "row", gap: 8, marginBottom: 12 }}>
+            <View style={styles.actionRow}>
               <TouchableOpacity
                 style={[styles.addButton, { flex: 1, marginBottom: 0 }]}
                 onPress={() => openTaskForm()}
@@ -873,7 +873,7 @@ export default function ParentDashboardScreen({
                         <Text style={styles.taskIcon}>
                           {getTaskIcon(task.title)}
                         </Text>
-                        <View style={{ flex: 1 }}>
+                        <View style={styles.flex1}>
                           <Text style={[styles.taskTitle, { color: palette.goldText }]}>
                             {"★".repeat(task.special_difficulty || 1)} {task.title}
                           </Text>
@@ -922,7 +922,7 @@ export default function ParentDashboardScreen({
                   <Text style={styles.taskIcon}>
                     {getTaskIcon(task.title)}
                   </Text>
-                  <View style={{ flex: 1 }}>
+                  <View style={styles.flex1}>
                     <Text style={styles.taskTitle}>{task.title}</Text>
                     <Text style={styles.taskSub}>
                       💰 {task.reward_amount}円 ・{" "}
@@ -1039,7 +1039,7 @@ export default function ParentDashboardScreen({
           </View>
         )}
 
-        <View style={{ height: 40 }} />
+        <View style={styles.bottomSpacer} />
       </ScrollView>
 
       {/* === Approval Modal === */}
@@ -1049,7 +1049,7 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setApprovalTarget(null)}
       >
-        <View style={{ flex: 1 }}>
+        <View style={styles.flex1}>
           <ScrollView
             contentContainerStyle={[
               styles.modalOverlay,
@@ -1840,5 +1840,24 @@ function createStyles(p: Palette) {
   },
   recurrenceText: { fontSize: 13, color: p.textMuted },
   recurrenceTextActive: { color: p.white, fontWeight: "bold" },
+
+  // 共通ユーティリティ
+  flex1: { flex: 1 },
+  rowAround: { flexDirection: "row", justifyContent: "space-around" } as const,
+  colCenter: { alignItems: "center" } as const,
+  loadingEmoji: { fontSize: 48, marginBottom: 12 },
+  emptyEmoji: { fontSize: 48, marginBottom: 8 },
+  loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
+  headerRow: { flexDirection: "row", alignItems: "flex-end", flex: 1 } as const,
+  headerEmoji: { fontSize: 18 },
+  headerBadgeRow: { flexDirection: "row", alignItems: "center", gap: 4 } as const,
+  weeklySummaryTitle: { fontSize: rf(13), fontWeight: "bold", color: p.textStrong, marginBottom: 8 } as const,
+  weeklyStatValue: { fontSize: rf(22), fontWeight: "bold", color: p.accent } as const,
+  weeklyStatLabel: { fontSize: rf(11), color: p.textMuted },
+  subText: { fontSize: 12, color: p.primaryDark, marginTop: 2 },
+  pendingText: { fontSize: 11, color: p.textMuted, marginTop: 2 },
+  recentAmount: { fontSize: 13, marginTop: 4 },
+  actionRow: { flexDirection: "row", gap: 8, marginBottom: 12 } as const,
+  bottomSpacer: { height: 40 },
   });
 }
