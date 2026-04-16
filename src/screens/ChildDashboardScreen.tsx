@@ -469,7 +469,14 @@ export default function ChildDashboardScreen({
           </TouchableOpacity>
         </View>
       </View>
-      <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
+      <RubyText style={styles.headerDate} parts={(() => {
+        const now = new Date();
+        const m = now.getMonth() + 1;
+        const d = now.getDate();
+        const w = ["日", "月", "火", "水", "木", "金", "土"][now.getDay()];
+        const wRuby = ["にち", "げつ", "か", "すい", "もく", "きん", "ど"][now.getDay()];
+        return [`${m}`, ["月", "がつ"], `${d}`, ["日", "にち"], " ", [w, wRuby], ["曜日", "ようび"]];
+      })()} rubySize={5} />
 
       <ScrollView
         style={styles.scroll}
