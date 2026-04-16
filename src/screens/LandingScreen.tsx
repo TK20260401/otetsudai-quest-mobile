@@ -72,7 +72,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         <View style={styles.features}>
           <View style={[styles.featureCard, { backgroundColor: palette.walletSpendBg, borderColor: palette.walletSpendBorder }]}>
             <View style={[styles.featureIcon, { backgroundColor: palette.walletSpend }]}>
-              <Text style={styles.featureEmoji}>💰</Text>
+              <Text style={styles.featureEmoji}>💴</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
             {isLandscape ? (
@@ -89,7 +89,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletSaveBg, borderColor: palette.walletSaveBorder }]}>
             <View style={[styles.featureIcon, { backgroundColor: palette.walletSave }]}>
-              <Text style={styles.featureEmoji}>🐷</Text>
+              <Text style={styles.featureEmoji}>🧑</Text>
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["貯", "た"], "める"]} rubySize={7} />
             {isLandscape ? (

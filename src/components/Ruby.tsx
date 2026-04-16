@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, type TextStyle } from "react-native";
 
 type Props = {
   kanji: string;
@@ -9,34 +9,48 @@ type Props = {
 };
 
 /**
- * ルビ付きテキストのレイアウト方針 (A案):
+ * ルビ付きテキストのレイアウト方針:
  *
- * 全セグメント（ルビ有り/無し）を同じ高さのコンテナに入れる。
- * - paddingTop でルビ領域を確保（ルビ無しセグメントにも同じ padding）
- * - ルビは position: absolute で上部に配置
- * - 本文テキストはコンテナ下部に自然配置
- * → 全セグメントの高さが揃い、ベースラインが一致
+ * - ルビ文字は漢字の真上に密着配置
+ * - 呼び出し元のstyleにlineHeightがあっても、ルビ内部では
+ *   fontSize * 1.15 に強制してルビ-漢字間の隙間を防止
+ * - ルビ無しセグメントにはpaddingTopでルビ領域分の高さを確保
+ * - 全セグメントのベースラインを揃える
  */
+
+/** styleからlineHeightを除去し、fontSizeに密着させる */
+function tightStyle(style: any): TextStyle {
+  const flat = StyleSheet.flatten(style) as TextStyle | undefined;
+  if (!flat) return {};
+  const { lineHeight: _, ...rest } = flat;
+  const fontSize = rest.fontSize ?? 14;
+  return { ...rest, lineHeight: Math.ceil(fontSize * 1.15) };
+}
+
+/** ルビテキストのスタイル */
+function rubyStyle(size: number): TextStyle {
+  return {
+    fontSize: size,
+    color: "#64748b",
+    lineHeight: Math.ceil(size * 1.1),
+    textAlign: "center",
+    marginBottom: -1,
+  };
+}
 
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
   return (
-    <View style={{ alignItems: "center" }}>
+    <View style={layoutStyles.center}>
       <Text
-        style={{
-          fontSize: rubySize,
-          color: "#64748b",
-          lineHeight: rubySize,
-          textAlign: "center",
-          marginBottom: -1,
-        }}
+        style={rubyStyle(rubySize)}
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.6}
       >
         {ruby}
       </Text>
-      <Text style={style}>{kanji}</Text>
+      <Text style={tightStyle(style)}>{kanji}</Text>
     </View>
   );
 }
@@ -54,30 +68,26 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
+  const tight = tightStyle(style);
+  const rs = rubyStyle(rubySize);
   return (
-    <View style={baseStyles.textRow}>
+    <View style={layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
           <View key={i} style={{ paddingTop: rubySize }}>
-            <Text style={style}>{part}</Text>
+            <Text style={tight}>{part}</Text>
           </View>
         ) : (
-          <View key={i} style={{ alignItems: "center" }}>
+          <View key={i} style={layoutStyles.center}>
             <Text
-              style={{
-                fontSize: rubySize,
-                color: "#64748b",
-                lineHeight: rubySize,
-                textAlign: "center",
-                marginBottom: -1,
-              }}
+              style={rs}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
             >
               {part[1]}
             </Text>
-            <Text style={style}>{part[0]}</Text>
+            <Text style={tight}>{part[0]}</Text>
           </View>
         )
       )}
@@ -241,10 +251,13 @@ export function AutoRubyText({
   return <RubyText parts={parts} style={style} rubySize={rubySize} />;
 }
 
-const baseStyles = StyleSheet.create({
+const layoutStyles = StyleSheet.create({
   textRow: {
     flexDirection: "row",
     alignItems: "flex-end",
     flexWrap: "wrap",
+  },
+  center: {
+    alignItems: "center",
   },
 });
