@@ -29,6 +29,7 @@ import { getChildStampById } from "../lib/child-stamps";
 import { useAppAlert } from "../components/AppAlert";
 import AnimatedButton from "../components/AnimatedButton";
 import BadgeUnlockModal from "../components/BadgeUnlockModal";
+import SkillTree from "../components/SkillTree";
 import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
 
@@ -683,31 +684,10 @@ export default function ChildDashboardScreen({
 
         {/* そうび（バッジ → 装備として表示） */}
         <View style={styles.badgeCard}>
-          <RubyText style={styles.sectionTitle} parts={["⚔️ ", ["装備", "そうび"], ` (${badges.length}/5)`]} />
-          <View style={styles.badgeRow}>
-            {badges.map((b) => {
-              const def = BADGE_DEFINITIONS[b.badge_type];
-              return def ? (
-                <View key={b.id} style={styles.equipItem}>
-                  <View style={styles.equipIconWrap}>
-                    <Text style={styles.badgeEmoji}>{def.emoji}</Text>
-                  </View>
-                  <Text style={styles.badgeLabel}>{def.label}</Text>
-                </View>
-              ) : null;
-            })}
-            {/* 未獲得スロット */}
-            {Array.from({ length: Math.max(0, 5 - badges.length) }).map((_, i) => (
-              <View key={`empty-${i}`} style={styles.equipItem}>
-                <View style={styles.equipIconEmpty}>
-                  <Text style={styles.equipEmptyText}>？</Text>
-                </View>
-                <Text style={styles.badgeLabel}>？？？</Text>
-              </View>
-            ))}
-          </View>
+          <RubyText style={styles.sectionTitle} parts={["🌳 ", ["冒険", "ぼうけん"], "スキルツリー ", `(${badges.length}/5)`]} />
+          <SkillTree badges={badges} palette={palette} />
           {badges.length === 0 && (
-            <AutoRubyText text="クエストをクリアして 装備を集めよう！" style={styles.emptyHint} rubySize={6} />
+            <AutoRubyText text="クエストをクリアしてスキルを解放しよう！" style={styles.emptyHint} rubySize={6} />
           )}
         </View>
 
