@@ -1493,10 +1493,15 @@ function createStyles(p: Palette) {
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
+    shadowColor: p.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   approvalInfo: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   approvalIcon: { fontSize: 28, marginRight: 10 },
-  approvalTitle: { fontSize: 15, fontWeight: "600", color: p.textStrong },
+  approvalTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong },
   approvalSub: { fontSize: 13, color: p.textMuted, marginTop: 2 },
   approvalActions: { flexDirection: "row", gap: 8 },
   approveButton: {
@@ -1571,7 +1576,7 @@ function createStyles(p: Palette) {
   specialToggleText: {
     fontSize: 14,
     color: p.textMuted,
-    fontWeight: "600" as const,
+    fontWeight: "bold" as const,
   },
   specialToggleTextActive: {
     color: p.goldText,
@@ -1615,7 +1620,7 @@ function createStyles(p: Palette) {
   taskInactive: { opacity: 0.5 },
   taskInfo: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   taskIcon: { fontSize: 28, marginRight: 10 },
-  taskTitle: { fontSize: 15, fontWeight: "600", color: p.textStrong },
+  taskTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong },
   taskSub: { fontSize: 13, color: p.textMuted, marginTop: 2 },
   taskActions: { flexDirection: "row", gap: 12, justifyContent: "flex-end" },
   taskActionBtn: { padding: 10, minWidth: 44, minHeight: 44, alignItems: "center" as const, justifyContent: "center" as const },
@@ -1626,6 +1631,11 @@ function createStyles(p: Palette) {
     borderRadius: 12,
     padding: 16,
     marginBottom: 10,
+    shadowColor: p.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   childName: {
     fontSize: 18,
@@ -1668,6 +1678,11 @@ function createStyles(p: Palette) {
     borderRadius: 12,
     padding: 32,
     marginBottom: 8,
+    shadowColor: p.black,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   emptyCardText: {
     textAlign: "center" as const,
@@ -1721,7 +1736,7 @@ function createStyles(p: Palette) {
   },
   stampLabel: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "bold",
     color: p.textStrong,
     marginBottom: 8,
   },
@@ -1774,7 +1789,7 @@ function createStyles(p: Palette) {
   // Task form
   formLabel: {
     fontSize: rf(14),
-    fontWeight: "600",
+    fontWeight: "bold",
     color: p.textStrong,
     marginTop: 12,
     marginBottom: 4,

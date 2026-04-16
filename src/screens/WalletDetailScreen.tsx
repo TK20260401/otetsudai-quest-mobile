@@ -605,7 +605,7 @@ function createStyles(p: Palette) {
     },
     totalLabel: {
       fontSize: 14,
-      fontWeight: "600",
+      fontWeight: "bold",
       color: p.textMuted,
       marginBottom: 4,
     },

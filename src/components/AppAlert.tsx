@@ -207,7 +207,7 @@ function createStyles(p: Palette, width: number) {
     },
     buttonTextCancel: {
       color: p.textMuted,
-      fontWeight: "600",
+      fontWeight: "bold",
     },
     buttonTextDestructive: {
       color: p.red,

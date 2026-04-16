@@ -417,7 +417,7 @@ function createStyles(p: Palette) {
     confirmLabel: {
       fontSize: rf(14),
       color: p.textMuted,
-      fontWeight: "600",
+      fontWeight: "bold",
       marginBottom: 4,
       marginTop: 16,
     },

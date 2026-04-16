@@ -1107,7 +1107,7 @@ function createStyles(p: Palette) {
   levelInfo: { flex: 1, overflow: "hidden" as const },
   levelTitle: { fontSize: rf(14), fontWeight: "bold" as const, color: p.textStrong },
   speechBubble: {
-    backgroundColor: "rgba(255,255,255,0.7)",
+    backgroundColor: `${p.surface}b3`,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
@@ -1147,7 +1147,7 @@ function createStyles(p: Palette) {
   },
   walletTitle: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "bold",
     color: p.textMuted,
     marginBottom: 4,
   },
@@ -1395,7 +1395,7 @@ function createStyles(p: Palette) {
   questInfo: { flexDirection: "row", alignItems: "center", flex: 1 },
   questIcon: { fontSize: 28, marginRight: 10 },
   questDetails: { flex: 1 },
-  questTitle: { fontSize: 15, fontWeight: "600", color: p.textStrong, lineHeight: 24 },
+  questTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong, lineHeight: 24 },
   rewardRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,
@@ -1510,7 +1510,7 @@ function createStyles(p: Palette) {
   },
   repliedTaskName: {
     fontSize: 13,
-    fontWeight: "600" as const,
+    fontWeight: "bold" as const,
     color: p.textStrong,
     marginBottom: 4,
   },

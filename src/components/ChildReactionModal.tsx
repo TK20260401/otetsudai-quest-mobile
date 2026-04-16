@@ -272,7 +272,7 @@ function createStyles(p: Palette) {
     },
     sectionLabel: {
       fontSize: 14,
-      fontWeight: "600",
+      fontWeight: "bold",
       color: p.textStrong,
       marginBottom: 8,
     },

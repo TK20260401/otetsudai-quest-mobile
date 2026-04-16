@@ -429,7 +429,7 @@ function createStyles(p: Palette) {
     },
     label: {
       fontSize: 16,
-      fontWeight: "600",
+      fontWeight: "bold",
       marginBottom: 12,
       color: p.textStrong,
     },
