@@ -439,12 +439,9 @@ export default function ChildDashboardScreen({
     <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
       {/* Header */}
       <View style={styles.header} accessibilityRole="header">
-        <View style={styles.flex1}>
-          <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
-            🧒 {childName}
-          </Text>
-          <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
-        </View>
+        <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
+          🧒 {childName}
+        </Text>
         <View style={styles.headerActions}>
           {/* テーマ切替 */}
           <View style={styles.themeRow}>
@@ -472,6 +469,7 @@ export default function ChildDashboardScreen({
           </TouchableOpacity>
         </View>
       </View>
+      <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
       <ScrollView
         style={styles.scroll}
@@ -1573,7 +1571,7 @@ function createStyles(p: Palette) {
   loadingEmoji: { fontSize: 48, marginBottom: 12 },
   emptyEmoji: { fontSize: 48, marginBottom: 8 },
   loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
-  headerDate: { fontSize: rf(10), color: p.textMuted, marginTop: 2 },
+  headerDate: { fontSize: rf(10), color: p.textMuted, paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 },
   headerActions: { flexDirection: "row", alignItems: "center", gap: 8 } as const,
   themeRow: { flexDirection: "row", gap: 2 } as const,
   weeklyStatValue: { fontSize: rf(24), fontWeight: "bold", color: p.accent } as const,
