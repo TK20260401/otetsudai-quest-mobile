@@ -153,6 +153,19 @@ export type InvestOrder = {
   approved_by: string | null;
 };
 
+export type FamilyChallenge = {
+  id: string;
+  family_id: string;
+  title: string;
+  target_quests: number;
+  bonus_amount: number;
+  start_date: string;
+  end_date: string;
+  is_achieved: boolean;
+  achieved_at: string | null;
+  created_at: string;
+};
+
 export type FamilyMessage = {
   id: string;
   family_id: string;

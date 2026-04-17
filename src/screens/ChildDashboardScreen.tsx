@@ -23,7 +23,7 @@ import { getLevelProgress, getCurrentLevel } from "../lib/levels";
 import type { Level } from "../lib/levels";
 import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
-import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest, User, FamilyMessage } from "../lib/types";
+import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest, User, FamilyMessage, FamilyChallenge } from "../lib/types";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
 import LevelUpModal from "../components/LevelUpModal";
@@ -31,6 +31,7 @@ import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
 import FamilyStampSendModal from "../components/FamilyStampSendModal";
 import FamilyMessageCard from "../components/FamilyMessageCard";
+import FamilyChallengeCard from "../components/FamilyChallengeCard";
 import { getChildStampById } from "../lib/child-stamps";
 import { useAppAlert } from "../components/AppAlert";
 import AnimatedButton from "../components/AnimatedButton";
@@ -100,6 +101,8 @@ export default function ChildDashboardScreen({
   const [familyMembers, setFamilyMembers] = useState<User[]>([]);
   const [stampSendVisible, setStampSendVisible] = useState(false);
   const [sessionFamilyId, setSessionFamilyId] = useState<string | null>(null);
+  // 家族チャレンジ
+  const [activeChallenge, setActiveChallenge] = useState<FamilyChallenge | null>(null);
   // 提案中のクエスト数
   const pendingProposals = useMemo(() => tasks.filter((t) => t.created_by === childId && t.proposal_status === "pending").length, [tasks, childId]);
 
@@ -335,6 +338,18 @@ export default function ChildDashboardScreen({
     ]);
     setFamilyMembers(membersRes.data || []);
     setFamilyMessages(fmsgRes.data || []);
+
+    // アクティブな家族チャレンジ
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: challengeData } = await supabase
+      .from("otetsudai_family_challenges")
+      .select("*")
+      .eq("family_id", session.familyId)
+      .lte("start_date", today)
+      .gte("end_date", today)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    setActiveChallenge(challengeData?.[0] || null);
 
     setLoading(false);
   }, [childId]);
@@ -659,6 +674,14 @@ export default function ChildDashboardScreen({
               )}
             </View>
           </View>
+        )}
+
+        {/* 家族チャレンジ */}
+        {activeChallenge && (
+          <FamilyChallengeCard
+            challenge={activeChallenge}
+            children={familyMembers.filter((m) => m.role === "child")}
+          />
         )}
 
         {/* ファミリースタンプリレー */}

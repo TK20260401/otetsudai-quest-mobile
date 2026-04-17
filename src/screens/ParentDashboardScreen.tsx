@@ -22,10 +22,13 @@ import { getTaskIcon } from "../lib/task-icons";
 import { STAMPS } from "../lib/stamps";
 import { getChildStampById } from "../lib/child-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
-import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings, FamilyMessage } from "../lib/types";
+import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings, FamilyMessage, FamilyChallenge } from "../lib/types";
 import { useAppAlert } from "../components/AppAlert";
 import FamilyStampSendModal from "../components/FamilyStampSendModal";
 import FamilyMessageCard from "../components/FamilyMessageCard";
+import MonthlyReport from "../components/MonthlyReport";
+import FamilyAdventureMap from "../components/FamilyAdventureMap";
+import FamilyChallengeCard from "../components/FamilyChallengeCard";
 
 type PendingLog = TaskLog & { task: Task; child: User };
 
@@ -89,6 +92,11 @@ export default function ParentDashboardScreen({
   const [familyMessages, setFamilyMessages] = useState<FamilyMessage[]>([]);
   const [allMembers, setAllMembers] = useState<User[]>([]);
   const [stampSendVisible, setStampSendVisible] = useState(false);
+  // 家族名
+  const [familyName, setFamilyName] = useState("");
+  // 家族チャレンジ
+  const [activeChallenge, setActiveChallenge] = useState<FamilyChallenge | null>(null);
+  const [challengeCreating, setChallengeCreating] = useState(false);
 
   const loadData = useCallback(async () => {
     const session = await getSession();
@@ -118,7 +126,15 @@ export default function ParentDashboardScreen({
     if (session.familyId && !familyIds.includes(session.familyId)) {
       familyIds.push(session.familyId);
     }
-    if (familyIds.length > 0) setFamilyId(familyIds[0]);
+    if (familyIds.length > 0) {
+      setFamilyId(familyIds[0]);
+      const { data: famData } = await supabase
+        .from("otetsudai_families")
+        .select("name")
+        .eq("id", familyIds[0])
+        .single();
+      if (famData) setFamilyName(famData.name);
+    }
 
     if (childIds.length === 0) {
       // Still load tasks even if no children
@@ -242,6 +258,18 @@ export default function ParentDashboardScreen({
       ]);
       setAllMembers(membersRes.data || []);
       setFamilyMessages(fmsgRes.data || []);
+
+      // アクティブな家族チャレンジ
+      const today = new Date().toISOString().slice(0, 10);
+      const { data: challengeData } = await supabase
+        .from("otetsudai_family_challenges")
+        .select("*")
+        .eq("family_id", fid)
+        .lte("start_date", today)
+        .gte("end_date", today)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      setActiveChallenge(challengeData?.[0] || null);
     }
 
     setLoading(false);
@@ -250,6 +278,31 @@ export default function ParentDashboardScreen({
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  async function handleCreateChallenge() {
+    if (!familyId || challengeCreating) return;
+    setChallengeCreating(true);
+    const today = new Date();
+    const endDate = new Date(today);
+    endDate.setDate(endDate.getDate() + 6);
+    const titles = [
+      "みんなで 20クエスト クリアしよう！",
+      "かぞくで ちからを あわせよう！",
+      "こんしゅうも がんばろう！",
+      "めざせ クエストマスター！",
+    ];
+    const title = titles[Math.floor(Math.random() * titles.length)];
+    await supabase.from("otetsudai_family_challenges").insert({
+      family_id: familyId,
+      title,
+      target_quests: 20,
+      bonus_amount: 50,
+      start_date: today.toISOString().slice(0, 10),
+      end_date: endDate.toISOString().slice(0, 10),
+    });
+    setChallengeCreating(false);
+    loadData();
+  }
 
   async function onRefresh() {
     setRefreshing(true);
@@ -653,6 +706,31 @@ export default function ParentDashboardScreen({
                 <Text style={styles.weeklyStatLabel}>支払い</Text>
               </View>
             </View>
+          </View>
+        )}
+
+        {/* 家族チャレンジ（承認タブ内） */}
+        {tab === "approve" && (
+          <View style={styles.section}>
+            {activeChallenge ? (
+              <FamilyChallengeCard
+                challenge={activeChallenge}
+                children={children}
+                isParent
+              />
+            ) : (
+              <TouchableOpacity
+                style={[styles.stampRelayBtn, { backgroundColor: palette.accentLight, borderColor: palette.accent }]}
+                onPress={handleCreateChallenge}
+                disabled={challengeCreating}
+                accessibilityLabel="今週の家族チャレンジを作る"
+                accessibilityRole="button"
+              >
+                <Text style={[styles.stampRelayBtnText, { color: palette.accentDark }]}>
+                  {challengeCreating ? "作成中..." : "🎯 今週のチャレンジを作る"}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -1078,6 +1156,14 @@ export default function ParentDashboardScreen({
         {/* === Children Tab === */}
         {tab === "children" && (
           <View style={styles.section}>
+            {/* 冒険の地図 */}
+            {children.length > 0 && (
+              <FamilyAdventureMap
+                familyName={familyName || "かぞく"}
+                children={children}
+                wallets={wallets}
+              />
+            )}
             {children.map((child) => {
               const w = wallets[child.id];
               const total = w
@@ -1149,6 +1235,8 @@ export default function ParentDashboardScreen({
                       {w.invest_ratio ?? 0}%
                     </Text>
                   )}
+                  {/* 月次レポート */}
+                  <MonthlyReport child={child} wallet={w || null} />
                 </View>
               );
             })}
