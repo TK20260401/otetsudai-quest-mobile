@@ -46,6 +46,8 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false); // false=ログイン, true=新規登録
   const [showPassword, setShowPassword] = useState(false);
+  const [loggedInUserId, setLoggedInUserId] = useState("");
+  const [loggedInAuthId, setLoggedInAuthId] = useState("");
 
   // Family add
   const [newFamilyName, setNewFamilyName] = useState("");
@@ -75,6 +77,15 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       .select("*");
     setFamilies(data || []);
     setLoading(false);
+  }
+
+  async function loadMyFamilies(authId: string) {
+    // 自分が所有する家族 + 山田家（見本）
+    const { data } = await supabase
+      .from("otetsudai_families")
+      .select("*")
+      .or(`owner_auth_id.eq.${authId},name.eq.${SAMPLE_FAMILY_NAME}`);
+    setFamilies(data || []);
   }
 
   async function handleFamilySelect(family: Family) {
@@ -178,14 +189,11 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         name: authUser.name,
         authId: authData.user.id,
       });
-      if (familyId) {
-        onLoginSuccess();
-      } else {
-        // 家族未作成 → 家族管理画面へ
-        setAdminLoggedIn(true);
-        await loadFamilies();
-        alert("ようこそ！", "まず家族を追加してください");
-      }
+      // 常に家族管理画面へ（ダッシュボードへはボタンで遷移）
+      setLoggedInUserId(authUser.id);
+      setLoggedInAuthId(authData.user.id);
+      setAdminLoggedIn(true);
+      await loadMyFamilies(authData.user.id);
     } catch {
       setError("ログインに 失敗しました");
     }
@@ -234,8 +242,10 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
           });
         }
         // 新規登録 → 家族管理画面へ
+        if (newAdminUser) setLoggedInUserId(newAdminUser.id);
+        if (authData.user) setLoggedInAuthId(authData.user.id);
         setAdminLoggedIn(true);
-        await loadFamilies();
+        await loadMyFamilies(authData.user?.id || "");
         alert("🎉 登録完了", "家族を追加してはじめましょう！");
       }
     } catch {
@@ -290,7 +300,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     try {
       const { data: familyData } = await supabase
         .from("otetsudai_families")
-        .insert({ name: newFamilyName.trim() })
+        .insert({ name: newFamilyName.trim(), owner_auth_id: loggedInAuthId || null })
         .select()
         .single();
       if (familyData) {
@@ -304,7 +314,11 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       }
       setNewFamilyName("");
       alert("追加しました", `${newFamilyName.trim()} を追加しました`);
-      await loadFamilies();
+      if (loggedInAuthId) {
+        await loadMyFamilies(loggedInAuthId);
+      } else {
+        await loadFamilies();
+      }
     } catch {
       alert("エラー", "家族の追加に失敗しました");
     }
@@ -456,13 +470,16 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     return (
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
       <ScrollView
         ref={adminScrollRef}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[styles.container, { flexGrow: 1 }]}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
+        showsVerticalScrollIndicator
+        alwaysBounceVertical
       >
         <View style={styles.card}>
           {!adminLoggedIn ? (
@@ -691,6 +708,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                         {addingChild ? "追加中..." : "🧒 子供を追加"}
                       </Text>
                     </TouchableOpacity>
+                    <View style={{ height: 200 }} />
                   </View>
                 </>
               ) : (
@@ -698,22 +716,66 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                   {families.map((f) => {
                     const isSample = f.name === SAMPLE_FAMILY_NAME;
                     return (
-                      <View key={f.id} style={styles.familyRow}>
-                        <TouchableOpacity
-                          style={{ flex: 1 }}
-                          onPress={() => !isSample && openFamilyMembers(f)}
-                        >
-                          <Text style={styles.familyName}>
-                            🏠 {f.name}{isSample ? "（見本）" : ""}
-                          </Text>
-                        </TouchableOpacity>
-                        {!isSample && (
+                      <View key={f.id}>
+                        <View style={styles.familyRow}>
                           <TouchableOpacity
-                            onPress={() => handleDeleteFamily(f)}
-                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                            style={{ flex: 1 }}
+                            onPress={() => !isSample && openFamilyMembers(f)}
                           >
-                            <Text style={styles.familyDelete}>🗑️</Text>
+                            <Text style={styles.familyName}>
+                              🏠 {f.name}{isSample ? "（見本）" : ""}
+                            </Text>
                           </TouchableOpacity>
+                          {!isSample && (
+                            <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
+                              <TouchableOpacity
+                                onPress={() => handleDeleteFamily(f)}
+                                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                              >
+                                <Text style={styles.familyDelete}>🗑️</Text>
+                              </TouchableOpacity>
+                            </View>
+                          )}
+                        </View>
+                        {!isSample && (
+                          <View style={{ flexDirection: "row", gap: 8, marginBottom: 8, marginTop: -4 }}>
+                            <TouchableOpacity
+                              style={{
+                                flex: 1,
+                                backgroundColor: palette.primary,
+                                borderRadius: 10,
+                                paddingVertical: 10,
+                                alignItems: "center",
+                              }}
+                              onPress={async () => {
+                                await setSession({
+                                  userId: loggedInUserId,
+                                  familyId: f.id,
+                                  role: "admin",
+                                  name: adminEmail.split("@")[0],
+                                });
+                                // DB側も更新
+                                await supabase.from("otetsudai_users").update({ family_id: f.id }).eq("id", loggedInUserId);
+                                onLoginSuccess();
+                              }}
+                            >
+                              <Text style={{ color: palette.white, fontWeight: "bold", fontSize: 14 }}>▶ ダッシュボード</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={{
+                                flex: 1,
+                                backgroundColor: palette.surfaceMuted,
+                                borderRadius: 10,
+                                paddingVertical: 10,
+                                alignItems: "center",
+                                borderWidth: 1,
+                                borderColor: palette.border,
+                              }}
+                              onPress={() => openFamilyMembers(f)}
+                            >
+                              <Text style={{ color: palette.textBase, fontWeight: "bold", fontSize: 14 }}>✏️ メンバー管理</Text>
+                            </TouchableOpacity>
+                          </View>
                         )}
                       </View>
                     );
@@ -730,6 +792,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                       placeholder="あたらしい かぞくめい（れい: たなかけ）"
                       value={newFamilyName}
                       onChangeText={setNewFamilyName}
+                      onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
                     />
                   </View>
                   <TouchableOpacity
@@ -788,15 +851,15 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             >
               <Text style={styles.modeEmoji}>🧒</Text>
               <Text style={[styles.modeText, { color: palette.primaryDark }]}>こどもモード</Text>
-              <Text style={styles.modeHint}>おうちをえらんで ログイン</Text>
+              <Text style={styles.modeHint} numberOfLines={1} adjustsFontSizeToFit>おうちをえらんでログイン</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modeButton, { backgroundColor: palette.surfaceMuted, borderColor: palette.border }]}
               onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}
             >
               <Text style={styles.modeEmoji}>👨‍👩‍👧‍👦</Text>
-              <Text style={[styles.modeText, { color: palette.textStrong }]}>おやモード</Text>
-              <Text style={styles.modeHint}>メール・パスワードで ログイン</Text>
+              <Text style={[styles.modeText, { color: palette.textStrong }]}>親モード</Text>
+              <Text style={styles.modeHint} numberOfLines={1} adjustsFontSizeToFit>メール・パスワードでログイン</Text>
             </TouchableOpacity>
           </>
         )}

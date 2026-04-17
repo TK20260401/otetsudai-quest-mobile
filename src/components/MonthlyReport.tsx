@@ -38,7 +38,7 @@ function generateComment(data: ReportData): string {
   } else if (data.questsCompleted >= 10) {
     parts.push("コツコツがんばったね！");
   } else if (data.questsCompleted > 0) {
-    parts.push("クエストにちょうせんできたね！");
+    parts.push("クエストに挑戦できたね！");
   }
 
   if (data.levelEnd > data.levelStart) {
@@ -46,18 +46,18 @@ function generateComment(data: ReportData): string {
   }
 
   if (data.maxStreak >= 5) {
-    parts.push(`${data.maxStreak}日れんぞくはすごい！`);
+    parts.push(`${data.maxStreak}日連続はすごい！`);
   }
 
   if (data.savingGoalsAchieved > 0) {
-    parts.push("ちょきんの目標もたっせいしたね！");
+    parts.push("貯金の目標も達成したね！");
   }
 
   if (data.topQuest) {
     parts.push(`「${data.topQuest}」が一番たくさんクリアしたクエストだよ`);
   }
 
-  return parts.length > 0 ? parts.join(" ") : "こんげつもがんばろう！";
+  return parts.length > 0 ? parts.join(" ") : "今月もがんばろう！";
 }
 
 export default function MonthlyReport({ child, wallet }: Props) {
@@ -161,7 +161,7 @@ export default function MonthlyReport({ child, wallet }: Props) {
     <View style={styles.container}>
       {/* ヘッダー */}
       <Text style={styles.header}>
-        📊 {child.name}の せいちょうレポート
+        📊 {child.name}の成長レポート
       </Text>
       <Text style={styles.monthLabel}>{label}</Text>
 
@@ -175,12 +175,12 @@ export default function MonthlyReport({ child, wallet }: Props) {
         <View style={styles.statItem}>
           <Text style={styles.statEmoji}>💰</Text>
           <Text style={styles.statValue}>¥{data.totalEarned.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>かせいだ</Text>
+          <Text style={styles.statLabel}>稼いだ</Text>
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statEmoji}>🔥</Text>
           <Text style={styles.statValue}>{data.maxStreak}日</Text>
-          <Text style={styles.statLabel}>さいこう連続</Text>
+          <Text style={styles.statLabel}>最高連続</Text>
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statEmoji}>⚔️</Text>

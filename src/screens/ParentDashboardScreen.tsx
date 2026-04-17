@@ -105,14 +105,13 @@ export default function ParentDashboardScreen({
       return;
     }
     setUserId(session.userId);
-    const isAdmin = session.role === "admin";
 
-    // Admin: get all children. Parent: get children in own family.
+    // セッションのfamilyIdで子供を取得
     let childQuery = supabase
       .from("otetsudai_users")
       .select("*")
       .eq("role", "child");
-    if (!isAdmin && session.familyId) {
+    if (session.familyId) {
       childQuery = childQuery.eq("family_id", session.familyId);
       setFamilyId(session.familyId);
     }
