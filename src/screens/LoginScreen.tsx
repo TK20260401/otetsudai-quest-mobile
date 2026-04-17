@@ -424,19 +424,6 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     ]);
   }
 
-  async function handleAddParentMember() {
-    if (!managingFamily) return;
-    const memberCount = familyMembers.length;
-    await supabase.from("otetsudai_users").insert({
-      family_id: managingFamily.id,
-      role: "parent",
-      name: "おや",
-      icon: "👨‍👩‍👧‍👦",
-      display_order: memberCount + 1,
-    });
-    await openFamilyMembers(managingFamily);
-  }
-
   function goBack() {
     setError("");
     if (step === "pin") {
