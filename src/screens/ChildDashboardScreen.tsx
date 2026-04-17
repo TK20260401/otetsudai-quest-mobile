@@ -40,6 +40,7 @@ import SkillTree from "../components/SkillTree";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
+import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon } from "../components/PixelIcons";
 
 export default function ChildDashboardScreen({
   route,
@@ -515,7 +516,7 @@ export default function ChildDashboardScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={styles.loadingEmoji}>⚔️</Text>
+        <PixelCrossedSwordsIcon size={40} />
         <ActivityIndicator size="large" color={palette.primary} />
         <Text style={styles.loadingText}>ぼうけんの じゅんび ちゅう...</Text>
       </View>
@@ -554,7 +555,7 @@ export default function ChildDashboardScreen({
             ))}
           </View>
           <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログアウト" accessibilityRole="button">
-            <Text style={styles.logoutText}>🚪</Text>
+            <PixelDoorIcon size={20} />
           </TouchableOpacity>
         </View>
       </View>
@@ -598,13 +599,19 @@ export default function ChildDashboardScreen({
                 rubySize={6}
               />
             </View>
-            <View style={styles.progressBar}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${levelInfo.progress}%` },
-                ]}
-              />
+            <View style={styles.progressRow}>
+              <PixelSwordIcon size={18} />
+              <View style={styles.progressBarWrap}>
+                <View style={styles.progressBar}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${levelInfo.progress}%` },
+                    ]}
+                  />
+                </View>
+                <Text style={styles.progressLabel}>EXP {levelInfo.progress}%</Text>
+              </View>
             </View>
             {levelInfo.next ? (
               <View>
@@ -612,7 +619,7 @@ export default function ChildDashboardScreen({
                 <AutoRubyText text={`あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} />
               </View>
             ) : (
-              <AutoRubyText text="最高レベル 達成！ 🎊" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
             )}
           </View>
         </View>
@@ -650,7 +657,7 @@ export default function ChildDashboardScreen({
         {/* 週次サマリー */}
         {weeklySummary.quests > 0 && (
           <View style={[styles.weeklyCard, { backgroundColor: palette.surface, borderColor: palette.border }]}>
-            <AutoRubyText text="📊 今週の記録" style={[styles.sectionTitle, { marginBottom: 8 }]} rubySize={6} />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={18} /><AutoRubyText text="今週の記録" style={[styles.sectionTitle, { marginBottom: 8 }]} rubySize={6} /></View>
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
                 <Text style={styles.weeklyStatValue}>
@@ -666,9 +673,10 @@ export default function ChildDashboardScreen({
               </View>
               {weeklySummary.streak > 0 && (
                 <View style={styles.colCenter}>
-                  <Text style={styles.weeklyStatValue}>
-                    🔥{weeklySummary.streak}
-                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                    <PixelFlameIcon size={16} />
+                    <Text style={styles.weeklyStatValue}>{weeklySummary.streak}</Text>
+                  </View>
                   <AutoRubyText text="連続日" style={styles.weeklyStatLabel} rubySize={5} />
                 </View>
               )}
@@ -692,7 +700,7 @@ export default function ChildDashboardScreen({
             style={styles.stampRelayBtn}
             accessibilityLabel="かぞくに エールを おくる"
           >
-            <Text style={styles.stampRelayBtnText}>💌 エールを おくる</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><Text style={styles.stampRelayBtnText}>エールを おくる</Text></View>
           </AnimatedButton>
         </View>
 
@@ -705,7 +713,10 @@ export default function ChildDashboardScreen({
             accessibilityLabel="おさいふの くわしい じょうほう"
             accessibilityRole="button"
           >
-            <RubyText style={styles.walletTitle} parts={["🪙", ["財布", "さいふ"]]} />
+            <View style={styles.walletTitleRow}>
+              <PixelChestOpenIcon size={24} />
+              <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
+            </View>
             <Text
               style={styles.walletTotal}
               adjustsFontSizeToFit
@@ -748,7 +759,7 @@ export default function ChildDashboardScreen({
                 haptic="light"
                 accessibilityLabel="つかうリクエスト"
               >
-                <Text style={styles.spendShortcutText}>💸 つかう</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCartIcon size={14} /><Text style={styles.spendShortcutText}>つかう</Text></View>
               </AnimatedButton>
               <AnimatedButton
                 style={styles.investShortcut}
@@ -756,7 +767,7 @@ export default function ChildDashboardScreen({
                 haptic="light"
                 accessibilityLabel="とうしがめん"
               >
-                <Text style={styles.investShortcutText}>📈 ふやす</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChartIcon size={14} /><Text style={styles.investShortcutText}>ふやす</Text></View>
               </AnimatedButton>
             </View>
           </TouchableOpacity>
@@ -775,9 +786,9 @@ export default function ChildDashboardScreen({
                   req.status === "rejected" && { backgroundColor: palette.redLight },
                 ]}
               >
-                <Text style={styles.spendStatusIcon}>
-                  {req.status === "pending" ? "⏳" : req.status === "approved" ? "✅" : "❌"}
-                </Text>
+                <View style={styles.spendStatusIcon}>
+                  {req.status === "pending" ? <PixelHourglassIcon size={18} /> : req.status === "approved" ? <PixelCheckIcon size={18} /> : <PixelCrossIcon size={18} />}
+                </View>
                 <View style={styles.flex1}>
                   <Text style={styles.spendStatusText} numberOfLines={1}>
                     {req.purpose} — {req.amount}円
@@ -799,7 +810,10 @@ export default function ChildDashboardScreen({
 
         {/* そうび（バッジ → 装備として表示） */}
         <View style={styles.badgeCard}>
-          <RubyText style={styles.sectionTitle} parts={["🌳 ", ["冒険", "ぼうけん"], "スキルツリー ", `(${badges.length}/5)`]} />
+          <View style={styles.sectionTitleRow}>
+            <PixelShieldIcon size={22} />
+            <RubyText style={styles.sectionTitle} parts={[["冒険", "ぼうけん"], "スキルツリー ", `(${badges.length}/5)`]} />
+          </View>
           <SkillTree badges={badges} palette={palette} />
           {badges.length === 0 && (
             <AutoRubyText text="クエストをクリアしてスキルを解放しよう！" style={styles.emptyHint} rubySize={6} />
@@ -821,7 +835,7 @@ export default function ChildDashboardScreen({
                 tab === "quests" && styles.tabTextActive,
               ]}
             >
-              ⚔️ クエスト
+              クエスト
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -833,7 +847,7 @@ export default function ChildDashboardScreen({
           >
             <RubyText
               style={tab === "history" ? styles.tabTextActive : styles.tabText}
-              parts={["📖 ", ["履歴", "りれき"]]}
+              parts={[["履歴", "りれき"]]}
               rubySize={6}
             />
           </TouchableOpacity>
@@ -843,7 +857,10 @@ export default function ChildDashboardScreen({
         {tab === "quests" && (
           <View style={styles.section}>
             {/* ★特別クエスト — 常時表示 */}
-            <RubyText style={styles.specialSectionTitle} parts={["★ ", ["特別", "とくべつ"], "クエスト"]} />
+            <View style={styles.sectionTitleRow}>
+              <PixelStarIcon size={22} />
+              <RubyText style={styles.specialSectionTitle} parts={[["特別", "とくべつ"], "クエスト"]} />
+            </View>
             {tasks.filter((t) => t.is_special && isSpecialActive(t)).length > 0 ? (
               <>
                 {tasks
@@ -905,7 +922,7 @@ export default function ChildDashboardScreen({
               </>
             ) : (
               <View style={styles.emptySpecialCard}>
-                <Text style={styles.emptySpecialIcon}>🌟</Text>
+                <PixelStarIcon size={32} />
                 <AutoRubyText text="今はお休み中" style={[styles.emptyHint, { fontWeight: "bold", fontSize: 13 }]} rubySize={4} />
                 <AutoRubyText text="次の特別クエストをお楽しみに！" style={styles.emptyHint} rubySize={4} />
               </View>
@@ -974,7 +991,7 @@ export default function ChildDashboardScreen({
 
             {tasks.length === 0 && (
               <View style={styles.emptyCard}>
-                <Text style={styles.emptyEmoji}>🗺️</Text>
+                <PixelMapIcon size={40} />
                 <AutoRubyText text="クエストが まだないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={7} />
                 <AutoRubyText text="親に たのんで クエストを つくってもらおう！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
@@ -986,7 +1003,7 @@ export default function ChildDashboardScreen({
               onPress={() => setProposalVisible(true)}
               accessibilityLabel="じぶんクエストを提案する"
             >
-              <Text style={styles.proposalButtonText}>💡 じぶんクエストを提案する</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><Text style={styles.proposalButtonText}>じぶんクエストを提案する</Text></View>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1000,7 +1017,7 @@ export default function ChildDashboardScreen({
             {/* 返信済みメッセージ履歴 */}
             {repliedMessages.length > 0 && (
               <View style={styles.repliedSection}>
-                <RubyText style={styles.repliedTitle} parts={["💬 ", ["親", "おや"], "との やりとり"]} />
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={18} /><RubyText style={styles.repliedTitle} parts={[["親", "おや"], "との やりとり"]} /></View>
                 {repliedMessages.map((log: any) => {
                   const cStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)
@@ -1010,7 +1027,7 @@ export default function ChildDashboardScreen({
                     : null;
                   return (
                     <View key={log.id} style={styles.repliedCard}>
-                      <Text style={styles.repliedTaskName}>🎯 {log.task?.title}</Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelTargetIcon size={14} /><Text style={styles.repliedTaskName}>{log.task?.title}</Text></View>
                       {pStamp && (
                         <Text style={styles.repliedParent}>
                           おや: {pStamp.emoji} {pStamp.label}
@@ -1029,22 +1046,16 @@ export default function ChildDashboardScreen({
 
             {transactions.length === 0 && repliedMessages.length === 0 ? (
               <View style={styles.emptyCard}>
-                <Text style={styles.emptyEmoji}>📖</Text>
+                <PixelBookIcon size={40} />
                 <AutoRubyText text="まだ履歴がないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={6} />
                 <AutoRubyText text="クエストをクリアすると ここに きろくされるよ！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
             ) : transactions.length === 0 ? null : (
               transactions.map((tx) => (
                 <View key={tx.id} style={styles.historyItem}>
-                  <Text style={styles.historyType}>
-                    {tx.type === "earn"
-                      ? "🪙"
-                      : tx.type === "spend"
-                        ? "🛒"
-                        : tx.type === "save"
-                          ? "🐷"
-                          : "📈"}
-                  </Text>
+                  <View style={styles.historyType}>
+                    {tx.type === "earn" ? <PixelCoinIcon size={20} /> : tx.type === "spend" ? <PixelCartIcon size={20} /> : tx.type === "save" ? <PixelPiggyIcon size={20} /> : <PixelChartIcon size={20} />}
+                  </View>
                   <View style={styles.historyInfo}>
                     <Text style={styles.historyDesc}>
                       {tx.description || tx.type}
@@ -1074,7 +1085,7 @@ export default function ChildDashboardScreen({
         {/* 開発用リセット */}
         {__DEV__ && (
           <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-            <Text style={styles.resetText}>🔄 データリセット（テスト用）</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelRefreshIcon size={14} /><Text style={styles.resetText}>データリセット（テスト用）</Text></View>
           </TouchableOpacity>
         )}
 
@@ -1154,7 +1165,7 @@ export default function ChildDashboardScreen({
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <View style={styles.proposalCard}>
-            <Text style={styles.proposalModalTitle}>💡 じぶんクエストを提案</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><Text style={styles.proposalModalTitle}>じぶんクエストを提案</Text></View>
             <AutoRubyText text="親に新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} />
 
             <Text style={styles.proposalLabel}>クエストの名前</Text>
@@ -1301,16 +1312,33 @@ function createStyles(p: Palette) {
     color: p.textStrong,
     lineHeight: 20,
   },
+  progressRow: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 6,
+  },
+  progressBarWrap: {
+    flex: 1,
+  },
   progressBar: {
-    height: 8,
+    height: 10,
     backgroundColor: p.surfaceMuted,
-    borderRadius: 4,
+    borderRadius: 5,
     overflow: "hidden" as const,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   progressFill: {
     height: 8,
     backgroundColor: p.primary,
     borderRadius: 4,
+  },
+  progressLabel: {
+    fontSize: 9,
+    color: p.textMuted,
+    marginTop: 1,
+    fontWeight: "bold" as const,
+    letterSpacing: 1,
   },
   levelNext: { fontSize: 11, color: p.textMuted, marginTop: 4, lineHeight: 18 },
 
@@ -1327,11 +1355,16 @@ function createStyles(p: Palette) {
     shadowRadius: 4,
     elevation: 2,
   },
+  walletTitleRow: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 6,
+    marginBottom: 4,
+  },
   walletTitle: {
     fontSize: 14,
     fontWeight: "bold",
     color: p.textMuted,
-    marginBottom: 4,
   },
   walletTotal: {
     fontSize: rf(28),
@@ -1401,7 +1434,7 @@ function createStyles(p: Palette) {
     padding: 10,
     gap: 8,
   },
-  spendStatusIcon: { fontSize: 18 },
+  spendStatusIcon: { width: 24, alignItems: "center" as const, justifyContent: "center" as const },
   spendStatusText: {
     fontSize: 13,
     fontWeight: "bold",
@@ -1452,11 +1485,16 @@ function createStyles(p: Palette) {
     padding: 16,
     borderRadius: 12,
   },
+  sectionTitleRow: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 6,
+    marginBottom: 8,
+  },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: p.textStrong,
-    marginBottom: 8,
   },
   badgeRow: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   badgeEmoji: { fontSize: 24 },
@@ -1645,7 +1683,7 @@ function createStyles(p: Palette) {
     borderRadius: 10,
     marginBottom: 6,
   },
-  historyType: { fontSize: 22, marginRight: 10 },
+  historyType: { marginRight: 10, width: 28, alignItems: "center" as const, justifyContent: "center" as const },
   historyInfo: { flex: 1 },
   historyDesc: { fontSize: 14, color: p.textStrong },
   historyDate: { fontSize: 11, color: p.textMuted, marginTop: 2 },

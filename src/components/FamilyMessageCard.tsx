@@ -5,6 +5,7 @@ import { rf } from "../lib/responsive";
 import { getFamilyStampById } from "../lib/family-stamps";
 import { AutoRubyText } from "./Ruby";
 import type { FamilyMessage } from "../lib/types";
+import { PixelChatIcon } from "./PixelIcons";
 
 type Props = {
   messages: FamilyMessage[];
@@ -31,8 +32,9 @@ export default function FamilyMessageCard({ messages, currentUserId }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
+        <PixelChatIcon size={18} />
         <AutoRubyText
-          text="💬 パーティチャット"
+          text="パーティチャット"
           style={styles.sectionTitle}
           rubySize={6}
         />
@@ -111,6 +113,7 @@ function createStyles(p: Palette) {
     headerRow: {
       flexDirection: "row",
       alignItems: "center",
+      gap: 6,
       marginBottom: 12,
     },
     sectionTitle: {

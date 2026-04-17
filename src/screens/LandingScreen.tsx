@@ -13,6 +13,8 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
 import AnimatedButton from "../components/AnimatedButton";
+import PixelHeroSvg from "../components/PixelHeroSvg";
+import { PixelKeyIcon, PixelCoinIcon, PixelPiggyIcon, PixelSeedlingIcon } from "../components/PixelIcons";
 
 type Props = {
   onSignup?: () => void;
@@ -38,7 +40,10 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
       showsVerticalScrollIndicator={false}
     >
       <View style={[styles.hero, isTablet && { maxWidth: 480, alignSelf: "center", width: "100%" }]}>
-        <Text style={[styles.icon, isSmallScreen && { fontSize: 48, marginBottom: 4 }]} accessibilityLabel="おこづかいクエスト">⚔️</Text>
+        <View style={styles.heroRow} accessibilityLabel="おこづかいクエスト">
+          <PixelHeroSvg type="warrior" size={isSmallScreen ? 56 : 72} />
+          <PixelHeroSvg type="mage" size={isSmallScreen ? 56 : 72} />
+        </View>
         <Text
           style={[styles.title, isTablet && { fontSize: 38 }, isSmallScreen && { fontSize: 26 }]}
           adjustsFontSizeToFit
@@ -61,7 +66,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
             onPress={onLogin}
             accessibilityLabel="ログイン"
           >
-            <Text style={styles.buttonIconText}>🔑</Text>
+            <PixelKeyIcon size={24} />
             <Text style={[styles.buttonPrimaryText, isTablet && { fontSize: 20 }]} adjustsFontSizeToFit numberOfLines={1}>
               クエストをはじめる！
             </Text>
@@ -71,7 +76,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         <View style={styles.features}>
           <View style={[styles.featureCard, { backgroundColor: palette.walletSpendBg, borderColor: palette.walletSpendBorder }]}>
             <View style={[styles.featureIcon, { backgroundColor: palette.walletSpend }]}>
-              <Text style={styles.featureEmoji}>💴</Text>
+              <PixelCoinIcon size={16} />
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
             <AutoRubyText text="コインで好きな物を買おう！" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={4} />
@@ -79,7 +84,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletSaveBg, borderColor: palette.walletSaveBorder }]}>
             <View style={[styles.featureIcon, { backgroundColor: palette.walletSave }]}>
-              <Text style={styles.featureEmoji}>🧑</Text>
+              <PixelPiggyIcon size={16} />
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["貯", "た"], "める"]} rubySize={7} />
             <AutoRubyText text="貯金して" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
@@ -89,7 +94,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletInvestBg, borderColor: palette.walletInvestBorder }]}>
             <View style={[styles.featureIcon, { backgroundColor: palette.walletInvest }]}>
-              <Text style={styles.featureEmoji}>🌱</Text>
+              <PixelSeedlingIcon size={16} />
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletInvestText }]} parts={[["増", "ふ"], "やす"]} rubySize={7} />
             <AutoRubyText text="コインを育ててもっと増やそう！" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={4} />
@@ -124,9 +129,11 @@ function createStyles(p: Palette) {
     hero: {
       alignItems: "center",
     },
-    icon: {
-      fontSize: 64,
+    heroRow: {
+      flexDirection: "row" as const,
+      gap: 12,
       marginBottom: 8,
+      alignItems: "flex-end" as const,
     },
     title: {
       fontSize: rf(32),

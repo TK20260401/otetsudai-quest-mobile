@@ -18,6 +18,7 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
 import type { StockPrice } from "../lib/types";
+import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon } from "../components/PixelIcons";
 
 type Portfolio = {
   id: string;
@@ -239,11 +240,10 @@ export default function InvestScreen({
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backText}>← もどる</Text>
         </TouchableOpacity>
-        <RubyText
-          style={styles.headerTitle}
-          parts={["🌱 ", ["投資", "とうし"]]}
-          rubySize={6}
-        />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+          <PixelSeedlingIcon size={20} />
+          <RubyText style={styles.headerTitle} parts={[["投資", "とうし"]]} rubySize={6} />
+        </View>
       </View>
 
       <ScrollView
@@ -266,15 +266,19 @@ export default function InvestScreen({
             onPress={handleSync}
             disabled={syncing || isCoolingDown}
           >
-            <AutoRubyText
-              text={syncing
-                ? "更新中..."
-                : isCoolingDown
-                  ? `⏳ あと${Math.ceil(cooldownRemain / 60000)}分`
-                  : "🔄 最新価格に更新"}
-              style={styles.syncButtonText}
-              rubySize={4}
-            />
+            {syncing ? (
+              <Text style={styles.syncButtonText}>更新中...</Text>
+            ) : isCoolingDown ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelHourglassIcon size={12} />
+                <Text style={styles.syncButtonText}>あと{Math.ceil(cooldownRemain / 60000)}分</Text>
+              </View>
+            ) : (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelRefreshIcon size={12} />
+                <AutoRubyText text="最新価格に更新" style={styles.syncButtonText} rubySize={4} />
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -284,12 +288,18 @@ export default function InvestScreen({
             <AutoRubyText text="まだ投資はありません。" style={styles.emptyText} rubySize={5} />
             <AutoRubyText text="「株を買いたい！」ボタンで始めよう！" style={styles.emptyText} rubySize={5} />
             <View style={styles.tipCard}>
-              <AutoRubyText text="🌱 投資の基本" style={styles.tipTitle} rubySize={6} />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelSeedlingIcon size={16} />
+                <AutoRubyText text="投資の基本" style={styles.tipTitle} rubySize={6} />
+              </View>
               <AutoRubyText text="株は「お店の一部を持つ」こと。" style={styles.tipText} rubySize={5} />
               <AutoRubyText text="お店が頑張ると、株の値段が上がる！" style={styles.tipText} rubySize={5} />
               <AutoRubyText text="🐢 長く持つのがコツ！" style={styles.tipText} rubySize={5} />
               <AutoRubyText text="すぐ売らないで、じっくり育てよう。" style={styles.tipText} rubySize={5} />
-              <AutoRubyText text="🎯 まずは1つ選んでみよう！" style={styles.tipText} rubySize={5} />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelTargetIcon size={14} />
+                <AutoRubyText text="まずは1つ選んでみよう！" style={styles.tipText} rubySize={5} />
+              </View>
             </View>
           </View>
         ) : (
@@ -313,14 +323,17 @@ export default function InvestScreen({
                     <Text style={styles.portfolioValue}>
                       ¥{(p.current_value || 0).toLocaleString()}
                     </Text>
-                    <Text
-                      style={[
-                        styles.portfolioGain,
-                        { color: isUp ? palette.walletInvest : "#dc2626" },
-                      ]}
-                    >
-                      {isUp ? "📈" : "📉"} ¥{Math.abs(gain).toLocaleString()} ({percent})
-                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                      {isUp ? <PixelChartIcon size={14} /> : <PixelChartDownIcon size={14} />}
+                      <Text
+                        style={[
+                          styles.portfolioGain,
+                          { color: isUp ? palette.walletInvest : "#dc2626" },
+                        ]}
+                      >
+                        ¥{Math.abs(gain).toLocaleString()} ({percent})
+                      </Text>
+                    </View>
                   </View>
                 </View>
               );
@@ -332,7 +345,10 @@ export default function InvestScreen({
       {/* Buy button */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.buyButton} onPress={openOrderModal}>
-          <AutoRubyText text="🌱 株を買いたい！" style={styles.buyButtonText} rubySize={5} />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <PixelSeedlingIcon size={20} />
+            <AutoRubyText text="株を買いたい！" style={styles.buyButtonText} rubySize={5} />
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -352,11 +368,10 @@ export default function InvestScreen({
               <TouchableOpacity onPress={() => setOrderVisible(false)} style={styles.backButton}>
                 <Text style={styles.backText}>← もどる</Text>
               </TouchableOpacity>
-              <RubyText
-                style={styles.headerTitle}
-                parts={["🌱 ", ["株", "かぶ"], "を", ["買", "か"], "う"]}
-                rubySize={5}
-              />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelSeedlingIcon size={20} />
+                <RubyText style={styles.headerTitle} parts={[["株", "かぶ"], "を", ["買", "か"], "う"]} rubySize={5} />
+              </View>
             </View>
 
             <ScrollView
@@ -367,7 +382,7 @@ export default function InvestScreen({
             >
               {orderSuccess ? (
                 <View style={styles.successContainer}>
-                  <Text style={styles.successEmoji}>📈</Text>
+                  <PixelChartIcon size={56} />
                   <AutoRubyText text="親にお願いしたよ！" style={styles.successTitle} rubySize={5} />
                   <AutoRubyText text="承認を待ってね" style={styles.successSub} rubySize={5} />
                 </View>
@@ -455,16 +470,18 @@ export default function InvestScreen({
                       <View style={styles.stockPriceCol}>
                         <Text style={styles.stockPrice}>{formatPrice(stock)}</Text>
                         {stock.change_percent !== 0 && (
-                          <Text
-                            style={[
-                              styles.stockChange,
-                              { color: stock.change_percent >= 0 ? palette.walletInvest : "#dc2626" },
-                            ]}
-                          >
-                            {stock.change_percent >= 0 ? "📈" : "📉"}{" "}
-                            {stock.change_percent >= 0 ? "+" : ""}
-                            {stock.change_percent.toFixed(2)}%
-                          </Text>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+                            {stock.change_percent >= 0 ? <PixelChartIcon size={12} /> : <PixelChartDownIcon size={12} />}
+                            <Text
+                              style={[
+                                styles.stockChange,
+                                { color: stock.change_percent >= 0 ? palette.walletInvest : "#dc2626" },
+                              ]}
+                            >
+                              {stock.change_percent >= 0 ? "+" : ""}
+                              {stock.change_percent.toFixed(2)}%
+                            </Text>
+                          </View>
                         )}
                       </View>
                     </TouchableOpacity>
@@ -502,13 +519,20 @@ export default function InvestScreen({
                     onPress={handleOrder}
                     disabled={orderLoading}
                   >
-                    <AutoRubyText
-                      text={orderLoading ? "送り中..." : "親に お願いする 📈"}
-                      style={styles.orderButtonText}
-                    />
+                    {orderLoading ? (
+                      <Text style={styles.orderButtonText}>送り中...</Text>
+                    ) : (
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                        <AutoRubyText text="親に お願いする" style={styles.orderButtonText} />
+                        <PixelChartIcon size={18} />
+                      </View>
+                    )}
                   </TouchableOpacity>
 
-                  <AutoRubyText text="💡 買いたい株がないときは、おうちの人に相談してね" style={styles.orderHint} rubySize={4} />
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    <PixelLightbulbIcon size={14} />
+                    <AutoRubyText text="買いたい株がないときは、おうちの人に相談してね" style={styles.orderHint} rubySize={4} />
+                  </View>
                 </>
               )}
             </ScrollView>

@@ -19,6 +19,8 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
+import PixelHeroSvg from "../components/PixelHeroSvg";
+import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon } from "../components/PixelIcons";
 
 type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
 
@@ -445,7 +447,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={styles.icon}>🔑</Text>
+        <PixelKeyIcon size={40} />
         <ActivityIndicator size="large" color={palette.primary} />
         <Text style={styles.loadingText}>よみこみちゅう...</Text>
       </View>
@@ -471,7 +473,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         <View style={styles.card}>
           {!adminLoggedIn ? (
             <>
-              <Text style={styles.icon}>{isSignUp ? "📝" : "🔧"}</Text>
+              {isSignUp ? <PixelScrollIcon size={40} /> : <PixelKeyIcon size={40} />}
               <Text style={styles.titleAdmin} adjustsFontSizeToFit numberOfLines={1}>
                 {isSignUp ? "アカウント作成" : "ログイン"}
               </Text>
@@ -550,7 +552,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             </>
           ) : (
             <>
-              <Text style={styles.icon}>🏠</Text>
+              <PixelHouseIcon size={40} />
               <Text style={styles.titleAdmin}>家族管理</Text>
 
               {/* 家族一覧 */}
@@ -560,9 +562,10 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                   <TouchableOpacity onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
                     <Text style={styles.backText}>← 家族一覧に戻る</Text>
                   </TouchableOpacity>
-                  <Text style={[styles.titleAdmin, { fontSize: rf(18), marginTop: 8, marginBottom: 12 }]}>
-                    🏠 {managingFamily.name}
-                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8, marginBottom: 12 }}>
+                    <PixelHouseIcon size={18} />
+                    <Text style={[styles.titleAdmin, { fontSize: rf(18), marginBottom: 0 }]}>{managingFamily.name}</Text>
+                  </View>
 
                   {/* 既存メンバー */}
                   {familyMembers.map((m) => (
@@ -623,7 +626,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                             style={{ marginTop: 8, alignItems: "center" }}
                             onPress={() => handleDeleteMember(m)}
                           >
-                            <Text style={{ color: palette.red, fontSize: 13 }}>🗑️ このメンバーを削除</Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelTrashIcon size={14} /><Text style={{ color: palette.red, fontSize: 13 }}>このメンバーを削除</Text></View>
                           </TouchableOpacity>
                         </View>
                       ) : (
@@ -635,7 +638,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                           <Text style={styles.familyName}>
                             {m.icon} {m.name}（{m.role === "child" ? "こども" : "おや"}）
                           </Text>
-                          <Text style={{ color: palette.textMuted, fontSize: 12 }}>✏️</Text>
+                          <PixelPencilIcon size={14} />
                         </TouchableOpacity>
                       )}
                     </View>
@@ -709,9 +712,10 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                             style={{ flex: 1 }}
                             onPress={() => !isSample && openFamilyMembers(f)}
                           >
-                            <Text style={styles.familyName}>
-                              🏠 {f.name}{isSample ? "（見本）" : ""}
-                            </Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flex: 1 }}>
+                              <PixelHouseIcon size={16} />
+                              <Text style={styles.familyName}>{f.name}{isSample ? "（見本）" : ""}</Text>
+                            </View>
                           </TouchableOpacity>
                           {!isSample && (
                             <View style={{ flexDirection: "row", gap: 12, alignItems: "center" }}>
@@ -719,7 +723,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                                 onPress={() => handleDeleteFamily(f)}
                                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                               >
-                                <Text style={styles.familyDelete}>🗑️</Text>
+                                <PixelTrashIcon size={18} />
                               </TouchableOpacity>
                             </View>
                           )}
@@ -760,7 +764,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                               }}
                               onPress={() => openFamilyMembers(f)}
                             >
-                              <Text style={{ color: palette.textBase, fontWeight: "bold", fontSize: 14 }}>✏️ メンバー管理</Text>
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelPencilIcon size={14} /><Text style={{ color: palette.textBase, fontWeight: "bold", fontSize: 14 }}>メンバー管理</Text></View>
                             </TouchableOpacity>
                           </View>
                         )}
@@ -822,7 +826,10 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     >
       <View style={styles.card}>
         {/* Header */}
-        <Text style={styles.icon}>⚔️</Text>
+        <View style={{ flexDirection: "row", gap: 8, marginBottom: 4 }}>
+          <PixelHeroSvg type="warrior" size={48} />
+          <PixelHeroSvg type="mage" size={48} />
+        </View>
         <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>おこづかいクエスト</Text>
         <Text style={styles.subtitle} adjustsFontSizeToFit numberOfLines={1}>
           クエストをクリアしてコインをかせごう！
@@ -864,7 +871,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 style={styles.selectButton}
                 onPress={() => handleFamilySelect(f)}
               >
-                <Text style={styles.selectText}>🏠 {f.name}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelHouseIcon size={16} /><Text style={styles.selectText}>{f.name}</Text></View>
               </TouchableOpacity>
             ))}
           </>

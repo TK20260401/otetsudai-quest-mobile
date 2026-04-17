@@ -14,6 +14,7 @@ import { rf } from "../lib/responsive";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import { useAppAlert } from "./AppAlert";
 import { AutoRubyText } from "./Ruby";
+import { PixelPiggyIcon, PixelWarningIcon } from "./PixelIcons";
 
 type Props = {
   visible: boolean;
@@ -75,11 +76,10 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
           keyboardDismissMode="interactive"
         >
           <View style={styles.card}>
-            <AutoRubyText
-              text="🐷 ちょきん目標をつくる"
-              style={styles.title}
-              rubySize={8}
-            />
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
+              <PixelPiggyIcon size={22} />
+              <AutoRubyText text="ちょきん目標をつくる" style={styles.title} rubySize={8} />
+            </View>
 
             <Text style={styles.inputLabel}>何を 買いたい？</Text>
             <TextInput
@@ -94,7 +94,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
                 setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
               }}
             />
-            {titleError && <Text style={styles.errorText}>⚠️ なまえを いれてね</Text>}
+            {titleError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><Text style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]}>なまえを いれてね</Text></View>}
 
             <Text style={styles.inputLabel}>いくら 貯める？</Text>
             <View style={styles.amountRow}>
@@ -110,7 +110,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
               />
               <Text style={styles.yen}>円</Text>
             </View>
-            {amountError && <Text style={styles.errorText}>⚠️ きんがくを いれてね</Text>}
+            {amountError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><Text style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]}>きんがくを いれてね</Text></View>}
 
             <View style={styles.buttonRow}>
               <TouchableOpacity

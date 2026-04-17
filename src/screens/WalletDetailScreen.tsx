@@ -17,6 +17,7 @@ import { useAppAlert } from "../components/AppAlert";
 import SavingGoalModal from "../components/SavingGoalModal";
 import type { Wallet, Transaction, SpendRequest, SavingGoal } from "../lib/types";
 import MoneyTree, { getStage } from "../components/MoneyTree";
+import { PixelChestOpenIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelTreeIcon, PixelConfettiIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelScrollIcon } from "../components/PixelIcons";
 
 export default function WalletDetailScreen({
   route,
@@ -122,7 +123,7 @@ export default function WalletDetailScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={styles.loadingEmoji}>💰</Text>
+        <PixelCoinIcon size={40} />
         <ActivityIndicator size="large" color={palette.primary} />
         <Text style={styles.loadingText}>おさいふを ひらいてるよ...</Text>
       </View>
@@ -198,11 +199,10 @@ export default function WalletDetailScreen({
         >
           <Text style={styles.backText}>← もどる</Text>
         </TouchableOpacity>
-        <AutoRubyText
-          text="💰 おさいふ"
-          style={styles.headerTitle}
-          rubySize={7}
-        />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <PixelCoinIcon size={22} />
+          <AutoRubyText text="おさいふ" style={styles.headerTitle} rubySize={7} />
+        </View>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -214,11 +214,14 @@ export default function WalletDetailScreen({
       >
         {/* ── 1. Total Balance Card ── */}
         <View style={styles.totalCard}>
-          <AutoRubyText
-            text="ぜんぶの おかね"
-            style={styles.totalLabel}
-            rubySize={7}
-          />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <PixelChestOpenIcon size={22} />
+            <AutoRubyText
+              text="ぜんぶの おかね"
+              style={styles.totalLabel}
+              rubySize={7}
+            />
+          </View>
           <Text
             style={styles.totalAmount}
             adjustsFontSizeToFit
@@ -241,7 +244,7 @@ export default function WalletDetailScreen({
             ]}
             accessibilityLabel={`つかう ${spending}円`}
           >
-            <Text style={styles.pocketIcon}>🛒</Text>
+            <PixelCartIcon size={20} />
             <RubyText
               style={styles.pocketLabel}
               parts={[["使", "つか"], "う"]}
@@ -265,7 +268,7 @@ export default function WalletDetailScreen({
             ]}
             accessibilityLabel={`ためる ${saving}円`}
           >
-            <Text style={styles.pocketIcon}>🐷</Text>
+            <PixelPiggyIcon size={20} />
             <RubyText
               style={styles.pocketLabel}
               parts={[["貯", "た"], "める"]}
@@ -289,7 +292,7 @@ export default function WalletDetailScreen({
             ]}
             accessibilityLabel={`ふやす ${invest}円`}
           >
-            <Text style={styles.pocketIcon}>📈</Text>
+            <PixelChartIcon size={20} />
             <RubyText
               style={styles.pocketLabel}
               parts={[["増", "ふ"], "やす"]}
@@ -307,11 +310,10 @@ export default function WalletDetailScreen({
         <View style={styles.treeSection}>
           <MoneyTree investBalance={invest} size={120} />
           <View style={styles.treeInfo}>
-            <AutoRubyText
-              text={`🌳 ふやすの木: ${getStage(invest).label}`}
-              style={styles.treeLabel}
-              rubySize={6}
-            />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelTreeIcon size={18} />
+              <AutoRubyText text={`ふやすの木: ${getStage(invest).label}`} style={styles.treeLabel} rubySize={6} />
+            </View>
             {getStage(invest).next && (
               <AutoRubyText
                 text={`次の成長まで あと ${(getStage(invest).next! - invest).toLocaleString()}円`}
@@ -320,11 +322,10 @@ export default function WalletDetailScreen({
               />
             )}
             {!getStage(invest).next && (
-              <AutoRubyText
-                text="最大まで 成長した！ 🎉"
-                style={[styles.treeProgress, { color: palette.accent, fontWeight: "bold" }]}
-                rubySize={5}
-              />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <AutoRubyText text="最大まで 成長した！" style={[styles.treeProgress, { color: palette.accent, fontWeight: "bold" }]} rubySize={5} />
+                <PixelConfettiIcon size={16} />
+              </View>
             )}
           </View>
         </View>
@@ -343,7 +344,10 @@ export default function WalletDetailScreen({
             accessibilityLabel="つかうリクエストを おくる"
             activeOpacity={0.8}
           >
-            <Text style={styles.spendRequestButtonText}>🛒 つかいたい！</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelCartIcon size={18} />
+              <Text style={styles.spendRequestButtonText}>つかいたい！</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.investButton}
@@ -357,18 +361,20 @@ export default function WalletDetailScreen({
             accessibilityLabel="とうし がめんを ひらく"
             activeOpacity={0.8}
           >
-            <Text style={styles.investButtonText}>📈 ふやす！</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelChartIcon size={18} />
+              <Text style={styles.investButtonText}>ふやす！</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
         {/* ── 4. Spend Request Status Cards ── */}
         {recentSpendRequests.length > 0 && (
           <View style={styles.section}>
-            <AutoRubyText
-              text="🛒 つかうリクエスト"
-              style={styles.sectionTitle}
-              rubySize={7}
-            />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelCartIcon size={18} />
+              <AutoRubyText text="つかうリクエスト" style={styles.sectionTitle} rubySize={7} />
+            </View>
             {recentSpendRequests.map((req) => {
               if (req.status === "pending") {
                 return (
@@ -379,9 +385,10 @@ export default function WalletDetailScreen({
                       { backgroundColor: palette.accentLight },
                     ]}
                   >
-                    <Text style={styles.requestStatus}>
-                      ⏳ しんせいちゅう
-                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <PixelHourglassIcon size={16} />
+                      <Text style={styles.requestStatus}>しんせいちゅう</Text>
+                    </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
                       {req.amount.toLocaleString()}円
@@ -401,9 +408,10 @@ export default function WalletDetailScreen({
                       { backgroundColor: palette.greenLight },
                     ]}
                   >
-                    <Text style={styles.requestStatus}>
-                      ✅ しょうにんずみ おかねをまってね
-                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <PixelCheckIcon size={16} />
+                      <Text style={styles.requestStatus}>しょうにんずみ おかねをまってね</Text>
+                    </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
                       {req.amount.toLocaleString()}円
@@ -420,9 +428,10 @@ export default function WalletDetailScreen({
                       { backgroundColor: palette.redLight },
                     ]}
                   >
-                    <Text style={styles.requestStatus}>
-                      ❌ きょかされませんでした
-                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                      <PixelCrossIcon size={16} />
+                      <Text style={styles.requestStatus}>きょかされませんでした</Text>
+                    </View>
                     {req.reject_reason && (
                       <Text style={styles.requestReason}>
                         りゆう: {req.reject_reason}
@@ -441,11 +450,10 @@ export default function WalletDetailScreen({
 
         {/* ── 5. Savings Goals Section ── */}
         <View style={styles.section}>
-          <AutoRubyText
-            text="🐷 ちょきん目標"
-            style={styles.sectionTitle}
-            rubySize={7}
-          />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <PixelPiggyIcon size={18} />
+            <AutoRubyText text="ちょきん目標" style={styles.sectionTitle} rubySize={7} />
+          </View>
 
           {/* Unachieved goals */}
           {unachievedGoals.map((goal) => {
@@ -480,9 +488,10 @@ export default function WalletDetailScreen({
           {/* Achieved goals */}
           {achievedGoals.map((goal) => (
             <View key={goal.id} style={styles.goalCardAchieved}>
-              <Text style={styles.goalTitle}>
-                ✅ {goal.title}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelCheckIcon size={16} />
+                <Text style={styles.goalTitle}>{goal.title}</Text>
+              </View>
               <Text style={styles.goalAmountText}>
                 {goal.target_amount.toLocaleString()} 円 達成！
               </Text>
@@ -510,11 +519,10 @@ export default function WalletDetailScreen({
 
         {/* ── 6. Transaction History with Filter ── */}
         <View style={styles.section}>
-          <AutoRubyText
-            text="📋 履歴"
-            style={styles.sectionTitle}
-            rubySize={7}
-          />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <PixelScrollIcon size={18} />
+            <AutoRubyText text="履歴" style={styles.sectionTitle} rubySize={7} />
+          </View>
 
           {/* Filter tabs */}
           <View style={styles.filterRow}>

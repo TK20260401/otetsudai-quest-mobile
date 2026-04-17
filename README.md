@@ -56,7 +56,9 @@ otetsudai-quest-mobile/
 │   │   ├── AnimatedButton.tsx   # アニメーション付きボタン
 │   │   ├── AppAlert.tsx         # カスタムアラート（ルビ対応）
 │   │   ├── ChildReactionModal.tsx # 子ども返信モーダル
-│   │   └── PriceRequestModal.tsx  # 値上げリクエストモーダル
+│   │   ├── PriceRequestModal.tsx  # 値上げリクエストモーダル
+│   │   ├── PixelIcons.tsx       # ピクセルアートSVGアイコン（38種）
+│   │   └── PixelHeroSvg.tsx     # ドット絵キャラクター（戦士・魔法使い）
 │   ├── migrations/
 │   │   ├── add_special_quest.sql      # 特別クエストカラム追加
 │   │   ├── add_pricing_and_reaction.sql # 値上げ・返信機能追加
@@ -218,6 +220,7 @@ npx expo start --tunnel
 | v0.13.0 | 2026-04-17 | Sprint 3完了。ファミリースタンプリレー（親⇔子・兄弟間エール送信、パーティチャット風UI、DB: otetsudai_family_messages）、ふやすの木（invest_balanceに応じたSVG木成長メタファー: たね→ふたば→わかぎ→たいぼく）。Web版同時対応。RLSセキュリティ修正（4テーブル有効化） |
 | v0.14.0 | 2026-04-17 | Sprint 4完了。保護者向け月次レポート（クエスト数/稼ぎ/ストリーク/レベル変化/貯金達成/自動コメント）、ファミリーダッシュボード（冒険の地図: メンバーLv表示+家族統計）、家族チャレンジウィーク（協力型週間目標: メンバー進捗バー+達成ボーナス、DB: otetsudai_family_challenges）。Web版同時対応 |
 | v0.14.1 | 2026-04-17 | ログイン/家族管理大幅改善。ログイン後→家族管理画面（ダッシュボード/メンバー管理選択）、セッション記憶（次回自動ログイン）、PIN bcryptハッシュ保存、パスワード表示トグル+リセット機能、家族owner_auth_id紐付け（なりすまし防止）、子供の名前/PIN/アイコン編集・削除UI、親画面ひらがな→漢字統一、キーボード対応改善、独立リポジトリ作成 |
+| v0.15.0 | 2026-04-17 | Habitica風ピクセルアートSVG導入。PixelHeroSvg（戦士・魔法使い）＋PixelIcons（38種）で全画面の絵文字アイコンをドット絵SVGに置換。ランディング/ログイン/子ダッシュ/親ダッシュ/ウォレット/投資/月次レポート/冒険の地図/家族チャレンジ/スタンプ送信/返信モーダル/貯金目標。Web版同時対応 |
 
 ## Web版との関係
 

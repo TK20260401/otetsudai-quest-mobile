@@ -17,6 +17,7 @@ import { rf } from "../lib/responsive";
 import { FAMILY_STAMPS } from "../lib/family-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { User } from "../lib/types";
+import { PixelLetterIcon } from "./PixelIcons";
 import * as Haptics from "expo-haptics";
 
 type Props = {
@@ -103,7 +104,7 @@ export default function FamilyStampSendModal({
             >
               {/* ヘッダー */}
               <View style={styles.headerRow}>
-                <Text style={styles.header}>💌 エールを おくる</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><PixelLetterIcon size={20} /><Text style={styles.header}>エールを おくる</Text></View>
                 <TouchableOpacity
                   onPress={handleClose}
                   style={styles.closeBtn}
@@ -201,9 +202,14 @@ export default function FamilyStampSendModal({
                 accessibilityLabel="エールを おくる"
                 accessibilityRole="button"
               >
-                <Text style={styles.sendText}>
-                  {sending ? "おくりちゅう..." : "📣 エールを おくる！"}
-                </Text>
+                {sending ? (
+                  <Text style={styles.sendText}>おくりちゅう...</Text>
+                ) : (
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <PixelLetterIcon size={20} />
+                    <Text style={styles.sendText}>エールを おくる！</Text>
+                  </View>
+                )}
               </TouchableOpacity>
 
               <Text style={styles.hint}>

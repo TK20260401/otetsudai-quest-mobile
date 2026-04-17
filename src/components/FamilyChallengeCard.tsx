@@ -5,6 +5,7 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { AutoRubyText } from "./Ruby";
 import type { FamilyChallenge, User } from "../lib/types";
+import { PixelCrownIcon, PixelGiftIcon, PixelConfettiIcon } from "./PixelIcons";
 
 type Props = {
   challenge: FamilyChallenge;
@@ -79,11 +80,14 @@ export default function FamilyChallengeCard({
 
   return (
     <View style={[styles.container, isComplete && styles.containerComplete]}>
-      <AutoRubyText
-        text={isComplete ? "🎉 かぞくチャレンジ たっせい！" : "🎯 かぞくチャレンジ"}
-        style={styles.header}
-        rubySize={6}
-      />
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        <PixelCrownIcon size={20} />
+        <AutoRubyText
+          text={isComplete ? "かぞくチャレンジ たっせい！" : "かぞくチャレンジ"}
+          style={styles.header}
+          rubySize={6}
+        />
+      </View>
 
       <Text style={styles.title}>「{challenge.title}」</Text>
 
@@ -134,18 +138,20 @@ export default function FamilyChallengeCard({
 
       {/* ボーナス + 残り */}
       <View style={styles.footer}>
-        <Text style={styles.bonusText}>
-          🎁 たっせいボーナス: みんなに {challenge.bonus_amount}えん！
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+          <PixelGiftIcon size={16} />
+          <Text style={styles.bonusText}>たっせいボーナス: みんなに {challenge.bonus_amount}えん！</Text>
+        </View>
         {!isComplete && isActive && (
           <Text style={styles.remainText}>
             あと {remaining}クエスト！ のこり{daysLeft}にち がんばろう！
           </Text>
         )}
         {isComplete && (
-          <Text style={styles.completeText}>
-            みんなで たっせいした！ おめでとう！ 🎊
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Text style={styles.completeText}>みんなで たっせいした！ おめでとう！</Text>
+            <PixelConfettiIcon size={16} />
+          </View>
         )}
       </View>
     </View>

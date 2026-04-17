@@ -15,6 +15,7 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { AutoRubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
+import { PixelCoinIcon } from "../components/PixelIcons";
 
 const NUM_KEYS = [
   { label: "1", value: "1", a11y: "いち" },
@@ -171,7 +172,10 @@ export default function SpendRequestScreen({
         >
           {/* Header */}
           <View style={styles.header}>
-            <AutoRubyText text="🛒 つかいたい！" style={styles.title} rubySize={8} />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <PixelCoinIcon size={22} />
+              <AutoRubyText text="つかいたい！" style={styles.title} rubySize={8} />
+            </View>
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => navigation.goBack()}

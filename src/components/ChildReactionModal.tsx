@@ -17,6 +17,7 @@ import { rf } from "../lib/responsive";
 import { CHILD_STAMPS } from "../lib/child-stamps";
 import { getStampById } from "../lib/stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
+import { PixelLetterIcon, PixelTargetIcon, PixelCoinIcon } from "./PixelIcons";
 
 type UnreadLog = {
   id: string;
@@ -100,12 +101,21 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             </Text>
           )}
 
-          <Text style={styles.header} adjustsFontSizeToFit numberOfLines={1}>📩 おやからの メッセージ</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <PixelLetterIcon size={22} />
+            <Text style={styles.header} adjustsFontSizeToFit numberOfLines={1}>おやからの メッセージ</Text>
+          </View>
 
           {/* 親メッセージ表示 */}
           <View style={styles.parentCard}>
-            <Text style={styles.questName}>🎯 {log.taskTitle}</Text>
-            <Text style={styles.rewardText}>💰 {log.rewardAmount}えん</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelTargetIcon size={16} />
+              <Text style={styles.questName}>{log.taskTitle}</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelCoinIcon size={16} />
+              <Text style={styles.rewardText}>{log.rewardAmount}えん</Text>
+            </View>
 
             {parentStampDef && (
               <View style={styles.parentStampRow}>
@@ -176,9 +186,14 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             onPress={handleSend}
             disabled={!canSend || sending}
           >
-            <Text style={styles.sendText}>
-              {sending ? "おくりちゅう..." : "📩 おくる！"}
-            </Text>
+            {sending ? (
+              <Text style={styles.sendText}>おくりちゅう...</Text>
+            ) : (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelLetterIcon size={18} />
+                <Text style={styles.sendText}>おくる！</Text>
+              </View>
+            )}
           </TouchableOpacity>
 
           <Text style={styles.hint}>

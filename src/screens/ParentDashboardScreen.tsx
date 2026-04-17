@@ -29,6 +29,7 @@ import FamilyMessageCard from "../components/FamilyMessageCard";
 import MonthlyReport from "../components/MonthlyReport";
 import FamilyAdventureMap from "../components/FamilyAdventureMap";
 import FamilyChallengeCard from "../components/FamilyChallengeCard";
+import { PixelCrossedSwordsIcon, PixelScrollIcon, PixelShieldIcon, PixelHourglassIcon, PixelCartIcon, PixelCoinIcon, PixelCheckIcon, PixelCrownIcon, PixelLetterIcon, PixelFlameIcon, PixelDoorIcon, PixelBarChartIcon, PixelTargetIcon, PixelLightbulbIcon, PixelChatIcon, PixelPencilIcon, PixelTrashIcon, PixelPauseIcon, PixelPlayIcon, PixelRefreshIcon, PixelStarIcon, PixelCalendarIcon, PixelPersonIcon, PixelWarningIcon, PixelConfettiIcon, PixelGiftIcon } from "../components/PixelIcons";
 
 type PendingLog = TaskLog & { task: Task; child: User };
 
@@ -630,7 +631,7 @@ export default function ParentDashboardScreen({
           <Text style={styles.headerTitle}>親</Text>
         </View>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログアウト" accessibilityRole="button">
-          <Text style={styles.logoutText}>🚪 ログアウト</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={16} /><Text style={styles.logoutText}>ログアウト</Text></View>
         </TouchableOpacity>
       </View>
 
@@ -644,7 +645,7 @@ export default function ParentDashboardScreen({
           accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
           <View style={styles.headerBadgeRow}>
-            <Text style={tab === "approve" ? styles.tabTextActive : styles.tabText} numberOfLines={1}>✅ 承認</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><Text style={tab === "approve" ? styles.tabTextActive : styles.tabText} numberOfLines={1}>承認</Text></View>
             {pendingCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{pendingCount}</Text>
@@ -663,7 +664,7 @@ export default function ParentDashboardScreen({
             style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}
             numberOfLines={1}
           >
-            ⚔️ クエスト
+            クエスト
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -680,7 +681,7 @@ export default function ParentDashboardScreen({
             ]}
             numberOfLines={1}
           >
-            👦 子ども
+            子ども
           </Text>
         </TouchableOpacity>
       </View>
@@ -694,7 +695,7 @@ export default function ParentDashboardScreen({
         {/* 週次サマリー */}
         {tab === "approve" && weeklySummary.quests > 0 && (
           <View style={[styles.section, { backgroundColor: palette.accentLight, borderRadius: 12, padding: 16, marginBottom: 8 }]}>
-            <Text style={styles.weeklySummaryTitle}>📊 今週の家族記録</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={16} /><Text style={styles.weeklySummaryTitle}>今週の家族記録</Text></View>
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
                 <Text style={styles.weeklyStatValue}>{weeklySummary.quests}</Text>
@@ -725,9 +726,12 @@ export default function ParentDashboardScreen({
                 accessibilityLabel="今週の家族チャレンジを作る"
                 accessibilityRole="button"
               >
-                <Text style={[styles.stampRelayBtnText, { color: palette.accentDark }]}>
-                  {challengeCreating ? "作成中..." : "🎯 今週のチャレンジを作る"}
-                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  {!challengeCreating && <PixelTargetIcon size={16} />}
+                  <Text style={[styles.stampRelayBtnText, { color: palette.accentDark }]}>
+                    {challengeCreating ? "作成中..." : "今週のチャレンジを作る"}
+                  </Text>
+                </View>
               </TouchableOpacity>
             )}
           </View>
@@ -743,9 +747,12 @@ export default function ParentDashboardScreen({
               accessibilityLabel="家族にエールを送る"
               accessibilityRole="button"
             >
-              <Text style={[styles.stampRelayBtnText, { color: palette.primaryDark }]}>
-                💌 エールを送る
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelLetterIcon size={16} />
+                <Text style={[styles.stampRelayBtnText, { color: palette.primaryDark }]}>
+                  エールを送る
+                </Text>
+              </View>
             </TouchableOpacity>
           </View>
         )}
@@ -756,7 +763,7 @@ export default function ParentDashboardScreen({
             {/* Quest completions */}
             {pendingLogs.length > 0 && (
               <>
-                <Text style={styles.sectionTitle}>{`⏳ クエスト完了 (${pendingLogs.length})`}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><PixelHourglassIcon size={18} /><Text style={styles.sectionTitle}>{`クエスト完了 (${pendingLogs.length})`}</Text></View>
                 {pendingLogs.map((log) => (
                   <View key={log.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -795,11 +802,11 @@ export default function ParentDashboardScreen({
             {/* Spend requests */}
             {pendingSpends.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`🛒 使いたいリクエスト (${pendingSpends.length})`}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelCartIcon size={18} /><Text style={styles.sectionTitle}>{`使いたいリクエスト (${pendingSpends.length})`}</Text></View>
                 {pendingSpends.map((req) => (
                   <View key={req.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
-                      <Text style={styles.approvalIcon}>🛒</Text>
+                      <View style={styles.approvalIcon}><PixelCartIcon size={24} /></View>
                       <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>{req.purpose}</Text>
                         <Text style={styles.approvalSub}>
@@ -829,7 +836,7 @@ export default function ParentDashboardScreen({
             {/* Price requests */}
             {priceRequests.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`🪙 値上げリクエスト (${priceRequests.length})`}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelCoinIcon size={18} /><Text style={styles.sectionTitle}>{`値上げリクエスト (${priceRequests.length})`}</Text></View>
                 {priceRequests.map((task) => (
                   <View key={task.id} style={styles.approvalCard}>
                     <View style={styles.approvalInfo}>
@@ -842,9 +849,7 @@ export default function ParentDashboardScreen({
                           {task.reward_amount}円 → {task.proposed_reward}円
                         </Text>
                         {task.proposal_message && (
-                          <Text style={styles.subText}>
-                            💬 「{task.proposal_message}」
-                          </Text>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{task.proposal_message}」</Text></View>
                         )}
                       </View>
                     </View>
@@ -870,22 +875,20 @@ export default function ParentDashboardScreen({
             {/* じぶんクエスト提案 */}
             {questProposals.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 16 }]}>{`💡 じぶんクエスト提案 (${questProposals.length})`}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelScrollIcon size={18} /><Text style={styles.sectionTitle}>{`じぶんクエスト提案 (${questProposals.length})`}</Text></View>
                 {questProposals.map((task) => {
                   const child = children.find((c) => c.id === task.assigned_child_id);
                   return (
                     <View key={task.id} style={styles.approvalCard}>
                       <View style={styles.approvalInfo}>
-                        <Text style={styles.approvalIcon}>💡</Text>
+                        <View style={styles.approvalIcon}><PixelLightbulbIcon size={24} /></View>
                         <View style={styles.flex1}>
                           <Text style={styles.approvalTitle}>{task.title}</Text>
                           <Text style={styles.approvalSub}>
                             🧒 {child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}円
                           </Text>
                           {task.proposal_message && (
-                            <Text style={styles.subText}>
-                              💬 「{task.proposal_message}」
-                            </Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{task.proposal_message}」</Text></View>
                           )}
                         </View>
                       </View>
@@ -911,7 +914,7 @@ export default function ParentDashboardScreen({
 
             {pendingCount === 0 && priceRequests.length === 0 && questProposals.length === 0 && (
               <View style={styles.emptyCard}>
-                <Text style={styles.emptyEmoji}>✨</Text>
+                <PixelStarIcon size={32} />
                 <Text style={styles.emptyCardText}>承認待ちはありません</Text>
                 <Text style={styles.emptyCardSub}>全て処理済みです！</Text>
               </View>
@@ -920,7 +923,7 @@ export default function ParentDashboardScreen({
             {/* 最近の承認（子ども返信表示） */}
             {recentApproved.length > 0 && (
               <>
-                <Text style={[styles.sectionTitle, { marginTop: 20 }]}>✅ 最近の承認</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 20 }}><PixelCheckIcon size={18} /><Text style={styles.sectionTitle}>最近の承認</Text></View>
                 {recentApproved.map((log: any) => {
                   const childStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)
@@ -929,9 +932,7 @@ export default function ParentDashboardScreen({
                   return (
                     <View key={log.id} style={[styles.approvalCard, { opacity: 1 }]}>
                       <View style={styles.approvalInfo}>
-                        <Text style={styles.approvalIcon}>
-                          {hasReaction ? "✅" : "⏳"}
-                        </Text>
+                        <View style={styles.approvalIcon}>{hasReaction ? <PixelCheckIcon size={24} /> : <PixelHourglassIcon size={24} />}</View>
                         <View style={styles.flex1}>
                           <Text style={styles.approvalTitle}>
                             {log.task?.title}
@@ -945,12 +946,10 @@ export default function ParentDashboardScreen({
                             </Text>
                           )}
                           {log.child_reaction_message && (
-                            <Text style={styles.subText}>
-                              💬 「{log.child_reaction_message}」
-                            </Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{log.child_reaction_message}」</Text></View>
                           )}
                           {!hasReaction && (
-                            <Text style={styles.pendingText}>⏳ 子どもの返事待ち</Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelHourglassIcon size={12} /><Text style={styles.pendingText}>子どもの返事待ち</Text></View>
                           )}
                         </View>
                       </View>
@@ -1074,19 +1073,19 @@ export default function ParentDashboardScreen({
                           style={styles.taskActionBtn}
                           onPress={() => openTaskForm(task)}
                         >
-                          <Text>✏️</Text>
+                          <PixelPencilIcon size={18} />
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={styles.taskActionBtn}
                           onPress={() => handleToggleTask(task)}
                         >
-                          <Text>{task.is_active ? "⏸️" : "▶️"}</Text>
+                          {task.is_active ? <PixelPauseIcon size={18} /> : <PixelPlayIcon size={18} />}
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={styles.taskActionBtn}
                           onPress={() => handleDeleteTask(task.id)}
                         >
-                          <Text>🗑️</Text>
+                          <PixelTrashIcon size={18} />
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -1132,19 +1131,19 @@ export default function ParentDashboardScreen({
                     style={styles.taskActionBtn}
                     onPress={() => openTaskForm(task)}
                   >
-                    <Text>✏️</Text>
+                    <PixelPencilIcon size={18} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.taskActionBtn}
                     onPress={() => handleToggleTask(task)}
                   >
-                    <Text>{task.is_active ? "⏸️" : "▶️"}</Text>
+                    {task.is_active ? <PixelPauseIcon size={18} /> : <PixelPlayIcon size={18} />}
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.taskActionBtn}
                     onPress={() => handleDeleteTask(task.id)}
                   >
-                    <Text>🗑️</Text>
+                    <PixelTrashIcon size={18} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1349,7 +1348,7 @@ export default function ParentDashboardScreen({
                 {editingTask ? "クエスト編集" : "新しいクエスト"}
               </Text>
 
-              <Text style={styles.formLabel}>⚔️ クエスト名</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCrossedSwordsIcon size={16} /><Text style={styles.formLabel}>クエスト名</Text></View>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.title}
@@ -1357,7 +1356,7 @@ export default function ParentDashboardScreen({
                 placeholder="おふろそうじ、しゅくだい など"
               />
 
-              <Text style={styles.formLabel}>📝 説明（なくてもOK）</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelScrollIcon size={16} /><Text style={styles.formLabel}>説明（なくてもOK）</Text></View>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.description}
@@ -1395,7 +1394,7 @@ export default function ParentDashboardScreen({
               {/* 特別クエスト: 難易度 */}
               {taskForm.is_special && (
                 <>
-                  <Text style={styles.formLabel}>⭐ 難易度</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelStarIcon size={16} /><Text style={styles.formLabel}>難易度</Text></View>
                   <View style={styles.recurrenceRow}>
                     {[1, 2, 3].map((d) => (
                       <TouchableOpacity
@@ -1417,7 +1416,7 @@ export default function ParentDashboardScreen({
                   </View>
 
                   <View style={styles.dateRow}>
-                    <Text style={styles.formLabel}>📅 期間（開始）</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCalendarIcon size={16} /><Text style={styles.formLabel}>期間（開始）</Text></View>
                     <Text style={styles.dateHint}>なしでOK</Text>
                   </View>
                   <TouchableOpacity
@@ -1455,7 +1454,7 @@ export default function ParentDashboardScreen({
                   )}
 
                   <View style={styles.dateRow}>
-                    <Text style={styles.formLabel}>📅 期間（終わり）</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCalendarIcon size={16} /><Text style={styles.formLabel}>期間（終わり）</Text></View>
                     <Text style={styles.dateHint}>期限なしならなしでOK</Text>
                   </View>
                   <TouchableOpacity
@@ -1509,11 +1508,16 @@ export default function ParentDashboardScreen({
 
               {editingTask && parseInt(taskForm.reward_amount) !== editingTask.reward_amount && (
                 <>
-                  <Text style={styles.formLabel}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     {parseInt(taskForm.reward_amount) < editingTask.reward_amount
-                      ? "⚠️ 値下げの理由（必須）"
-                      : "💬 金額変更のコメント"}
-                  </Text>
+                      ? <PixelWarningIcon size={16} />
+                      : <PixelChatIcon size={16} />}
+                    <Text style={styles.formLabel}>
+                      {parseInt(taskForm.reward_amount) < editingTask.reward_amount
+                        ? "値下げの理由（必須）"
+                        : "金額変更のコメント"}
+                    </Text>
+                  </View>
                   <TextInput
                     style={styles.formInput}
                     value={taskForm.price_change_comment}
@@ -1528,7 +1532,7 @@ export default function ParentDashboardScreen({
 
               {!taskForm.is_special && (
                 <>
-                  <Text style={styles.formLabel}>🔄 繰り返し</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelRefreshIcon size={16} /><Text style={styles.formLabel}>繰り返し</Text></View>
                   <View style={styles.recurrenceRow}>
                     {(["once", "daily", "weekly"] as const).map((r) => (
                       <TouchableOpacity
@@ -1558,7 +1562,7 @@ export default function ParentDashboardScreen({
                 </>
               )}
 
-              <Text style={styles.formLabel}>👤 誰に？</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelPersonIcon size={16} /><Text style={styles.formLabel}>誰に？</Text></View>
               <TouchableOpacity
                 style={styles.dropdownButton}
                 onPress={() => {
@@ -1706,7 +1710,7 @@ function createStyles(p: Palette) {
     elevation: 2,
   },
   approvalInfo: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-  approvalIcon: { fontSize: 28, marginRight: 10 },
+  approvalIcon: { marginRight: 10, width: 32, alignItems: "center" as const, justifyContent: "center" as const },
   approvalTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong },
   approvalSub: { fontSize: 13, color: p.textMuted, marginTop: 2 },
   approvalActions: { flexDirection: "row", gap: 8 },

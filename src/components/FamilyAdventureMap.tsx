@@ -6,6 +6,7 @@ import { rf } from "../lib/responsive";
 import { getCurrentLevel } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
 import type { User, Wallet } from "../lib/types";
+import { PixelMapIcon } from "./PixelIcons";
 
 type Props = {
   familyName: string;
@@ -96,7 +97,10 @@ export default function FamilyAdventureMap({
   return (
     <View style={styles.container}>
       {/* ヘッダー */}
-      <Text style={styles.header}>🗺️ {familyName}の ぼうけんちず</Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        <PixelMapIcon size={22} />
+        <Text style={styles.header}>{familyName}の ぼうけんちず</Text>
+      </View>
 
       {/* メンバーカード横並び */}
       <View style={styles.membersRow}>

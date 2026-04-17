@@ -5,6 +5,7 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getCurrentLevel } from "../lib/levels";
 import type { User, Wallet } from "../lib/types";
+import { PixelScrollIcon, PixelFlameIcon, PixelCrossedSwordsIcon, PixelPiggyIcon, PixelCrownIcon, PixelLightbulbIcon } from "./PixelIcons";
 
 type Props = {
   child: User;
@@ -160,37 +161,38 @@ export default function MonthlyReport({ child, wallet }: Props) {
   return (
     <View style={styles.container}>
       {/* ヘッダー */}
-      <Text style={styles.header}>
-        📊 {child.name}の成長レポート
-      </Text>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+        <PixelScrollIcon size={20} />
+        <Text style={styles.header}>{child.name}の成長レポート</Text>
+      </View>
       <Text style={styles.monthLabel}>{label}</Text>
 
       {/* 統計カード */}
       <View style={styles.statsGrid}>
         <View style={styles.statItem}>
-          <Text style={styles.statEmoji}>🎯</Text>
+          <PixelCrossedSwordsIcon size={20} />
           <Text style={styles.statValue}>{data.questsCompleted}</Text>
           <Text style={styles.statLabel}>クエスト</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statEmoji}>💰</Text>
+          <PixelCrownIcon size={20} />
           <Text style={styles.statValue}>¥{data.totalEarned.toLocaleString()}</Text>
           <Text style={styles.statLabel}>稼いだ</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statEmoji}>🔥</Text>
+          <PixelFlameIcon size={20} />
           <Text style={styles.statValue}>{data.maxStreak}日</Text>
           <Text style={styles.statLabel}>最高連続</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statEmoji}>⚔️</Text>
+          <PixelCrossedSwordsIcon size={20} />
           <Text style={styles.statValue}>
             Lv.{data.levelStart === data.levelEnd
               ? data.levelEnd
               : `${data.levelStart}→${data.levelEnd}`}
           </Text>
           <Text style={styles.statLabel}>
-            {data.levelEnd > data.levelStart ? "🎉 UP!" : "レベル"}
+            {data.levelEnd > data.levelStart ? "UP!" : "レベル"}
           </Text>
         </View>
       </View>
@@ -198,15 +200,19 @@ export default function MonthlyReport({ child, wallet }: Props) {
       {/* 貯金達成 */}
       {data.savingGoalsTotal > 0 && (
         <View style={styles.goalRow}>
-          <Text style={styles.goalText}>
-            🐷 ちょきん目標: {data.savingGoalsAchieved}/{data.savingGoalsTotal} たっせい
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <PixelPiggyIcon size={18} />
+            <Text style={styles.goalText}>ちょきん目標: {data.savingGoalsAchieved}/{data.savingGoalsTotal} たっせい</Text>
+          </View>
         </View>
       )}
 
       {/* コメント */}
       <View style={styles.commentBox}>
-        <Text style={styles.commentLabel}>💡 コメント:</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+          <PixelLightbulbIcon size={14} />
+          <Text style={styles.commentLabel}>コメント:</Text>
+        </View>
         <Text style={styles.commentText}>「{comment}」</Text>
       </View>
     </View>
