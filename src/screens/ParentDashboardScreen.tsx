@@ -606,7 +606,7 @@ export default function ParentDashboardScreen({
 
   function handleLogout() {
     clearSession().then(() => {
-      navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+      navigation.reset({ index: 0, routes: [{ name: "Landing" }] });
     });
   }
 
@@ -630,8 +630,8 @@ export default function ParentDashboardScreen({
           <Text style={styles.headerEmoji}>👨‍👩‍👧‍👦 </Text>
           <Text style={styles.headerTitle}>親</Text>
         </View>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
-          <Text style={styles.logoutText}>← もどる</Text>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログアウト" accessibilityRole="button">
+          <Text style={styles.logoutText}>🚪 ログアウト</Text>
         </TouchableOpacity>
       </View>
 

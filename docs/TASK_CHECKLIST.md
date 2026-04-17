@@ -29,7 +29,7 @@
 
 ## 仕上げ
 
-- [ ] Web版同期 + README更新 + git push
+- [x] Web版同期 + README更新 + git push — 2026-04-17完了（全Sprint分同時対応済み）
 
 ---
 

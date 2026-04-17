@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,10 +8,13 @@ import {
   StyleSheet,
   ScrollView,
   Linking,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { supabase } from "../lib/supabase";
 import type { Family, User } from "../lib/types";
 import { verifyPin, loginAsUser, signIn, signUp } from "../services/auth";
+import { setSession } from "../lib/session";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
@@ -42,10 +45,25 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const [adminLoading, setAdminLoading] = useState(false);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false); // false=ログイン, true=新規登録
+  const [showPassword, setShowPassword] = useState(false);
 
   // Family add
   const [newFamilyName, setNewFamilyName] = useState("");
   const [addingFamily, setAddingFamily] = useState(false);
+  // 家族メンバー管理
+  const [managingFamily, setManagingFamily] = useState<Family | null>(null);
+  const [familyMembers, setFamilyMembers] = useState<User[]>([]);
+  const [newChildName, setNewChildName] = useState("");
+  const [newChildIcon, setNewChildIcon] = useState("🧒");
+  const [newChildPin, setNewChildPin] = useState("");
+  const [addingChild, setAddingChild] = useState(false);
+  // メンバー編集
+  const [editingMember, setEditingMember] = useState<User | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editIcon, setEditIcon] = useState("");
+  const [editPin, setEditPin] = useState("");
+  const [savingMember, setSavingMember] = useState(false);
+  const adminScrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     loadFamilies();
@@ -74,7 +92,9 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     setSelectedUser(user);
     setPin("");
     setError("");
-    if (user.pin) {
+    // pin_hash があれば PIN 入力を求める
+    const hasPinHash = (user as any).pin_hash;
+    if (user.pin || hasPinHash) {
       setStep("pin");
     } else {
       // PIN not set - login directly
@@ -111,20 +131,61 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         setAdminLoading(false);
         return;
       }
-      const { data: adminUser } = await supabase
+      let { data: authUser } = await supabase
         .from("otetsudai_users")
         .select("*")
         .eq("auth_id", authData.user.id)
-        .eq("role", "admin")
+        .in("role", ["admin", "parent"])
+        .limit(1)
         .single();
-      if (!adminUser) {
+      if (!authUser) {
+        // レコードが未作成の場合、自動でadminとして登録
+        const { data: newUser } = await supabase.from("otetsudai_users").insert({
+          auth_id: authData.user.id,
+          role: "admin",
+          name: adminEmail.split("@")[0],
+          icon: "👨‍👩‍👧‍👦",
+          display_order: 0,
+        }).select().single();
+        authUser = newUser;
+      }
+      if (!authUser) {
         await supabase.auth.signOut();
-        setError("かんりしゃ けんげんが ありません");
+        setError("このアカウントでは ログインできません");
         setAdminLoading(false);
         return;
       }
-      setAdminLoggedIn(true);
-      await loadFamilies();
+      // admin の family_id が null なら最新の自分の家族を探す
+      let familyId = authUser.family_id;
+      if (!familyId) {
+        const { data: myFamilies } = await supabase
+          .from("otetsudai_families")
+          .select("id, name")
+          .neq("name", SAMPLE_FAMILY_NAME)
+          .order("created_at", { ascending: false })
+          .limit(1);
+        if (myFamilies && myFamilies.length > 0) {
+          familyId = myFamilies[0].id;
+          // DB側も更新
+          await supabase.from("otetsudai_users").update({ family_id: familyId }).eq("id", authUser.id);
+        }
+      }
+      // セッション保存
+      await setSession({
+        userId: authUser.id,
+        familyId,
+        role: authUser.role as "admin" | "parent",
+        name: authUser.name,
+        authId: authData.user.id,
+      });
+      if (familyId) {
+        onLoginSuccess();
+      } else {
+        // 家族未作成 → 家族管理画面へ
+        setAdminLoggedIn(true);
+        await loadFamilies();
+        alert("ようこそ！", "まず家族を追加してください");
+      }
     } catch {
       setError("ログインに 失敗しました");
     }
@@ -157,7 +218,22 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
           icon: "👨‍👩‍👧‍👦",
           display_order: 0,
         });
-        // 登録後に自動ログイン
+        // 登録後に自動ログイン + セッション保存
+        const { data: newAdminUser } = await supabase
+          .from("otetsudai_users")
+          .select("*")
+          .eq("auth_id", authData.user.id)
+          .single();
+        if (newAdminUser) {
+          await setSession({
+            userId: newAdminUser.id,
+            familyId: newAdminUser.family_id,
+            role: "admin",
+            name: newAdminUser.name,
+            authId: authData.user.id,
+          });
+        }
+        // 新規登録 → 家族管理画面へ
         setAdminLoggedIn(true);
         await loadFamilies();
         alert("🎉 登録完了", "家族を追加してはじめましょう！");
@@ -168,6 +244,8 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     setAdminLoading(false);
   }
 
+  const SAMPLE_FAMILY_NAME = "山田家";
+
   function handleDeleteFamily(family: Family) {
     alert("家族を削除", `「${family.name}」を削除しますか？\n関連するデータも全て削除されます。`, [
       { text: "キャンセル", style: "cancel" },
@@ -176,11 +254,29 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         style: "destructive",
         onPress: async () => {
           // 関連データを先に削除（FK制約）
-          await supabase.from("otetsudai_family_settings").delete().eq("family_id", family.id);
-          await supabase.from("otetsudai_messages").delete().eq("family_id", family.id);
-          await supabase.from("otetsudai_tasks").delete().eq("family_id", family.id);
-          await supabase.from("otetsudai_users").delete().eq("family_id", family.id);
-          await supabase.from("otetsudai_families").delete().eq("id", family.id);
+          const fid = family.id;
+          // 子テーブルから順に削除
+          const { data: users } = await supabase.from("otetsudai_users").select("id").eq("family_id", fid);
+          const userIds = (users || []).map((u: { id: string }) => u.id);
+          if (userIds.length > 0) {
+            const { data: wallets } = await supabase.from("otetsudai_wallets").select("id").in("child_id", userIds);
+            const walletIds = (wallets || []).map((w: { id: string }) => w.id);
+            if (walletIds.length > 0) {
+              await supabase.from("otetsudai_transactions").delete().in("wallet_id", walletIds);
+              await supabase.from("otetsudai_spend_requests").delete().in("wallet_id", walletIds);
+              await supabase.from("otetsudai_invest_orders").delete().in("wallet_id", walletIds);
+              await supabase.from("otetsudai_wallets").delete().in("id", walletIds);
+            }
+            await supabase.from("otetsudai_task_logs").delete().in("child_id", userIds);
+            await supabase.from("otetsudai_badges").delete().in("child_id", userIds);
+            await supabase.from("otetsudai_saving_goals").delete().in("child_id", userIds);
+          }
+          await supabase.from("otetsudai_family_messages").delete().eq("family_id", fid);
+          await supabase.from("otetsudai_family_challenges").delete().eq("family_id", fid);
+          await supabase.from("otetsudai_family_settings").delete().eq("family_id", fid);
+          await supabase.from("otetsudai_tasks").delete().eq("family_id", fid);
+          await supabase.from("otetsudai_users").delete().eq("family_id", fid);
+          await supabase.from("otetsudai_families").delete().eq("id", fid);
           await loadFamilies();
           alert("削除しました", `${family.name} を削除しました`);
         },
@@ -215,6 +311,118 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     setAddingFamily(false);
   }
 
+  const CHILD_ICONS = ["🧒", "👧", "👦", "🧒🏻", "👧🏻", "👦🏻", "🧑", "👶"];
+
+  async function openFamilyMembers(family: Family) {
+    setManagingFamily(family);
+    const { data } = await supabase
+      .from("otetsudai_users")
+      .select("*")
+      .eq("family_id", family.id)
+      .order("display_order");
+    setFamilyMembers(data || []);
+  }
+
+  async function handleAddChild() {
+    if (!newChildName.trim() || !managingFamily) return;
+    setAddingChild(true);
+    const memberCount = familyMembers.length;
+    const { data: insertedUser } = await supabase.from("otetsudai_users").insert({
+      family_id: managingFamily.id,
+      role: "child",
+      name: newChildName.trim(),
+      icon: newChildIcon,
+      display_order: memberCount + 1,
+    }).select("id").single();
+    if (insertedUser) {
+      // PINをbcryptハッシュで保存
+      if (newChildPin) {
+        await supabase.rpc("set_pin_hash", { p_user_id: insertedUser.id, p_pin: newChildPin });
+      }
+      // ウォレット自動作成
+      await supabase.from("otetsudai_wallets").insert({
+        child_id: insertedUser.id,
+        spending_balance: 0,
+        saving_balance: 0,
+        invest_balance: 0,
+        save_ratio: 30,
+        invest_ratio: 0,
+        split_ratio: 30,
+      });
+    }
+    setNewChildName("");
+    setNewChildPin("");
+    setNewChildIcon("🧒");
+    setAddingChild(false);
+    await openFamilyMembers(managingFamily);
+  }
+
+  function startEditMember(member: User) {
+    setEditingMember(member);
+    setEditName(member.name);
+    setEditIcon(member.icon);
+    setEditPin(member.pin || "");
+  }
+
+  async function handleSaveMember() {
+    if (!editingMember || !editName.trim()) return;
+    setSavingMember(true);
+    await supabase.from("otetsudai_users").update({
+      name: editName.trim(),
+      icon: editIcon,
+    }).eq("id", editingMember.id);
+    // PINが変更されていたらbcryptハッシュで更新
+    if (editPin && editPin !== (editingMember.pin || "")) {
+      await supabase.rpc("set_pin_hash", { p_user_id: editingMember.id, p_pin: editPin });
+    }
+    setSavingMember(false);
+    setEditingMember(null);
+    if (managingFamily) await openFamilyMembers(managingFamily);
+  }
+
+  async function handleDeleteMember(member: User) {
+    if (!managingFamily) return;
+    alert("メンバーを削除", `「${member.name}」を削除しますか？`, [
+      { text: "キャンセル", style: "cancel" },
+      {
+        text: "削除する",
+        style: "destructive",
+        onPress: async () => {
+          // 関連データ削除
+          const { data: wallets } = await supabase.from("otetsudai_wallets").select("id").eq("child_id", member.id);
+          const walletIds = (wallets || []).map((w: { id: string }) => w.id);
+          if (walletIds.length > 0) {
+            await supabase.from("otetsudai_transactions").delete().in("wallet_id", walletIds);
+            await supabase.from("otetsudai_spend_requests").delete().in("wallet_id", walletIds);
+            await supabase.from("otetsudai_invest_orders").delete().in("wallet_id", walletIds);
+            await supabase.from("otetsudai_wallets").delete().in("id", walletIds);
+          }
+          await supabase.from("otetsudai_task_logs").delete().eq("child_id", member.id);
+          await supabase.from("otetsudai_badges").delete().eq("child_id", member.id);
+          await supabase.from("otetsudai_saving_goals").delete().eq("child_id", member.id);
+          await supabase.from("otetsudai_family_messages").delete().eq("sender_id", member.id);
+          await supabase.from("otetsudai_family_messages").delete().eq("recipient_id", member.id);
+          await supabase.from("otetsudai_users").delete().eq("id", member.id);
+          setEditingMember(null);
+          await openFamilyMembers(managingFamily);
+        },
+      },
+    ]);
+  }
+
+  async function handleAddParentMember() {
+    if (!managingFamily) return;
+    const memberCount = familyMembers.length;
+    await supabase.from("otetsudai_users").insert({
+      family_id: managingFamily.id,
+      role: "parent",
+      name: "おや",
+      icon: "👨‍👩‍👧‍👦",
+      display_order: memberCount + 1,
+    });
+    await openFamilyMembers(managingFamily);
+  }
+
   function goBack() {
     setError("");
     if (step === "pin") {
@@ -246,16 +454,22 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   // Admin login / family management
   if (step === "admin") {
     return (
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
       <ScrollView
+        ref={adminScrollRef}
         contentContainerStyle={styles.container}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
       >
         <View style={styles.card}>
           {!adminLoggedIn ? (
             <>
               <Text style={styles.icon}>{isSignUp ? "📝" : "🔧"}</Text>
               <Text style={styles.titleAdmin} adjustsFontSizeToFit numberOfLines={1}>
-                {isSignUp ? "新規アカウント作成" : "管理者ログイン"}
+                {isSignUp ? "アカウント作成" : "ログイン"}
               </Text>
 
               <TextInput
@@ -266,14 +480,23 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
-              <TextInput
-                style={styles.input}
-                placeholder={isSignUp ? "パスワード（6文字以上）" : "パスワード"}
-                value={adminPassword}
-                onChangeText={setAdminPassword}
-                secureTextEntry
-                onSubmitEditing={isSignUp ? handleAdminSignUp : handleAdminLogin}
-              />
+              <View style={{ position: "relative" }}>
+                <TextInput
+                  style={styles.input}
+                  placeholder={isSignUp ? "パスワード（6文字以上）" : "パスワード"}
+                  value={adminPassword}
+                  onChangeText={setAdminPassword}
+                  secureTextEntry={!showPassword}
+                  onSubmitEditing={isSignUp ? handleAdminSignUp : handleAdminLogin}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={{ position: "absolute", right: 14, top: 14 }}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Text style={{ fontSize: 18 }}>{showPassword ? "🙈" : "👁️"}</Text>
+                </TouchableOpacity>
+              </View>
 
               {error ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -291,49 +514,235 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
 
               <TouchableOpacity
                 style={styles.switchAuthLink}
-                onPress={() => { setIsSignUp(!isSignUp); setError(""); }}
+                onPress={() => { setIsSignUp(!isSignUp); setError(""); setAdminEmail(""); setAdminPassword(""); }}
               >
                 <Text style={styles.switchAuthText}>
-                  {isSignUp ? "ログインに戻る" : "新規登録"}
+                  {isSignUp ? "ログインに戻る" : "アカウント作成"}
                 </Text>
               </TouchableOpacity>
+
+              {!isSignUp && (
+                <TouchableOpacity
+                  style={styles.switchAuthLink}
+                  onPress={async () => {
+                    if (!adminEmail.trim()) {
+                      setError("メールアドレスを入力してください");
+                      return;
+                    }
+                    setAdminLoading(true);
+                    setError("");
+                    const { error: resetError } = await supabase.auth.resetPasswordForEmail(adminEmail.trim());
+                    setAdminLoading(false);
+                    if (resetError) {
+                      setError("送信に失敗しました");
+                    } else {
+                      alert("📧 メール送信", `${adminEmail.trim()} にパスワードリセット用のメールを送信しました。メール内のリンクから再設定してください。`);
+                    }
+                  }}
+                >
+                  <Text style={styles.switchAuthText}>パスワードを忘れた</Text>
+                </TouchableOpacity>
+              )}
             </>
           ) : (
             <>
               <Text style={styles.icon}>🏠</Text>
-              <RubyText style={styles.titleAdmin} parts={[["家族", "かぞく"], ["管理", "かんり"]]} rubySize={7} />
+              <Text style={styles.titleAdmin}>家族管理</Text>
 
               {/* 家族一覧 */}
-              {families.map((f) => (
-                <View key={f.id} style={styles.familyRow}>
-                  <Text style={styles.familyName}>🏠 {f.name}</Text>
-                  <TouchableOpacity
-                    onPress={() => handleDeleteFamily(f)}
-                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  >
-                    <Text style={styles.familyDelete}>🗑️</Text>
+              {managingFamily ? (
+                <>
+                  {/* 家族メンバー管理画面 */}
+                  <TouchableOpacity onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
+                    <Text style={styles.backText}>← 家族一覧に戻る</Text>
                   </TouchableOpacity>
-                </View>
-              ))}
+                  <Text style={[styles.titleAdmin, { fontSize: rf(18), marginTop: 8, marginBottom: 12 }]}>
+                    🏠 {managingFamily.name}
+                  </Text>
 
-              {/* 家族追加 */}
-              <View style={styles.addFamilyRow}>
-                <TextInput
-                  style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                  placeholder="あたらしい かぞくめい（れい: たなかけ）"
-                  value={newFamilyName}
-                  onChangeText={setNewFamilyName}
-                />
-              </View>
-              <TouchableOpacity
-                style={[styles.button, styles.buttonPrimary, { marginTop: 8 }]}
-                onPress={handleAddFamily}
-                disabled={addingFamily || !newFamilyName.trim()}
-              >
-                <Text style={styles.buttonText}>
-                  {addingFamily ? "ついかちゅう..." : "＋ かぞくを ついか"}
-                </Text>
-              </TouchableOpacity>
+                  {/* 既存メンバー */}
+                  {familyMembers.map((m) => (
+                    <View key={m.id}>
+                      {editingMember?.id === m.id ? (
+                        /* 編集モード */
+                        <View style={[styles.familyRow, { flexDirection: "column", alignItems: "stretch", padding: 12, backgroundColor: palette.primaryLight }]}>
+                          {/* アイコン選択 */}
+                          <View style={{ flexDirection: "row", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                            {CHILD_ICONS.map((icon) => (
+                              <TouchableOpacity
+                                key={icon}
+                                onPress={() => setEditIcon(icon)}
+                                style={{
+                                  padding: 6, borderRadius: 10, borderWidth: 2,
+                                  borderColor: editIcon === icon ? palette.primary : palette.border,
+                                  backgroundColor: editIcon === icon ? palette.primaryLight : palette.surfaceMuted,
+                                }}
+                              >
+                                <Text style={{ fontSize: 22 }}>{icon}</Text>
+                              </TouchableOpacity>
+                            ))}
+                          </View>
+                          <TextInput
+                            style={styles.input}
+                            value={editName}
+                            onChangeText={setEditName}
+                            placeholder="なまえ"
+                            onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
+                          />
+                          <TextInput
+                            style={styles.input}
+                            value={editPin}
+                            onChangeText={setEditPin}
+                            placeholder="あんしょうばんごう（なくてもOK）"
+                            keyboardType="number-pad"
+                            maxLength={6}
+                            onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
+                          />
+                          <View style={{ flexDirection: "row", gap: 8 }}>
+                            <TouchableOpacity
+                              style={[styles.button, styles.buttonPrimary, { flex: 1 }]}
+                              onPress={handleSaveMember}
+                              disabled={savingMember || !editName.trim()}
+                            >
+                              <Text style={styles.buttonText}>
+                                {savingMember ? "ほぞんちゅう..." : "✓ ほぞん"}
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={[styles.button, { flex: 1, backgroundColor: palette.surfaceMuted }]}
+                              onPress={() => setEditingMember(null)}
+                            >
+                              <Text style={[styles.buttonText, { color: palette.textBase }]}>キャンセル</Text>
+                            </TouchableOpacity>
+                          </View>
+                          <TouchableOpacity
+                            style={{ marginTop: 8, alignItems: "center" }}
+                            onPress={() => handleDeleteMember(m)}
+                          >
+                            <Text style={{ color: palette.red, fontSize: 13 }}>🗑️ このメンバーを削除</Text>
+                          </TouchableOpacity>
+                        </View>
+                      ) : (
+                        /* 表示モード — タップで編集 */
+                        <TouchableOpacity
+                          style={styles.familyRow}
+                          onPress={() => startEditMember(m)}
+                        >
+                          <Text style={styles.familyName}>
+                            {m.icon} {m.name}（{m.role === "child" ? "こども" : "おや"}）
+                          </Text>
+                          <Text style={{ color: palette.textMuted, fontSize: 12 }}>✏️</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  ))}
+
+                  {familyMembers.length === 0 && (
+                    <Text style={{ textAlign: "center", color: palette.textMuted, marginVertical: 12 }}>
+                      まだメンバーがいません
+                    </Text>
+                  )}
+
+                  {/* 子供追加フォーム */}
+                  <View style={{ marginTop: 16 }}>
+                    <Text style={[styles.label, { marginBottom: 8 }]}>子供を追加</Text>
+
+                    {/* アイコン選択 */}
+                    <View style={{ flexDirection: "row", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
+                      {CHILD_ICONS.map((icon) => (
+                        <TouchableOpacity
+                          key={icon}
+                          onPress={() => setNewChildIcon(icon)}
+                          style={{
+                            padding: 6,
+                            borderRadius: 10,
+                            borderWidth: 2,
+                            borderColor: newChildIcon === icon ? palette.primary : palette.border,
+                            backgroundColor: newChildIcon === icon ? palette.primaryLight : palette.surfaceMuted,
+                          }}
+                        >
+                          <Text style={{ fontSize: 22 }}>{icon}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+
+                    <TextInput
+                      style={styles.input}
+                      placeholder="なまえ（れい: ハルト）"
+                      value={newChildName}
+                      onChangeText={setNewChildName}
+                      onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
+                    />
+                    <TextInput
+                      style={styles.input}
+                      placeholder="あんしょうばんごう（なくてもOK）"
+                      value={newChildPin}
+                      onChangeText={setNewChildPin}
+                      keyboardType="number-pad"
+                      maxLength={6}
+                      onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
+                    />
+                    <TouchableOpacity
+                      style={[styles.button, styles.buttonPrimary]}
+                      onPress={handleAddChild}
+                      disabled={addingChild || !newChildName.trim()}
+                    >
+                      <Text style={styles.buttonText}>
+                        {addingChild ? "追加中..." : "🧒 子供を追加"}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </>
+              ) : (
+                <>
+                  {families.map((f) => {
+                    const isSample = f.name === SAMPLE_FAMILY_NAME;
+                    return (
+                      <View key={f.id} style={styles.familyRow}>
+                        <TouchableOpacity
+                          style={{ flex: 1 }}
+                          onPress={() => !isSample && openFamilyMembers(f)}
+                        >
+                          <Text style={styles.familyName}>
+                            🏠 {f.name}{isSample ? "（見本）" : ""}
+                          </Text>
+                        </TouchableOpacity>
+                        {!isSample && (
+                          <TouchableOpacity
+                            onPress={() => handleDeleteFamily(f)}
+                            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                          >
+                            <Text style={styles.familyDelete}>🗑️</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    );
+                  })}
+                </>
+              )}
+
+              {/* 家族追加（メンバー管理中は非表示） */}
+              {!managingFamily && (
+                <>
+                  <View style={styles.addFamilyRow}>
+                    <TextInput
+                      style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                      placeholder="あたらしい かぞくめい（れい: たなかけ）"
+                      value={newFamilyName}
+                      onChangeText={setNewFamilyName}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    style={[styles.button, styles.buttonPrimary, { marginTop: 8 }]}
+                    onPress={handleAddFamily}
+                    disabled={addingFamily || !newFamilyName.trim()}
+                  >
+                    <Text style={styles.buttonText}>
+                      {addingFamily ? "追加中..." : "＋ 家族を追加"}
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
             </>
           )}
 
@@ -347,13 +756,19 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     );
   }
 
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
     <ScrollView
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="interactive"
     >
       <View style={styles.card}>
         {/* Header */}
@@ -377,7 +792,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modeButton, { backgroundColor: palette.surfaceMuted, borderColor: palette.border }]}
-              onPress={() => setStep("admin")}
+              onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}
             >
               <Text style={styles.modeEmoji}>👨‍👩‍👧‍👦</Text>
               <Text style={[styles.modeText, { color: palette.textStrong }]}>おやモード</Text>
@@ -474,6 +889,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -553,8 +553,8 @@ export default function ChildDashboardScreen({
               />
             ))}
           </View>
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログインがめんに もどる" accessibilityRole="button">
-            <Text style={styles.logoutText}>← もどる</Text>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログアウト" accessibilityRole="button">
+            <Text style={styles.logoutText}>🚪</Text>
           </TouchableOpacity>
         </View>
       </View>

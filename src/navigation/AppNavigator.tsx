@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { getSession } from "../lib/session";
+import { getSession, clearSession } from "../lib/session";
 import { useTheme } from "../theme";
 import LandingScreen from "../screens/LandingScreen";
 import LoginScreen from "../screens/LoginScreen";
@@ -38,7 +38,21 @@ export default function AppNavigator() {
   }, []);
 
   async function checkSession() {
-    // 常にランディング画面から開始
+    try {
+      const session = await getSession();
+      console.log("[AppNavigator] session:", session ? `role=${session.role}, userId=${session.userId}` : "null");
+      if (session) {
+        if (session.role === "child") {
+          setInitialParams({ childId: session.userId });
+          setInitialRoute("ChildDashboard");
+        } else {
+          setInitialRoute("ParentDashboard");
+        }
+        return;
+      }
+    } catch {
+      await clearSession();
+    }
     setInitialRoute("Landing");
   }
 
