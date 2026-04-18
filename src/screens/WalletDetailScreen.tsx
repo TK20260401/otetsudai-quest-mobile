@@ -137,24 +137,19 @@ export default function WalletDetailScreen({
 
   const filterTabs: { label: string; value: string }[] = [
     { label: "全部", value: "all" },
-    { label: "💰 稼ぐ", value: "earn" },
-    { label: "🛒 使う", value: "spend" },
-    { label: "🐷 貯める", value: "save" },
-    { label: "📈 増やす", value: "invest" },
+    { label: "稼ぐ", value: "earn" },
+    { label: "使う", value: "spend" },
+    { label: "貯める", value: "save" },
+    { label: "増やす", value: "invest" },
   ];
 
-  function txTypeEmoji(type: string): string {
+  function TxTypeIcon({ type }: { type: string }) {
     switch (type) {
-      case "earn":
-        return "💰";
-      case "spend":
-        return "🛒";
-      case "save":
-        return "🐷";
-      case "invest":
-        return "📈";
-      default:
-        return "💰";
+      case "earn": return <PixelCoinIcon size={18} />;
+      case "spend": return <PixelCartIcon size={18} />;
+      case "save": return <PixelPiggyIcon size={18} />;
+      case "invest": return <PixelChartIcon size={18} />;
+      default: return <PixelCoinIcon size={18} />;
     }
   }
 
@@ -197,7 +192,7 @@ export default function WalletDetailScreen({
           style={styles.backButton}
           accessibilityLabel="もどる"
         >
-          <Text style={styles.backText}>← もどる</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelScrollIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
           <PixelCoinIcon size={22} />
@@ -552,7 +547,7 @@ export default function WalletDetailScreen({
           {filteredTransactions.length > 0 ? (
             filteredTransactions.map((tx) => (
               <View key={tx.id} style={styles.historyItem}>
-                <Text style={styles.historyType}>{txTypeEmoji(tx.type)}</Text>
+                <View style={styles.historyType}><TxTypeIcon type={tx.type} /></View>
                 <View style={styles.historyInfo}>
                   <Text style={styles.historyDesc}>
                     {tx.description || txTypeName(tx.type)}

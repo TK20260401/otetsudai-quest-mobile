@@ -18,7 +18,7 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
 import type { StockPrice } from "../lib/types";
-import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon } from "../components/PixelIcons";
+import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon, PixelBarChartIcon, PixelDoorIcon } from "../components/PixelIcons";
 
 type Portfolio = {
   id: string;
@@ -34,7 +34,7 @@ type Portfolio = {
 const SYNC_COOLDOWN_MS = 5 * 60 * 1000;
 
 const CATEGORIES = [
-  { key: "index", label: "📊 インデックス", desc: "初めての人におすすめ" },
+  { key: "index", label: "インデックス", desc: "初めての人におすすめ" },
   { key: "jp_stock", label: "🇯🇵 日本", desc: "" },
   { key: "us_stock", label: "🇺🇸 アメリカ", desc: "" },
 ] as const;
@@ -238,7 +238,7 @@ export default function InvestScreen({
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backText}>← もどる</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
           <PixelSeedlingIcon size={20} />
@@ -366,7 +366,7 @@ export default function InvestScreen({
           >
             <View style={styles.header}>
               <TouchableOpacity onPress={() => setOrderVisible(false)} style={styles.backButton}>
-                <Text style={styles.backText}>← もどる</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelSeedlingIcon size={20} />
