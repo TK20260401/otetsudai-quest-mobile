@@ -11,8 +11,8 @@ type ThemeContextType = {
 const STORAGE_KEY = "app_palette";
 
 const ThemeContext = createContext<ThemeContextType>({
-  palette: palettes.breeze,
-  paletteName: "breeze",
+  palette: palettes.dungeon,
+  paletteName: "dungeon",
   setPalette: () => {},
 });
 
@@ -22,7 +22,7 @@ export function useTheme() {
 
 export function ThemeProvider({
   children,
-  initial = "breeze",
+  initial = "dungeon",
 }: {
   children: React.ReactNode;
   initial?: PaletteName;
@@ -49,5 +49,5 @@ export async function loadSavedPalette(): Promise<PaletteName> {
     const saved = await AsyncStorage.getItem(STORAGE_KEY);
     if (saved && saved in palettes) return saved as PaletteName;
   } catch {}
-  return "breeze";
+  return "dungeon";
 }

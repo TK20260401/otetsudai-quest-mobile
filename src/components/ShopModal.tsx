@@ -1,0 +1,328 @@
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  Modal,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SHOP_ITEMS,
+  RARITY_COLORS,
+  getPurchases,
+  purchaseItem,
+  equipItem,
+  unequipAll,
+  type PurchaseRecord,
+} from "../lib/shop";
+import RpgButton from "./RpgButton";
+import { useTheme, type Palette } from "../theme";
+
+type Props = {
+  visible: boolean;
+  onClose: () => void;
+  childId: string;
+  walletId: string | null;
+  spendingBalance: number;
+  onChanged?: () => void;
+};
+
+export default function ShopModal({
+  visible,
+  onClose,
+  childId,
+  walletId,
+  spendingBalance,
+  onChanged,
+}: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
+  const insets = useSafeAreaInsets();
+
+  const [purchases, setPurchases] = useState<PurchaseRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ msg: string; tone: "ok" | "err" } | null>(null);
+
+  useEffect(() => {
+    if (!visible) return;
+    refresh();
+  }, [visible, childId]);
+
+  async function refresh() {
+    setLoading(true);
+    const data = await getPurchases(childId);
+    setPurchases(data);
+    setLoading(false);
+  }
+
+  const ownedMap = useMemo(() => {
+    const map = new Map<string, PurchaseRecord>();
+    for (const p of purchases) map.set(p.item_id, p);
+    return map;
+  }, [purchases]);
+
+  async function handleBuy(itemId: string, price: number) {
+    if (!walletId) return;
+    if (spendingBalance < price) {
+      setToast({ msg: "お金が たりないよ", tone: "err" });
+      return;
+    }
+    setBusy(itemId);
+    const result = await purchaseItem(childId, walletId, itemId);
+    setBusy(null);
+    if (result.success) {
+      setToast({ msg: "こうにゅうしたよ！", tone: "ok" });
+      await refresh();
+      onChanged?.();
+    } else {
+      setToast({ msg: result.error || "しっぱい", tone: "err" });
+    }
+  }
+
+  async function handleEquip(itemId: string) {
+    setBusy(itemId);
+    await equipItem(childId, itemId);
+    setBusy(null);
+    await refresh();
+    onChanged?.();
+  }
+
+  async function handleUnequip() {
+    setBusy("unequip");
+    await unequipAll(childId);
+    setBusy(null);
+    await refresh();
+    onChanged?.();
+  }
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
+      <View style={[styles.container, { paddingTop: insets.top }]}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>🏪 ショップ</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <Text style={styles.closeText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.subtitle}>
+          「つかう」のおかね: {spendingBalance.toLocaleString()}円
+        </Text>
+
+        {toast && (
+          <View
+            style={[
+              styles.toast,
+              toast.tone === "ok" ? styles.toastOk : styles.toastErr,
+            ]}
+          >
+            <Text
+              style={[
+                styles.toastText,
+                { color: toast.tone === "ok" ? palette.green : palette.red },
+              ]}
+            >
+              {toast.msg}
+            </Text>
+          </View>
+        )}
+
+        <ScrollView
+          contentContainerStyle={{ padding: 12, paddingBottom: insets.bottom + 20 }}
+          showsVerticalScrollIndicator
+        >
+          {loading ? (
+            <ActivityIndicator color={palette.primary} style={{ marginTop: 40 }} />
+          ) : (
+            <>
+              {purchases.some((p) => p.is_equipped) && (
+                <TouchableOpacity
+                  onPress={handleUnequip}
+                  disabled={busy === "unequip"}
+                  style={styles.unequipBtn}
+                >
+                  <Text style={styles.unequipText}>しょうごうを はずす</Text>
+                </TouchableOpacity>
+              )}
+
+              {SHOP_ITEMS.map((item) => {
+                const owned = ownedMap.get(item.id);
+                const isEquipped = owned?.is_equipped;
+                const canAfford = spendingBalance >= item.price;
+                const rc = RARITY_COLORS[item.rarity];
+                return (
+                  <View
+                    key={item.id}
+                    style={[
+                      styles.itemRow,
+                      {
+                        borderColor: isEquipped ? palette.primary : rc.border,
+                        backgroundColor: isEquipped ? palette.primaryLight : rc.bg,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.itemEmoji}>{item.emoji}</Text>
+                    <View style={styles.itemInfo}>
+                      <Text style={[styles.itemLabel, { color: rc.text }]} numberOfLines={1}>
+                        {item.label}
+                      </Text>
+                      <Text style={styles.itemDesc} numberOfLines={1}>
+                        {item.description}
+                      </Text>
+                      <Text style={[styles.itemMeta, { color: rc.text }]}>
+                        {item.rarity.toUpperCase()} ・ {item.price}円
+                      </Text>
+                    </View>
+                    <View style={styles.itemAction}>
+                      {isEquipped ? (
+                        <Text style={styles.equippedText}>⭐{"\n"}そうび中</Text>
+                      ) : owned ? (
+                        <RpgButton
+                          tier="violet"
+                          size="sm"
+                          onPress={() => handleEquip(item.id)}
+                          disabled={busy === item.id}
+                        >
+                          そうび
+                        </RpgButton>
+                      ) : (
+                        <RpgButton
+                          tier={canAfford ? "gold" : "silver"}
+                          size="sm"
+                          onPress={() => handleBuy(item.id, item.price)}
+                          disabled={busy === item.id || !canAfford || !walletId}
+                        >
+                          {busy === item.id ? "..." : canAfford ? "かう" : "不足"}
+                        </RpgButton>
+                      )}
+                    </View>
+                  </View>
+                );
+              })}
+            </>
+          )}
+
+          <View style={{ marginTop: 12 }}>
+            <RpgButton tier="silver" size="md" onPress={onClose}>
+              とじる
+            </RpgButton>
+          </View>
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+}
+
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: p.background,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: p.border,
+    },
+    headerTitle: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: p.textStrong,
+    },
+    closeBtn: {
+      width: 36,
+      height: 36,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 18,
+      backgroundColor: p.surfaceMuted,
+    },
+    closeText: {
+      fontSize: 16,
+      color: p.textStrong,
+    },
+    subtitle: {
+      fontSize: 12,
+      color: p.textMuted,
+      textAlign: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    toast: {
+      marginHorizontal: 12,
+      marginBottom: 8,
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+    },
+    toastOk: {
+      backgroundColor: p.greenLight,
+      borderColor: p.green,
+    },
+    toastErr: {
+      backgroundColor: p.redLight,
+      borderColor: p.red,
+    },
+    toastText: {
+      fontSize: 12,
+      textAlign: "center",
+    },
+    unequipBtn: {
+      paddingVertical: 8,
+      alignItems: "center",
+      marginBottom: 4,
+    },
+    unequipText: {
+      fontSize: 11,
+      color: p.textMuted,
+      textDecorationLine: "underline",
+    },
+    itemRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: 12,
+      borderRadius: 12,
+      borderWidth: 2,
+      marginBottom: 8,
+      gap: 12,
+    },
+    itemEmoji: {
+      fontSize: 32,
+    },
+    itemInfo: {
+      flex: 1,
+      minWidth: 0,
+    },
+    itemLabel: {
+      fontSize: 14,
+      fontWeight: "bold",
+    },
+    itemDesc: {
+      fontSize: 10,
+      color: p.textMuted,
+      marginTop: 1,
+    },
+    itemMeta: {
+      fontSize: 10,
+      marginTop: 2,
+    },
+    itemAction: {
+      width: 88,
+      alignItems: "center",
+    },
+    equippedText: {
+      fontSize: 10,
+      fontWeight: "bold",
+      color: p.primary,
+      textAlign: "center",
+    },
+  });
+}

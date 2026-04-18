@@ -21,6 +21,7 @@ import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 import PixelHeroSvg from "../components/PixelHeroSvg";
 import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon, PixelDoorIcon, PixelCheckIcon } from "../components/PixelIcons";
+import RpgButton from "../components/RpgButton";
 
 type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
 
@@ -506,17 +507,17 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
 
               {error ? <Text style={styles.error}>{error}</Text> : null}
 
-              <TouchableOpacity
-                style={[styles.button, styles.buttonAdmin]}
+              <RpgButton
+                tier="violet"
+                size="lg"
+                fullWidth
                 onPress={isSignUp ? handleAdminSignUp : handleAdminLogin}
                 disabled={adminLoading || !adminEmail || !adminPassword}
               >
-                <Text style={styles.buttonText}>
-                  {adminLoading
-                    ? (isSignUp ? "登録中..." : "ログイン中...")
-                    : (isSignUp ? "アカウント作成" : "ログイン")}
-                </Text>
-              </TouchableOpacity>
+                {adminLoading
+                  ? (isSignUp ? "登録中..." : "ログイン中...")
+                  : (isSignUp ? "アカウント作成" : "ログイン")}
+              </RpgButton>
 
               <TouchableOpacity
                 style={styles.switchAuthLink}
@@ -839,22 +840,20 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         {step === "mode" && (
           <>
             <Text style={styles.label}>どっちのモード？</Text>
-            <TouchableOpacity
-              style={[styles.modeButton, { backgroundColor: palette.primaryLight, borderColor: palette.primary }]}
-              onPress={() => { setStep("family"); loadFamilies(); }}
-            >
-              <Text style={styles.modeEmoji}>🧒</Text>
-              <Text style={[styles.modeText, { color: palette.primaryDark }]}>こどもモード</Text>
-              <Text style={styles.modeHint} numberOfLines={1} adjustsFontSizeToFit>おうちをえらんでログイン</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modeButton, { backgroundColor: palette.surfaceMuted, borderColor: palette.border }]}
-              onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}
-            >
-              <Text style={styles.modeEmoji}>👨‍👩‍👧‍👦</Text>
-              <Text style={[styles.modeText, { color: palette.textStrong }]}>親モード</Text>
-              <Text style={styles.modeHint} numberOfLines={1} adjustsFontSizeToFit>メール・パスワードでログイン</Text>
-            </TouchableOpacity>
+            <View style={{ marginBottom: 12 }}>
+              <RpgButton tier="gold" size="lg" fullWidth onPress={() => { setStep("family"); loadFamilies(); }}>
+                <Text style={{ fontSize: 28 }}>🧒</Text>
+                <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }}>こどもモード</Text>
+              </RpgButton>
+              <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>おうちをえらんでログイン</Text>
+            </View>
+            <View style={{ marginBottom: 8 }}>
+              <RpgButton tier="violet" size="lg" fullWidth onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}>
+                <Text style={{ fontSize: 28 }}>👨‍👩‍👧‍👦</Text>
+                <Text style={{ fontSize: 18, fontWeight: "bold", color: "#FFFFFF" }}>親モード</Text>
+              </RpgButton>
+              <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>メール・パスワードでログイン</Text>
+            </View>
           </>
         )}
 
@@ -923,12 +922,9 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
               onSubmitEditing={handlePinLogin}
             />
             {error ? <Text style={styles.error}>{error}</Text> : null}
-            <TouchableOpacity
-              style={[styles.button, styles.buttonPrimary]}
-              onPress={handlePinLogin}
-            >
-              <Text style={styles.buttonText}>クエストをはじめる！</Text>
-            </TouchableOpacity>
+            <RpgButton tier="gold" size="lg" fullWidth onPress={handlePinLogin}>
+              クエストをはじめる！
+            </RpgButton>
           </>
         )}
       </View>

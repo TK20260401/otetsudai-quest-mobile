@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,19 @@ import { getLevelProgress, getCurrentLevel } from "../lib/levels";
 import type { Level } from "../lib/levels";
 import { checkAndAwardBadges, BADGE_DEFINITIONS } from "../lib/badges";
 import { getStampById } from "../lib/stamps";
-import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest, User, FamilyMessage, FamilyChallenge } from "../lib/types";
+import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest, User, FamilyMessage, FamilyChallenge, Pet } from "../lib/types";
+import { getActivePet, processQuestCompletionForPets, hatchEgg, type PetType, type PetQuestResult } from "../lib/pets";
+import PetDisplay from "../components/PetDisplay";
+import PetManagementModal from "../components/PetManagementModal";
+import TrophyCaseModal from "../components/TrophyCaseModal";
+import DailyLoginModal from "../components/DailyLoginModal";
+import { getDailyLoginStatus } from "../lib/daily-login";
+import ShopModal from "../components/ShopModal";
+import { getEquippedTitle, RARITY_COLORS, type ShopItem } from "../lib/shop";
+import EggDropAnimation from "../components/EggDropAnimation";
+import GameStatusHeader from "../components/GameStatusHeader";
+import RpgCard from "../components/RpgCard";
+import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
 import LevelUpModal from "../components/LevelUpModal";
@@ -106,6 +118,15 @@ export default function ChildDashboardScreen({
   // ファミリースタンプリレー
   const [familyMessages, setFamilyMessages] = useState<FamilyMessage[]>([]);
   const [familyMembers, setFamilyMembers] = useState<User[]>([]);
+  // ペット
+  const [activePet, setActivePet] = useState<Pet | null>(null);
+  const [petManageVisible, setPetManageVisible] = useState(false);
+  const [trophyVisible, setTrophyVisible] = useState(false);
+  const [dailyLoginVisible, setDailyLoginVisible] = useState(false);
+  const [dailyLoginChecked, setDailyLoginChecked] = useState(false);
+  const [shopVisible, setShopVisible] = useState(false);
+  const [equippedTitle, setEquippedTitle] = useState<ShopItem | null>(null);
+  const [eggDrop, setEggDrop] = useState<PetType | null>(null);
   const [stampSendVisible, setStampSendVisible] = useState(false);
   const [sessionFamilyId, setSessionFamilyId] = useState<string | null>(null);
   // 家族チャレンジ
@@ -358,6 +379,14 @@ export default function ChildDashboardScreen({
       .limit(1);
     setActiveChallenge(challengeData?.[0] || null);
 
+    // アクティブペット
+    const pet = await getActivePet(childId);
+    setActivePet(pet);
+
+    // 装備中タイトル読み込み
+    const title = await getEquippedTitle(childId);
+    setEquippedTitle(title);
+
     setLoading(false);
   }, [childId]);
 
@@ -367,6 +396,16 @@ export default function ChildDashboardScreen({
       loadData();
     }, [loadData])
   );
+
+  // 初回のみデイリーログインチェック（wallet取得後）
+  useEffect(() => {
+    if (dailyLoginChecked) return;
+    if (!wallet) return;
+    setDailyLoginChecked(true);
+    getDailyLoginStatus(childId).then((s) => {
+      if (s.canClaimToday) setDailyLoginVisible(true);
+    });
+  }, [wallet, childId, dailyLoginChecked]);
 
   async function onRefresh() {
     setRefreshing(true);
@@ -426,6 +465,14 @@ export default function ChildDashboardScreen({
         setUnlockedBadge({ emoji: def.emoji, label: def.label, description: def.description });
       }
     }
+
+    // ペット処理（卵の孵化進行・餌やり・卵ドロップ）
+    const session = await getSession();
+    if (session?.familyId) {
+      const result: PetQuestResult = await processQuestCompletionForPets(childId, session.familyId);
+      if (result.eggDropped) setEggDrop(result.eggDropped);
+    }
+
     await loadData();
 
     // レベルアップ検出（承認前なので実際のレベルアップはloadData後に確認）
@@ -534,37 +581,39 @@ export default function ChildDashboardScreen({
 
   return (
     <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
-      {/* Header */}
-      <View style={styles.header} accessibilityRole="header">
-        <Text style={styles.headerTitle} numberOfLines={1} accessibilityRole="header">
-          🧒 {childName}
-        </Text>
-        <View style={styles.headerActions}>
-          {/* テーマ切替 */}
-          <View style={styles.themeRow}>
-            {(Object.keys(palettes) as PaletteName[]).map((name) => (
-              <TouchableOpacity
-                key={name}
-                onPress={() => setPalette(name)}
-                accessibilityLabel={`テーマ: ${palettes[name].name}`}
-                accessibilityRole="button"
-                hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  backgroundColor: palettes[name].primary,
-                  borderWidth: paletteName === name ? 2.5 : 0,
-                  borderColor: palette.textStrong,
-                  opacity: paletteName === name ? 1 : 0.5,
-                }}
-              />
-            ))}
-          </View>
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログアウト" accessibilityRole="button">
-            <PixelDoorIcon size={20} />
-          </TouchableOpacity>
-        </View>
+      <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
+        <GameStatusHeader
+          title={`🧒 ${childName}`}
+          userName=""
+          level={levelInfo.current.level}
+          hp={Math.round((weeklySummary.streak / 7) * 100)}
+          mp={Math.min(10, weeklySummary.streak)}
+          exp={levelInfo.progress}
+          gold={totalEarned}
+          onLogout={handleLogout}
+          rightSlot={
+            <View style={styles.themeRow}>
+              {(Object.keys(palettes) as PaletteName[]).map((name) => (
+                <TouchableOpacity
+                  key={name}
+                  onPress={() => setPalette(name)}
+                  accessibilityLabel={`テーマ: ${palettes[name].name}`}
+                  accessibilityRole="button"
+                  hitSlop={{ top: 8, bottom: 8, left: 2, right: 2 }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: 8,
+                    backgroundColor: palettes[name].primary,
+                    borderWidth: paletteName === name ? 2 : 0,
+                    borderColor: palette.textStrong,
+                    opacity: paletteName === name ? 1 : 0.5,
+                  }}
+                />
+              ))}
+            </View>
+          }
+        />
       </View>
       <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
@@ -575,19 +624,42 @@ export default function ChildDashboardScreen({
         }
       >
         {/* キャラクター育成 */}
-        <View
-          style={[
-            styles.levelCard,
-            mood === "active" ? styles.levelCardActive :
-            mood === "lonely" ? styles.levelCardLonely :
-            styles.levelCardNormal,
-          ]}
-          accessibilityLabel={`レベル${levelInfo.current.level} ${levelInfo.next ? `つぎのレベルまで あと${levelInfo.remaining}えん` : "さいこうレベル たっせい"}`}
-          accessibilityRole="summary"
+        <RpgCard
+          tier="violet"
+          style={{ marginHorizontal: 12, marginTop: 12 }}
+          contentStyle={{ flexDirection: "row", alignItems: "flex-start" }}
         >
           <View style={styles.characterColumn}>
             <CharacterSvg level={levelInfo.current.level} mood={mood} size={100} />
+            {equippedTitle && (
+              <View
+                style={[
+                  styles.titleBadge,
+                  {
+                    borderColor: RARITY_COLORS[equippedTitle.rarity].border,
+                    backgroundColor: RARITY_COLORS[equippedTitle.rarity].bg,
+                  },
+                ]}
+              >
+                <Text style={[styles.titleBadgeText, { color: RARITY_COLORS[equippedTitle.rarity].text }]}>
+                  {equippedTitle.emoji} {equippedTitle.label}
+                </Text>
+              </View>
+            )}
             <RubyStr text={levelInfo.current.appearance} style={styles.appearanceText} rubySize={6} />
+            <PetDisplay
+              pet={activePet}
+              onTapEgg={async () => {
+                if (activePet) {
+                  await hatchEgg(activePet.id);
+                  loadData();
+                }
+              }}
+              onManage={() => setPetManageVisible(true)}
+            />
+            <TouchableOpacity onPress={() => setShopVisible(true)} style={styles.shopBtn}>
+              <Text style={styles.shopBtnText}>🏪 ショップ</Text>
+            </TouchableOpacity>
           </View>
           <View style={styles.levelInfo}>
             <View style={styles.rowWrap}>
@@ -634,11 +706,11 @@ export default function ChildDashboardScreen({
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
             )}
           </View>
-        </View>
+        </RpgCard>
 
         {/* Stamp Notifications */}
         {stampNotifs.length > 0 && (
-          <View style={styles.stampCard}>
+          <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
             <RubyText style={styles.sectionTitle} parts={[["親", "おや"], "からのメッセージ"]} />
             {stampNotifs.map((s) => {
               const stampDef = s.stamp ? getStampById(s.stamp) : null;
@@ -663,12 +735,12 @@ export default function ChildDashboardScreen({
                 </View>
               );
             })}
-          </View>
+          </RpgCard>
         )}
 
         {/* 週次サマリー */}
         {weeklySummary.quests > 0 && (
-          <View style={[styles.weeklyCard, { backgroundColor: palette.surface, borderColor: palette.border }]}>
+          <RpgCard tier="silver" style={{ marginHorizontal: 12, marginTop: 12 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={18} /><AutoRubyText text="今週の記録" style={[styles.sectionTitle, { marginBottom: 8 }]} rubySize={6} /></View>
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
@@ -693,7 +765,7 @@ export default function ChildDashboardScreen({
                 </View>
               )}
             </View>
-          </View>
+          </RpgCard>
         )}
 
         {/* 家族チャレンジ */}
@@ -718,8 +790,8 @@ export default function ChildDashboardScreen({
 
         {/* Wallet */}
         {wallet && (
+          <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
           <TouchableOpacity
-            style={styles.walletCard}
             activeOpacity={0.7}
             onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
             accessibilityLabel="おさいふの くわしい じょうほう"
@@ -783,6 +855,7 @@ export default function ChildDashboardScreen({
               </AnimatedButton>
             </View>
           </TouchableOpacity>
+          </RpgCard>
         )}
 
         {/* つかうリクエスト状況 */}
@@ -821,16 +894,19 @@ export default function ChildDashboardScreen({
         )}
 
         {/* そうび（バッジ → 装備として表示） */}
-        <View style={styles.badgeCard}>
-          <View style={styles.sectionTitleRow}>
-            <PixelShieldIcon size={22} />
-            <RubyText style={styles.sectionTitle} parts={[["冒険", "ぼうけん"], "スキルツリー ", `(${badges.length}/5)`]} />
-          </View>
-          <SkillTree badges={badges} palette={palette} />
-          {badges.length === 0 && (
-            <AutoRubyText text="クエストをクリアしてスキルを解放しよう！" style={styles.emptyHint} rubySize={6} />
-          )}
-        </View>
+        <TouchableOpacity activeOpacity={0.85} onPress={() => setTrophyVisible(true)}>
+          <RpgCard tier="bronze" style={{ marginHorizontal: 12, marginTop: 12 }}>
+            <View style={styles.sectionTitleRow}>
+              <PixelShieldIcon size={22} />
+              <RubyText style={styles.sectionTitle} parts={[["冒険", "ぼうけん"], "スキルツリー ", `(${badges.length}/5)`]} />
+            </View>
+            <SkillTree badges={badges} palette={palette} />
+            {badges.length === 0 && (
+              <AutoRubyText text="クエストをクリアしてスキルを解放しよう！" style={styles.emptyHint} rubySize={6} />
+            )}
+            <Text style={styles.trophyHint}>タップで トロフィーケースを ひらく</Text>
+          </RpgCard>
+        </TouchableOpacity>
 
         {/* Tabs */}
         <View style={styles.tabRow} accessibilityRole="tabbar">
@@ -1183,6 +1259,49 @@ export default function ChildDashboardScreen({
           onClose={() => setLevelUpModal(null)}
         />
       )}
+
+      {/* 卵ドロップ演出 */}
+      {eggDrop && (
+        <EggDropAnimation
+          show
+          petType={eggDrop}
+          onComplete={() => { setEggDrop(null); loadData(); }}
+        />
+      )}
+
+      {/* ペットずかん */}
+      <PetManagementModal
+        visible={petManageVisible}
+        onClose={() => setPetManageVisible(false)}
+        childId={childId}
+        onChanged={loadData}
+      />
+
+      {/* トロフィーケース */}
+      <TrophyCaseModal
+        visible={trophyVisible}
+        onClose={() => setTrophyVisible(false)}
+        childId={childId}
+      />
+
+      {/* デイリーログインボーナス */}
+      <DailyLoginModal
+        visible={dailyLoginVisible}
+        onClose={() => setDailyLoginVisible(false)}
+        childId={childId}
+        walletId={wallet?.id ?? null}
+        onClaimed={loadData}
+      />
+
+      {/* ショップ */}
+      <ShopModal
+        visible={shopVisible}
+        onClose={() => setShopVisible(false)}
+        childId={childId}
+        walletId={wallet?.id ?? null}
+        spendingBalance={wallet?.spending_balance ?? 0}
+        onChanged={loadData}
+      />
 
       {/* じぶんクエスト提案モーダル */}
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
@@ -1730,6 +1849,39 @@ function createStyles(p: Palette) {
     color: p.textMuted,
     fontSize: 12,
     marginTop: 8,
+  },
+  trophyHint: {
+    textAlign: "center",
+    color: p.textMuted,
+    fontSize: 10,
+    marginTop: 8,
+    fontStyle: "italic",
+  },
+  titleBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 4,
+  },
+  titleBadgeText: {
+    fontSize: 9,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  shopBtn: {
+    marginTop: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: p.primary,
+    backgroundColor: p.primaryLight,
+  },
+  shopBtnText: {
+    fontSize: 10,
+    color: p.primary,
+    fontWeight: "bold",
   },
   emptySpecialCard: {
     backgroundColor: p.accentLight,

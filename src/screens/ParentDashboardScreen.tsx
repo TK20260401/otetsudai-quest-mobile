@@ -30,6 +30,9 @@ import MonthlyReport from "../components/MonthlyReport";
 import FamilyAdventureMap from "../components/FamilyAdventureMap";
 import FamilyChallengeCard from "../components/FamilyChallengeCard";
 import { PixelCrossedSwordsIcon, PixelScrollIcon, PixelShieldIcon, PixelHourglassIcon, PixelCartIcon, PixelCoinIcon, PixelCheckIcon, PixelCrownIcon, PixelLetterIcon, PixelFlameIcon, PixelDoorIcon, PixelBarChartIcon, PixelTargetIcon, PixelLightbulbIcon, PixelChatIcon, PixelPencilIcon, PixelTrashIcon, PixelPauseIcon, PixelPlayIcon, PixelRefreshIcon, PixelStarIcon, PixelCalendarIcon, PixelPersonIcon, PixelWarningIcon, PixelConfettiIcon, PixelGiftIcon } from "../components/PixelIcons";
+import GameStatusHeader from "../components/GameStatusHeader";
+import RpgCard from "../components/RpgCard";
+import RpgButton from "../components/RpgButton";
 
 type PendingLog = TaskLog & { task: Task; child: User };
 
@@ -624,15 +627,16 @@ export default function ParentDashboardScreen({
 
   return (
     <SafeAreaView style={styles.container} accessibilityLabel="おやダッシュボード">
-      {/* Header */}
-      <View style={styles.header} accessibilityRole="header">
-        <View style={styles.headerRow}>
-          <Text style={styles.headerEmoji}>👨‍👩‍👧‍👦 </Text>
-          <Text style={styles.headerTitle}>親</Text>
-        </View>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton} accessibilityLabel="ログアウト" accessibilityRole="button">
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={16} /><Text style={styles.logoutText}>ログアウト</Text></View>
-        </TouchableOpacity>
+      <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
+        <GameStatusHeader
+          title="👨‍👩‍👧‍👦 クエストマスター"
+          level={Math.max(1, children.length)}
+          hp={Math.min(100, pendingCount === 0 && children.length > 0 ? 100 : Math.max(30, 100 - pendingCount * 10))}
+          mp={Math.min(10, children.length * 2)}
+          exp={0}
+          pendingCount={pendingCount}
+          onLogout={handleLogout}
+        />
       </View>
 
       {/* Tabs */}
@@ -694,7 +698,7 @@ export default function ParentDashboardScreen({
       >
         {/* 週次サマリー */}
         {tab === "approve" && weeklySummary.quests > 0 && (
-          <View style={[styles.section, { backgroundColor: palette.accentLight, borderRadius: 12, padding: 16, marginBottom: 8 }]}>
+          <RpgCard tier="silver" style={{ marginHorizontal: 12, marginTop: 12 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={16} /><Text style={styles.weeklySummaryTitle}>今週の家族記録</Text></View>
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
@@ -706,7 +710,7 @@ export default function ParentDashboardScreen({
                 <Text style={styles.weeklyStatLabel}>支払い</Text>
               </View>
             </View>
-          </View>
+          </RpgCard>
         )}
 
         {/* 家族チャレンジ（承認タブ内） */}
@@ -1168,7 +1172,7 @@ export default function ParentDashboardScreen({
                 ? w.spending_balance + w.saving_balance + w.invest_balance
                 : 0;
               return (
-                <View key={child.id} style={styles.childCard}>
+                <RpgCard key={child.id} tier="gold" style={{ marginBottom: 10 }}>
                   <Text style={styles.childName}>🧒 {child.name}</Text>
                   <Text style={styles.childTotal}>
                     {total.toLocaleString()}円
@@ -1235,7 +1239,7 @@ export default function ParentDashboardScreen({
                   )}
                   {/* 月次レポート */}
                   <MonthlyReport child={child} wallet={w || null} />
-                </View>
+                </RpgCard>
               );
             })}
           </View>
@@ -1699,7 +1703,9 @@ function createStyles(p: Palette) {
 
   // Approval cards
   approvalCard: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
+    borderWidth: 1,
+    borderColor: p.border,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
@@ -1734,7 +1740,7 @@ function createStyles(p: Palette) {
   // Special quest
   // 特別クエスト設定パネル
   settingsPanel: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -1822,10 +1828,12 @@ function createStyles(p: Palette) {
   },
   addButtonText: { color: p.white, fontWeight: "bold", fontSize: 16 },
   taskCard: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 12,
     padding: 14,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   taskInactive: { opacity: 0.5 },
   taskInfo: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
@@ -1839,13 +1847,15 @@ function createStyles(p: Palette) {
 
   // Children cards
   childCard: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 12,
     padding: 16,
     marginBottom: 10,
+    borderWidth: 1,
+    borderColor: p.borderStrong,
     shadowColor: p.black,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 2,
   },
@@ -1886,13 +1896,15 @@ function createStyles(p: Palette) {
   },
   emptyCard: {
     alignItems: "center" as const,
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 12,
     padding: 32,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: p.border,
     shadowColor: p.black,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 2,
   },

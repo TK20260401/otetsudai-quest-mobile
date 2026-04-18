@@ -15,6 +15,8 @@ import { RubyText, AutoRubyText } from "../components/Ruby";
 import AnimatedButton from "../components/AnimatedButton";
 import PixelHeroSvg from "../components/PixelHeroSvg";
 import { PixelKeyIcon, PixelCoinIcon, PixelPiggyIcon, PixelSeedlingIcon } from "../components/PixelIcons";
+import RpgButton from "../components/RpgButton";
+import RpgCard from "../components/RpgCard";
 
 type Props = {
   onSignup?: () => void;
@@ -61,16 +63,12 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         </View>
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
-          <AnimatedButton
-            style={[styles.button, styles.buttonPrimary]}
-            onPress={onLogin}
-            accessibilityLabel="ログイン"
-          >
-            <PixelKeyIcon size={24} />
-            <Text style={[styles.buttonPrimaryText, isTablet && { fontSize: 20 }]} adjustsFontSizeToFit numberOfLines={1}>
+          <RpgButton tier="gold" size="lg" fullWidth onPress={onLogin} accessibilityLabel="ログイン">
+            <PixelKeyIcon size={22} />
+            <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: "bold", color: "#2A1800" }} adjustsFontSizeToFit numberOfLines={1}>
               クエストをはじめる！
             </Text>
-          </AnimatedButton>
+          </RpgButton>
         </View>
 
         <View style={styles.features}>
