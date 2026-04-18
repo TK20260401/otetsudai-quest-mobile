@@ -1092,11 +1092,15 @@ export default function ChildDashboardScreen({
         <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* クエストクリア時のキャラ反応（フローティング） */}
+      {/* クエストクリア時のキャラ反応（RPGフローティングバナー） */}
       {questClearMsg && (
         <View style={styles.questClearBanner}>
-          <CharacterSvg level={levelInfo.current.level} mood="active" size={48} />
-          <Text style={styles.questClearText}>{questClearMsg}</Text>
+          <View style={styles.questClearInner}>
+            <CharacterSvg level={levelInfo.current.level} mood="active" size={48} />
+            <View style={styles.questClearBubble}>
+              <Text style={styles.questClearText}>{questClearMsg}</Text>
+            </View>
+          </View>
         </View>
       )}
 
@@ -1762,23 +1766,34 @@ function createStyles(p: Palette) {
     bottom: 40,
     left: 16,
     right: 16,
-    flexDirection: "row" as const,
-    alignItems: "center" as const,
-    backgroundColor: p.primaryDark,
-    borderRadius: 16,
-    padding: 12,
-    gap: 10,
     shadowColor: p.black,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
-  questClearText: {
+  questClearInner: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    backgroundColor: "#1a1a2e",
+    borderRadius: 16,
+    padding: 12,
+    gap: 10,
+    borderWidth: 2,
+    borderColor: "#FFD700",
+  },
+  questClearBubble: {
     flex: 1,
-    fontSize: 15,
+    backgroundColor: "rgba(255,215,0,0.15)",
+    borderRadius: 10,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255,215,0,0.3)",
+  },
+  questClearText: {
+    fontSize: 14,
     fontWeight: "bold" as const,
-    color: p.white,
+    color: "#FFD700",
   },
 
   // リセットボタン

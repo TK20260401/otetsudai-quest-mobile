@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import Svg, { Rect, Circle, Ellipse, Path, G, Defs, LinearGradient, Stop } from "react-native-svg";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getCurrentLevel } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
 import type { User, Wallet } from "../lib/types";
-import { PixelMapIcon } from "./PixelIcons";
+import { PixelMapIcon, PixelFlameIcon, PixelCoinIcon } from "./PixelIcons";
 
 type Props = {
   familyName: string;
@@ -96,8 +97,13 @@ export default function FamilyAdventureMap({
 
   return (
     <View style={styles.container}>
+      {/* ワールドマップ背景 */}
+      <View style={{ position: "absolute", top: 0, left: 0, right: 0, opacity: 0.12 }}>
+        <PixelWorldMapBg width={340} />
+      </View>
+
       {/* ヘッダー */}
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, zIndex: 1 }}>
         <PixelMapIcon size={22} />
         <Text style={styles.header}>{familyName}の ぼうけんちず</Text>
       </View>
@@ -136,9 +142,14 @@ export default function FamilyAdventureMap({
           <Text style={styles.statLabel}>稼いだ</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={styles.statValue}>
-            {stats.familyStreak > 0 ? `🔥${stats.familyStreak}` : "—"}
-          </Text>
+          {stats.familyStreak > 0 ? (
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+              <PixelFlameIcon size={16} />
+              <Text style={styles.statValue}>{stats.familyStreak}</Text>
+            </View>
+          ) : (
+            <Text style={styles.statValue}>—</Text>
+          )}
           <Text style={styles.statLabel}>連続日</Text>
         </View>
         <View style={styles.statItem}>
@@ -147,6 +158,48 @@ export default function FamilyAdventureMap({
         </View>
       </View>
     </View>
+  );
+}
+
+/** ピクセルアートのワールドマップ背景 */
+function PixelWorldMapBg({ width = 340 }: { width?: number }) {
+  const h = Math.round(width * 0.5);
+  return (
+    <Svg width={width} height={h} viewBox="0 0 340 170">
+      <Defs>
+        <LinearGradient id="mapSky" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0%" stopColor="#87CEEB" />
+          <Stop offset="100%" stopColor="#E0F0FF" />
+        </LinearGradient>
+        <LinearGradient id="mapGrass" x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0%" stopColor="#4CAF50" />
+          <Stop offset="100%" stopColor="#388E3C" />
+        </LinearGradient>
+      </Defs>
+      {/* 空 */}
+      <Rect x={0} y={0} width={340} height={170} fill="url(#mapSky)" />
+      {/* 山（遠景） */}
+      <Path d="M0,120 L40,60 L80,110 L120,50 L160,100 L200,40 L240,90 L280,55 L320,95 L340,70 L340,170 L0,170 Z" fill="#6B8E4E" opacity={0.3} />
+      {/* 丘（中景） */}
+      <Path d="M0,140 L60,100 L120,130 L180,95 L240,120 L300,100 L340,130 L340,170 L0,170 Z" fill="url(#mapGrass)" opacity={0.5} />
+      {/* 道 */}
+      <Path d="M30,160 Q80,140 130,150 Q180,160 220,140 Q260,120 310,145" fill="none" stroke="#D4A030" strokeWidth={4} strokeLinecap="round" strokeDasharray="8,4" />
+      {/* 城（右奥） */}
+      <Rect x={275} y={80} width={20} height={30} fill="#A0A0B0" />
+      <Rect x={270} y={75} width={30} height={8} fill="#B0B0C0" />
+      <Path d="M270,75 L275,65 L280,75" fill="#C0392B" />
+      <Path d="M290,75 L295,65 L300,75" fill="#C0392B" />
+      {/* 木（点在） */}
+      <Circle cx={50} cy={128} r={8} fill="#2E7D32" />
+      <Rect x={48} y={134} width={4} height={8} fill="#5D4037" />
+      <Circle cx={160} cy={118} r={6} fill="#388E3C" />
+      <Rect x={158} y={123} width={4} height={6} fill="#5D4037" />
+      <Circle cx={100} cy={138} r={7} fill="#43A047" />
+      <Rect x={98} y={143} width={4} height={7} fill="#5D4037" />
+      {/* 旗マーカー */}
+      <Rect x={218} y={130} width={2} height={14} fill="#5D4037" />
+      <Path d="M220,130 L230,133 L220,136" fill="#E74C3C" />
+    </Svg>
   );
 }
 

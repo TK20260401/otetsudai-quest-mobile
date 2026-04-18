@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import Svg, { Rect, Circle, Ellipse, Path, G, Defs, LinearGradient, RadialGradient, Stop } from "react-native-svg";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
@@ -80,13 +81,21 @@ export default function FamilyChallengeCard({
 
   return (
     <View style={[styles.container, isComplete && styles.containerComplete]}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
         <PixelCrownIcon size={20} />
         <AutoRubyText
           text={isComplete ? "かぞくチャレンジ たっせい！" : "かぞくチャレンジ"}
           style={styles.header}
           rubySize={6}
         />
+      </View>
+
+      {/* ボスモンスター */}
+      <View style={{ alignItems: "center", marginVertical: 8 }}>
+        <PixelBossMonster defeated={isComplete} size={64} />
+        <Text style={{ fontSize: 10, color: isComplete ? "#4CAF50" : "#C0392B", fontWeight: "bold", marginTop: 2 }}>
+          {isComplete ? "たおした！" : `HP: ${remaining}/${challenge.target_quests}`}
+        </Text>
       </View>
 
       <Text style={styles.title}>「{challenge.title}」</Text>
@@ -155,6 +164,66 @@ export default function FamilyChallengeCard({
         )}
       </View>
     </View>
+  );
+}
+
+/** ピクセルアートのボスモンスター（スライム風） */
+function PixelBossMonster({ defeated = false, size = 64 }: { defeated?: boolean; size?: number }) {
+  const opacity = defeated ? 0.4 : 1;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 64 64" opacity={opacity}>
+      <Defs>
+        <RadialGradient id="bossBody" cx="50%" cy="40%" r="50%">
+          <Stop offset="0%" stopColor={defeated ? "#888" : "#7B4CDB"} />
+          <Stop offset="100%" stopColor={defeated ? "#666" : "#5A2DAA"} />
+        </RadialGradient>
+        <RadialGradient id="bossGlow" cx="50%" cy="50%" r="50%">
+          <Stop offset="0%" stopColor={defeated ? "#666" : "#9B59B6"} stopOpacity={0.3} />
+          <Stop offset="100%" stopColor={defeated ? "#444" : "#6C3483"} stopOpacity={0} />
+        </RadialGradient>
+      </Defs>
+      {/* シャドウ */}
+      <Ellipse cx={32} cy={58} rx={22} ry={5} fill="#000" opacity={0.15} />
+      {/* オーラ */}
+      {!defeated && <Circle cx={32} cy={36} r={30} fill="url(#bossGlow)" />}
+      {/* ボディ（スライム形状） */}
+      <Path
+        d="M12,46 Q12,20 32,14 Q52,20 52,46 Q52,54 32,54 Q12,54 12,46 Z"
+        fill="url(#bossBody)"
+      />
+      {/* ハイライト */}
+      <Ellipse cx={24} cy={28} rx={6} ry={4} fill="#FFFFFF" opacity={0.2} />
+      {/* ツノ（左） */}
+      <Path d="M20,20 L16,8 L24,16 Z" fill={defeated ? "#888" : "#8E44AD"} />
+      <Circle cx={16} cy={8} r={2} fill={defeated ? "#AAA" : "#E74C3C"} />
+      {/* ツノ（右） */}
+      <Path d="M44,20 L48,8 L40,16 Z" fill={defeated ? "#888" : "#8E44AD"} />
+      <Circle cx={48} cy={8} r={2} fill={defeated ? "#AAA" : "#E74C3C"} />
+      {/* 目 */}
+      {defeated ? (
+        <>
+          <Path d="M22,32 L28,38" stroke="#333" strokeWidth={2.5} />
+          <Path d="M28,32 L22,38" stroke="#333" strokeWidth={2.5} />
+          <Path d="M36,32 L42,38" stroke="#333" strokeWidth={2.5} />
+          <Path d="M42,32 L36,38" stroke="#333" strokeWidth={2.5} />
+        </>
+      ) : (
+        <>
+          <Ellipse cx={25} cy={34} rx={5} ry={6} fill="#FFFFFF" />
+          <Circle cx={26} cy={35} r={3} fill="#333" />
+          <Circle cx={27} cy={34} r={1} fill="#FFF" />
+          <Ellipse cx={39} cy={34} rx={5} ry={6} fill="#FFFFFF" />
+          <Circle cx={40} cy={35} r={3} fill="#333" />
+          <Circle cx={41} cy={34} r={1} fill="#FFF" />
+        </>
+      )}
+      {/* 口 */}
+      {defeated ? (
+        <Path d="M26,44 Q32,41 38,44" stroke="#333" strokeWidth={1.5} fill="none" />
+      ) : (
+        <Path d="M26,43 Q32,48 38,43" stroke="#333" strokeWidth={1.5} fill="none" />
+      )}
+    </Svg>
   );
 }
 

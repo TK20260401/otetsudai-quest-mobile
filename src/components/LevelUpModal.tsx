@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
+import Svg, { Rect, Path, Circle, G, Defs, LinearGradient, Stop } from "react-native-svg";
 import { rf } from "../lib/responsive";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import type { Level } from "../lib/levels";
@@ -107,17 +108,18 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
         />
 
         <View style={styles.content}>
-          {/* キラキラ */}
+          {/* ピクセルスパークル（SVG） */}
           {[...Array(8)].map((_, i) => {
             const angle = (i / 8) * Math.PI * 2;
             const radius = 90;
+            const colors = ["#FFD700", "#FF8C00", "#FFF8DC", "#FFE066", "#E0A030", "#FF6B35", "#FFC857", "#FFFACD"];
             return (
-              <Animated.Text
+              <Animated.View
                 key={i}
                 style={[
                   styles.sparkle,
                   {
-                    left: width / 2 - 10 + Math.cos(angle) * radius,
+                    left: width / 2 - 12 + Math.cos(angle) * radius,
                     top: 180 + Math.sin(angle) * radius,
                     opacity: sparkle.interpolate({
                       inputRange: [0, 0.5, 1],
@@ -126,20 +128,20 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
                     transform: [{
                       scale: sparkle.interpolate({
                         inputRange: [0, 0.5, 1],
-                        outputRange: i % 2 === 0 ? [0.5, 1.2, 0.5] : [1.2, 0.5, 1.2],
+                        outputRange: i % 2 === 0 ? [0.6, 1.3, 0.6] : [1.3, 0.6, 1.3],
                       }),
                     }],
                   },
                 ]}
               >
-                ✨
-              </Animated.Text>
+                <PixelStar size={24} color={colors[i]} />
+              </Animated.View>
             );
           })}
 
-          {/* しんかした！ */}
-          <Animated.View style={{ opacity: textFade }}>
-            <Text style={styles.evolveTitle} adjustsFontSizeToFit numberOfLines={1}>⚡ しんかした！ ⚡</Text>
+          {/* ピクセルバナー「しんかした！」 */}
+          <Animated.View style={{ opacity: textFade, alignItems: "center" }}>
+            <PixelBanner text="しんかした！" />
           </Animated.View>
 
           {/* Before → After */}
@@ -154,7 +156,9 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
               </Text>
             </View>
 
-            <Text style={styles.arrow}>→</Text>
+            <View style={styles.arrowWrap}>
+              <PixelArrow size={36} />
+            </View>
 
             {/* 新キャラ（アニメーション付き） */}
             <Animated.View style={[styles.compareItem, { transform: [{ scale }] }]}>
@@ -195,6 +199,78 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
   );
 }
 
+/** ピクセルアート4方向星 */
+function PixelStar({ size = 24, color = "#FFD700" }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M12,0 L14,10 L24,12 L14,14 L12,24 L10,14 L0,12 L10,10 Z" fill={color} />
+      <Path d="M12,4 L13,10 L12,11 L11,10 Z" fill="#FFFFFF" opacity={0.5} />
+    </Svg>
+  );
+}
+
+/** ピクセルアート右矢印 */
+function PixelArrow({ size = 36 }: { size?: number }) {
+  const PX = size / 9;
+  return (
+    <Svg width={size} height={size} viewBox="0 0 36 36">
+      <Defs>
+        <LinearGradient id="arrowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <Stop offset="0%" stopColor="#FFD700" />
+          <Stop offset="100%" stopColor="#FF8C00" />
+        </LinearGradient>
+      </Defs>
+      <G>
+        <Rect x={0} y={14} width={20} height={8} rx={2} fill="url(#arrowGrad)" />
+        <Path d="M18,8 L34,18 L18,28 Z" fill="url(#arrowGrad)" />
+        <Rect x={2} y={16} width={16} height={2} fill="#FFFFFF" opacity={0.3} />
+      </G>
+    </Svg>
+  );
+}
+
+/** ピクセルRPGバナー（リボン風） */
+function PixelBanner({ text }: { text: string }) {
+  return (
+    <View style={{ alignItems: "center", marginBottom: 16 }}>
+      <Svg width={220} height={48} viewBox="0 0 220 48">
+        <Defs>
+          <LinearGradient id="bannerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+            <Stop offset="0%" stopColor="#FFD700" />
+            <Stop offset="100%" stopColor="#DAA520" />
+          </LinearGradient>
+        </Defs>
+        {/* リボンの端（左） */}
+        <Path d="M0,12 L20,8 L20,40 L0,36 L8,24 Z" fill="#B8860B" />
+        {/* リボンの端（右） */}
+        <Path d="M220,12 L200,8 L200,40 L220,36 L212,24 Z" fill="#B8860B" />
+        {/* メインバナー */}
+        <Rect x={18} y={6} width={184} height={36} rx={4} fill="url(#bannerGrad)" />
+        <Rect x={18} y={6} width={184} height={12} rx={4} fill="#FFFFFF" opacity={0.2} />
+        {/* 上下の縁取り */}
+        <Rect x={18} y={6} width={184} height={3} fill="#B8860B" opacity={0.5} />
+        <Rect x={18} y={39} width={184} height={3} fill="#B8860B" opacity={0.5} />
+        {/* 宝石飾り */}
+        <Circle cx={30} cy={24} r={4} fill="#E74C3C" />
+        <Circle cx={190} cy={24} r={4} fill="#3498DB" />
+      </Svg>
+      <Text style={{
+        position: "absolute",
+        top: 12,
+        fontSize: rf(20),
+        fontWeight: "bold",
+        color: "#1a1a2e",
+        textShadowColor: "#FFE066",
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 4,
+        letterSpacing: 2,
+      }}>
+        ⚔ {text} ⚔
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
@@ -217,16 +293,8 @@ const styles = StyleSheet.create({
   },
   sparkle: {
     position: "absolute",
-    fontSize: 20,
-  },
-  evolveTitle: {
-    fontSize: rf(24),
-    fontWeight: "bold",
-    color: "#FFD700",
-    marginBottom: 16,
-    textShadowColor: "#FF8C00",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    width: 24,
+    height: 24,
   },
   compareRow: {
     flexDirection: "row",
@@ -260,10 +328,10 @@ const styles = StyleSheet.create({
     color: "#FFD700",
     marginTop: 4,
   },
-  arrow: {
-    fontSize: 28,
-    color: "#FFD700",
-    marginHorizontal: 8,
+  arrowWrap: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 4,
   },
   infoBox: {
     backgroundColor: "rgba(255,215,0,0.1)",
