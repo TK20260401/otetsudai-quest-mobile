@@ -54,6 +54,7 @@ import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon } from "../components/PixelIcons";
 import QuestCardFrame from "../components/QuestCardFrame";
+import TaskIconSvg from "../components/TaskIconSvg";
 import RpgStatusBar from "../components/RpgStatusBar";
 import EquipmentView from "../components/EquipmentView";
 import { getQuestCardTier, calculateRpgStats } from "../lib/rpg-stats";
@@ -970,9 +971,9 @@ export default function ChildDashboardScreen({
                         )}
                       </View>
                       <View style={styles.questInfo}>
-                        <Text style={styles.questIcon}>
-                          {getTaskIcon(task.title)}
-                        </Text>
+                        <View style={styles.questIcon}>
+                          <TaskIconSvg title={task.title} size={28} />
+                        </View>
                         <View style={styles.questDetails}>
                           <AutoRubyText text={task.title} style={styles.specialQuestTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
@@ -1028,9 +1029,9 @@ export default function ChildDashboardScreen({
                   .map((task) => (
                     <QuestCardFrame key={task.id} tier={getQuestCardTier(task)}>
                       <View style={styles.questInfo}>
-                        <Text style={styles.questIcon}>
-                          {getTaskIcon(task.title)}
-                        </Text>
+                        <View style={styles.questIcon}>
+                          <TaskIconSvg title={task.title} size={28} />
+                        </View>
                         <View style={styles.questDetails}>
                           <AutoRubyText text={task.title} style={styles.questTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
@@ -1768,7 +1769,7 @@ function createStyles(p: Palette) {
     marginBottom: 8,
   },
   questInfo: { flexDirection: "row", alignItems: "center", flex: 1 },
-  questIcon: { fontSize: 28, marginRight: 10 },
+  questIcon: { width: 32, marginRight: 10, alignItems: "center" as const, justifyContent: "center" as const },
   questDetails: { flex: 1 },
   questTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong, lineHeight: 24 },
   rewardRow: {

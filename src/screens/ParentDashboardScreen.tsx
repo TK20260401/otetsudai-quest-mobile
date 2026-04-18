@@ -34,6 +34,7 @@ import GameStatusHeader from "../components/GameStatusHeader";
 import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import QuestCardFrame from "../components/QuestCardFrame";
+import TaskIconSvg from "../components/TaskIconSvg";
 import { getQuestCardTier } from "../lib/rpg-stats";
 
 type PendingLog = TaskLog & { task: Task; child: User };
@@ -774,9 +775,9 @@ export default function ParentDashboardScreen({
                 {pendingLogs.map((log) => (
                   <QuestCardFrame key={log.id} tier={getQuestCardTier(log.task || { recurrence: "once" })}>
                     <View style={styles.approvalInfo}>
-                      <Text style={styles.approvalIcon}>
-                        {getTaskIcon(log.task?.title || "")}
-                      </Text>
+                      <View style={styles.approvalIcon}>
+                        <TaskIconSvg title={log.task?.title || ""} size={28} />
+                      </View>
                       <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>
                           {log.task?.title}
@@ -847,9 +848,9 @@ export default function ParentDashboardScreen({
                 {priceRequests.map((task) => (
                   <QuestCardFrame key={task.id} tier={getQuestCardTier(task)}>
                     <View style={styles.approvalInfo}>
-                      <Text style={styles.approvalIcon}>
-                        {getTaskIcon(task.title)}
-                      </Text>
+                      <View style={styles.approvalIcon}>
+                        <TaskIconSvg title={task.title} size={28} />
+                      </View>
                       <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>{task.title}</Text>
                         <Text style={styles.approvalSub}>
@@ -1059,9 +1060,9 @@ export default function ParentDashboardScreen({
                     >
                       <QuestCardFrame tier="gold">
                         <View style={styles.taskInfo}>
-                          <Text style={styles.taskIcon}>
-                            {getTaskIcon(task.title)}
-                          </Text>
+                          <View style={styles.taskIcon}>
+                            <TaskIconSvg title={task.title} size={28} />
+                          </View>
                           <View style={styles.flex1}>
                             <Text style={[styles.taskTitle, { color: palette.goldText }]}>
                               {"★".repeat(task.special_difficulty || 1)} {task.title}
@@ -1107,9 +1108,9 @@ export default function ParentDashboardScreen({
               >
                 <QuestCardFrame tier={getQuestCardTier(task)}>
                   <View style={styles.taskInfo}>
-                    <Text style={styles.taskIcon}>
-                      {getTaskIcon(task.title)}
-                    </Text>
+                    <View style={styles.taskIcon}>
+                      <TaskIconSvg title={task.title} size={28} />
+                    </View>
                     <View style={styles.flex1}>
                       <Text style={styles.taskTitle}>{task.title}</Text>
                       <View style={styles.taskSubRow}>
@@ -1837,7 +1838,7 @@ function createStyles(p: Palette) {
   },
   taskInactive: { opacity: 0.5 },
   taskInfo: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
-  taskIcon: { fontSize: 28, marginRight: 10 },
+  taskIcon: { width: 32, marginRight: 10, alignItems: "center" as const, justifyContent: "center" as const },
   taskTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong },
   taskSubRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 2 } as const,
   taskRewardTap: { fontSize: 13, color: p.primary, fontWeight: "600" },
