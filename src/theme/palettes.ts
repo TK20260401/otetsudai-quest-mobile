@@ -247,5 +247,68 @@ export const breeze: Palette = {
   ...sharedBase,
 };
 
-export const palettes = { forest, adventure, breeze } as const;
+// ─── D: ダンジョン (Dungeon / Habitica) ───
+// Habitica風ダークパープル。ファンタジーRPGのダンジョン感。
+// ゴールドアクセントでゲームUI感を最大化。
+
+export const dungeon: Palette = {
+  name: "ダンジョン",
+  description: "Habitica風ダークパープル。RPGの世界観に没入する配色",
+
+  primary: "#ffa623", // ゴールド — ダーク背景上: 高コントラスト
+  primaryDark: "#e08a00",
+  primaryLight: "#3d2663",
+  primaryMuted: "#6b4cdb",
+
+  accent: "#f9c33b",
+  accentLight: "#4f2a93",
+  accentDark: "#e0a030",
+
+  red: "#e74c3c",
+  redLight: "#3e1a2a",
+  green: "#2ecc71",
+  greenLight: "#1a3e2a",
+
+  textStrong: "#f5f5f5", // on ダーク: 高コントラスト
+  textBase: "#e0d8f0",
+  textMuted: "#a090c0",
+
+  background: "#1f0f31",
+  backgroundLanding: "#150a24",
+  surface: "#2a1a4d",
+  surfaceMuted: "#36205d",
+  border: "#4f2a93",
+  borderStrong: "#6b4cdb",
+
+  switchTrackOff: "#36205d",
+  switchTrackOn: "#6b4cdb",
+  switchThumbOff: "#4f2a93",
+
+  // ウォレット — ダーク背景用に調整
+  walletSpend: "#e74c3c",
+  walletSpendBg: "#3e1a2a",
+  walletSpendBorder: "#c0392b",
+  walletSpendText: "#ff6b6b",
+
+  walletSave: "#3498db",
+  walletSaveBg: "#1a2a3e",
+  walletSaveBorder: "#2980b9",
+  walletSaveText: "#5dade2",
+
+  walletInvest: "#2ecc71",
+  walletInvestBg: "#1a3e2a",
+  walletInvestBorder: "#27ae60",
+  walletInvestText: "#58d68d",
+
+  gold: "#ffa623",
+  goldLight: "#3d2663",
+  goldBorder: "#f9c33b",
+  goldText: "#ffd700",
+
+  white: "#f5f5f5",
+  black: "#0a0618",
+  overlay: "rgba(0,0,0,0.65)",
+};
+
+export const palettes = { dungeon, forest, adventure, breeze } as const;
 export type PaletteName = keyof typeof palettes;
