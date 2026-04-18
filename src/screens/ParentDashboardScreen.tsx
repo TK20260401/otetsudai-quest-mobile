@@ -637,6 +637,7 @@ export default function ParentDashboardScreen({
           mp={Math.min(10, children.length * 2)}
           exp={0}
           pendingCount={pendingCount}
+          onBack={handleLogout}
           onLogout={handleLogout}
         />
       </View>

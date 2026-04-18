@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Svg, { Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import CharacterSvg from "./CharacterSvg";
 import { useTheme, type Palette } from "../theme";
-import { PixelDoorIcon, PixelCoinIcon } from "./PixelIcons";
+import { PixelDoorIcon, PixelCoinIcon, PixelHouseIcon } from "./PixelIcons";
 
 type Props = {
   title: string;
@@ -56,8 +56,8 @@ export default function GameStatusHeader({
 
       <View style={styles.row}>
         {onBack ? (
-          <TouchableOpacity onPress={onBack} style={styles.iconBtn} accessibilityLabel="もどる">
-            <PixelDoorIcon size={14} />
+          <TouchableOpacity onPress={onBack} style={styles.iconBtn} accessibilityLabel="TOPにもどる">
+            <PixelHouseIcon size={16} />
           </TouchableOpacity>
         ) : null}
 

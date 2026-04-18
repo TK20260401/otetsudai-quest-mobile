@@ -590,6 +590,7 @@ export default function ChildDashboardScreen({
           mp={Math.min(10, weeklySummary.streak)}
           exp={levelInfo.progress}
           gold={totalEarned}
+          onBack={handleLogout}
           onLogout={handleLogout}
           rightSlot={
             <View style={styles.themeRow}>
