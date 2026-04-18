@@ -6,6 +6,7 @@ import { rf } from "../lib/responsive";
 import { getCurrentLevel } from "../lib/levels";
 import type { User, Wallet } from "../lib/types";
 import { PixelScrollIcon, PixelFlameIcon, PixelCrossedSwordsIcon, PixelPiggyIcon, PixelCrownIcon, PixelLightbulbIcon } from "./PixelIcons";
+import CharacterSvg from "./CharacterSvg";
 
 type Props = {
   child: User;
@@ -166,6 +167,25 @@ export default function MonthlyReport({ child, wallet }: Props) {
         <Text style={styles.header}>{child.name}の成長レポート</Text>
       </View>
       <Text style={styles.monthLabel}>{label}</Text>
+
+      {/* レベル変化キャラクター */}
+      {data.levelEnd > data.levelStart ? (
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8 }}>
+          <View style={{ alignItems: "center", opacity: 0.5 }}>
+            <CharacterSvg level={Math.min(data.levelStart, 7)} mood="normal" size={40} />
+            <Text style={{ fontSize: 9, color: "#999" }}>Lv.{data.levelStart}</Text>
+          </View>
+          <Text style={{ fontSize: 18, fontWeight: "bold", color: "#DAA520" }}>→</Text>
+          <View style={{ alignItems: "center" }}>
+            <CharacterSvg level={Math.min(data.levelEnd, 7)} mood="active" size={48} />
+            <Text style={{ fontSize: 9, fontWeight: "bold", color: "#DAA520" }}>Lv.{data.levelEnd}</Text>
+          </View>
+        </View>
+      ) : (
+        <View style={{ alignItems: "center", marginBottom: 8 }}>
+          <CharacterSvg level={Math.min(data.levelEnd, 7)} mood="normal" size={48} />
+        </View>
+      )}
 
       {/* 統計カード */}
       <View style={styles.statsGrid}>
