@@ -178,6 +178,22 @@ export type FamilyMessage = {
   recipient?: User;
 };
 
+export type Pet = {
+  id: string;
+  child_id: string;
+  family_id: string;
+  pet_type: "dragon" | "phoenix" | "unicorn" | "cat" | "dog" | "rabbit";
+  name: string | null;
+  growth_stage: "egg" | "baby" | "child" | "adult";
+  hatched_at: string | null;
+  fed_count: number;
+  happiness: number;
+  is_active: boolean;
+  quests_since_acquired: number;
+  last_fed_at: string | null;
+  created_at: string;
+};
+
 export type Session = {
   userId: string;
   familyId: string | null;
