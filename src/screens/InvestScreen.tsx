@@ -328,7 +328,7 @@ export default function InvestScreen({
                       <Text
                         style={[
                           styles.portfolioGain,
-                          { color: isUp ? palette.walletInvest : "#dc2626" },
+                          { color: isUp ? palette.walletInvest : palette.red },
                         ]}
                       >
                         ¥{Math.abs(gain).toLocaleString()} ({percent})
@@ -475,7 +475,7 @@ export default function InvestScreen({
                             <Text
                               style={[
                                 styles.stockChange,
-                                { color: stock.change_percent >= 0 ? palette.walletInvest : "#dc2626" },
+                                { color: stock.change_percent >= 0 ? palette.walletInvest : palette.red },
                               ]}
                             >
                               {stock.change_percent >= 0 ? "+" : ""}
@@ -574,43 +574,43 @@ function createStyles(p: Palette) {
 
     // Balance card
     balanceCard: {
-      backgroundColor: "#f0fdf4",
+      backgroundColor: p.walletInvestBg,
       borderRadius: 16,
       padding: 20,
       alignItems: "center",
       borderWidth: 1,
-      borderColor: "#bbf7d0",
+      borderColor: p.walletInvestBorder,
       marginBottom: 16,
     },
-    balanceLabel: { fontSize: rf(12), color: "#16a34a", fontWeight: "600" },
-    balanceAmount: { fontSize: rf(28), fontWeight: "bold", color: "#15803d", marginTop: 4 },
+    balanceLabel: { fontSize: rf(12), color: p.walletInvestText, fontWeight: "600" },
+    balanceAmount: { fontSize: rf(28), fontWeight: "bold", color: p.walletInvestText, marginTop: 4 },
     lastSyncText: { fontSize: 10, color: p.textMuted, marginTop: 4 },
     syncButton: {
       marginTop: 10,
-      backgroundColor: "#dcfce7",
+      backgroundColor: p.surface,
       borderRadius: 8,
       paddingVertical: 6,
       paddingHorizontal: 14,
       borderWidth: 1,
-      borderColor: "#86efac",
+      borderColor: p.walletInvestBorder,
     },
     syncButtonDisabled: { opacity: 0.5 },
-    syncButtonText: { fontSize: 12, color: "#16a34a", fontWeight: "600" },
+    syncButtonText: { fontSize: 12, color: p.walletInvestText, fontWeight: "600" },
 
     // Empty state
     emptyCard: { alignItems: "center", paddingVertical: 20 },
     emptyText: { fontSize: rf(14), color: p.textMuted, textAlign: "center" },
     tipCard: {
-      backgroundColor: "#f0fdf4",
+      backgroundColor: p.walletInvestBg,
       borderRadius: 12,
       padding: 16,
       marginTop: 16,
       borderWidth: 1,
-      borderColor: "#bbf7d0",
+      borderColor: p.walletInvestBorder,
       width: "100%",
     },
-    tipTitle: { fontSize: rf(14), fontWeight: "bold", color: "#15803d", marginBottom: 8 },
-    tipText: { fontSize: rf(11), color: "#166534", marginBottom: 4 },
+    tipTitle: { fontSize: rf(14), fontWeight: "bold", color: p.walletInvestText, marginBottom: 8 },
+    tipText: { fontSize: rf(11), color: p.textBase, marginBottom: 4 },
 
     // Portfolio
     portfolioSection: { marginTop: 8 },
@@ -621,9 +621,9 @@ function createStyles(p: Palette) {
       justifyContent: "space-between",
       padding: 14,
       borderRadius: 12,
-      backgroundColor: p.white,
+      backgroundColor: p.surface,
       borderWidth: 1,
-      borderColor: "#bbf7d0",
+      borderColor: p.walletInvestBorder,
       marginBottom: 8,
     },
     portfolioLeft: { flex: 1 },
@@ -646,7 +646,7 @@ function createStyles(p: Palette) {
       borderTopColor: p.border,
     },
     buyButton: {
-      backgroundColor: "#22c55e",
+      backgroundColor: p.walletInvest,
       borderRadius: 16,
       paddingVertical: 16,
       alignItems: "center",
@@ -662,20 +662,20 @@ function createStyles(p: Palette) {
     orderScrollContent: { padding: 16, paddingBottom: 40 },
     successContainer: { alignItems: "center", paddingVertical: 40 },
     successEmoji: { fontSize: 64, marginBottom: 12 },
-    successTitle: { fontSize: rf(20), fontWeight: "bold", color: "#15803d" },
+    successTitle: { fontSize: rf(20), fontWeight: "bold", color: p.walletInvestText },
     successSub: { fontSize: rf(14), color: p.textMuted, marginTop: 4 },
 
     orderBalanceCard: {
-      backgroundColor: "#f0fdf4",
+      backgroundColor: p.walletInvestBg,
       borderRadius: 12,
       padding: 14,
       alignItems: "center",
       borderWidth: 1,
-      borderColor: "#bbf7d0",
+      borderColor: p.walletInvestBorder,
       marginBottom: 16,
     },
-    orderBalanceLabel: { fontSize: rf(11), color: "#16a34a", fontWeight: "600" },
-    orderBalanceAmount: { fontSize: rf(22), fontWeight: "bold", color: "#15803d", marginTop: 2 },
+    orderBalanceLabel: { fontSize: rf(11), color: p.walletInvestText, fontWeight: "600" },
+    orderBalanceAmount: { fontSize: rf(22), fontWeight: "bold", color: p.walletInvestText, marginTop: 2 },
 
     orderLabel: {
       fontSize: rf(13),
@@ -693,17 +693,17 @@ function createStyles(p: Palette) {
       borderRadius: 10,
       borderWidth: 1,
       borderColor: p.border,
-      backgroundColor: p.white,
+      backgroundColor: p.surfaceMuted,
       alignItems: "center",
       justifyContent: "center",
     },
     categoryTabActive: {
-      backgroundColor: "#dcfce7",
-      borderColor: "#4ade80",
+      backgroundColor: p.walletInvestBg,
+      borderColor: p.walletInvestBorder,
     },
     categoryTabText: { fontSize: 11, color: p.textMuted, textAlign: "center" },
-    categoryTabTextActive: { fontWeight: "bold", color: "#166534" },
-    categoryHint: { fontSize: 11, color: "#16a34a", textAlign: "center", marginBottom: 4, marginTop: 2 },
+    categoryTabTextActive: { fontWeight: "bold", color: p.walletInvestText },
+    categoryHint: { fontSize: 11, color: p.walletInvestText, textAlign: "center", marginBottom: 4, marginTop: 2 },
 
     stockCard: {
       flexDirection: "row",
@@ -712,13 +712,13 @@ function createStyles(p: Palette) {
       borderRadius: 12,
       borderWidth: 2,
       borderColor: p.border,
-      backgroundColor: p.white,
+      backgroundColor: p.surface,
       marginBottom: 8,
       gap: 10,
     },
     stockCardSelected: {
-      borderColor: "#4ade80",
-      backgroundColor: "#dcfce7",
+      borderColor: p.walletInvestBorder,
+      backgroundColor: p.walletInvestBg,
     },
     stockIcon: { fontSize: 28 },
     stockNameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
@@ -741,10 +741,10 @@ function createStyles(p: Palette) {
     },
     amountHint: { fontSize: 10, color: p.textMuted, textAlign: "center", marginTop: 4 },
 
-    errorText: { color: "#dc2626", fontSize: 13, textAlign: "center", marginTop: 8 },
+    errorText: { color: palette.red, fontSize: 13, textAlign: "center", marginTop: 8 },
 
     orderButton: {
-      backgroundColor: "#22c55e",
+      backgroundColor: p.walletInvest,
       borderRadius: 16,
       paddingVertical: 16,
       alignItems: "center",
