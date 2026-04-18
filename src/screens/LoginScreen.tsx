@@ -20,7 +20,7 @@ import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 import PixelHeroSvg from "../components/PixelHeroSvg";
-import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon, PixelDoorIcon, PixelCheckIcon } from "../components/PixelIcons";
+import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon, PixelDoorIcon, PixelCheckIcon, PixelPersonIcon, PixelFamilyIcon } from "../components/PixelIcons";
 import RpgButton from "../components/RpgButton";
 
 type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
@@ -97,7 +97,8 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     const { data } = await supabase
       .from("otetsudai_users")
       .select("*")
-      .eq("family_id", family.id);
+      .eq("family_id", family.id)
+      .eq("role", "child");
     setMembers(data || []);
     setStep("member");
   }
@@ -636,9 +637,12 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                           style={styles.familyRow}
                           onPress={() => startEditMember(m)}
                         >
-                          <Text style={styles.familyName}>
-                            {m.icon} {m.name}（{m.role === "child" ? "こども" : "おや"}）
-                          </Text>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1 }}>
+                            {m.role === "child" ? <PixelPersonIcon size={16} /> : <PixelFamilyIcon size={16} />}
+                            <Text style={styles.familyName}>
+                              {m.name}（{m.role === "child" ? "こども" : "おや"}）
+                            </Text>
+                          </View>
                           <PixelPencilIcon size={14} />
                         </TouchableOpacity>
                       )}
@@ -695,9 +699,14 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                       onPress={handleAddChild}
                       disabled={addingChild || !newChildName.trim()}
                     >
-                      <Text style={styles.buttonText}>
-                        {addingChild ? "追加中..." : "🧒 子供を追加"}
-                      </Text>
+                      {addingChild ? (
+                        <Text style={styles.buttonText}>追加中...</Text>
+                      ) : (
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
+                          <PixelPersonIcon size={16} />
+                          <Text style={styles.buttonText}>子供を追加</Text>
+                        </View>
+                      )}
                     </TouchableOpacity>
                     <View style={{ height: 200 }} />
                   </View>
@@ -842,15 +851,19 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             <Text style={styles.label}>どっちのモード？</Text>
             <View style={{ marginBottom: 12 }}>
               <RpgButton tier="gold" size="lg" fullWidth onPress={() => { setStep("family"); loadFamilies(); }}>
-                <Text style={{ fontSize: 28 }}>🧒</Text>
-                <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }}>こどもモード</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <PixelPersonIcon size={24} />
+                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }}>こどもモード</Text>
+                </View>
               </RpgButton>
               <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>おうちをえらんでログイン</Text>
             </View>
             <View style={{ marginBottom: 8 }}>
               <RpgButton tier="violet" size="lg" fullWidth onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}>
-                <Text style={{ fontSize: 28 }}>👨‍👩‍👧‍👦</Text>
-                <Text style={{ fontSize: 18, fontWeight: "bold", color: "#FFFFFF" }}>親モード</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <PixelFamilyIcon size={24} />
+                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#FFFFFF" }}>親モード</Text>
+                </View>
               </RpgButton>
               <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>メール・パスワードでログイン</Text>
             </View>
@@ -889,12 +902,13 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 style={styles.selectButton}
                 onPress={() => handleUserSelect(m)}
               >
-                <Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit>
-                  {m.role === "parent" ? "👨‍👩‍👧‍👦" : "🧒"} {m.name}
-                </Text>
-                <Text style={styles.roleText} numberOfLines={1}>
-                  {m.role === "parent" ? "おやこうざ" : "こどもこうざ"}
-                </Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <PixelPersonIcon size={22} />
+                  <Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit>
+                    {m.name}
+                  </Text>
+                </View>
+                <Text style={styles.roleText} numberOfLines={1}>こどもこうざ</Text>
               </TouchableOpacity>
             ))}
           </>
