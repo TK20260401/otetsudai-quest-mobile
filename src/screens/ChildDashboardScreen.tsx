@@ -41,6 +41,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon } from "../components/PixelIcons";
+import QuestCardFrame from "../components/QuestCardFrame";
+import { getQuestCardTier } from "../lib/rpg-stats";
 
 export default function ChildDashboardScreen({
   route,
@@ -937,7 +939,7 @@ export default function ChildDashboardScreen({
                 {tasks
                   .filter((t) => !t.is_special)
                   .map((task) => (
-                    <View key={task.id} style={styles.questCard}>
+                    <QuestCardFrame key={task.id} tier={getQuestCardTier(task)}>
                       <View style={styles.questInfo}>
                         <Text style={styles.questIcon}>
                           {getTaskIcon(task.title)}
@@ -984,7 +986,7 @@ export default function ChildDashboardScreen({
                           </AnimatedButton>
                         )}
                       </View>
-                    </View>
+                    </QuestCardFrame>
                   ))}
               </>
             )}
