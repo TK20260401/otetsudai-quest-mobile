@@ -33,6 +33,8 @@ import { PixelCrossedSwordsIcon, PixelScrollIcon, PixelShieldIcon, PixelHourglas
 import GameStatusHeader from "../components/GameStatusHeader";
 import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
+import QuestCardFrame from "../components/QuestCardFrame";
+import { getQuestCardTier } from "../lib/rpg-stats";
 
 type PendingLog = TaskLog & { task: Task; child: User };
 
@@ -1052,46 +1054,44 @@ export default function ParentDashboardScreen({
                   return (
                     <View
                       key={task.id}
-                      style={[
-                        styles.taskCard,
-                        styles.specialTaskCard,
-                        (!task.is_active || starDisabled) && styles.taskInactive,
-                      ]}
+                      style={[(!task.is_active || starDisabled) && styles.taskInactive]}
                     >
-                      <View style={styles.taskInfo}>
-                        <Text style={styles.taskIcon}>
-                          {getTaskIcon(task.title)}
-                        </Text>
-                        <View style={styles.flex1}>
-                          <Text style={[styles.taskTitle, { color: palette.goldText }]}>
-                            {"★".repeat(task.special_difficulty || 1)} {task.title}
+                      <QuestCardFrame tier="gold">
+                        <View style={styles.taskInfo}>
+                          <Text style={styles.taskIcon}>
+                            {getTaskIcon(task.title)}
                           </Text>
-                          <Text style={styles.taskSub}>
-                            🪙 {task.reward_amount}円
-                            {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
-                          </Text>
+                          <View style={styles.flex1}>
+                            <Text style={[styles.taskTitle, { color: palette.goldText }]}>
+                              {"★".repeat(task.special_difficulty || 1)} {task.title}
+                            </Text>
+                            <Text style={styles.taskSub}>
+                              🪙 {task.reward_amount}円
+                              {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                      <View style={styles.taskActions}>
-                        <TouchableOpacity
-                          style={styles.taskActionBtn}
-                          onPress={() => openTaskForm(task)}
-                        >
-                          <PixelPencilIcon size={18} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={styles.taskActionBtn}
-                          onPress={() => handleToggleTask(task)}
-                        >
-                          {task.is_active ? <PixelPauseIcon size={18} /> : <PixelPlayIcon size={18} />}
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={styles.taskActionBtn}
-                          onPress={() => handleDeleteTask(task.id)}
-                        >
-                          <PixelTrashIcon size={18} />
-                        </TouchableOpacity>
-                      </View>
+                        <View style={styles.taskActions}>
+                          <TouchableOpacity
+                            style={styles.taskActionBtn}
+                            onPress={() => openTaskForm(task)}
+                          >
+                            <PixelPencilIcon size={18} />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.taskActionBtn}
+                            onPress={() => handleToggleTask(task)}
+                          >
+                            {task.is_active ? <PixelPauseIcon size={18} /> : <PixelPlayIcon size={18} />}
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.taskActionBtn}
+                            onPress={() => handleDeleteTask(task.id)}
+                          >
+                            <PixelTrashIcon size={18} />
+                          </TouchableOpacity>
+                        </View>
+                      </QuestCardFrame>
                     </View>
                   );
                 })}
@@ -1102,54 +1102,53 @@ export default function ParentDashboardScreen({
             {tasks.filter((t) => !t.is_special).map((task) => (
               <View
                 key={task.id}
-                style={[
-                  styles.taskCard,
-                  !task.is_active && styles.taskInactive,
-                ]}
+                style={[!task.is_active && styles.taskInactive]}
               >
-                <View style={styles.taskInfo}>
-                  <Text style={styles.taskIcon}>
-                    {getTaskIcon(task.title)}
-                  </Text>
-                  <View style={styles.flex1}>
-                    <Text style={styles.taskTitle}>{task.title}</Text>
-                    <View style={styles.taskSubRow}>
-                      <TouchableOpacity
-                        onPress={() => openTaskForm(task)}
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                      >
-                        <Text style={styles.taskRewardTap}>🪙 {task.reward_amount}円 ✏️</Text>
-                      </TouchableOpacity>
-                      <Text style={styles.taskSub}>
-                        {task.recurrence === "daily"
-                          ? "毎日"
-                          : task.recurrence === "weekly"
-                            ? "毎週"
-                            : "1回"}
-                      </Text>
+                <QuestCardFrame tier={getQuestCardTier(task)}>
+                  <View style={styles.taskInfo}>
+                    <Text style={styles.taskIcon}>
+                      {getTaskIcon(task.title)}
+                    </Text>
+                    <View style={styles.flex1}>
+                      <Text style={styles.taskTitle}>{task.title}</Text>
+                      <View style={styles.taskSubRow}>
+                        <TouchableOpacity
+                          onPress={() => openTaskForm(task)}
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                          <Text style={styles.taskRewardTap}>🪙 {task.reward_amount}円 ✏️</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.taskSub}>
+                          {task.recurrence === "daily"
+                            ? "毎日"
+                            : task.recurrence === "weekly"
+                              ? "毎週"
+                              : "1回"}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-                <View style={styles.taskActions}>
-                  <TouchableOpacity
-                    style={styles.taskActionBtn}
-                    onPress={() => openTaskForm(task)}
-                  >
-                    <PixelPencilIcon size={18} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.taskActionBtn}
-                    onPress={() => handleToggleTask(task)}
-                  >
-                    {task.is_active ? <PixelPauseIcon size={18} /> : <PixelPlayIcon size={18} />}
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.taskActionBtn}
-                    onPress={() => handleDeleteTask(task.id)}
-                  >
-                    <PixelTrashIcon size={18} />
-                  </TouchableOpacity>
-                </View>
+                  <View style={styles.taskActions}>
+                    <TouchableOpacity
+                      style={styles.taskActionBtn}
+                      onPress={() => openTaskForm(task)}
+                    >
+                      <PixelPencilIcon size={18} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.taskActionBtn}
+                      onPress={() => handleToggleTask(task)}
+                    >
+                      {task.is_active ? <PixelPauseIcon size={18} /> : <PixelPlayIcon size={18} />}
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.taskActionBtn}
+                      onPress={() => handleDeleteTask(task.id)}
+                    >
+                      <PixelTrashIcon size={18} />
+                    </TouchableOpacity>
+                  </View>
+                </QuestCardFrame>
               </View>
             ))}
           </View>
