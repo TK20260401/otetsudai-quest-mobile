@@ -21,6 +21,7 @@ import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 import PixelHeroSvg from "../components/PixelHeroSvg";
 import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon, PixelDoorIcon, PixelCheckIcon, PixelPersonIcon, PixelFamilyIcon } from "../components/PixelIcons";
+import ChildCharacterSvg, { resolveChildGender, type ChildGender } from "../components/ChildCharacterSvg";
 import RpgButton from "../components/RpgButton";
 
 type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
@@ -59,13 +60,13 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const [managingFamily, setManagingFamily] = useState<Family | null>(null);
   const [familyMembers, setFamilyMembers] = useState<User[]>([]);
   const [newChildName, setNewChildName] = useState("");
-  const [newChildIcon, setNewChildIcon] = useState("🧒");
+  const [newChildIcon, setNewChildIcon] = useState<ChildGender>("boy");
   const [newChildPin, setNewChildPin] = useState("");
   const [addingChild, setAddingChild] = useState(false);
   // メンバー編集
   const [editingMember, setEditingMember] = useState<User | null>(null);
   const [editName, setEditName] = useState("");
-  const [editIcon, setEditIcon] = useState("");
+  const [editIcon, setEditIcon] = useState<ChildGender>("boy");
   const [editPin, setEditPin] = useState("");
   const [savingMember, setSavingMember] = useState(false);
   const adminScrollRef = useRef<ScrollView>(null);
@@ -329,7 +330,11 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     setAddingFamily(false);
   }
 
-  const CHILD_ICONS = ["🧒", "👧", "👦", "🧒🏻", "👧🏻", "👦🏻", "🧑", "👶"];
+  const CHILD_GENDERS: { key: ChildGender; label: string }[] = [
+    { key: "boy", label: "男の子" },
+    { key: "girl", label: "女の子" },
+    { key: "other", label: "どちらでもない" },
+  ];
 
   async function openFamilyMembers(family: Family) {
     setManagingFamily(family);
@@ -370,7 +375,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     }
     setNewChildName("");
     setNewChildPin("");
-    setNewChildIcon("🧒");
+    setNewChildIcon("boy");
     setAddingChild(false);
     await openFamilyMembers(managingFamily);
   }
@@ -378,7 +383,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   function startEditMember(member: User) {
     setEditingMember(member);
     setEditName(member.name);
-    setEditIcon(member.icon);
+    setEditIcon(resolveChildGender(member.icon));
     setEditPin(member.pin || "");
   }
 
@@ -575,19 +580,28 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                       {editingMember?.id === m.id ? (
                         /* 編集モード */
                         <View style={[styles.familyRow, { flexDirection: "column", alignItems: "stretch", padding: 12, backgroundColor: palette.primaryLight }]}>
-                          {/* アイコン選択 */}
-                          <View style={{ flexDirection: "row", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
-                            {CHILD_ICONS.map((icon) => (
+                          {/* キャラクター選択 */}
+                          <View style={{ flexDirection: "row", gap: 8, marginBottom: 8, justifyContent: "space-around" }}>
+                            {CHILD_GENDERS.map((g) => (
                               <TouchableOpacity
-                                key={icon}
-                                onPress={() => setEditIcon(icon)}
+                                key={g.key}
+                                onPress={() => setEditIcon(g.key)}
                                 style={{
-                                  padding: 6, borderRadius: 10, borderWidth: 2,
-                                  borderColor: editIcon === icon ? palette.primary : palette.border,
-                                  backgroundColor: editIcon === icon ? palette.primaryLight : palette.surfaceMuted,
+                                  flex: 1,
+                                  paddingVertical: 8,
+                                  borderRadius: 10,
+                                  borderWidth: 2,
+                                  borderColor: editIcon === g.key ? palette.primary : palette.border,
+                                  backgroundColor: editIcon === g.key ? palette.primaryLight : palette.surfaceMuted,
+                                  alignItems: "center",
                                 }}
+                                accessibilityLabel={g.label}
+                                accessibilityState={{ selected: editIcon === g.key }}
                               >
-                                <Text style={{ fontSize: 22 }}>{icon}</Text>
+                                <ChildCharacterSvg gender={g.key} size={36} />
+                                <Text style={{ fontSize: 10, marginTop: 2, fontWeight: "bold", color: editIcon === g.key ? palette.primary : palette.textMuted }}>
+                                  {g.label}
+                                </Text>
                               </TouchableOpacity>
                             ))}
                           </View>
@@ -638,7 +652,11 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                           onPress={() => startEditMember(m)}
                         >
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1 }}>
-                            {m.role === "child" ? <PixelPersonIcon size={16} /> : <PixelFamilyIcon size={16} />}
+                            {m.role === "child" ? (
+                              <ChildCharacterSvg gender={resolveChildGender(m.icon)} size={22} />
+                            ) : (
+                              <PixelFamilyIcon size={18} />
+                            )}
                             <Text style={styles.familyName}>
                               {m.name}（{m.role === "child" ? "こども" : "おや"}）
                             </Text>
@@ -659,21 +677,36 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                   <View style={{ marginTop: 16 }}>
                     <Text style={[styles.label, { marginBottom: 8 }]}>子供を追加</Text>
 
-                    {/* アイコン選択 */}
-                    <View style={{ flexDirection: "row", gap: 6, marginBottom: 8, flexWrap: "wrap" }}>
-                      {CHILD_ICONS.map((icon) => (
+                    {/* キャラクター選択 (男の子/女の子/どちらでもない) */}
+                    <View style={{ flexDirection: "row", gap: 8, marginBottom: 8, justifyContent: "space-around" }}>
+                      {CHILD_GENDERS.map((g) => (
                         <TouchableOpacity
-                          key={icon}
-                          onPress={() => setNewChildIcon(icon)}
+                          key={g.key}
+                          onPress={() => setNewChildIcon(g.key)}
                           style={{
-                            padding: 6,
-                            borderRadius: 10,
+                            flex: 1,
+                            paddingVertical: 10,
+                            paddingHorizontal: 4,
+                            borderRadius: 12,
                             borderWidth: 2,
-                            borderColor: newChildIcon === icon ? palette.primary : palette.border,
-                            backgroundColor: newChildIcon === icon ? palette.primaryLight : palette.surfaceMuted,
+                            borderColor: newChildIcon === g.key ? palette.primary : palette.border,
+                            backgroundColor: newChildIcon === g.key ? palette.primaryLight : palette.surfaceMuted,
+                            alignItems: "center",
                           }}
+                          accessibilityLabel={g.label}
+                          accessibilityState={{ selected: newChildIcon === g.key }}
                         >
-                          <Text style={{ fontSize: 22 }}>{icon}</Text>
+                          <ChildCharacterSvg gender={g.key} size={44} />
+                          <Text
+                            style={{
+                              fontSize: 11,
+                              marginTop: 4,
+                              fontWeight: "bold",
+                              color: newChildIcon === g.key ? palette.primary : palette.textMuted,
+                            }}
+                          >
+                            {g.label}
+                          </Text>
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -902,8 +935,8 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 style={styles.selectButton}
                 onPress={() => handleUserSelect(m)}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <PixelPersonIcon size={22} />
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <ChildCharacterSvg gender={resolveChildGender(m.icon)} size={36} />
                   <Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit>
                     {m.name}
                   </Text>
