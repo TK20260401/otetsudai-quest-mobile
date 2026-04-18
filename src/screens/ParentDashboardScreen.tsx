@@ -1318,7 +1318,7 @@ export default function ParentDashboardScreen({
                   style={styles.modalApprove}
                   onPress={handleApprove}
                 >
-                  <Text style={styles.modalApproveText}>✓ 承認</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCheckIcon size={14} /><Text style={styles.modalApproveText}>承認</Text></View>
                 </TouchableOpacity>
               </View>
             </View>

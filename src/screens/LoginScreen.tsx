@@ -20,7 +20,7 @@ import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 import PixelHeroSvg from "../components/PixelHeroSvg";
-import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon } from "../components/PixelIcons";
+import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon, PixelDoorIcon, PixelCheckIcon } from "../components/PixelIcons";
 
 type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
 
@@ -560,7 +560,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 <>
                   {/* 家族メンバー管理画面 */}
                   <TouchableOpacity onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
-                    <Text style={styles.backText}>← 家族一覧に戻る</Text>
+                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>家族一覧に戻る</Text></View>
                   </TouchableOpacity>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8, marginBottom: 12 }}>
                     <PixelHouseIcon size={18} />
@@ -612,7 +612,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                               disabled={savingMember || !editName.trim()}
                             >
                               <Text style={styles.buttonText}>
-                                {savingMember ? "ほぞんちゅう..." : "✓ ほぞん"}
+                                {savingMember ? "ほぞんちゅう..." : "ほぞん"}
                               </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -806,7 +806,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             setAdminPassword("");
             goBack();
           }}>
-            <Text style={styles.backText}>← もどる</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -862,7 +862,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         {step === "family" && (
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
-              <Text style={styles.backText}>← もどる</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
             </TouchableOpacity>
             <Text style={styles.label}>おうちを選んでね</Text>
             {families.map((f) => (
@@ -881,9 +881,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         {step === "member" && (
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
-              <Text style={styles.backText}>
-                ← {selectedFamily?.name}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>{selectedFamily?.name}</Text></View>
             </TouchableOpacity>
             <Text style={styles.label}>だれかな？</Text>
             {members.map((m) => (
@@ -907,7 +905,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         {step === "pin" && (
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
-              <Text style={styles.backText}>← {selectedUser?.name}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>{selectedUser?.name}</Text></View>
             </TouchableOpacity>
             <Text style={styles.label}>PINをいれてね 🔑</Text>
             <Text style={styles.hint}>
