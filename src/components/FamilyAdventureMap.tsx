@@ -8,6 +8,7 @@ import { getCurrentLevel } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
 import type { User, Wallet } from "../lib/types";
 import { PixelMapIcon, PixelFlameIcon, PixelCoinIcon } from "./PixelIcons";
+import DungeonMap from "./DungeonMap";
 
 type Props = {
   familyName: string;
@@ -33,6 +34,7 @@ export default function FamilyAdventureMap({
     weeklyEarned: 0,
     familyStreak: 0,
   });
+  const [totalFamilyQuests, setTotalFamilyQuests] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -86,6 +88,13 @@ export default function FamilyAdventureMap({
       }
 
       setStats({ weeklyQuests, weeklyEarned, familyStreak });
+
+      const { count: totalQ } = await supabase
+        .from("otetsudai_task_logs")
+        .select("id", { count: "exact", head: true })
+        .in("child_id", childIds)
+        .eq("status", "approved");
+      setTotalFamilyQuests(totalQ || 0);
     }
     load();
   }, [kids]);
@@ -157,6 +166,9 @@ export default function FamilyAdventureMap({
           <Text style={styles.statLabel}>合計</Text>
         </View>
       </View>
+
+      {/* ダンジョンフロア進行マップ */}
+      <DungeonMap totalQuests={totalFamilyQuests} />
     </View>
   );
 }
