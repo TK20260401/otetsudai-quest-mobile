@@ -35,6 +35,7 @@ import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import QuestCardFrame from "../components/QuestCardFrame";
 import TaskIconSvg from "../components/TaskIconSvg";
+import CoinKunChat from "../components/CoinKunChat";
 import { getQuestCardTier } from "../lib/rpg-stats";
 
 type PendingLog = TaskLog & { task: Task; child: User };
@@ -1646,6 +1647,9 @@ export default function ParentDashboardScreen({
           }}
         />
       )}
+
+      {/* コインくん AIチャット（親アドバイザーモード） */}
+      <CoinKunChat role="parent" />
     </SafeAreaView>
   );
 }

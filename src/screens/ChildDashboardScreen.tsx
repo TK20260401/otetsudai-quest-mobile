@@ -31,6 +31,7 @@ import TrophyCaseModal from "../components/TrophyCaseModal";
 import DailyLoginModal from "../components/DailyLoginModal";
 import { getDailyLoginStatus } from "../lib/daily-login";
 import ShopModal from "../components/ShopModal";
+import CoinKunChat from "../components/CoinKunChat";
 import { getEquippedTitle, RARITY_COLORS, type ShopItem } from "../lib/shop";
 import EggDropAnimation from "../components/EggDropAnimation";
 import GameStatusHeader from "../components/GameStatusHeader";
@@ -1325,6 +1326,9 @@ export default function ChildDashboardScreen({
         spendingBalance={wallet?.spending_balance ?? 0}
         onChanged={loadData}
       />
+
+      {/* コインくん AIチャット */}
+      <CoinKunChat role="child" />
 
       {/* じぶんクエスト提案モーダル */}
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
