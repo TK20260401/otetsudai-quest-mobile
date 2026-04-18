@@ -42,7 +42,10 @@ import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon } from "../components/PixelIcons";
 import QuestCardFrame from "../components/QuestCardFrame";
-import { getQuestCardTier } from "../lib/rpg-stats";
+import RpgStatusBar from "../components/RpgStatusBar";
+import EquipmentView from "../components/EquipmentView";
+import { getQuestCardTier, calculateRpgStats } from "../lib/rpg-stats";
+import RewardSequence from "../components/RewardSequence";
 
 export default function ChildDashboardScreen({
   route,
@@ -79,6 +82,7 @@ export default function ChildDashboardScreen({
   } | null>(null);
   // クエストクリア演出
   const [questClearMsg, setQuestClearMsg] = useState<string | null>(null);
+  const [showRewardSequence, setShowRewardSequence] = useState(false);
   // ねあげリクエスト
   const [priceRequestTask, setPriceRequestTask] = useState<Task | null>(null);
   // 返信済みメッセージ履歴
@@ -413,6 +417,7 @@ export default function ChildDashboardScreen({
     const msg = clearMessages[Math.floor(Math.random() * clearMessages.length)];
     setQuestClearMsg(msg);
     setTimeout(() => setQuestClearMsg(null), 3000);
+    setShowRewardSequence(true);
 
     const newBadges = await checkAndAwardBadges(childId);
     if (newBadges.length > 0) {
@@ -601,27 +606,32 @@ export default function ChildDashboardScreen({
                 rubySize={6}
               />
             </View>
-            <View style={styles.progressRow}>
-              <PixelSwordIcon size={18} />
-              <View style={styles.progressBarWrap}>
-                <View style={styles.progressBar}>
-                  <View
-                    style={[
-                      styles.progressFill,
-                      { width: `${levelInfo.progress}%` },
-                    ]}
-                  />
-                </View>
-                <Text style={styles.progressLabel}>EXP {levelInfo.progress}%</Text>
-              </View>
-            </View>
+            {/* RPGステータスゲージ */}
+            <RpgStatusBar
+              hp={Math.round((weeklySummary.streak / 7) * 100)}
+              mp={Math.min(weeklySummary.streak, 10)}
+              exp={levelInfo.progress}
+            />
+            {/* 装備ステータス */}
+            <EquipmentView
+              stats={calculateRpgStats({
+                level: levelInfo.current.level,
+                totalQuests: weeklySummary.quests,
+                badgeCount: badges.length,
+                streakDays: weeklySummary.streak,
+                daysActiveInLast7: Math.min(weeklySummary.streak, 7),
+                savingStreakWeeks: Math.min(weeklySummary.streak, 10),
+                expProgress: levelInfo.progress,
+              })}
+              appearance={levelInfo.current.appearance.replace(/\[([^\]|]+)\|[^\]]+\]/g, "$1")}
+            />
             {levelInfo.next ? (
-              <View>
+              <View style={{ marginTop: 4 }}>
                 <AutoRubyText text="次のレベルまで" style={styles.levelNext} rubySize={5} />
                 <AutoRubyText text={`あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} />
               </View>
             ) : (
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
             )}
           </View>
         </View>
@@ -1105,6 +1115,13 @@ export default function ChildDashboardScreen({
           </View>
         </View>
       )}
+
+      {/* RPG報酬シーケンス */}
+      <RewardSequence
+        show={showRewardSequence}
+        level={levelInfo.current.level}
+        onComplete={() => setShowRewardSequence(false)}
+      />
 
       {/* ファミリースタンプ送信モーダル */}
       {sessionFamilyId && (
