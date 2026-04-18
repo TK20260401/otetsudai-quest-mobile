@@ -221,6 +221,10 @@ npx expo start --tunnel
 | v0.14.0 | 2026-04-17 | Sprint 4完了。保護者向け月次レポート（クエスト数/稼ぎ/ストリーク/レベル変化/貯金達成/自動コメント）、ファミリーダッシュボード（冒険の地図: メンバーLv表示+家族統計）、家族チャレンジウィーク（協力型週間目標: メンバー進捗バー+達成ボーナス、DB: otetsudai_family_challenges）。Web版同時対応 |
 | v0.14.1 | 2026-04-17 | ログイン/家族管理大幅改善。ログイン後→家族管理画面（ダッシュボード/メンバー管理選択）、セッション記憶（次回自動ログイン）、PIN bcryptハッシュ保存、パスワード表示トグル+リセット機能、家族owner_auth_id紐付け（なりすまし防止）、子供の名前/PIN/アイコン編集・削除UI、親画面ひらがな→漢字統一、キーボード対応改善、独立リポジトリ作成 |
 | v0.15.0 | 2026-04-17 | Habitica風ピクセルアートSVG導入。PixelHeroSvg（戦士・魔法使い）＋PixelIcons（38種）で全画面の絵文字アイコンをドット絵SVGに置換。ランディング/ログイン/子ダッシュ/親ダッシュ/ウォレット/投資/月次レポート/冒険の地図/家族チャレンジ/スタンプ送信/返信モーダル/貯金目標。Web版同時対応 |
+| v0.16.0 | 2026-04-18 | RPG演出強化。LevelUpModal/BadgeUnlockModalのSVG化（ピクセルスパークル・メダルフレーム・RPGバナー）、FamilyChallengeCardにボスモンスターSVG、FamilyAdventureMapにワールドマップ背景、クエストクリアバナーRPG化 |
+| v0.17.0 | 2026-04-18 | Habitica風リッチRPG SVG 8機能。アイテムSVG/QuestCardFrame(bronze/silver/gold)/HP・MP・EXPゲージ/装備ステータス(ATK/DEF/LCK)/宝箱演出/バトルシーン+小モンスター4種/報酬シーケンス/ダンジョンマップ。rpg-stats.ts |
+| v0.18.0 | 2026-04-18 | Habitica風ペットシステム。クエスト20%で卵ドロップ→3クエストで孵化→餌やり成長(baby→child→adult)。6種×4段階ピクセルアート。幸福度3日減衰、アクティブ切替、卵ドロップ演出。DB: otetsudai_pets |
+| v0.19.0 | 2026-04-18 | **ダンジョンテーマ全面移行**: ダークパープル(#1f0f31)+ゴールド(#ffa623)、RpgCard/RpgButton/GameStatusHeader新設、全画面p.whiteをp.surface化。**優先度C全実装**: PetManagementModal(名前・アクティブ切替)、TrophyCaseModal(バッジ一覧・シルエット・獲得日時)、DailyLoginModal(7日サイクル5〜50円・自動起動)、ShopModal(称号8種・装備表示・キャラ横バッジ)。**親画面SVG枠化**: クエスト/承認/値上げ/提案/最近承認の全カードをQuestCardFrameで統一。**絵文字→SVG大規模置換**: PixelIcons 22種新規追加(犬/猫/風呂/皿/ほうき/ベッド/車/シャツ/靴/花/鍋/ランドセル/歯ブラシ/トロフィー/ショップ/肉球/洗濯/スポンジ/窓/トイレ/家族/リサイクル)、TaskIconSvg新設(タスク名→SVG自動マッピング)、Parent/Child Dashboardの🪙/🧒/✏️/⏳/📝を全PixelIcon化、モーダルヘッダー🎁🏆🏪🐾もSVG化。**ChildCharacterSvg 3択刷新**: 8種emoji picker→男の子/女の子/どちらでもない(6x8ピクセルアート、Habitica方針準拠)、DBキー保存(boy/girl/other)+legacy resolver。**認証・ナビ改善**: こどもモード「だれかな？」で親口座非表示(role=child filter・PIN試行事故防止)、起動時セッション自動ログイン廃止(QR起動時も必ずLanding)、GameStatusHeaderに「🏠TOP」戻るボタン追加(枠線付き視認性UP)。**インフラ**: DB migration 3本実行済(otetsudai_pets/daily_logins/shop_purchases)、app.json version未更新のためTestFlight配信は次セッション |
 
 ## Web版との関係
 
