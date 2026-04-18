@@ -772,7 +772,7 @@ export default function ParentDashboardScreen({
               <>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><PixelHourglassIcon size={18} /><Text style={styles.sectionTitle}>{`クエスト完了 (${pendingLogs.length})`}</Text></View>
                 {pendingLogs.map((log) => (
-                  <View key={log.id} style={styles.approvalCard}>
+                  <QuestCardFrame key={log.id} tier={getQuestCardTier(log.task || { recurrence: "once" })}>
                     <View style={styles.approvalInfo}>
                       <Text style={styles.approvalIcon}>
                         {getTaskIcon(log.task?.title || "")}
@@ -801,7 +801,7 @@ export default function ParentDashboardScreen({
                         <Text style={styles.rejectText}>やり直し</Text>
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </QuestCardFrame>
                 ))}
               </>
             )}
@@ -845,7 +845,7 @@ export default function ParentDashboardScreen({
               <>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelCoinIcon size={18} /><Text style={styles.sectionTitle}>{`値上げリクエスト (${priceRequests.length})`}</Text></View>
                 {priceRequests.map((task) => (
-                  <View key={task.id} style={styles.approvalCard}>
+                  <QuestCardFrame key={task.id} tier={getQuestCardTier(task)}>
                     <View style={styles.approvalInfo}>
                       <Text style={styles.approvalIcon}>
                         {getTaskIcon(task.title)}
@@ -874,7 +874,7 @@ export default function ParentDashboardScreen({
                         <Text style={styles.rejectText}>NG</Text>
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </QuestCardFrame>
                 ))}
               </>
             )}
@@ -886,7 +886,7 @@ export default function ParentDashboardScreen({
                 {questProposals.map((task) => {
                   const child = children.find((c) => c.id === task.assigned_child_id);
                   return (
-                    <View key={task.id} style={styles.approvalCard}>
+                    <QuestCardFrame key={task.id} tier={getQuestCardTier(task)}>
                       <View style={styles.approvalInfo}>
                         <View style={styles.approvalIcon}><PixelLightbulbIcon size={24} /></View>
                         <View style={styles.flex1}>
@@ -913,7 +913,7 @@ export default function ParentDashboardScreen({
                           <Text style={styles.rejectText}>NG</Text>
                         </TouchableOpacity>
                       </View>
-                    </View>
+                    </QuestCardFrame>
                   );
                 })}
               </>
@@ -937,7 +937,7 @@ export default function ParentDashboardScreen({
                     : null;
                   const hasReaction = !!log.child_reaction_at;
                   return (
-                    <View key={log.id} style={[styles.approvalCard, { opacity: 1 }]}>
+                    <QuestCardFrame key={log.id} tier={getQuestCardTier(log.task || { recurrence: "once" })}>
                       <View style={styles.approvalInfo}>
                         <View style={styles.approvalIcon}>{hasReaction ? <PixelCheckIcon size={24} /> : <PixelHourglassIcon size={24} />}</View>
                         <View style={styles.flex1}>
@@ -960,7 +960,7 @@ export default function ParentDashboardScreen({
                           )}
                         </View>
                       </View>
-                    </View>
+                    </QuestCardFrame>
                   );
                 })}
               </>
