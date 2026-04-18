@@ -38,21 +38,7 @@ export default function AppNavigator() {
   }, []);
 
   async function checkSession() {
-    try {
-      const session = await getSession();
-      console.log("[AppNavigator] session:", session ? `role=${session.role}, userId=${session.userId}` : "null");
-      if (session) {
-        if (session.role === "child") {
-          setInitialParams({ childId: session.userId });
-          setInitialRoute("ChildDashboard");
-        } else {
-          setInitialRoute("ParentDashboard");
-        }
-        return;
-      }
-    } catch {
-      await clearSession();
-    }
+    // 毎回Landingから開始する。セッションが残っていてもTOP画面に戻す。
     setInitialRoute("Landing");
   }
 

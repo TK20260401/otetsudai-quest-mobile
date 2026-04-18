@@ -14,6 +14,7 @@ import { supabase } from "../lib/supabase";
 import type { Badge } from "../lib/types";
 import RpgCard from "./RpgCard";
 import RpgButton from "./RpgButton";
+import { PixelTrophyIcon } from "./PixelIcons";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -57,7 +58,10 @@ export default function TrophyCaseModal({ visible, onClose, childId }: Props) {
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>🏆 トロフィーケース</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <PixelTrophyIcon size={20} />
+            <Text style={styles.headerTitle}>トロフィーケース</Text>
+          </View>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>

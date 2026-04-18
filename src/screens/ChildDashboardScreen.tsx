@@ -52,7 +52,7 @@ import SkillTree from "../components/SkillTree";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
-import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon } from "../components/PixelIcons";
+import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon, PixelShopIcon, PixelPencilIcon } from "../components/PixelIcons";
 import QuestCardFrame from "../components/QuestCardFrame";
 import TaskIconSvg from "../components/TaskIconSvg";
 import RpgStatusBar from "../components/RpgStatusBar";
@@ -584,7 +584,7 @@ export default function ChildDashboardScreen({
     <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
       <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
         <GameStatusHeader
-          title={`🧒 ${childName}`}
+          title={childName}
           userName=""
           level={levelInfo.current.level}
           hp={Math.round((weeklySummary.streak / 7) * 100)}
@@ -660,7 +660,10 @@ export default function ChildDashboardScreen({
               onManage={() => setPetManageVisible(true)}
             />
             <TouchableOpacity onPress={() => setShopVisible(true)} style={styles.shopBtn}>
-              <Text style={styles.shopBtnText}>🏪 ショップ</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelShopIcon size={14} />
+                <Text style={styles.shopBtnText}>ショップ</Text>
+              </View>
             </TouchableOpacity>
           </View>
           <View style={styles.levelInfo}>
@@ -977,13 +980,19 @@ export default function ChildDashboardScreen({
                         <View style={styles.questDetails}>
                           <AutoRubyText text={task.title} style={styles.specialQuestTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
-                            <AutoRubyText
-                              text={`🪙${task.reward_amount}円`}
-                              style={styles.specialQuestReward}
-                              rubySize={6}
-                            />
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                              <PixelCoinIcon size={14} />
+                              <AutoRubyText
+                                text={`${task.reward_amount}円`}
+                                style={styles.specialQuestReward}
+                                rubySize={6}
+                              />
+                            </View>
                             {task.proposal_status === "pending" && (
-                              <AutoRubyText text="⏳ リクエスト中" style={styles.pendingBadge} rubySize={5} />
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                                <PixelHourglassIcon size={11} />
+                                <AutoRubyText text="リクエスト中" style={styles.pendingBadge} rubySize={5} />
+                              </View>
                             )}
                           </View>
                           {task.description && (
@@ -1035,21 +1044,30 @@ export default function ChildDashboardScreen({
                         <View style={styles.questDetails}>
                           <AutoRubyText text={task.title} style={styles.questTitle} rubySize={7} />
                           <View style={styles.rewardRow}>
-                            <AutoRubyText
-                              text={`🪙${task.reward_amount}円`}
-                              style={styles.questReward}
-                              rubySize={6}
-                            />
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                              <PixelCoinIcon size={14} />
+                              <AutoRubyText
+                                text={`${task.reward_amount}円`}
+                                style={styles.questReward}
+                                rubySize={6}
+                              />
+                            </View>
                             {task.proposal_status === "pending" && (
-                              <AutoRubyText text="⏳ リクエスト中" style={styles.pendingBadge} rubySize={5} />
+                              <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                                <PixelHourglassIcon size={11} />
+                                <AutoRubyText text="リクエスト中" style={styles.pendingBadge} rubySize={5} />
+                              </View>
                             )}
                           </View>
                           {task.price_change_comment && (
-                            <AutoRubyText
-                              text={`📝 「${task.price_change_comment}」`}
-                              style={styles.priceComment}
-                              rubySize={5}
-                            />
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                              <PixelPencilIcon size={11} />
+                              <AutoRubyText
+                                text={`「${task.price_change_comment}」`}
+                                style={styles.priceComment}
+                                rubySize={5}
+                              />
+                            </View>
                           )}
                         </View>
                       </View>
@@ -1070,7 +1088,10 @@ export default function ChildDashboardScreen({
                             onPress={() => setPriceRequestTask(task)}
                             accessibilityLabel={`${task.title}のねあげリクエスト`}
                           >
-                            <Text style={styles.priceUpText}>🪙↑</Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 1 }}>
+                              <PixelCoinIcon size={12} />
+                              <Text style={styles.priceUpText}>↑</Text>
+                            </View>
                           </AnimatedButton>
                         )}
                       </View>

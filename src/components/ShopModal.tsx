@@ -19,6 +19,7 @@ import {
   type PurchaseRecord,
 } from "../lib/shop";
 import RpgButton from "./RpgButton";
+import { PixelShopIcon } from "./PixelIcons";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -103,7 +104,10 @@ export default function ShopModal({
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>🏪 ショップ</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <PixelShopIcon size={20} />
+            <Text style={styles.headerTitle}>ショップ</Text>
+          </View>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>

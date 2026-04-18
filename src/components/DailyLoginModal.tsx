@@ -14,6 +14,7 @@ import {
   type DailyBonusResult,
 } from "../lib/daily-login";
 import RpgButton from "./RpgButton";
+import { PixelGiftIcon } from "./PixelIcons";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -71,7 +72,10 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={styles.card} onPress={(e) => e.stopPropagation()}>
-          <Text style={styles.title}>🎁 ログインボーナス</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
+            <PixelGiftIcon size={18} />
+            <Text style={styles.title}>ログインボーナス</Text>
+          </View>
           <Text style={styles.subtitle}>
             {result?.awarded
               ? `${result.streak}日れんぞく ログイン！`

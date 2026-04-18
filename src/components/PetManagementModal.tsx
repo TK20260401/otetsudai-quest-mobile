@@ -21,6 +21,7 @@ import {
 } from "../lib/pets";
 import PetSvg from "./PetSvg";
 import RpgButton from "./RpgButton";
+import { PixelPawIcon } from "./PixelIcons";
 import RpgCard from "./RpgCard";
 import { useTheme, type Palette } from "../theme";
 
@@ -75,7 +76,10 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
       <View style={[styles.container, { paddingTop: insets.top }]}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>🐾 ペットずかん</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <PixelPawIcon size={18} />
+            <Text style={styles.headerTitle}>ペットずかん</Text>
+          </View>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>

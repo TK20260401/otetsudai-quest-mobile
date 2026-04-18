@@ -29,7 +29,7 @@ import FamilyMessageCard from "../components/FamilyMessageCard";
 import MonthlyReport from "../components/MonthlyReport";
 import FamilyAdventureMap from "../components/FamilyAdventureMap";
 import FamilyChallengeCard from "../components/FamilyChallengeCard";
-import { PixelCrossedSwordsIcon, PixelScrollIcon, PixelShieldIcon, PixelHourglassIcon, PixelCartIcon, PixelCoinIcon, PixelCheckIcon, PixelCrownIcon, PixelLetterIcon, PixelFlameIcon, PixelDoorIcon, PixelBarChartIcon, PixelTargetIcon, PixelLightbulbIcon, PixelChatIcon, PixelPencilIcon, PixelTrashIcon, PixelPauseIcon, PixelPlayIcon, PixelRefreshIcon, PixelStarIcon, PixelCalendarIcon, PixelPersonIcon, PixelWarningIcon, PixelConfettiIcon, PixelGiftIcon } from "../components/PixelIcons";
+import { PixelCrossedSwordsIcon, PixelScrollIcon, PixelShieldIcon, PixelHourglassIcon, PixelCartIcon, PixelCoinIcon, PixelCheckIcon, PixelCrownIcon, PixelLetterIcon, PixelFlameIcon, PixelDoorIcon, PixelBarChartIcon, PixelTargetIcon, PixelLightbulbIcon, PixelChatIcon, PixelPencilIcon, PixelTrashIcon, PixelPauseIcon, PixelPlayIcon, PixelRefreshIcon, PixelStarIcon, PixelCalendarIcon, PixelPersonIcon, PixelWarningIcon, PixelConfettiIcon, PixelGiftIcon, PixelFamilyIcon } from "../components/PixelIcons";
 import GameStatusHeader from "../components/GameStatusHeader";
 import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
@@ -619,7 +619,7 @@ export default function ParentDashboardScreen({
   if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={styles.loadingEmoji}>👨‍👩‍👧‍👦</Text>
+        <PixelFamilyIcon size={48} />
         <ActivityIndicator size="large" color={palette.primary} />
         <Text style={styles.loadingText}>よみこみちゅう...</Text>
       </View>
@@ -632,7 +632,7 @@ export default function ParentDashboardScreen({
     <SafeAreaView style={styles.container} accessibilityLabel="おやダッシュボード">
       <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
         <GameStatusHeader
-          title="👨‍👩‍👧‍👦 クエストマスター"
+          title="クエストマスター"
           level={Math.max(1, children.length)}
           hp={Math.min(100, pendingCount === 0 && children.length > 0 ? 100 : Math.max(30, 100 - pendingCount * 10))}
           mp={Math.min(10, children.length * 2)}
@@ -782,10 +782,12 @@ export default function ParentDashboardScreen({
                         <Text style={styles.approvalTitle}>
                           {log.task?.title}
                         </Text>
-                        <Text style={styles.approvalSub}>
-                          🧒 {(log.child as any)?.name} ・ 🪙{" "}
-                          {log.task?.reward_amount}円
-                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                          <PixelPersonIcon size={12} />
+                          <Text style={styles.approvalSub}>{(log.child as any)?.name} ・</Text>
+                          <PixelCoinIcon size={12} />
+                          <Text style={styles.approvalSub}>{log.task?.reward_amount}円</Text>
+                        </View>
                       </View>
                     </View>
                     <View style={styles.approvalActions}>
@@ -817,9 +819,10 @@ export default function ParentDashboardScreen({
                       <View style={styles.approvalIcon}><PixelCartIcon size={24} /></View>
                       <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>{req.purpose}</Text>
-                        <Text style={styles.approvalSub}>
-                          🧒 {(req.child as any)?.name} ・ {req.amount}円
-                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                          <PixelPersonIcon size={12} />
+                          <Text style={styles.approvalSub}>{(req.child as any)?.name} ・ {req.amount}円</Text>
+                        </View>
                       </View>
                     </View>
                     <View style={styles.approvalActions}>
@@ -892,9 +895,10 @@ export default function ParentDashboardScreen({
                         <View style={styles.approvalIcon}><PixelLightbulbIcon size={24} /></View>
                         <View style={styles.flex1}>
                           <Text style={styles.approvalTitle}>{task.title}</Text>
-                          <Text style={styles.approvalSub}>
-                            🧒 {child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}円
-                          </Text>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                            <PixelPersonIcon size={12} />
+                            <Text style={styles.approvalSub}>{child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}円</Text>
+                          </View>
                           {task.proposal_message && (
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{task.proposal_message}」</Text></View>
                           )}
@@ -945,9 +949,12 @@ export default function ParentDashboardScreen({
                           <Text style={styles.approvalTitle}>
                             {log.task?.title}
                           </Text>
-                          <Text style={styles.approvalSub}>
-                            🧒 {log.child?.name} ・ 🪙 {log.task?.reward_amount}円
-                          </Text>
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                            <PixelPersonIcon size={12} />
+                            <Text style={styles.approvalSub}>{log.child?.name} ・</Text>
+                            <PixelCoinIcon size={12} />
+                            <Text style={styles.approvalSub}>{log.task?.reward_amount}円</Text>
+                          </View>
                           {childStamp && (
                             <Text style={styles.recentAmount}>
                               {childStamp.emoji} {childStamp.label}
@@ -1067,10 +1074,13 @@ export default function ParentDashboardScreen({
                             <Text style={[styles.taskTitle, { color: palette.goldText }]}>
                               {"★".repeat(task.special_difficulty || 1)} {task.title}
                             </Text>
-                            <Text style={styles.taskSub}>
-                              🪙 {task.reward_amount}円
-                              {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
-                            </Text>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+                              <PixelCoinIcon size={12} />
+                              <Text style={styles.taskSub}>
+                                {task.reward_amount}円
+                                {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
+                              </Text>
+                            </View>
                           </View>
                         </View>
                         <View style={styles.taskActions}>
@@ -1117,8 +1127,11 @@ export default function ParentDashboardScreen({
                         <TouchableOpacity
                           onPress={() => openTaskForm(task)}
                           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                          style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
                         >
-                          <Text style={styles.taskRewardTap}>🪙 {task.reward_amount}円 ✏️</Text>
+                          <PixelCoinIcon size={12} />
+                          <Text style={styles.taskRewardTap}>{task.reward_amount}円</Text>
+                          <PixelPencilIcon size={11} />
                         </TouchableOpacity>
                         <Text style={styles.taskSub}>
                           {task.recurrence === "daily"
@@ -1174,7 +1187,10 @@ export default function ParentDashboardScreen({
                 : 0;
               return (
                 <RpgCard key={child.id} tier="gold" style={{ marginBottom: 10 }}>
-                  <Text style={styles.childName}>🧒 {child.name}</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <PixelPersonIcon size={16} />
+                    <Text style={styles.childName}>{child.name}</Text>
+                  </View>
                   <Text style={styles.childTotal}>
                     {total.toLocaleString()}円
                   </Text>
@@ -1272,9 +1288,10 @@ export default function ParentDashboardScreen({
                 {(approvalTarget?.child as any)?.name} -{" "}
                 {approvalTarget?.task?.title}
               </Text>
-              <Text style={styles.modalReward}>
-                🪙 {approvalTarget?.task?.reward_amount}円
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
+                <PixelCoinIcon size={18} />
+                <Text style={styles.modalReward}>{approvalTarget?.task?.reward_amount}円</Text>
+              </View>
 
               {/* Stamps */}
               <Text style={styles.stampLabel}>スタンプを選んでね</Text>
@@ -1499,9 +1516,12 @@ export default function ParentDashboardScreen({
                 </>
               )}
 
-              <Text style={styles.formLabel} adjustsFontSizeToFit numberOfLines={1}>
-                🪙 報酬（円）{taskForm.is_special ? " ※50円〜" : ""}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelCoinIcon size={14} />
+                <Text style={styles.formLabel} adjustsFontSizeToFit numberOfLines={1}>
+                  報酬（円）{taskForm.is_special ? " ※50円〜" : ""}
+                </Text>
+              </View>
               <TextInput
                 style={styles.formInput}
                 value={taskForm.reward_amount}
