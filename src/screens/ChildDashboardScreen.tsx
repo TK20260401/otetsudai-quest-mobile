@@ -63,6 +63,7 @@ import EquipmentView from "../components/EquipmentView";
 import { getQuestCardTier, calculateRpgStats } from "../lib/rpg-stats";
 import RewardSequence from "../components/RewardSequence";
 import CoinBurstAnimation from "../components/animations/CoinBurstAnimation";
+import LevelUpBurst from "../components/animations/LevelUpBurst";
 
 export default function ChildDashboardScreen({
   route,
@@ -1318,6 +1319,10 @@ export default function ChildDashboardScreen({
           onClose={() => setLevelUpModal(null)}
         />
       )}
+
+      {/* レベルアップ 光爆発 — モーダル open と同時に画面全体でフラッシュ */}
+      <LevelUpBurst visible={!!levelUpModal} />
+
 
       {/* 卵ドロップ演出 */}
       {eggDrop && (
