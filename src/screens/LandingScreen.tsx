@@ -1,22 +1,20 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
   useWindowDimensions,
-  Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
-import AnimatedButton from "../components/AnimatedButton";
 import PixelHeroSvg from "../components/PixelHeroSvg";
 import { PixelKeyIcon, PixelCoinIcon, PixelPiggyIcon, PixelSeedlingIcon } from "../components/PixelIcons";
 import RpgButton from "../components/RpgButton";
-import RpgCard from "../components/RpgCard";
+import LegalModal from "../components/LegalModal";
+import { TERMS, PRIVACY } from "../lib/legal-texts";
 
 type Props = {
   onSignup?: () => void;
@@ -30,39 +28,32 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
   const styles = useMemo(() => createStyles(palette), [palette]);
   const isTablet = width >= 600;
   const isSmallScreen = height < 700;
+  const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.scrollContent,
-        { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 },
+    <View
+      style={[
+        styles.screen,
+        { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 8 },
       ]}
-      style={styles.scroll}
-      bounces
-      showsVerticalScrollIndicator={false}
     >
       <View style={[styles.hero, isTablet && { maxWidth: 480, alignSelf: "center", width: "100%" }]}>
         <View style={styles.heroRow} accessibilityLabel="おこづかいクエスト">
-          <PixelHeroSvg type="warrior" size={isSmallScreen ? 56 : 72} />
-          <PixelHeroSvg type="mage" size={isSmallScreen ? 56 : 72} />
+          <PixelHeroSvg type="warrior" size={isSmallScreen ? 48 : 64} />
+          <PixelHeroSvg type="mage" size={isSmallScreen ? 48 : 64} />
         </View>
         <Text
-          style={[styles.title, isTablet && { fontSize: 38 }, isSmallScreen && { fontSize: 26 }]}
+          style={[styles.title, isTablet && { fontSize: 38 }, isSmallScreen && { fontSize: 24 }]}
           adjustsFontSizeToFit
           numberOfLines={1}
         >
           おこづかいクエスト
         </Text>
         <View style={styles.subtitleWrap}>
-          <Text style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]}>クエストをクリアして</Text>
-          <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 14 }]} parts={["コインを ", ["稼", "かせ"], "ごう！"]} rubySize={7} />
-        </View>
-        <View style={styles.descriptionWrap}>
-          <RubyText style={styles.description} parts={["お", ["手伝", "てつだ"], "い＝クエスト！"]} rubySize={5} />
-          <RubyText style={styles.description} parts={[["稼", "かせ"], "いで、", ["貯", "た"], "めて、", ["増", "ふ"], "やすマネー", ["冒険", "ぼうけん"], "アプリ"]} rubySize={5} />
+          <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["クエストをクリアして、コインを ", ["稼", "かせ"], "ごう！"]} rubySize={6} />
         </View>
 
-        <View style={[styles.buttons, isSmallScreen && { marginBottom: 20 }]}>
+        <View style={[styles.buttons, isSmallScreen && { marginBottom: 12 }]}>
           <RpgButton tier="gold" size="lg" fullWidth onPress={onLogin} accessibilityLabel="ログイン">
             <PixelKeyIcon size={22} />
             <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: "bold", color: "#2A1800" }} adjustsFontSizeToFit numberOfLines={1}>
@@ -77,7 +68,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <PixelCoinIcon size={16} />
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
-            <AutoRubyText text="コインで好きな物を買おう！" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={4} />
+            <AutoRubyText text="物を買う" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={4} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletSaveBg, borderColor: palette.walletSaveBorder }]}>
@@ -85,9 +76,7 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <PixelPiggyIcon size={16} />
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["貯", "た"], "める"]} rubySize={7} />
-            <AutoRubyText text="貯金して" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
-            <AutoRubyText text="大きな夢を" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
-            <AutoRubyText text="叶えよう！" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
+            <AutoRubyText text="夢を叶える" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletInvestBg, borderColor: palette.walletInvestBorder }]}>
@@ -95,34 +84,46 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
               <PixelSeedlingIcon size={16} />
             </View>
             <RubyText style={[styles.featureTitle, { color: palette.walletInvestText }]} parts={[["増", "ふ"], "やす"]} rubySize={7} />
-            <AutoRubyText text="コインを育ててもっと増やそう！" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={4} />
+            <AutoRubyText text="お金が育つ" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={4} />
           </View>
         </View>
       </View>
 
       <View style={styles.legalRow}>
-        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/terms")} accessibilityRole="link" accessibilityLabel="りようきやく">
-          <RubyText style={styles.legalLink} parts={[["利用規約", "りようきやく"]]} rubySize={6} />
+        <TouchableOpacity onPress={() => setLegalModal("terms")} accessibilityRole="button" accessibilityLabel="利用規約を開く">
+          <RubyText style={styles.legalLink} parts={[["利用規約", "りようきやく"]]} rubySize={5} />
         </TouchableOpacity>
         <Text style={styles.legalSep} accessibilityElementsHidden>|</Text>
-        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/privacy")} accessibilityRole="link" accessibilityLabel="プライバシーポリシー">
-          <AutoRubyText text="プライバシーポリシー" style={styles.legalLink} rubySize={6} />
+        <TouchableOpacity onPress={() => setLegalModal("privacy")} accessibilityRole="button" accessibilityLabel="プライバシーポリシーを開く">
+          <AutoRubyText text="プライバシーポリシー" style={styles.legalLink} rubySize={5} />
         </TouchableOpacity>
       </View>
-    </ScrollView>
+
+      <LegalModal
+        visible={legalModal === "terms"}
+        onClose={() => setLegalModal(null)}
+        title={TERMS.title}
+        updated={TERMS.updated}
+        sections={TERMS.sections}
+      />
+      <LegalModal
+        visible={legalModal === "privacy"}
+        onClose={() => setLegalModal(null)}
+        title={PRIVACY.title}
+        updated={PRIVACY.updated}
+        sections={PRIVACY.sections}
+      />
+    </View>
   );
 }
 
 function createStyles(p: Palette) {
   return StyleSheet.create({
-    scroll: {
+    screen: {
       flex: 1,
       backgroundColor: p.backgroundLanding,
-    },
-    scrollContent: {
-      flexGrow: 1,
-      justifyContent: "center",
       paddingHorizontal: 20,
+      justifyContent: "center",
     },
     hero: {
       alignItems: "center",
@@ -130,20 +131,20 @@ function createStyles(p: Palette) {
     heroRow: {
       flexDirection: "row" as const,
       gap: 12,
-      marginBottom: 8,
+      marginBottom: 4,
       alignItems: "flex-end" as const,
     },
     title: {
-      fontSize: rf(32),
+      fontSize: rf(28),
       fontWeight: "800",
       color: p.primaryDark,
-      marginBottom: 8,
+      marginBottom: 4,
       textAlign: "center",
     },
     subtitle: {
       fontSize: rf(13),
       color: p.primary,
-      marginBottom: 6,
+      marginBottom: 4,
       textAlign: "center",
       lineHeight: rf(22),
     },
@@ -156,7 +157,8 @@ function createStyles(p: Palette) {
     buttons: {
       width: "100%",
       gap: 12,
-      marginBottom: 28,
+      marginTop: 16,
+      marginBottom: 20,
     },
     button: {
       flexDirection: "row",
@@ -232,24 +234,19 @@ function createStyles(p: Palette) {
       justifyContent: "center",
       alignItems: "center",
       gap: 8,
-      marginTop: 8,
-      marginBottom: 12,
+      marginTop: 12,
     },
     legalLink: {
-      fontSize: 11,
+      fontSize: 10,
       color: p.primary,
     },
     legalSep: {
-      fontSize: 11,
+      fontSize: 10,
       color: p.textMuted,
     },
     subtitleWrap: {
       alignItems: "center",
-      marginBottom: 6,
-    },
-    descriptionWrap: {
-      alignItems: "center",
-      marginBottom: 28,
+      marginBottom: 4,
     },
   });
 }
