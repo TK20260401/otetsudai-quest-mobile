@@ -115,6 +115,7 @@ export default function FamilyChallengeCard({
           text={`「${challenge.title}」`}
           style={styles.title}
           rubySize={6}
+          noWrap
         />
       </View>
 
