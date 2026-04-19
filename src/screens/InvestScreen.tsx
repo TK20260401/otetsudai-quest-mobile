@@ -18,7 +18,7 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
 import type { StockPrice } from "../lib/types";
-import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon, PixelBarChartIcon, PixelDoorIcon } from "../components/PixelIcons";
+import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon, PixelBarChartIcon, PixelDoorIcon, PixelHouseIcon, PixelCrossIcon } from "../components/PixelIcons";
 
 type Portfolio = {
   id: string;
@@ -245,13 +245,20 @@ export default function InvestScreen({
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          accessibilityLabel="前の画面に戻る"
+          accessibilityRole="button"
+        >
+          <PixelHouseIcon size={20} />
+          <Text style={styles.backText}>もどる</Text>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
           <PixelSeedlingIcon size={20} />
           <RubyText style={styles.headerTitle} parts={[["投資", "とうし"]]} rubySize={6} />
         </View>
@@ -376,10 +383,17 @@ export default function InvestScreen({
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
             <View style={styles.header}>
-              <TouchableOpacity onPress={() => setOrderVisible(false)} style={styles.backButton}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
+              <TouchableOpacity
+                onPress={() => setOrderVisible(false)}
+                style={styles.backButton}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                accessibilityLabel="閉じる"
+                accessibilityRole="button"
+              >
+                <PixelCrossIcon size={20} />
+                <Text style={styles.backText}>とじる</Text>
               </TouchableOpacity>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
                 <PixelSeedlingIcon size={20} />
                 <RubyText style={styles.headerTitle} parts={[["株", "かぶ"], "を", ["買", "か"], "う"]} rubySize={5} />
               </View>
@@ -564,25 +578,35 @@ function createStyles(p: Palette) {
     header: {
       flexDirection: "row",
       alignItems: "center",
-      paddingHorizontal: 16,
-      paddingVertical: 10,
+      paddingHorizontal: 12,
+      paddingTop: 12,
+      paddingBottom: 10,
       borderBottomWidth: 1,
       borderBottomColor: p.border,
-      gap: 8,
+      gap: 10,
+      // iOS ステータスバー／ノッチと重なる事故を避けるため SafeAreaView
+      // に加えて backgroundColor を明示
+      backgroundColor: p.background,
     },
     backButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
       paddingHorizontal: 14,
-      paddingVertical: 10,
-      borderRadius: 8,
-      backgroundColor: p.surfaceMuted,
-      minHeight: 44,
-      minWidth: 44,
+      paddingVertical: 12,
+      borderRadius: 10,
+      backgroundColor: p.primaryLight,
+      borderWidth: 2,
+      borderColor: p.primary,
+      minHeight: 48,
+      minWidth: 88,
       justifyContent: "center",
+      // 親が flexDirection:"row" なので自動的にサイズされる
     },
-    backText: { fontSize: rf(14), color: p.textMuted, fontWeight: "600" },
+    backText: { fontSize: rf(15), color: p.primary, fontWeight: "800" },
     headerTitle: { fontSize: rf(16), fontWeight: "bold", color: p.textStrong, flexShrink: 1 },
 
-    scrollContent: { padding: 16, paddingBottom: 100 },
+    scrollContent: { padding: 16, paddingBottom: 140 },
 
     // Balance card
     balanceCard: {
@@ -654,21 +678,33 @@ function createStyles(p: Palette) {
       padding: 16,
       paddingBottom: 32,
       backgroundColor: p.background,
-      borderTopWidth: 1,
-      borderTopColor: p.border,
+      borderTopWidth: 2,
+      borderTopColor: p.walletInvestBorder,
     },
     buyButton: {
       backgroundColor: p.walletInvest,
       borderRadius: 16,
-      paddingVertical: 16,
+      paddingVertical: 18,
       alignItems: "center",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      borderWidth: 3,
+      borderColor: p.accent,
+      shadowColor: p.walletInvest,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.5,
+      shadowRadius: 8,
+      elevation: 8,
     },
-    buyButtonText: { fontSize: rf(18), fontWeight: "bold", color: p.white },
+    // 緑地に白文字はコントラスト比 ~3:1 と低いため黒文字＋太字＋シャドウで
+    // 視認性を確保
+    buyButtonText: {
+      fontSize: rf(20),
+      fontWeight: "900",
+      color: "#1a0f2e",
+      letterSpacing: 1,
+      textShadowColor: "rgba(255,255,255,0.4)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 2,
+    },
 
     // Order modal
     orderScrollContent: { padding: 16, paddingBottom: 40 },
