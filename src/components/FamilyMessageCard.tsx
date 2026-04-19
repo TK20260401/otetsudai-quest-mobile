@@ -6,6 +6,7 @@ import { getFamilyStampById } from "../lib/family-stamps";
 import { AutoRubyText } from "./Ruby";
 import type { FamilyMessage } from "../lib/types";
 import { PixelChatIcon } from "./PixelIcons";
+import StampSvg from "./StampSvg";
 
 type Props = {
   messages: FamilyMessage[];
@@ -73,7 +74,9 @@ export default function FamilyMessageCard({ messages, currentUserId }: Props) {
               {/* スタンプ + メッセージ */}
               <View style={styles.contentRow}>
                 {stamp && (
-                  <Text style={styles.stampEmoji}>{stamp.emoji}</Text>
+                  <View style={styles.stampSvgWrap}>
+                    <StampSvg id={stamp.id} size={28} />
+                  </View>
                 )}
                 <View style={styles.textCol}>
                   {stamp && (
@@ -176,6 +179,12 @@ function createStyles(p: Palette) {
     },
     stampEmoji: {
       fontSize: 28,
+    },
+    stampSvgWrap: {
+      width: 32,
+      height: 32,
+      alignItems: "center",
+      justifyContent: "center",
     },
     textCol: {
       flex: 1,

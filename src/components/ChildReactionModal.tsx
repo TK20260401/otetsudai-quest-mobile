@@ -18,6 +18,7 @@ import { CHILD_STAMPS } from "../lib/child-stamps";
 import { getStampById } from "../lib/stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import { PixelLetterIcon, PixelTargetIcon, PixelCoinIcon } from "./PixelIcons";
+import StampSvg from "./StampSvg";
 
 type UnreadLog = {
   id: string;
@@ -119,7 +120,9 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
 
             {parentStampDef && (
               <View style={styles.parentStampRow}>
-                <Text style={styles.parentStampEmoji}>{parentStampDef.emoji}</Text>
+                <View style={{ width: 44, height: 44, alignItems: "center", justifyContent: "center" }}>
+                  <StampSvg id={parentStampDef.id} size={40} />
+                </View>
                 <Text style={styles.parentStampLabel}>{parentStampDef.label}</Text>
               </View>
             )}
@@ -154,7 +157,9 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
                   setSelectedStamp(selectedStamp === s.id ? null : s.id)
                 }
               >
-                <Text style={styles.stampEmoji}>{s.emoji}</Text>
+                <View style={styles.stampSvgWrap}>
+                  <StampSvg id={s.id} size={28} />
+                </View>
                 <Text
                   style={[
                     styles.stampLabel,
@@ -310,6 +315,12 @@ function createStyles(p: Palette) {
       backgroundColor: p.primaryLight,
     },
     stampEmoji: { fontSize: 28 },
+    stampSvgWrap: {
+      width: 34,
+      height: 34,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+    },
     stampLabel: {
       fontSize: 10,
       color: p.textMuted,

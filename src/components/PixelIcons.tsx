@@ -981,3 +981,20 @@ const RECYCLE_PIXELS: PixelDef[] = [
 export function PixelRecycleIcon({ size = 24 }: { size?: number }) {
   return <PixelGrid pixels={RECYCLE_PIXELS} gridW={5} gridH={5} size={size} />;
 }
+
+// ============================================================
+// ハート — スタンプ系（承認・エール・子返信）共用
+// 7x6 グリッド
+// ============================================================
+const HEART_PIXELS: PixelDef[] = [
+  [1,0,"#C0392B"],[2,0,"#C0392B"],[4,0,"#C0392B"],[5,0,"#C0392B"],
+  [0,1,"#C0392B"],[1,1,"#FF6B6B"],[2,1,"#FFB6C1"],[3,1,"#C0392B"],[4,1,"#FF6B6B"],[5,1,"#FF6B6B"],[6,1,"#C0392B"],
+  [0,2,"#C0392B"],[1,2,"#FF6B6B"],[2,2,"#FF6B6B"],[3,2,"#FF6B6B"],[4,2,"#FF6B6B"],[5,2,"#FF6B6B"],[6,2,"#C0392B"],
+  [1,3,"#C0392B"],[2,3,"#FF6B6B"],[3,3,"#FF6B6B"],[4,3,"#FF6B6B"],[5,3,"#C0392B"],
+  [2,4,"#C0392B"],[3,4,"#FF6B6B"],[4,4,"#C0392B"],
+  [3,5,"#C0392B"],
+];
+
+export function PixelHeartIcon({ size = 20 }: { size?: number }) {
+  return <PixelGrid pixels={HEART_PIXELS} gridW={7} gridH={6} size={size} />;
+}

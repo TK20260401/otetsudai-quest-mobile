@@ -53,6 +53,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon, PixelShopIcon, PixelPencilIcon } from "../components/PixelIcons";
+import StampSvg from "../components/StampSvg";
 import QuestCardFrame from "../components/QuestCardFrame";
 import TaskIconSvg from "../components/TaskIconSvg";
 import RpgStatusBar from "../components/RpgStatusBar";
@@ -700,7 +701,9 @@ export default function ChildDashboardScreen({
               return (
                 <View key={s.id} style={styles.stampNotif}>
                   {stampDef && (
-                    <Text style={styles.stampNotifEmoji}>{stampDef.emoji}</Text>
+                    <View style={styles.stampNotifSvgWrap}>
+                      <StampSvg id={stampDef.id} size={32} />
+                    </View>
                   )}
                   <View style={styles.flex1}>
                     <Text style={styles.stampNotifTask}>{s.taskTitle}</Text>
@@ -1636,6 +1639,13 @@ function createStyles(p: Palette) {
     marginBottom: 6,
   },
   stampNotifEmoji: { fontSize: 32, marginRight: 10 },
+  stampNotifSvgWrap: {
+    width: 38,
+    height: 38,
+    marginRight: 10,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+  },
   stampNotifTask: { fontSize: 13, color: p.textMuted },
   stampNotifLabel: { fontSize: 15, fontWeight: "bold", color: p.textStrong },
   stampNotifMsg: { fontSize: 13, color: p.primaryDark, marginTop: 2 },

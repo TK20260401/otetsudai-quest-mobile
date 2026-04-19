@@ -18,6 +18,7 @@ import { FAMILY_STAMPS } from "../lib/family-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { User } from "../lib/types";
 import { PixelLetterIcon } from "./PixelIcons";
+import StampSvg from "./StampSvg";
 import * as Haptics from "expo-haptics";
 
 type Props = {
@@ -163,7 +164,9 @@ export default function FamilyStampSendModal({
                     accessibilityLabel={s.label}
                     accessibilityRole="button"
                   >
-                    <Text style={styles.stampEmoji}>{s.emoji}</Text>
+                    <View style={styles.stampSvgWrap}>
+                      <StampSvg id={s.id} size={32} />
+                    </View>
                     <Text
                       style={[
                         styles.stampLabel,
@@ -325,6 +328,12 @@ function createStyles(p: Palette) {
     },
     stampEmoji: {
       fontSize: 24,
+    },
+    stampSvgWrap: {
+      width: 36,
+      height: 36,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
     },
     stampLabel: {
       fontSize: 9,
