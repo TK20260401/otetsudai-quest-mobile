@@ -86,6 +86,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
                 onChangeText={setAmount}
                 keyboardType="number-pad"
                 placeholder="きんがく"
+                placeholderTextColor={palette.textPlaceholder}
                 textAlign="center"
               />
               <Text style={styles.yen}>えん</Text>
@@ -96,6 +97,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
               value={message}
               onChangeText={setMessage}
               placeholder="おやに ひとこと！（にゅうりょく しなくても OK）"
+              placeholderTextColor={palette.textPlaceholder}
               multiline
               maxLength={100}
               onFocus={() => {

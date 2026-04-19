@@ -231,7 +231,7 @@ export default function SpendRequestScreen({
             <TextInput
               style={styles.purposeInput}
               placeholder="なにに つかいたい？"
-              placeholderTextColor={palette.textMuted}
+              placeholderTextColor={palette.textPlaceholder}
               value={purpose}
               onChangeText={setPurpose}
               maxLength={100}

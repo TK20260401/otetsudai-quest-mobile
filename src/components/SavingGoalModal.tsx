@@ -87,7 +87,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
               value={title}
               onChangeText={(t) => { setTitle(t); setTitleError(false); }}
               placeholder="何を 買いたい？（例：ゲーム、自転車）"
-              placeholderTextColor={palette.textMuted}
+              placeholderTextColor={palette.textPlaceholder}
               maxLength={50}
               accessibilityLabel="貯金 目標の 名前"
               onFocus={() => {
@@ -104,7 +104,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
                 onChangeText={(t) => { setTargetAmount(t); setAmountError(false); }}
                 keyboardType="number-pad"
                 placeholder="金額"
-                placeholderTextColor={palette.textMuted}
+                placeholderTextColor={palette.textPlaceholder}
                 textAlign="center"
                 accessibilityLabel="目標 金額"
               />

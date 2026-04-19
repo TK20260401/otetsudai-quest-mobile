@@ -202,7 +202,7 @@ export default function CoinKunChat({ role }: { role: Role }) {
                 value={input}
                 onChangeText={setInput}
                 placeholder={isChild ? "きいてみよう..." : "メッセージを入力..."}
-                placeholderTextColor={palette.textMuted}
+                placeholderTextColor={palette.textPlaceholder}
                 style={styles.input}
                 editable={!loading}
                 returnKeyType="send"

@@ -1318,6 +1318,7 @@ export default function ParentDashboardScreen({
               <TextInput
                 style={styles.messageInput}
                 placeholder="一言メッセージ（なくてもOK）"
+                placeholderTextColor={palette.textPlaceholder}
                 value={approvalMessage}
                 onChangeText={setApprovalMessage}
                 maxLength={100}
@@ -1377,6 +1378,7 @@ export default function ParentDashboardScreen({
                 value={taskForm.title}
                 onChangeText={(t) => setTaskForm({ ...taskForm, title: t })}
                 placeholder="おふろそうじ、しゅくだい など"
+                placeholderTextColor={palette.textPlaceholder}
               />
 
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelScrollIcon size={16} /><Text style={styles.formLabel}>説明（なくてもOK）</Text></View>
@@ -1387,6 +1389,7 @@ export default function ParentDashboardScreen({
                   setTaskForm({ ...taskForm, description: t })
                 }
                 placeholder="くわしいやりかた"
+                placeholderTextColor={palette.textPlaceholder}
               />
 
               {/* ★とくべつクエスト トグル */}
@@ -1551,6 +1554,7 @@ export default function ParentDashboardScreen({
                       setTaskForm({ ...taskForm, price_change_comment: t })
                     }
                     placeholder="子どもに伝えるメッセージ"
+                    placeholderTextColor={palette.textPlaceholder}
                     multiline
                   />
                 </>

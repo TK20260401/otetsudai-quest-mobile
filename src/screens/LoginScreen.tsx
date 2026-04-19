@@ -488,6 +488,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
               <TextInput
                 style={styles.input}
                 placeholder="メールアドレス"
+                placeholderTextColor={palette.textPlaceholder}
                 value={adminEmail}
                 onChangeText={setAdminEmail}
                 keyboardType="email-address"
@@ -497,6 +498,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 <TextInput
                   style={styles.input}
                   placeholder={isSignUp ? "パスワード（6文字以上）" : "パスワード"}
+                  placeholderTextColor={palette.textPlaceholder}
                   value={adminPassword}
                   onChangeText={setAdminPassword}
                   secureTextEntry={!showPassword}
@@ -610,6 +612,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                             value={editName}
                             onChangeText={setEditName}
                             placeholder="なまえ"
+                            placeholderTextColor={palette.textPlaceholder}
                             onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
                           />
                           <TextInput
@@ -617,6 +620,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                             value={editPin}
                             onChangeText={setEditPin}
                             placeholder="あんしょうばんごう（なくてもOK）"
+                            placeholderTextColor={palette.textPlaceholder}
                             keyboardType="number-pad"
                             maxLength={6}
                             onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
@@ -714,6 +718,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                     <TextInput
                       style={styles.input}
                       placeholder="なまえ（れい: ハルト）"
+                      placeholderTextColor={palette.textPlaceholder}
                       value={newChildName}
                       onChangeText={setNewChildName}
                       onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
@@ -721,6 +726,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                     <TextInput
                       style={styles.input}
                       placeholder="あんしょうばんごう（なくてもOK）"
+                      placeholderTextColor={palette.textPlaceholder}
                       value={newChildPin}
                       onChangeText={setNewChildPin}
                       keyboardType="number-pad"
@@ -824,6 +830,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                     <TextInput
                       style={[styles.input, { flex: 1, marginBottom: 0 }]}
                       placeholder="あたらしい かぞくめい（れい: たなかけ）"
+                      placeholderTextColor={palette.textPlaceholder}
                       value={newFamilyName}
                       onChangeText={setNewFamilyName}
                       onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
@@ -965,6 +972,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
               keyboardType="number-pad"
               secureTextEntry
               placeholder="4けたのPIN"
+              placeholderTextColor={palette.textPlaceholder}
               textAlign="center"
               onSubmitEditing={handlePinLogin}
             />
@@ -1081,6 +1089,7 @@ function createStyles(p: Palette) {
       letterSpacing: 12,
       marginBottom: 16,
       backgroundColor: p.surfaceMuted,
+      color: p.textStrong,
     },
     input: {
       borderWidth: 1,
@@ -1090,6 +1099,7 @@ function createStyles(p: Palette) {
       fontSize: 16,
       marginBottom: 12,
       backgroundColor: p.surfaceMuted,
+      color: p.textStrong,
     },
     button: {
       borderRadius: 12,

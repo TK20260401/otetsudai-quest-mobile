@@ -183,7 +183,7 @@ export default function FamilyStampSendModal({
                 value={message}
                 onChangeText={setMessage}
                 placeholder="ひとこと メッセージ（なくても OK）"
-                placeholderTextColor={palette.textMuted}
+                placeholderTextColor={palette.textPlaceholder}
                 multiline
                 maxLength={100}
                 onFocus={() => {

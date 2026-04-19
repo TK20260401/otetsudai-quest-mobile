@@ -503,6 +503,7 @@ export default function InvestScreen({
                     value={amount}
                     onChangeText={setAmount}
                     placeholder="例: 500"
+                    placeholderTextColor={palette.textPlaceholder}
                     keyboardType="number-pad"
                     onFocus={() => {
                       setTimeout(() => orderScrollRef.current?.scrollToEnd({ animated: true }), 200);

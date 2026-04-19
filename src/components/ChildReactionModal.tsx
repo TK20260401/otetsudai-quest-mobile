@@ -173,6 +173,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             value={message}
             onChangeText={setMessage}
             placeholder="おやに ひとこと！（にゅうりょく しなくても OK）"
+            placeholderTextColor={palette.textPlaceholder}
             multiline
             maxLength={100}
             onFocus={() => {

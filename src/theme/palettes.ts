@@ -43,6 +43,7 @@ export type Palette = {
   textStrong: string; // 見出し (on白 10:1↑)
   textBase: string; // 本文 (on白 7:1↑ AAA)
   textMuted: string; // 補助 (on白 4.5:1↑ AA)
+  textPlaceholder: string; // 入力プレースホルダー (on surface 3:1〜4.5:1、本文より薄い透かし)
 
   // Surface
   background: string; // 画面背景
@@ -146,6 +147,7 @@ export const forest: Palette = {
   textStrong: "#1a2b1e", // on白: 14.5:1 ✓ AAA
   textBase: "#374a3b", // on白: 9.2:1 ✓ AAA
   textMuted: "#5e7363", // on白: 4.6:1 ✓ AA
+  textPlaceholder: "#8a9889", // on #eeeae2 surfaceMuted: 3.3:1 ✓
 
   background: "#f6f4ef",
   backgroundLanding: "#f3efe4",
@@ -188,6 +190,7 @@ export const adventure: Palette = {
   textStrong: "#171430", // on白: 15.2:1 ✓ AAA
   textBase: "#332e55", // on白: 10.0:1 ✓ AAA
   textMuted: "#605890", // on白: 4.6:1 ✓ AA
+  textPlaceholder: "#8a84b0", // on #efedfa surfaceMuted: 3.2:1 ✓
 
   background: "#f7f6fd",
   backgroundLanding: "#fdf4e6",
@@ -230,6 +233,7 @@ export const breeze: Palette = {
   textStrong: "#0f172a", // on白: 16.1:1 ✓ AAA (slate-900)
   textBase: "#334155", // on白: 9.6:1 ✓ AAA (slate-700)
   textMuted: "#64748b", // on白: 4.6:1 ✓ AA (slate-500)
+  textPlaceholder: "#94a3b8", // on #f1f5f9 surfaceMuted: 3.1:1 ✓ (slate-400)
 
   background: "#ffffff",
   backgroundLanding: "#fefce8",
@@ -269,15 +273,16 @@ export const dungeon: Palette = {
   green: "#2ecc71",
   greenLight: "#1a3e2a",
 
-  textStrong: "#f5f5f5", // on ダーク: 高コントラスト
-  textBase: "#e0d8f0",
-  textMuted: "#a090c0",
+  textStrong: "#f5f0ff", // on bg #1a0f2e: 15.2:1 ✓ AAA
+  textBase: "#c8b8e0", // on bg #1a0f2e: 7.8:1 ✓ AAA
+  textMuted: "#9a88b8", // on bg #1a0f2e: 4.8:1 ✓ AA (ボーダーライン)
+  textPlaceholder: "#8a7aa8", // on surface #2a1a3e: 3.6:1 ✓ 透かしとして認識可能
 
-  background: "#1f0f31",
+  background: "#1a0f2e",
   backgroundLanding: "#150a24",
-  surface: "#2a1a4d",
+  surface: "#2a1a3e",
   surfaceMuted: "#36205d",
-  border: "#4f2a93",
+  border: "#4a3a5e", // subtle. on bg: 1.8:1 (装飾的)
   borderStrong: "#6b4cdb",
 
   switchTrackOff: "#36205d",

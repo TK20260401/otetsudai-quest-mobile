@@ -1321,7 +1321,7 @@ export default function ChildDashboardScreen({
               value={proposalTitle}
               onChangeText={setProposalTitle}
               maxLength={30}
-              placeholderTextColor={palette.textMuted}
+              placeholderTextColor={palette.textPlaceholder}
             />
 
             <Text style={styles.proposalLabel}>理由（なぜやりたい？）</Text>
@@ -1332,7 +1332,7 @@ export default function ChildDashboardScreen({
               onChangeText={setProposalReason}
               multiline
               maxLength={100}
-              placeholderTextColor={palette.textMuted}
+              placeholderTextColor={palette.textPlaceholder}
             />
 
             <Text style={styles.proposalLabel}>希望のごほうび（円）</Text>
@@ -1343,7 +1343,7 @@ export default function ChildDashboardScreen({
               onChangeText={setProposalReward}
               keyboardType="number-pad"
               maxLength={5}
-              placeholderTextColor={palette.textMuted}
+              placeholderTextColor={palette.textPlaceholder}
             />
 
             <View style={styles.proposalActions}>
