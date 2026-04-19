@@ -1,5 +1,6 @@
 import React from "react";
 import Svg, { Rect, G } from "react-native-svg";
+import IdleAnimationWrapper, { type IdleAnimationType } from "./IdleAnimationWrapper";
 
 type MonsterType = "slime" | "bat" | "goblin" | "mushroom";
 
@@ -7,6 +8,14 @@ type Props = {
   type: MonsterType;
   defeated?: boolean;
   size?: number;
+  animated?: boolean;
+};
+
+const MONSTER_IDLE: Record<MonsterType, IdleAnimationType> = {
+  slime: "bob",
+  bat: "flutter",
+  goblin: "sway",
+  mushroom: "breathe",
 };
 
 const PX = 3;
@@ -80,7 +89,15 @@ const MONSTERS: Record<MonsterType, { pixels: PixelDef[]; gridW: number; gridH: 
 
 export const MONSTER_TYPES: MonsterType[] = ["slime", "bat", "goblin", "mushroom"];
 
-export default function PixelMonsterSvg({ type, defeated = false, size = 48 }: Props) {
+export default function PixelMonsterSvg({ type, defeated = false, size = 48, animated = false }: Props) {
   const m = MONSTERS[type];
-  return <PixelGrid pixels={m.pixels} gridW={m.gridW} gridH={m.gridH} size={size} opacity={defeated ? 0.35 : 1} />;
+  const svg = <PixelGrid pixels={m.pixels} gridW={m.gridW} gridH={m.gridH} size={size} opacity={defeated ? 0.35 : 1} />;
+
+  if (!animated) return svg;
+
+  return (
+    <IdleAnimationWrapper type={MONSTER_IDLE[type]} paused={defeated}>
+      {svg}
+    </IdleAnimationWrapper>
+  );
 }

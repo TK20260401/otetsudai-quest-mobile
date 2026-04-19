@@ -15,6 +15,7 @@ import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 import SavingGoalModal from "../components/SavingGoalModal";
+import SavingGoalMilestone from "../components/SavingGoalMilestone";
 import type { Wallet, Transaction, SpendRequest, SavingGoal } from "../lib/types";
 import MoneyTree, { getStage } from "../components/MoneyTree";
 import { PixelChestOpenIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelTreeIcon, PixelConfettiIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelScrollIcon } from "../components/PixelIcons";
@@ -462,20 +463,30 @@ export default function WalletDetailScreen({
             return (
               <View key={goal.id} style={styles.goalCard}>
                 <Text style={styles.goalTitle}>{goal.title}</Text>
-                <View style={styles.goalProgressBar}>
-                  <View
-                    style={[
-                      styles.goalProgressFill,
-                      { width: `${pct}%` },
-                    ]}
+                {pct >= 100 ? (
+                  <SavingGoalMilestone
+                    show={pct >= 100}
+                    goalTitle={goal.title}
+                    onComplete={() => {}}
                   />
-                </View>
-                <View style={styles.goalAmountRow}>
-                  <Text style={styles.goalAmountText}>
-                    {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} 円
-                  </Text>
-                  <Text style={styles.goalPctText}>{pct}%</Text>
-                </View>
+                ) : (
+                  <>
+                    <View style={styles.goalProgressBar}>
+                      <View
+                        style={[
+                          styles.goalProgressFill,
+                          { width: `${pct}%` },
+                        ]}
+                      />
+                    </View>
+                    <View style={styles.goalAmountRow}>
+                      <Text style={styles.goalAmountText}>
+                        {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} 円
+                      </Text>
+                      <Text style={styles.goalPctText}>{pct}%</Text>
+                    </View>
+                  </>
+                )}
               </View>
             );
           })}

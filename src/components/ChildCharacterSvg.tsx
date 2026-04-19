@@ -1,5 +1,6 @@
 import React from "react";
 import Svg, { Rect, G } from "react-native-svg";
+import IdleAnimationWrapper from "./IdleAnimationWrapper";
 
 export type ChildGender = "boy" | "girl" | "other";
 
@@ -96,12 +97,12 @@ const OTHER_PIXELS: PixelDef[] = [
  * gender: boy / girl / other の3種
  * ピクセルアート（6x8グリッド）で描画
  */
-export default function ChildCharacterSvg({ gender, size = 48 }: { gender: ChildGender; size?: number }) {
+export default function ChildCharacterSvg({ gender, size = 48, animated = false }: { gender: ChildGender; size?: number; animated?: boolean }) {
   const pixels =
     gender === "boy" ? BOY_PIXELS : gender === "girl" ? GIRL_PIXELS : OTHER_PIXELS;
   const gridW = 6;
   const gridH = 8;
-  return (
+  const svg = (
     <Svg
       width={size}
       height={size * (gridH / gridW)}
@@ -118,6 +119,14 @@ export default function ChildCharacterSvg({ gender, size = 48 }: { gender: Child
         ))}
       </G>
     </Svg>
+  );
+
+  if (!animated) return svg;
+
+  return (
+    <IdleAnimationWrapper type="sway" duration={4}>
+      {svg}
+    </IdleAnimationWrapper>
   );
 }
 

@@ -11,12 +11,14 @@ import Svg, {
   Stop,
   Text as SvgText,
 } from "react-native-svg";
+import IdleAnimationWrapper from "./IdleAnimationWrapper";
 
 type Stage = "seed" | "sprout" | "sapling" | "tree";
 
 type Props = {
   investBalance: number;
   size?: number;
+  animated?: boolean;
 };
 
 function getStage(balance: number): { stage: Stage; label: string; next: number | null } {
@@ -37,10 +39,10 @@ export { getStage };
  * Stage 3: わかぎ (500-999円) — 葉が茂り始めた若木
  * Stage 4: たいぼく (1000円+) — 金の実がなる大木
  */
-export default function MoneyTree({ investBalance, size = 140 }: Props) {
+export default function MoneyTree({ investBalance, size = 140, animated = false }: Props) {
   const { stage } = getStage(investBalance);
 
-  return (
+  const svg = (
     <Svg width={size} height={size} viewBox="0 0 140 140">
       <Defs>
         <RadialGradient id="soil" cx="50%" cy="60%" r="50%">
@@ -76,6 +78,14 @@ export default function MoneyTree({ investBalance, size = 140 }: Props) {
       {stage === "sapling" && renderSapling()}
       {stage === "tree" && renderTree()}
     </Svg>
+  );
+
+  if (!animated) return svg;
+
+  return (
+    <IdleAnimationWrapper type="breathe">
+      {svg}
+    </IdleAnimationWrapper>
   );
 }
 

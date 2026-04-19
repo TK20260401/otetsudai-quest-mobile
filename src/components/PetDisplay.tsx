@@ -32,7 +32,7 @@ export default function PetDisplay({ pet, onTapEgg, onManage }: Props) {
     return (
       <View style={styles.container}>
         <Pressable onPress={ready ? onTapEgg : undefined}>
-          <PetSvg type={pet.pet_type} stage="egg" size={44} />
+          <PetSvg type={pet.pet_type} stage="egg" size={44} animated />
         </Pressable>
         <View style={styles.progressTrack}>
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
@@ -54,7 +54,7 @@ export default function PetDisplay({ pet, onTapEgg, onManage }: Props) {
 
   return (
     <TouchableOpacity onPress={onManage} style={styles.container} activeOpacity={0.8}>
-      <PetSvg type={pet.pet_type} stage={pet.growth_stage} happiness={happiness} size={44} />
+      <PetSvg type={pet.pet_type} stage={pet.growth_stage} happiness={happiness} size={44} animated />
       {pet.name ? <Text style={styles.petName}>{pet.name}</Text> : null}
       <Text style={styles.petType}>{info.nameJa}</Text>
       {nextThreshold ? (

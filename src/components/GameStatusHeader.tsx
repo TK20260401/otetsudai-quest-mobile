@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Svg, { Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import CharacterSvg from "./CharacterSvg";
+import WalletBalanceAnimation from "./WalletBalanceAnimation";
 import { useTheme, type Palette } from "../theme";
 import { PixelDoorIcon, PixelCoinIcon, PixelHouseIcon } from "./PixelIcons";
 
@@ -95,7 +96,7 @@ export default function GameStatusHeader({
           {gold !== undefined ? (
             <View style={styles.goldChip}>
               <PixelCoinIcon size={12} />
-              <Text style={styles.goldText}>{gold.toLocaleString()}</Text>
+              <WalletBalanceAnimation value={gold} textStyle={styles.goldText} />
             </View>
           ) : null}
           <View style={styles.rightRow}>

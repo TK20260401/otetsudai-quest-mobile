@@ -1,6 +1,7 @@
 import React from "react";
 import Svg, { Rect, G } from "react-native-svg";
 import type { PetType, GrowthStage } from "../lib/pets";
+import IdleAnimationWrapper, { type IdleAnimationType } from "./IdleAnimationWrapper";
 
 const PX = 3;
 type PixelDef = [number, number, string];
@@ -10,6 +11,7 @@ type Props = {
   stage: GrowthStage;
   happiness?: number;
   size?: number;
+  animated?: boolean;
 };
 
 function PixelGrid({ pixels, gridW, gridH, size }: { pixels: PixelDef[]; gridW: number; gridH: number; size: number }) {
@@ -244,11 +246,18 @@ const PET_DATA: Record<string, Record<string, PetPixelData>> = {
   },
 };
 
-export default function PetSvg({ type, stage, happiness = 100, size = 48 }: Props) {
+const STAGE_IDLE_TYPE: Record<GrowthStage, IdleAnimationType> = {
+  egg: "pulse",
+  baby: "bounce",
+  child: "bob",
+  adult: "breathe",
+};
+
+export default function PetSvg({ type, stage, happiness = 100, size = 48, animated = false }: Props) {
   const data = PET_DATA[type]?.[stage] || PET_DATA[type]?.egg || { pixels: EGG, gridW: 8, gridH: 8 };
   // 低幸福度でグレーアウト
   const opacity = happiness < 30 ? 0.6 : 1;
-  return (
+  const svg = (
     <Svg width={size} height={size * (data.gridH / data.gridW)} viewBox={`0 0 ${data.gridW * PX} ${data.gridH * PX}`} opacity={opacity}>
       <G>
         {data.pixels.map(([x, y, color], i) => (
@@ -257,6 +266,31 @@ export default function PetSvg({ type, stage, happiness = 100, size = 48 }: Prop
       </G>
     </Svg>
   );
+
+  if (!animated) return svg;
+
+  const idleType = STAGE_IDLE_TYPE[stage];
+  const baseDuration = undefined; // use IdleAnimationWrapper defaults
+  const duration = happiness < 30 ? ((baseDuration ?? getDefaultIdleDuration(idleType)) * 2) : baseDuration;
+
+  return (
+    <IdleAnimationWrapper type={idleType} duration={duration}>
+      {svg}
+    </IdleAnimationWrapper>
+  );
+}
+
+function getDefaultIdleDuration(type: IdleAnimationType): number {
+  switch (type) {
+    case "bob": return 3;
+    case "breathe": return 3;
+    case "sway": return 4;
+    case "bounce": return 2;
+    case "flutter": return 2.5;
+    case "pulse": return 2;
+    case "spin": return 2;
+    case "flicker": return 0.8;
+  }
 }
 
 function desaturate(hex: string): string {

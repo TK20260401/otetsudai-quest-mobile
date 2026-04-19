@@ -1,5 +1,6 @@
 import React from "react";
 import Svg, { Rect, G } from "react-native-svg";
+import IdleAnimationWrapper from "./IdleAnimationWrapper";
 
 /** 1ピクセル = PX pt */
 const PX = 4;
@@ -195,8 +196,10 @@ const STAR_PIXELS: PixelDef[] = [
   [0,5,"#DAA520"],[1,5,"#DAA520"],[5,5,"#DAA520"],[6,5,"#DAA520"],
 ];
 
-export function PixelStarIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={STAR_PIXELS} gridW={7} gridH={6} size={size} label="星" />;
+export function PixelStarIcon({ size = 28, animated = false }: { size?: number; animated?: boolean }) {
+  const svg = <PixelGrid pixels={STAR_PIXELS} gridW={7} gridH={6} size={size} label="星" />;
+  if (!animated) return svg;
+  return <IdleAnimationWrapper type="pulse">{svg}</IdleAnimationWrapper>;
 }
 
 // ============================================================
@@ -210,8 +213,10 @@ const COIN_PIXELS: PixelDef[] = [
   [1,4,"#DAA520"],[2,4,"#DAA520"],[3,4,"#DAA520"],
 ];
 
-export function PixelCoinIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={COIN_PIXELS} gridW={5} gridH={5} size={size} label="コイン" />;
+export function PixelCoinIcon({ size = 20, animated = false }: { size?: number; animated?: boolean }) {
+  const svg = <PixelGrid pixels={COIN_PIXELS} gridW={5} gridH={5} size={size} label="コイン" />;
+  if (!animated) return svg;
+  return <IdleAnimationWrapper type="spin">{svg}</IdleAnimationWrapper>;
 }
 
 // ============================================================
@@ -303,8 +308,10 @@ const HOURGLASS_PIXELS: PixelDef[] = [
   [0,4,"#DAA520"],[1,4,"#F5D6A0"],[2,4,"#F5D6A0"],[3,4,"#F5D6A0"],[4,4,"#DAA520"],
 ];
 
-export function PixelHourglassIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={HOURGLASS_PIXELS} gridW={5} gridH={5} size={size} label="砂時計" />;
+export function PixelHourglassIcon({ size = 20, animated = false }: { size?: number; animated?: boolean }) {
+  const svg = <PixelGrid pixels={HOURGLASS_PIXELS} gridW={5} gridH={5} size={size} label="砂時計" />;
+  if (!animated) return svg;
+  return <IdleAnimationWrapper type="spin" duration={4}>{svg}</IdleAnimationWrapper>;
 }
 
 // ============================================================
@@ -334,8 +341,10 @@ const FLAME_PIXELS: PixelDef[] = [
   [1,5,"#C0392B"],[2,5,"#E74C3C"],[3,5,"#C0392B"],
 ];
 
-export function PixelFlameIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={FLAME_PIXELS} gridW={5} gridH={6} size={size} label="炎" />;
+export function PixelFlameIcon({ size = 20, animated = false }: { size?: number; animated?: boolean }) {
+  const svg = <PixelGrid pixels={FLAME_PIXELS} gridW={5} gridH={6} size={size} label="炎" />;
+  if (!animated) return svg;
+  return <IdleAnimationWrapper type="flicker">{svg}</IdleAnimationWrapper>;
 }
 
 // ============================================================
@@ -663,8 +672,10 @@ const CONFETTI_PIXELS: PixelDef[] = [
   [0,4,"#FFD700"],[3,4,"#3498DB"],[4,4,"#2ECC71"],
 ];
 
-export function PixelConfettiIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CONFETTI_PIXELS} gridW={5} gridH={5} size={size} label="紙吹雪" />;
+export function PixelConfettiIcon({ size = 20, animated = false }: { size?: number; animated?: boolean }) {
+  const svg = <PixelGrid pixels={CONFETTI_PIXELS} gridW={5} gridH={5} size={size} label="紙吹雪" />;
+  if (!animated) return svg;
+  return <IdleAnimationWrapper type="flutter">{svg}</IdleAnimationWrapper>;
 }
 
 // ============================================================

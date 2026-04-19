@@ -1,10 +1,12 @@
 import React from "react";
 import Svg, { Circle, Rect, Path, Ellipse, G, Defs, RadialGradient, Stop, LinearGradient } from "react-native-svg";
+import IdleAnimationWrapper from "./IdleAnimationWrapper";
 
 type Props = {
   level: number;
   mood: "active" | "normal" | "lonely";
   size?: number;
+  animated?: boolean;
 };
 
 /**
@@ -17,11 +19,11 @@ type Props = {
  * Lv6: 輝く鎧+賢者の杖
  * Lv7: 王冠+聖剣の伝説の勇者
  */
-export default function CharacterSvg({ level, mood, size = 120 }: Props) {
+export default function CharacterSvg({ level, mood, size = 120, animated = false }: Props) {
   // 機嫌による目の表現
   const eyeExpr = mood === "active" ? "happy" : mood === "lonely" ? "sad" : "normal";
 
-  return (
+  const svg = (
     <Svg width={size} height={size} viewBox="0 0 120 120">
       {commonDefs()}
       {level === 1 && renderLv1(eyeExpr)}
@@ -32,6 +34,14 @@ export default function CharacterSvg({ level, mood, size = 120 }: Props) {
       {level === 6 && renderLv6(eyeExpr)}
       {level >= 7 && renderLv7(eyeExpr)}
     </Svg>
+  );
+
+  if (!animated) return svg;
+
+  return (
+    <IdleAnimationWrapper type="sway" duration={4}>
+      {svg}
+    </IdleAnimationWrapper>
   );
 }
 
