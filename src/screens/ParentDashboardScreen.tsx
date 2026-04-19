@@ -294,9 +294,9 @@ export default function ParentDashboardScreen({
     endDate.setDate(endDate.getDate() + 6);
     const titles = [
       "みんなで 20クエスト クリアしよう！",
-      "かぞくで ちからを あわせよう！",
-      "こんしゅうも がんばろう！",
-      "めざせ クエストマスター！",
+      "家族で力を合わせよう！",
+      "今週も頑張ろう！",
+      "目指せクエストマスター！",
     ];
     const title = titles[Math.floor(Math.random() * titles.length)];
     await supabase.from("otetsudai_family_challenges").insert({

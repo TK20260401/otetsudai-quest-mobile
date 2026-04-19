@@ -110,7 +110,13 @@ export default function FamilyChallengeCard({
         )}
       </View>
 
-      <Text style={styles.title}>「{challenge.title}」</Text>
+      <View style={styles.titleWrap}>
+        <AutoRubyText
+          text={`「${challenge.title}」`}
+          style={styles.title}
+          rubySize={6}
+        />
+      </View>
 
       {/* メンバー進捗 */}
       <View style={styles.membersSection}>
@@ -291,12 +297,17 @@ function createStyles(p: Palette) {
       textAlign: "center",
       marginBottom: 4,
     },
+    titleWrap: {
+      alignItems: "center",
+      marginTop: 4,
+      marginBottom: 12,
+      paddingHorizontal: 8,
+    },
     title: {
-      fontSize: rf(15),
+      fontSize: rf(16),
       fontWeight: "bold",
       color: p.textStrong,
       textAlign: "center",
-      marginBottom: 12,
     },
     membersSection: {
       gap: 6,
