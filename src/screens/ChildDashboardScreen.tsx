@@ -1390,20 +1390,30 @@ export default function ChildDashboardScreen({
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={[["自分", "じぶん"], "クエストを", ["提案", "ていあん"]]} rubySize={6} /></View>
             <AutoRubyText text="親に新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} />
 
-            <Text style={styles.proposalLabel}>クエストの名前</Text>
+            <RubyText
+              style={styles.proposalLabel}
+              parts={["クエストの", ["名前", "なまえ"]]}
+              rubySize={5}
+              noWrap
+            />
             <TextInput
               style={styles.proposalInput}
-              placeholder="れい: おふろそうじ"
+              placeholder="例: お風呂掃除"
               value={proposalTitle}
               onChangeText={setProposalTitle}
               maxLength={30}
               placeholderTextColor={palette.textPlaceholder}
             />
 
-            <Text style={styles.proposalLabel}>理由（なぜやりたい？）</Text>
+            <RubyText
+              style={styles.proposalLabel}
+              parts={[["理由", "りゆう"], "（なぜやりたい？）"]}
+              rubySize={5}
+              noWrap
+            />
             <TextInput
               style={[styles.proposalInput, { minHeight: 60 }]}
-              placeholder="れい: きれいにしたいから"
+              placeholder="例: 綺麗にしたいから"
               value={proposalReason}
               onChangeText={setProposalReason}
               multiline
@@ -1411,10 +1421,15 @@ export default function ChildDashboardScreen({
               placeholderTextColor={palette.textPlaceholder}
             />
 
-            <Text style={styles.proposalLabel}>希望のごほうび（円）</Text>
+            <RubyText
+              style={styles.proposalLabel}
+              parts={[["希望", "きぼう"], "のご", ["褒美", "ほうび"], "（", ["円", "えん"], "）"]}
+              rubySize={5}
+              noWrap
+            />
             <TextInput
               style={styles.proposalInput}
-              placeholder="れい: 30"
+              placeholder="例: 30"
               value={proposalReward}
               onChangeText={setProposalReward}
               keyboardType="number-pad"
@@ -1424,14 +1439,33 @@ export default function ChildDashboardScreen({
 
             <View style={styles.proposalActions}>
               <TouchableOpacity style={styles.proposalCancel} onPress={() => setProposalVisible(false)}>
-                <Text style={styles.proposalCancelText}>やめる</Text>
+                <RubyText
+                  style={styles.proposalCancelText}
+                  parts={[["止", "や"], "める"]}
+                  rubySize={5}
+                  noWrap
+                />
               </TouchableOpacity>
               <AnimatedButton
                 style={[styles.proposalSubmit, !proposalTitle.trim() && { opacity: 0.5 }]}
                 onPress={handleProposalSubmit}
                 disabled={!proposalTitle.trim() || proposalSubmitting}
               >
-                <Text style={styles.proposalSubmitText}>{proposalSubmitting ? "送信中..." : "提案する！"}</Text>
+                {proposalSubmitting ? (
+                  <RubyText
+                    style={styles.proposalSubmitText}
+                    parts={[["送信", "そうしん"], ["中", "ちゅう"], "..."]}
+                    rubySize={5}
+                    noWrap
+                  />
+                ) : (
+                  <RubyText
+                    style={styles.proposalSubmitText}
+                    parts={[["提案", "ていあん"], "する！"]}
+                    rubySize={5}
+                    noWrap
+                  />
+                )}
               </AnimatedButton>
             </View>
           </View>
