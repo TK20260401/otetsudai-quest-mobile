@@ -15,6 +15,7 @@ import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task } from "../lib/types";
 import { useAppAlert } from "./AppAlert";
 import { RubyText } from "./Ruby";
+import { PixelCoinIcon } from "./PixelIcons";
 
 type Props = {
   visible: boolean;
@@ -67,12 +68,15 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
           keyboardDismissMode="interactive"
         >
           <View style={styles.card}>
-            <RubyText
-              style={styles.title}
-              parts={["💰 ", ["値上", "ねあ"], "げリクエスト"]}
-              rubySize={6}
-              noWrap
-            />
+            <View style={styles.titleRow}>
+              <PixelCoinIcon size={22} />
+              <RubyText
+                style={styles.title}
+                parts={[["値上", "ねあ"], "げリクエスト"]}
+                rubySize={6}
+                noWrap
+              />
+            </View>
             <Text style={styles.taskName} numberOfLines={1} adjustsFontSizeToFit>{task.title}</Text>
 
             <View style={styles.currentRow}>
@@ -182,12 +186,18 @@ function createStyles(p: Palette) {
       borderRadius: 16,
       padding: 20,
     },
+    titleRow: {
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      gap: 6,
+      marginBottom: 8,
+    },
     title: {
       fontSize: rf(20),
       fontWeight: "bold",
       color: p.textStrong,
       textAlign: "center",
-      marginBottom: 8,
     },
     taskName: {
       fontSize: 16,
