@@ -25,6 +25,7 @@ import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings, FamilyMessage, FamilyChallenge } from "../lib/types";
 import { useAppAlert } from "../components/AppAlert";
 import FamilyStampSendModal from "../components/FamilyStampSendModal";
+import { RubyText } from "../components/Ruby";
 import FamilyMessageCard from "../components/FamilyMessageCard";
 import MonthlyReport from "../components/MonthlyReport";
 import FamilyAdventureMap from "../components/FamilyAdventureMap";
@@ -622,7 +623,12 @@ export default function ParentDashboardScreen({
       <View style={styles.center}>
         <PixelFamilyIcon size={48} />
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={styles.loadingText}>よみこみちゅう...</Text>
+        <RubyText
+          style={styles.loadingText}
+          parts={[["読", "よ"], "み", ["込", "こ"], "み", ["中", "ちゅう"], "..."]}
+          rubySize={5}
+          noWrap
+        />
       </View>
     );
   }

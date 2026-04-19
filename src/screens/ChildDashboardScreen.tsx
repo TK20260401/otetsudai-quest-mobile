@@ -604,40 +604,40 @@ export default function ChildDashboardScreen({
       </View>
       <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
+      {/* 投資画面への最優先CTA — ScrollView 外の固定位置に配置して
+          スクロール位置に関わらず常時視認可能にする。wallet がまだ
+          undefined でも balance=0 で遷移を許容 */}
+      <AnimatedButton
+        style={styles.investTopCta}
+        onPress={() => {
+          console.log('[nav] Invest (topCta)', { childId, walletId: wallet?.id, investBalance: wallet?.invest_balance });
+          navigation.navigate("Invest", {
+            childId,
+            walletId: wallet?.id ?? "",
+            investBalance: wallet?.invest_balance ?? 0,
+          });
+        }}
+        haptic="medium"
+        accessibilityLabel="とうしがめんへ いく"
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 }}>
+          <PixelChartIcon size={26} />
+          <RubyText
+            parts={[["株", "かぶ"], "を", ["買", "か"], "いたい！"]}
+            style={styles.investTopCtaText}
+            rubySize={7}
+            noWrap
+          />
+          <PixelChartIcon size={26} />
+        </View>
+      </AnimatedButton>
+
       <ScrollView
         style={styles.scroll}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* 投資画面への最優先CTA — ScrollView の一番上に配置して
-            スクロール前から視認可能に。wallet がまだ undefined でも
-            balance=0 で遷移を許容 */}
-        <AnimatedButton
-          style={styles.investTopCta}
-          onPress={() => {
-            console.log('[nav] Invest (topCta)', { childId, walletId: wallet?.id, investBalance: wallet?.invest_balance });
-            navigation.navigate("Invest", {
-              childId,
-              walletId: wallet?.id ?? "",
-              investBalance: wallet?.invest_balance ?? 0,
-            });
-          }}
-          haptic="medium"
-          accessibilityLabel="とうしがめんへ いく"
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 }}>
-            <PixelChartIcon size={26} />
-            <RubyText
-              parts={[["株", "かぶ"], "を", ["買", "か"], "いたい！"]}
-              style={styles.investTopCtaText}
-              rubySize={7}
-              noWrap
-            />
-            <PixelChartIcon size={26} />
-          </View>
-        </AnimatedButton>
-
         {/* キャラクター育成 */}
         <RpgCard
           tier="violet"

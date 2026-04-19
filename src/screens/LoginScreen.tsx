@@ -458,7 +458,12 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       <View style={styles.center}>
         <PixelKeyIcon size={40} />
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={styles.loadingText}>よみこみちゅう...</Text>
+        <RubyText
+          style={styles.loadingText}
+          parts={[["読", "よ"], "み", ["込", "こ"], "み", ["中", "ちゅう"], "..."]}
+          rubySize={5}
+          noWrap
+        />
       </View>
     );
   }
