@@ -7,7 +7,7 @@ import { ThemeProvider } from "./src/theme";
 export default function App() {
   return (
     <SafeAreaProvider>
-      <ThemeProvider initial="breeze">
+      <ThemeProvider initial="dungeon">
         <AppAlertProvider>
           <StatusBar style="dark" />
           <AppNavigator />
