@@ -934,15 +934,36 @@ export default function ChildDashboardScreen({
         <View style={styles.screenTitleBar} accessibilityRole="header">
           <View style={styles.screenTitleAccent} />
           <View style={{ flex: 1 }}>
-            <Text style={styles.screenTitleText} numberOfLines={1}>
-              {childName}
-              {tab === "quests" ? " のクエスト" : " のりれき"}
-            </Text>
-            <Text style={styles.screenTitleSub} numberOfLines={1}>
-              {tab === "quests"
-                ? "いまやるクエストをえらぼう"
-                : "これまでクリアしたクエスト"}
-            </Text>
+            {tab === "quests" ? (
+              <RubyText
+                style={styles.screenTitleText}
+                parts={[`${childName} のクエスト`]}
+                rubySize={5}
+                noWrap
+              />
+            ) : (
+              <RubyText
+                style={styles.screenTitleText}
+                parts={[`${childName} の`, ["履歴", "りれき"]]}
+                rubySize={5}
+                noWrap
+              />
+            )}
+            {tab === "quests" ? (
+              <RubyText
+                style={styles.screenTitleSub}
+                parts={[["今", "いま"], "やるクエストを", ["選", "えら"], "ぼう"]}
+                rubySize={4}
+                noWrap
+              />
+            ) : (
+              <RubyText
+                style={styles.screenTitleSub}
+                parts={["これまでクリアしたクエスト"]}
+                rubySize={4}
+                noWrap
+              />
+            )}
           </View>
         </View>
 
