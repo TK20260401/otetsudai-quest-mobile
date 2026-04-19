@@ -76,7 +76,7 @@ const SWORD_PIXELS: PixelDef[] = [
 ];
 
 export function PixelSwordIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={SWORD_PIXELS} gridW={4} gridH={6} size={size} />;
+  return <PixelGrid pixels={SWORD_PIXELS} gridW={4} gridH={6} size={size} label="剣" />;
 }
 
 // ============================================================
@@ -93,7 +93,7 @@ const SCROLL_PIXELS: PixelDef[] = [
 ];
 
 export function PixelScrollIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={SCROLL_PIXELS} gridW={7} gridH={7} size={size} />;
+  return <PixelGrid pixels={SCROLL_PIXELS} gridW={7} gridH={7} size={size} label="巻物" />;
 }
 
 // ============================================================
@@ -110,7 +110,7 @@ const CROSSED_SWORDS_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCrossedSwordsIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={CROSSED_SWORDS_PIXELS} gridW={7} gridH={7} size={size} />;
+  return <PixelGrid pixels={CROSSED_SWORDS_PIXELS} gridW={7} gridH={7} size={size} label="交差した剣" />;
 }
 
 // ============================================================
@@ -127,7 +127,7 @@ const CHEST_PIXELS: PixelDef[] = [
 ];
 
 export function PixelChestIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={CHEST_PIXELS} gridW={7} gridH={5} size={size} />;
+  return <PixelGrid pixels={CHEST_PIXELS} gridW={7} gridH={5} size={size} label="宝箱" />;
 }
 
 // ============================================================
@@ -147,7 +147,7 @@ const CHEST_OPEN_PIXELS: PixelDef[] = [
 ];
 
 export function PixelChestOpenIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={CHEST_OPEN_PIXELS} gridW={7} gridH={6} size={size} />;
+  return <PixelGrid pixels={CHEST_OPEN_PIXELS} gridW={7} gridH={6} size={size} label="開いた宝箱" />;
 }
 
 // ============================================================
@@ -164,7 +164,7 @@ const SHIELD_PIXELS: PixelDef[] = [
 ];
 
 export function PixelShieldIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={SHIELD_PIXELS} gridW={7} gridH={7} size={size} />;
+  return <PixelGrid pixels={SHIELD_PIXELS} gridW={7} gridH={7} size={size} label="盾" />;
 }
 
 // ============================================================
@@ -182,7 +182,7 @@ const MEDAL_PIXELS: PixelDef[] = [
 ];
 
 export function PixelMedalIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={MEDAL_PIXELS} gridW={7} gridH={6} size={size} />;
+  return <PixelGrid pixels={MEDAL_PIXELS} gridW={7} gridH={6} size={size} label="メダル" />;
 }
 
 // ============================================================
@@ -198,7 +198,7 @@ const STAR_PIXELS: PixelDef[] = [
 ];
 
 export function PixelStarIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={STAR_PIXELS} gridW={7} gridH={6} size={size} />;
+  return <PixelGrid pixels={STAR_PIXELS} gridW={7} gridH={6} size={size} label="星" />;
 }
 
 // ============================================================
@@ -229,7 +229,7 @@ const POTION_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPotionIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={POTION_PIXELS} gridW={6} gridH={6} size={size} />;
+  return <PixelGrid pixels={POTION_PIXELS} gridW={6} gridH={6} size={size} label="ポーション" />;
 }
 
 // ============================================================
@@ -244,7 +244,7 @@ const CART_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCartIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CART_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={CART_PIXELS} gridW={5} gridH={5} size={size} label="カート" />;
 }
 
 // ============================================================
@@ -260,7 +260,7 @@ const PIGGY_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPiggyIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={PIGGY_PIXELS} gridW={6} gridH={6} size={size} />;
+  return <PixelGrid pixels={PIGGY_PIXELS} gridW={6} gridH={6} size={size} label="貯金箱" />;
 }
 
 // ============================================================
@@ -276,7 +276,7 @@ const CHART_PIXELS: PixelDef[] = [
 ];
 
 export function PixelChartIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CHART_PIXELS} gridW={5} gridH={6} size={size} />;
+  return <PixelGrid pixels={CHART_PIXELS} gridW={5} gridH={6} size={size} label="グラフ" />;
 }
 
 // ============================================================
@@ -291,7 +291,7 @@ const CHECK_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCheckIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CHECK_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={CHECK_PIXELS} gridW={5} gridH={5} size={size} label="チェック" />;
 }
 
 // ============================================================
@@ -306,7 +306,7 @@ const HOURGLASS_PIXELS: PixelDef[] = [
 ];
 
 export function PixelHourglassIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={HOURGLASS_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={HOURGLASS_PIXELS} gridW={5} gridH={5} size={size} label="砂時計" />;
 }
 
 // ============================================================
@@ -321,7 +321,7 @@ const MAP_PIXELS: PixelDef[] = [
 ];
 
 export function PixelMapIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={MAP_PIXELS} gridW={6} gridH={5} size={size} />;
+  return <PixelGrid pixels={MAP_PIXELS} gridW={6} gridH={5} size={size} label="地図" />;
 }
 
 // ============================================================
@@ -337,7 +337,7 @@ const FLAME_PIXELS: PixelDef[] = [
 ];
 
 export function PixelFlameIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={FLAME_PIXELS} gridW={5} gridH={6} size={size} />;
+  return <PixelGrid pixels={FLAME_PIXELS} gridW={5} gridH={6} size={size} label="炎" />;
 }
 
 // ============================================================
@@ -351,7 +351,7 @@ const LETTER_PIXELS: PixelDef[] = [
 ];
 
 export function PixelLetterIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={LETTER_PIXELS} gridW={6} gridH={4} size={size} />;
+  return <PixelGrid pixels={LETTER_PIXELS} gridW={6} gridH={4} size={size} label="手紙" />;
 }
 
 // ============================================================
@@ -365,7 +365,7 @@ const CROWN_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCrownIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CROWN_PIXELS} gridW={5} gridH={4} size={size} />;
+  return <PixelGrid pixels={CROWN_PIXELS} gridW={5} gridH={4} size={size} label="王冠" />;
 }
 
 // ============================================================
@@ -380,7 +380,7 @@ const CROSS_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCrossIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CROSS_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={CROSS_PIXELS} gridW={5} gridH={5} size={size} label="バツ" />;
 }
 
 // ============================================================
@@ -395,7 +395,7 @@ const TARGET_PIXELS: PixelDef[] = [
 ];
 
 export function PixelTargetIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={TARGET_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={TARGET_PIXELS} gridW={5} gridH={5} size={size} label="的" />;
 }
 
 // ============================================================
@@ -410,7 +410,7 @@ const KEY_PIXELS: PixelDef[] = [
 ];
 
 export function PixelKeyIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={KEY_PIXELS} gridW={6} gridH={5} size={size} />;
+  return <PixelGrid pixels={KEY_PIXELS} gridW={6} gridH={5} size={size} label="鍵" />;
 }
 
 // ============================================================
@@ -425,7 +425,7 @@ const DOOR_PIXELS: PixelDef[] = [
 ];
 
 export function PixelDoorIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={DOOR_PIXELS} gridW={6} gridH={5} size={size} />;
+  return <PixelGrid pixels={DOOR_PIXELS} gridW={6} gridH={5} size={size} label="ドア" />;
 }
 
 // ============================================================
@@ -440,7 +440,7 @@ const CHAT_PIXELS: PixelDef[] = [
 ];
 
 export function PixelChatIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={CHAT_PIXELS} gridW={6} gridH={5} size={size} />;
+  return <PixelGrid pixels={CHAT_PIXELS} gridW={6} gridH={5} size={size} label="チャット" />;
 }
 
 // ============================================================
@@ -455,7 +455,7 @@ const LIGHTBULB_PIXELS: PixelDef[] = [
 ];
 
 export function PixelLightbulbIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={LIGHTBULB_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={LIGHTBULB_PIXELS} gridW={5} gridH={5} size={size} label="ひらめき" />;
 }
 
 // ============================================================
@@ -470,7 +470,7 @@ const PENCIL_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPencilIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={PENCIL_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={PENCIL_PIXELS} gridW={5} gridH={5} size={size} label="鉛筆" />;
 }
 
 // ============================================================
@@ -486,7 +486,7 @@ const TRASH_PIXELS: PixelDef[] = [
 ];
 
 export function PixelTrashIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={TRASH_PIXELS} gridW={5} gridH={6} size={size} />;
+  return <PixelGrid pixels={TRASH_PIXELS} gridW={5} gridH={6} size={size} label="ゴミ箱" />;
 }
 
 // ============================================================
@@ -500,7 +500,7 @@ const PAUSE_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPauseIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={PAUSE_PIXELS} gridW={5} gridH={4} size={size} />;
+  return <PixelGrid pixels={PAUSE_PIXELS} gridW={5} gridH={4} size={size} label="一時停止" />;
 }
 
 // ============================================================
@@ -515,7 +515,7 @@ const PLAY_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPlayIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={PLAY_PIXELS} gridW={4} gridH={5} size={size} />;
+  return <PixelGrid pixels={PLAY_PIXELS} gridW={4} gridH={5} size={size} label="再生" />;
 }
 
 // ============================================================
@@ -530,7 +530,7 @@ const REFRESH_PIXELS: PixelDef[] = [
 ];
 
 export function PixelRefreshIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={REFRESH_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={REFRESH_PIXELS} gridW={5} gridH={5} size={size} label="更新" />;
 }
 
 // ============================================================
@@ -545,7 +545,7 @@ const HOUSE_PIXELS: PixelDef[] = [
 ];
 
 export function PixelHouseIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={HOUSE_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={HOUSE_PIXELS} gridW={5} gridH={5} size={size} label="家" />;
 }
 
 // ============================================================
@@ -560,7 +560,7 @@ const SEEDLING_PIXELS: PixelDef[] = [
 ];
 
 export function PixelSeedlingIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={SEEDLING_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={SEEDLING_PIXELS} gridW={5} gridH={5} size={size} label="芽" />;
 }
 
 // ============================================================
@@ -576,7 +576,7 @@ const TREE_PIXELS: PixelDef[] = [
 ];
 
 export function PixelTreeIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={TREE_PIXELS} gridW={6} gridH={6} size={size} />;
+  return <PixelGrid pixels={TREE_PIXELS} gridW={6} gridH={6} size={size} label="木" />;
 }
 
 // ============================================================
@@ -591,7 +591,7 @@ const GIFT_PIXELS: PixelDef[] = [
 ];
 
 export function PixelGiftIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={GIFT_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={GIFT_PIXELS} gridW={5} gridH={5} size={size} label="プレゼント" />;
 }
 
 // ============================================================
@@ -606,7 +606,7 @@ const CALENDAR_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCalendarIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CALENDAR_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={CALENDAR_PIXELS} gridW={5} gridH={5} size={size} label="カレンダー" />;
 }
 
 // ============================================================
@@ -621,7 +621,7 @@ const PERSON_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPersonIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={PERSON_PIXELS} gridW={4} gridH={5} size={size} />;
+  return <PixelGrid pixels={PERSON_PIXELS} gridW={4} gridH={5} size={size} label="人" />;
 }
 
 // ============================================================
@@ -636,7 +636,7 @@ const WARNING_PIXELS: PixelDef[] = [
 ];
 
 export function PixelWarningIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={WARNING_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={WARNING_PIXELS} gridW={5} gridH={5} size={size} label="警告" />;
 }
 
 // ============================================================
@@ -651,7 +651,7 @@ const BOOK_PIXELS: PixelDef[] = [
 ];
 
 export function PixelBookIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={BOOK_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={BOOK_PIXELS} gridW={5} gridH={5} size={size} label="本" />;
 }
 
 // ============================================================
@@ -666,7 +666,7 @@ const CONFETTI_PIXELS: PixelDef[] = [
 ];
 
 export function PixelConfettiIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CONFETTI_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={CONFETTI_PIXELS} gridW={5} gridH={5} size={size} label="紙吹雪" />;
 }
 
 // ============================================================
@@ -681,7 +681,7 @@ const BAR_CHART_PIXELS: PixelDef[] = [
 ];
 
 export function PixelBarChartIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={BAR_CHART_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={BAR_CHART_PIXELS} gridW={5} gridH={5} size={size} label="棒グラフ" />;
 }
 
 // ============================================================
@@ -697,7 +697,7 @@ const CHART_DOWN_PIXELS: PixelDef[] = [
 ];
 
 export function PixelChartDownIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={CHART_DOWN_PIXELS} gridW={5} gridH={6} size={size} />;
+  return <PixelGrid pixels={CHART_DOWN_PIXELS} gridW={5} gridH={6} size={size} label="下降グラフ" />;
 }
 
 // ============================================================
@@ -712,7 +712,7 @@ const DOG_PIXELS: PixelDef[] = [
 ];
 
 export function PixelDogIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={DOG_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={DOG_PIXELS} gridW={5} gridH={5} size={size} label="犬" />;
 }
 
 // ============================================================
@@ -727,7 +727,7 @@ const CAT_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCatIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={CAT_PIXELS} gridW={3} gridH={5} size={size} />;
+  return <PixelGrid pixels={CAT_PIXELS} gridW={3} gridH={5} size={size} label="猫" />;
 }
 
 // ============================================================
@@ -743,7 +743,7 @@ const BATH_PIXELS: PixelDef[] = [
 ];
 
 export function PixelBathIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={BATH_PIXELS} gridW={6} gridH={6} size={size} />;
+  return <PixelGrid pixels={BATH_PIXELS} gridW={6} gridH={6} size={size} label="お風呂" />;
 }
 
 // ============================================================
@@ -758,7 +758,7 @@ const PLATE_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPlateIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={PLATE_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={PLATE_PIXELS} gridW={5} gridH={5} size={size} label="皿" />;
 }
 
 // ============================================================
@@ -774,7 +774,7 @@ const BROOM_PIXELS: PixelDef[] = [
 ];
 
 export function PixelBroomIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={BROOM_PIXELS} gridW={5} gridH={6} size={size} />;
+  return <PixelGrid pixels={BROOM_PIXELS} gridW={5} gridH={6} size={size} label="ほうき" />;
 }
 
 // ============================================================
@@ -788,7 +788,7 @@ const BED_PIXELS: PixelDef[] = [
 ];
 
 export function PixelBedIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={BED_PIXELS} gridW={5} gridH={4} size={size} />;
+  return <PixelGrid pixels={BED_PIXELS} gridW={5} gridH={4} size={size} label="ベッド" />;
 }
 
 // ============================================================
@@ -802,7 +802,7 @@ const CAR_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCarIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={CAR_PIXELS} gridW={6} gridH={4} size={size} />;
+  return <PixelGrid pixels={CAR_PIXELS} gridW={6} gridH={4} size={size} label="車" />;
 }
 
 // ============================================================
@@ -817,7 +817,7 @@ const SHIRT_PIXELS: PixelDef[] = [
 ];
 
 export function PixelShirtIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={SHIRT_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={SHIRT_PIXELS} gridW={5} gridH={5} size={size} label="シャツ" />;
 }
 
 // ============================================================
@@ -831,7 +831,7 @@ const SHOES_PIXELS: PixelDef[] = [
 ];
 
 export function PixelShoesIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={SHOES_PIXELS} gridW={6} gridH={5} size={size} />;
+  return <PixelGrid pixels={SHOES_PIXELS} gridW={6} gridH={5} size={size} label="靴" />;
 }
 
 // ============================================================
@@ -847,7 +847,7 @@ const FLOWER_PIXELS: PixelDef[] = [
 ];
 
 export function PixelFlowerIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={FLOWER_PIXELS} gridW={5} gridH={6} size={size} />;
+  return <PixelGrid pixels={FLOWER_PIXELS} gridW={5} gridH={6} size={size} label="花" />;
 }
 
 // ============================================================
@@ -862,7 +862,7 @@ const POT_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPotIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={POT_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={POT_PIXELS} gridW={5} gridH={5} size={size} label="鍋" />;
 }
 
 // ============================================================
@@ -877,7 +877,7 @@ const BACKPACK_PIXELS: PixelDef[] = [
 ];
 
 export function PixelBackpackIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={BACKPACK_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={BACKPACK_PIXELS} gridW={5} gridH={5} size={size} label="ランドセル" />;
 }
 
 // ============================================================
@@ -892,7 +892,7 @@ const TOOTHBRUSH_PIXELS: PixelDef[] = [
 ];
 
 export function PixelToothbrushIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={TOOTHBRUSH_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={TOOTHBRUSH_PIXELS} gridW={5} gridH={5} size={size} label="歯ブラシ" />;
 }
 
 // ============================================================
@@ -907,7 +907,7 @@ const TROPHY_PIXELS: PixelDef[] = [
 ];
 
 export function PixelTrophyIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={TROPHY_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={TROPHY_PIXELS} gridW={5} gridH={5} size={size} label="トロフィー" />;
 }
 
 // ============================================================
@@ -922,7 +922,7 @@ const SHOP_PIXELS: PixelDef[] = [
 ];
 
 export function PixelShopIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={SHOP_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={SHOP_PIXELS} gridW={5} gridH={5} size={size} label="ショップ" />;
 }
 
 // ============================================================
@@ -936,7 +936,7 @@ const PAW_PIXELS: PixelDef[] = [
 ];
 
 export function PixelPawIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={PAW_PIXELS} gridW={5} gridH={4} size={size} />;
+  return <PixelGrid pixels={PAW_PIXELS} gridW={5} gridH={4} size={size} label="肉球" />;
 }
 
 // ============================================================
@@ -950,7 +950,7 @@ const LAUNDRY_PIXELS: PixelDef[] = [
 ];
 
 export function PixelLaundryIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={LAUNDRY_PIXELS} gridW={5} gridH={4} size={size} />;
+  return <PixelGrid pixels={LAUNDRY_PIXELS} gridW={5} gridH={4} size={size} label="洗濯物" />;
 }
 
 // ============================================================
@@ -963,7 +963,7 @@ const SPONGE_PIXELS: PixelDef[] = [
 ];
 
 export function PixelSpongeIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={SPONGE_PIXELS} gridW={4} gridH={3} size={size} />;
+  return <PixelGrid pixels={SPONGE_PIXELS} gridW={4} gridH={3} size={size} label="スポンジ" />;
 }
 
 // ============================================================
@@ -979,7 +979,7 @@ const WINDOW_PIXELS: PixelDef[] = [
 ];
 
 export function PixelWindowIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={WINDOW_PIXELS} gridW={5} gridH={6} size={size} />;
+  return <PixelGrid pixels={WINDOW_PIXELS} gridW={5} gridH={6} size={size} label="窓" />;
 }
 
 // ============================================================
@@ -994,7 +994,7 @@ const TOILET_PIXELS: PixelDef[] = [
 ];
 
 export function PixelToiletIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={TOILET_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={TOILET_PIXELS} gridW={5} gridH={5} size={size} label="トイレ" />;
 }
 
 // ============================================================
@@ -1009,7 +1009,7 @@ const FAMILY_PIXELS: PixelDef[] = [
 ];
 
 export function PixelFamilyIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={FAMILY_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={FAMILY_PIXELS} gridW={5} gridH={5} size={size} label="家族" />;
 }
 
 // ============================================================
@@ -1024,7 +1024,7 @@ const RECYCLE_PIXELS: PixelDef[] = [
 ];
 
 export function PixelRecycleIcon({ size = 24 }: { size?: number }) {
-  return <PixelGrid pixels={RECYCLE_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={RECYCLE_PIXELS} gridW={5} gridH={5} size={size} label="リサイクル" />;
 }
 
 // ============================================================
@@ -1041,5 +1041,5 @@ const HEART_PIXELS: PixelDef[] = [
 ];
 
 export function PixelHeartIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={HEART_PIXELS} gridW={7} gridH={6} size={size} />;
+  return <PixelGrid pixels={HEART_PIXELS} gridW={7} gridH={6} size={size} label="ハート" />;
 }
