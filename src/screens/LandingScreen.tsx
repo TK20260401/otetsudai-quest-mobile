@@ -93,7 +93,8 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         <TouchableOpacity onPress={() => setLegalModal("terms")} accessibilityRole="button" accessibilityLabel="利用規約を開く">
           <RubyText style={styles.legalLink} parts={[["利用規約", "りようきやく"]]} rubySize={5} />
         </TouchableOpacity>
-        <Text style={styles.legalSep} accessibilityElementsHidden>|</Text>
+        {/* ルビ有無で波打たないよう、セパレータも RubyText の空ルビ構造で揃える */}
+        <RubyText style={styles.legalSep} parts={["|"]} rubySize={5} />
         <TouchableOpacity onPress={() => setLegalModal("privacy")} accessibilityRole="button" accessibilityLabel="プライバシーポリシーを開く">
           <AutoRubyText text="プライバシーポリシー" style={styles.legalLink} rubySize={5} />
         </TouchableOpacity>

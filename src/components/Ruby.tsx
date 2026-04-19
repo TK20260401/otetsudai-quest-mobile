@@ -73,8 +73,14 @@ export function RubyText({
     <View style={layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <View key={i} style={{ paddingTop: Math.ceil(rubySize * 0.5) }}>
-            <Text style={tight}>{part}</Text>
+          // ルビなしsegmentにも同じ縦構造（透明スペーサー）を与え、ルビ付きと
+          // ベースラインが一致するようにする。以前はpaddingTopで近似していたが
+          // ルビ実体の高さと一致せず、混在時に文字が波打っていた。
+          <View key={i} style={layoutStyles.center}>
+            <Text style={[rs, { opacity: 0 }]} numberOfLines={1}>
+              .
+            </Text>
+            <Text style={[tight, { marginTop: -2 }]}>{part}</Text>
           </View>
         ) : (
           <View key={i} style={layoutStyles.center}>

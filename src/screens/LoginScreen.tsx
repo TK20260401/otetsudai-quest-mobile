@@ -987,11 +987,12 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       </View>
 
       {/* 利用規約・プライバシーポリシー — LandingScreen と同一仕様（アプリ内 LegalModal で表示） */}
+      {/* ルビ有無で波打たないよう、セパレータも RubyText の空ルビ構造で揃える */}
       <View style={styles.legalRow}>
         <TouchableOpacity onPress={() => setLegalModal("terms")} accessibilityRole="button" accessibilityLabel="利用規約を開く">
           <RubyText style={styles.legalLink} parts={[["利用規約", "りようきやく"]]} rubySize={6} />
         </TouchableOpacity>
-        <Text style={styles.legalSep}>|</Text>
+        <RubyText style={styles.legalSep} parts={["|"]} rubySize={6} />
         <TouchableOpacity onPress={() => setLegalModal("privacy")} accessibilityRole="button" accessibilityLabel="プライバシーポリシーを開く">
           <AutoRubyText text="プライバシーポリシー" style={styles.legalLink} rubySize={6} />
         </TouchableOpacity>
@@ -1031,9 +1032,11 @@ function createStyles(p: Palette) {
       backgroundColor: p.surfaceMuted,
     },
     card: {
-      backgroundColor: p.white,
+      backgroundColor: p.surface,
       borderRadius: 16,
       padding: 24,
+      borderWidth: 1,
+      borderColor: `${p.primary}55`,
       shadowColor: p.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
@@ -1082,7 +1085,7 @@ function createStyles(p: Palette) {
       borderRadius: 12,
       padding: 16,
       marginBottom: 8,
-      backgroundColor: p.white,
+      backgroundColor: p.surfaceMuted,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
