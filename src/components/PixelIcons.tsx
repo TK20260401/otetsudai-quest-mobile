@@ -4,11 +4,25 @@ import Svg, { Rect, G } from "react-native-svg";
 /** 1ピクセル = PX pt */
 const PX = 4;
 
+/**
+ * ピクセルアートを潰れさせない最小サイズ下限。
+ * 14px 以下だと anti-alias + 非整数スケーリングで細部が消え、
+ * 何のアイコンか判別できなくなる。
+ */
+const MIN_SIZE = 16;
+
 type PixelDef = [number, number, string]; // [x, y, color]
 
 function PixelGrid({ pixels, gridW, gridH, size }: { pixels: PixelDef[]; gridW: number; gridH: number; size: number }) {
+  // 小さすぎる指定は 16px に底上げして視認性を担保
+  const clamped = Math.max(MIN_SIZE, size);
   return (
-    <Svg width={size} height={size * (gridH / gridW)} viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}>
+    <Svg
+      width={clamped}
+      height={clamped * (gridH / gridW)}
+      viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}
+      shapeRendering="crispEdges"
+    >
       <G>
         {pixels.map(([x, y, color], i) => (
           <Rect key={i} x={x * PX} y={y * PX} width={PX} height={PX} fill={color} />

@@ -102,7 +102,7 @@ export default function ChildCharacterSvg({ gender, size = 48 }: { gender: Child
   const gridW = 6;
   const gridH = 8;
   return (
-    <Svg width={size} height={size * (gridH / gridW)} viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}>
+    <Svg width={size} height={size * (gridH / gridW)} viewBox={`0 0 ${gridW * PX} ${gridH * PX}`} shapeRendering="crispEdges">
       <G>
         {pixels.map(([x, y, color], i) => (
           <Rect key={i} x={x * PX} y={y * PX} width={PX} height={PX} fill={color} />
