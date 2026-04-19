@@ -16,6 +16,7 @@ import type { Task } from "../lib/types";
 import { useAppAlert } from "./AppAlert";
 import { RubyText } from "./Ruby";
 import { PixelCoinIcon } from "./PixelIcons";
+import RubyPlaceholderInput from "./RubyPlaceholderInput";
 
 type Props = {
   visible: boolean;
@@ -105,12 +106,13 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
                 rubySize={5}
                 noWrap
               />
-              <TextInput
+              <RubyPlaceholderInput
                 style={styles.amountInput}
                 value={amount}
                 onChangeText={setAmount}
                 keyboardType="number-pad"
-                placeholder="金額"
+                placeholderParts={[["金額", "きんがく"]]}
+                placeholderRubySize={5}
                 placeholderTextColor={palette.textPlaceholder}
                 textAlign="center"
               />
@@ -122,11 +124,12 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
               />
             </View>
 
-            <TextInput
+            <RubyPlaceholderInput
               style={styles.messageInput}
               value={message}
               onChangeText={setMessage}
-              placeholder="親に一言！（入力しなくてもOK）"
+              placeholderParts={[["親", "おや"], "に", ["一言", "ひとこと"], "！（", ["入力", "にゅうりょく"], "しなくても OK）"]}
+              placeholderRubySize={4}
               placeholderTextColor={palette.textPlaceholder}
               multiline
               maxLength={100}

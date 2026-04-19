@@ -38,6 +38,7 @@ import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
+import RubyPlaceholderInput from "../components/RubyPlaceholderInput";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
 import ChildReactionModal from "../components/ChildReactionModal";
@@ -1396,9 +1397,10 @@ export default function ChildDashboardScreen({
               rubySize={5}
               noWrap
             />
-            <TextInput
+            <RubyPlaceholderInput
               style={styles.proposalInput}
-              placeholder="例: お風呂掃除"
+              placeholderParts={[["例", "れい"], ": お", ["風呂", "ふろ"], ["掃除", "そうじ"]]}
+              placeholderRubySize={4}
               value={proposalTitle}
               onChangeText={setProposalTitle}
               maxLength={30}
@@ -1411,9 +1413,10 @@ export default function ChildDashboardScreen({
               rubySize={5}
               noWrap
             />
-            <TextInput
+            <RubyPlaceholderInput
               style={[styles.proposalInput, { minHeight: 60 }]}
-              placeholder="例: 綺麗にしたいから"
+              placeholderParts={[["例", "れい"], ": ", ["綺麗", "きれい"], "にしたいから"]}
+              placeholderRubySize={4}
               value={proposalReason}
               onChangeText={setProposalReason}
               multiline
@@ -1427,9 +1430,10 @@ export default function ChildDashboardScreen({
               rubySize={5}
               noWrap
             />
-            <TextInput
+            <RubyPlaceholderInput
               style={styles.proposalInput}
-              placeholder="例: 30"
+              placeholderParts={[["例", "れい"], ": 30"]}
+              placeholderRubySize={4}
               value={proposalReward}
               onChangeText={setProposalReward}
               keyboardType="number-pad"
