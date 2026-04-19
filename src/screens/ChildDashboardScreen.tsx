@@ -711,7 +711,7 @@ export default function ChildDashboardScreen({
                     </View>
                   )}
                   <View style={styles.flex1}>
-                    <Text style={styles.stampNotifTask}>{s.taskTitle}</Text>
+                    <AutoRubyText text={s.taskTitle} style={styles.stampNotifTask} rubySize={5} noWrap />
                     {stampDef && (
                       <Text style={styles.stampNotifLabel}>
                         {stampDef.label}
@@ -1193,7 +1193,7 @@ export default function ChildDashboardScreen({
                     : null;
                   return (
                     <View key={log.id} style={styles.repliedCard}>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelTargetIcon size={14} /><Text style={styles.repliedTaskName}>{log.task?.title}</Text></View>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelTargetIcon size={14} /><AutoRubyText text={log.task?.title ?? ""} style={styles.repliedTaskName} rubySize={5} noWrap /></View>
                       {pStamp && (
                         <Text style={styles.repliedParent}>
                           おや: {pStamp.emoji} {pStamp.label}
@@ -1389,7 +1389,7 @@ export default function ChildDashboardScreen({
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <View style={styles.proposalCard}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={[["自分", "じぶん"], "クエストを", ["提案", "ていあん"]]} rubySize={6} /></View>
-            <AutoRubyText text="親に新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} />
+            <AutoRubyText text="親に新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} noWrap />
 
             <RubyText
               style={styles.proposalLabel}

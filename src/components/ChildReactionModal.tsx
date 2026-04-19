@@ -18,6 +18,7 @@ import { CHILD_STAMPS } from "../lib/child-stamps";
 import { getStampById } from "../lib/stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import { PixelLetterIcon, PixelTargetIcon, PixelCoinIcon } from "./PixelIcons";
+import { AutoRubyText } from "./Ruby";
 import StampSvg from "./StampSvg";
 
 type UnreadLog = {
@@ -111,7 +112,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
           <View style={styles.parentCard}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelTargetIcon size={16} />
-              <Text style={styles.questName}>{log.taskTitle}</Text>
+              <AutoRubyText text={log.taskTitle} style={styles.questName} rubySize={5} noWrap />
             </View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCoinIcon size={16} />

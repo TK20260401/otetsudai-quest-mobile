@@ -133,9 +133,9 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
               style={styles.messageInput}
               value={message}
               onChangeText={setMessage}
-              placeholderParts={[["親", "おや"], "に", ["一言", "ひとこと"], "！（", ["入力", "にゅうりょく"], "しなくても OK）"]}
+              placeholderParts={[["親", "おや"], "に", ["一言", "ひとこと"], "（なくてもOK）"]}
               placeholderRubySize={4}
-              placeholderNoWrap={false}
+              placeholderNoWrap
               placeholderTextColor={palette.textPlaceholder}
               multiline
               maxLength={100}
