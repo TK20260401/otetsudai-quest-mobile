@@ -604,34 +604,6 @@ export default function ChildDashboardScreen({
       </View>
       <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
-      {/* 投資画面への最優先CTA — ScrollView 外の固定位置に配置して
-          スクロール位置に関わらず常時視認可能にする。wallet がまだ
-          undefined でも balance=0 で遷移を許容 */}
-      <AnimatedButton
-        style={styles.investTopCta}
-        onPress={() => {
-          console.log('[nav] Invest (topCta)', { childId, walletId: wallet?.id, investBalance: wallet?.invest_balance });
-          navigation.navigate("Invest", {
-            childId,
-            walletId: wallet?.id ?? "",
-            investBalance: wallet?.invest_balance ?? 0,
-          });
-        }}
-        haptic="medium"
-        accessibilityLabel="とうしがめんへ いく"
-      >
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 }}>
-          <PixelChartIcon size={26} />
-          <RubyText
-            parts={[["株", "かぶ"], "を", ["買", "か"], "いたい！"]}
-            style={styles.investTopCtaText}
-            rubySize={7}
-            noWrap
-          />
-          <PixelChartIcon size={26} />
-        </View>
-      </AnimatedButton>
-
       <ScrollView
         style={styles.scroll}
         refreshControl={
@@ -808,106 +780,88 @@ export default function ChildDashboardScreen({
           </AnimatedButton>
         </View>
 
-        {/* Wallet */}
+        {/* Wallet — 3分割ウォレット（使う/貯める/増やす）を対等な
+            3リンクとして配置。タイトル行・合計は WalletDetail への
+            ヘッダーリンク、各残高セルは個別の遷移先にタップ可能。
+            ヒト中心設計：3機能の等価性とメンタルモデル（3分割）を
+            UI でも担保する。 */}
         {wallet && (
           <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
-            accessibilityLabel="おさいふの くわしい じょうほう"
-            accessibilityRole="button"
-          >
-            <View style={styles.walletTitleRow}>
-              <PixelChestOpenIcon size={24} />
-              <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
-            </View>
-            <Text
-              style={styles.walletTotal}
-              adjustsFontSizeToFit
-              numberOfLines={1}
-              accessibilityLabel={`ごうけい ${((wallet.spending_balance ?? 0) + (wallet.saving_balance ?? 0) + (wallet.invest_balance ?? 0)).toLocaleString()}えん`}
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
+              accessibilityLabel="おさいふの くわしい じょうほう"
+              accessibilityRole="button"
             >
-              {(
-                (wallet.spending_balance ?? 0) +
-                (wallet.saving_balance ?? 0) +
-                (wallet.invest_balance ?? 0)
-              ).toLocaleString()}
-              円
-            </Text>
+              <View style={styles.walletTitleRow}>
+                <PixelChestOpenIcon size={24} />
+                <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
+              </View>
+              <Text
+                style={styles.walletTotal}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                accessibilityLabel={`ごうけい ${((wallet.spending_balance ?? 0) + (wallet.saving_balance ?? 0) + (wallet.invest_balance ?? 0)).toLocaleString()}えん`}
+              >
+                {(
+                  (wallet.spending_balance ?? 0) +
+                  (wallet.saving_balance ?? 0) +
+                  (wallet.invest_balance ?? 0)
+                ).toLocaleString()}
+                円
+              </Text>
+            </TouchableOpacity>
+
             <View style={styles.walletRow}>
-              <View style={[styles.walletItem, { borderColor: palette.walletSpend }]}>
+              <TouchableOpacity
+                style={[styles.walletItem, { borderColor: palette.walletSpend }]}
+                activeOpacity={0.7}
+                onPress={() => {
+                  console.log('[nav] SpendRequest', { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
+                  navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
+                }}
+                accessibilityLabel="つかう画面へ"
+                accessibilityRole="button"
+              >
                 <RubyText style={styles.walletLabel} parts={[["使", "つか"], "う"]} />
                 <Text style={[styles.walletAmount, { color: palette.walletSpend }]}>
                   {(wallet.spending_balance ?? 0).toLocaleString()}
                 </Text>
-              </View>
-              <View style={[styles.walletItem, { borderColor: palette.walletSave }]}>
+                <Text style={[styles.walletTapHint, { color: palette.walletSpend }]}>タップ→</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.walletItem, { borderColor: palette.walletSave }]}
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
+                accessibilityLabel="ためる画面へ"
+                accessibilityRole="button"
+              >
                 <RubyText style={styles.walletLabel} parts={[["貯", "た"], "める"]} />
                 <Text style={[styles.walletAmount, { color: palette.walletSave }]}>
                   {(wallet.saving_balance ?? 0).toLocaleString()}
                 </Text>
-              </View>
-              <View
+                <Text style={[styles.walletTapHint, { color: palette.walletSave }]}>タップ→</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 style={[styles.walletItem, { borderColor: palette.walletInvest }]}
+                activeOpacity={0.7}
+                onPress={() => {
+                  console.log('[nav] Invest', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+                  navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+                }}
+                accessibilityLabel="ふやす画面へ"
+                accessibilityRole="button"
               >
                 <RubyText style={styles.walletLabel} parts={[["増", "ふ"], "やす"]} />
                 <Text style={[styles.walletAmount, { color: palette.walletInvest }]}>
                   {(wallet.invest_balance ?? 0).toLocaleString()}
                 </Text>
-              </View>
+                <Text style={[styles.walletTapHint, { color: palette.walletInvest }]}>タップ→</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          {/* ショートカットは TouchableOpacity 外に配置しないと
-              親の WalletDetail 遷移に吸い上げられ、タップしても
-              何も起きないように見える（実際は別画面に飛んでしまう） */}
-          <View style={styles.walletFooter}>
-            <AnimatedButton
-              style={styles.spendShortcut}
-              onPress={() => {
-                console.log('[nav] SpendRequest', { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
-                navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
-              }}
-              haptic="light"
-              accessibilityLabel="つかうリクエスト"
-            >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCartIcon size={18} /><RubyText style={styles.spendShortcutText} parts={[["使", "つか"], "う"]} rubySize={5} /></View>
-            </AnimatedButton>
-            <AnimatedButton
-              style={styles.investShortcut}
-              onPress={() => {
-                console.log('[nav] Invest', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-                navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-              }}
-              haptic="light"
-              accessibilityLabel="とうしがめん"
-            >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChartIcon size={18} /><RubyText style={styles.investShortcutText} parts={[["増", "ふ"], "やす"]} rubySize={5} /></View>
-            </AnimatedButton>
-          </View>
           </RpgCard>
-        )}
-
-        {/* 投資への独立CTA — wallet カードより上に大きく配置、
-            スクロールしなくても視認できる明示的な動線 */}
-        {wallet && (
-          <AnimatedButton
-            style={styles.investMainCta}
-            onPress={() => {
-              console.log('[nav] Invest (mainCta)', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-              navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-            }}
-            haptic="light"
-            accessibilityLabel="とうしがめんへ いく"
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <PixelChartIcon size={22} />
-              <RubyText
-                parts={[["株", "かぶ"], "を", ["買", "か"], "いたい！"]}
-                style={styles.investMainCtaText}
-                rubySize={6}
-              />
-            </View>
-          </AnimatedButton>
         )}
 
         {/* つかうリクエスト状況 */}
@@ -1674,6 +1628,12 @@ function createStyles(p: Palette) {
   },
   walletLabel: { fontSize: 12, color: p.textMuted, marginBottom: 2, lineHeight: 20 },
   walletAmount: { fontSize: 16, fontWeight: "bold" },
+  walletTapHint: {
+    fontSize: 9,
+    fontWeight: "600" as const,
+    marginTop: 2,
+    opacity: 0.8,
+  },
   walletFooter: {
     flexDirection: "row" as const,
     justifyContent: "space-between" as const,
