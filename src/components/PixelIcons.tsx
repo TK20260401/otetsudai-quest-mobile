@@ -40,7 +40,6 @@ function PixelGrid({
       width={rendered}
       height={rendered * (gridH / gridW)}
       viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}
-      shapeRendering="crispEdges"
       preserveAspectRatio="xMidYMid meet"
       accessible={!!label}
       accessibilityLabel={label}
@@ -55,7 +54,6 @@ function PixelGrid({
             width={PX}
             height={PX}
             fill={color}
-            shapeRendering="crispEdges"
           />
         ))}
       </G>

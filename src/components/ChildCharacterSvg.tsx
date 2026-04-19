@@ -106,7 +106,6 @@ export default function ChildCharacterSvg({ gender, size = 48 }: { gender: Child
       width={size}
       height={size * (gridH / gridW)}
       viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}
-      shapeRendering="crispEdges"
       accessible
       accessibilityRole="image"
       accessibilityLabel={

@@ -753,7 +753,7 @@ function createStyles(p: Palette) {
     },
     amountHint: { fontSize: 10, color: p.textMuted, textAlign: "center", marginTop: 4 },
 
-    errorText: { color: palette.red, fontSize: 13, textAlign: "center", marginTop: 8 },
+    errorText: { color: p.red, fontSize: 13, textAlign: "center", marginTop: 8 },
 
     orderButton: {
       backgroundColor: p.walletInvest,

@@ -111,7 +111,7 @@ export default function PixelHeroSvg({ type, size = 60 }: Props) {
   const vh = gridH * PX;
 
   return (
-    <Svg width={size} height={size} viewBox={`0 0 ${vw} ${vh}`} shapeRendering="crispEdges">
+    <Svg width={size} height={size} viewBox={`0 0 ${vw} ${vh}`}>
       <G>
         {pixels.map(([x, y, color], i) => (
           <Rect

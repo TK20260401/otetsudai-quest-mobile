@@ -14,7 +14,7 @@ type Props = {
 
 function PixelGrid({ pixels, gridW, gridH, size }: { pixels: PixelDef[]; gridW: number; gridH: number; size: number }) {
   return (
-    <Svg width={size} height={size * (gridH / gridW)} viewBox={`0 0 ${gridW * PX} ${gridH * PX}`} shapeRendering="crispEdges">
+    <Svg width={size} height={size * (gridH / gridW)} viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}>
       <G>
         {pixels.map(([x, y, color], i) => (
           <Rect key={i} x={x * PX} y={y * PX} width={PX} height={PX} fill={color} />
@@ -249,7 +249,7 @@ export default function PetSvg({ type, stage, happiness = 100, size = 48 }: Prop
   // 低幸福度でグレーアウト
   const opacity = happiness < 30 ? 0.6 : 1;
   return (
-    <Svg width={size} height={size * (data.gridH / data.gridW)} viewBox={`0 0 ${data.gridW * PX} ${data.gridH * PX}`} opacity={opacity} shapeRendering="crispEdges">
+    <Svg width={size} height={size * (data.gridH / data.gridW)} viewBox={`0 0 ${data.gridW * PX} ${data.gridH * PX}`} opacity={opacity}>
       <G>
         {data.pixels.map(([x, y, color], i) => (
           <Rect key={i} x={x * PX} y={y * PX} width={PX} height={PX} fill={happiness < 30 ? desaturate(color) : color} />
