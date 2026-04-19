@@ -604,119 +604,81 @@ export default function ChildDashboardScreen({
       </View>
       <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
+      {/* ★固定 Quick Nav — 子供が迷わないよう常時表示。スクロールしても
+          消えない3大アクション動線（かいもの／ちょきん／かぶ）。
+          子ども向けに「かぶ」のような具体動詞で表示、大きなアイコン＋
+          大文字ラベルで「これはボタン」と一目でわかる設計。 */}
+      <View style={styles.quickNav}>
+        <TouchableOpacity
+          style={[styles.quickNavBtn, { backgroundColor: palette.walletSpend, shadowColor: palette.walletSpend }]}
+          activeOpacity={0.7}
+          onPress={() => {
+            console.log('[nav] SpendRequest', { childId, walletId: wallet?.id });
+            navigation.navigate("SpendRequest", { childId, walletId: wallet?.id ?? "", spendingBalance: wallet?.spending_balance ?? 0 });
+          }}
+          accessibilityLabel="かいもの画面へ"
+          accessibilityRole="button"
+        >
+          <PixelCartIcon size={28} />
+          <RubyText
+            style={styles.quickNavLabel}
+            parts={[["買", "か"], "いもの"]}
+            rubySize={4}
+            noWrap
+          />
+          <Text style={styles.quickNavBalance}>
+            {(wallet?.spending_balance ?? 0).toLocaleString()}円
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.quickNavBtn, { backgroundColor: palette.walletSave, shadowColor: palette.walletSave }]}
+          activeOpacity={0.7}
+          onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet?.id ?? "" })}
+          accessibilityLabel="ちょきん画面へ"
+          accessibilityRole="button"
+        >
+          <PixelPiggyIcon size={28} />
+          <RubyText
+            style={styles.quickNavLabel}
+            parts={[["貯金", "ちょきん"]]}
+            rubySize={4}
+            noWrap
+          />
+          <Text style={styles.quickNavBalance}>
+            {(wallet?.saving_balance ?? 0).toLocaleString()}円
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.quickNavBtn, { backgroundColor: palette.walletInvest, shadowColor: palette.walletInvest }]}
+          activeOpacity={0.7}
+          onPress={() => {
+            console.log('[nav] Invest', { childId, walletId: wallet?.id });
+            navigation.navigate("Invest", { childId, walletId: wallet?.id ?? "", investBalance: wallet?.invest_balance ?? 0 });
+          }}
+          accessibilityLabel="株を買う画面へ"
+          accessibilityRole="button"
+        >
+          <PixelChartIcon size={28} />
+          <RubyText
+            style={styles.quickNavLabel}
+            parts={[["株", "かぶ"]]}
+            rubySize={4}
+            noWrap
+          />
+          <Text style={styles.quickNavBalance}>
+            {(wallet?.invest_balance ?? 0).toLocaleString()}円
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         style={styles.scroll}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Wallet — 3分割ウォレット（使う/貯める/増やす）を対等な3リンクで配置。
-            株画面への発見性を担保するため ScrollView 最上部に配置する。
-            各セル下部に具体的アクションラベル（買い物 → / 目標 → / 株 →）を
-            併記し、タップ可能性と遷移先を同時に伝える。 */}
-        {wallet && (
-          <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
-              accessibilityLabel="おさいふの くわしい じょうほう"
-              accessibilityRole="button"
-            >
-              <View style={styles.walletTitleRow}>
-                <PixelChestOpenIcon size={24} />
-                <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
-              </View>
-              <Text
-                style={styles.walletTotal}
-                adjustsFontSizeToFit
-                numberOfLines={1}
-                accessibilityLabel={`ごうけい ${((wallet.spending_balance ?? 0) + (wallet.saving_balance ?? 0) + (wallet.invest_balance ?? 0)).toLocaleString()}えん`}
-              >
-                {(
-                  (wallet.spending_balance ?? 0) +
-                  (wallet.saving_balance ?? 0) +
-                  (wallet.invest_balance ?? 0)
-                ).toLocaleString()}
-                円
-              </Text>
-            </TouchableOpacity>
-
-            <View style={styles.walletRow}>
-              <TouchableOpacity
-                style={[styles.walletItem, { borderColor: palette.walletSpend, backgroundColor: `${palette.walletSpend}15` }]}
-                activeOpacity={0.6}
-                onPress={() => {
-                  console.log('[nav] SpendRequest', { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
-                  navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
-                }}
-                accessibilityLabel="買い物する画面へ"
-                accessibilityRole="button"
-              >
-                <View style={styles.walletCellHeader}>
-                  <PixelCartIcon size={14} />
-                  <RubyText style={styles.walletLabel} parts={[["使", "つか"], "う"]} />
-                </View>
-                <Text style={[styles.walletAmount, { color: palette.walletSpend }]}>
-                  {(wallet.spending_balance ?? 0).toLocaleString()}
-                </Text>
-                <RubyText
-                  style={[styles.walletActionText, { color: palette.walletSpend }]}
-                  parts={[["買", "か"], "い", ["物", "もの"], " →"]}
-                  rubySize={4}
-                  noWrap
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.walletItem, { borderColor: palette.walletSave, backgroundColor: `${palette.walletSave}15` }]}
-                activeOpacity={0.6}
-                onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
-                accessibilityLabel="目標を見る画面へ"
-                accessibilityRole="button"
-              >
-                <View style={styles.walletCellHeader}>
-                  <PixelPiggyIcon size={14} />
-                  <RubyText style={styles.walletLabel} parts={[["貯", "た"], "める"]} />
-                </View>
-                <Text style={[styles.walletAmount, { color: palette.walletSave }]}>
-                  {(wallet.saving_balance ?? 0).toLocaleString()}
-                </Text>
-                <RubyText
-                  style={[styles.walletActionText, { color: palette.walletSave }]}
-                  parts={[["目標", "もくひょう"], " →"]}
-                  rubySize={4}
-                  noWrap
-                />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.walletItem, { borderColor: palette.walletInvest, backgroundColor: `${palette.walletInvest}15` }]}
-                activeOpacity={0.6}
-                onPress={() => {
-                  console.log('[nav] Invest', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-                  navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-                }}
-                accessibilityLabel="株を買う画面へ"
-                accessibilityRole="button"
-              >
-                <View style={styles.walletCellHeader}>
-                  <PixelChartIcon size={14} />
-                  <RubyText style={styles.walletLabel} parts={[["増", "ふ"], "やす"]} />
-                </View>
-                <Text style={[styles.walletAmount, { color: palette.walletInvest }]}>
-                  {(wallet.invest_balance ?? 0).toLocaleString()}
-                </Text>
-                <RubyText
-                  style={[styles.walletActionText, { color: palette.walletInvest }]}
-                  parts={[["株", "かぶ"], "を", ["買", "か"], "う →"]}
-                  rubySize={4}
-                  noWrap
-                />
-              </TouchableOpacity>
-            </View>
-          </RpgCard>
-        )}
-
         {/* キャラクター育成 */}
         <RpgCard
           tier="violet"
@@ -1668,6 +1630,45 @@ function createStyles(p: Palette) {
     fontWeight: "700" as const,
     marginTop: 4,
     letterSpacing: 0.3,
+  },
+  // 固定 Quick Nav — 子ども向けの3大アクション動線
+  quickNav: {
+    flexDirection: "row" as const,
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  quickNavBtn: {
+    flex: 1,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    paddingVertical: 12,
+    paddingHorizontal: 6,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.3)",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 6,
+    minHeight: 88,
+  },
+  quickNavLabel: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "800" as const,
+    marginTop: 4,
+    letterSpacing: 0.5,
+    textShadowColor: "rgba(0,0,0,0.4)",
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  quickNavBalance: {
+    color: "#ffffff",
+    fontSize: 11,
+    fontWeight: "700" as const,
+    marginTop: 2,
+    opacity: 0.95,
   },
   walletFooter: {
     flexDirection: "row" as const,
