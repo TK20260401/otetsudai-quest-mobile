@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, type TextStyle } from "react-native";
+import { useTheme } from "../theme";
 
 type Props = {
   kanji: string;
@@ -18,19 +19,24 @@ type Props = {
  * - 全セグメントのベースラインを揃える
  */
 
-/** styleからlineHeightを除去し、fontSizeに近接させる */
-function tightStyle(style: any): TextStyle {
+/**
+ * styleからlineHeightを除去し、fontSizeに近接させる。
+ * color が呼び出し元で未指定の場合は defaultColor（palette.textStrong 相当）を
+ * フォールバックで入れる。ダーク移行時に呼び出し元の color 漏れで背景に沈む
+ * 事故を予防するための防御。
+ */
+function tightStyle(style: any, defaultColor: string): TextStyle {
   const flat = StyleSheet.flatten(style) as TextStyle | undefined;
-  if (!flat) return {};
-  const { lineHeight: _, ...rest } = flat;
-  return { ...rest, includeFontPadding: false } as TextStyle;
+  if (!flat) return { color: defaultColor, includeFontPadding: false } as TextStyle;
+  const { lineHeight: _lh, color: c, ...rest } = flat;
+  return { ...rest, color: c ?? defaultColor, includeFontPadding: false } as TextStyle;
 }
 
-/** ルビテキストのスタイル */
-function rubyStyle(size: number): TextStyle {
+/** ルビテキストのスタイル — palette.textMuted を使いダーク/ライト両対応 */
+function rubyStyle(size: number, color: string): TextStyle {
   return {
     fontSize: size,
-    color: "#64748b",
+    color,
     textAlign: "center",
     marginBottom: -2,
     includeFontPadding: false,
@@ -39,17 +45,20 @@ function rubyStyle(size: number): TextStyle {
 
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
+  const { palette } = useTheme();
+  const baseColor = palette.textStrong;
+  const rubyColor = palette.textMuted;
   return (
     <View style={layoutStyles.center}>
       <Text
-        style={rubyStyle(rubySize)}
+        style={rubyStyle(rubySize, rubyColor)}
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.6}
       >
         {ruby}
       </Text>
-      <Text style={[tightStyle(style), { marginTop: -2 }]}>{kanji}</Text>
+      <Text style={[tightStyle(style, baseColor), { marginTop: -2 }]}>{kanji}</Text>
     </View>
   );
 }
@@ -67,8 +76,9 @@ export function RubyText({
   style?: any;
   rubySize?: number;
 }) {
-  const tight = tightStyle(style);
-  const rs = rubyStyle(rubySize);
+  const { palette } = useTheme();
+  const tight = tightStyle(style, palette.textStrong);
+  const rs = rubyStyle(rubySize, palette.textMuted);
   return (
     <View style={layoutStyles.textRow}>
       {parts.map((part, i) =>
