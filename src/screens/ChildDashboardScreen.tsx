@@ -1020,7 +1020,7 @@ export default function ChildDashboardScreen({
               <View style={styles.emptySpecialCard}>
                 <PixelStarIcon size={32} />
                 <AutoRubyText text="今はお休み中" style={[styles.emptyHint, { fontWeight: "bold", fontSize: 13 }]} rubySize={4} />
-                <AutoRubyText text="次の特別クエストをお楽しみに！" style={styles.emptyHint} rubySize={4} />
+                <AutoRubyText text="次の特別クエストをお楽しみに！" style={styles.emptyHint} rubySize={4} noWrap />
               </View>
             )}
 
@@ -1402,7 +1402,7 @@ function createStyles(p: Palette) {
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderBottomWidth: 1,
     borderBottomColor: p.border,
   },
@@ -1509,7 +1509,7 @@ function createStyles(p: Palette) {
 
   // Wallet
   walletCard: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     margin: 12,
     marginBottom: 0,
     padding: 16,
@@ -1633,7 +1633,7 @@ function createStyles(p: Palette) {
   stampNotif: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 10,
     padding: 10,
     marginBottom: 6,
@@ -1651,7 +1651,7 @@ function createStyles(p: Palette) {
   stampNotifMsg: { fontSize: 13, color: p.primaryDark, marginTop: 2 },
 
   badgeCard: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     margin: 12,
     marginBottom: 0,
     padding: 16,
@@ -1823,7 +1823,7 @@ function createStyles(p: Palette) {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     padding: 14,
     borderRadius: 12,
     marginBottom: 8,
@@ -1882,7 +1882,7 @@ function createStyles(p: Palette) {
   historyItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     padding: 12,
     borderRadius: 10,
     marginBottom: 6,
@@ -1901,7 +1901,7 @@ function createStyles(p: Palette) {
   },
   emptyCard: {
     alignItems: "center" as const,
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 12,
     padding: 24,
     marginBottom: 8,
@@ -1970,7 +1970,7 @@ function createStyles(p: Palette) {
     marginBottom: 8,
   },
   repliedCard: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 10,
     padding: 12,
     marginBottom: 6,
@@ -2080,7 +2080,7 @@ function createStyles(p: Palette) {
     padding: 20,
   },
   proposalCard: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 16,
     padding: 20,
   },

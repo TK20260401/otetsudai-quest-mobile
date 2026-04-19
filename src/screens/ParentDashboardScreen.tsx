@@ -1695,7 +1695,7 @@ function createStyles(p: Palette) {
     alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderBottomWidth: 1,
     borderBottomColor: p.border,
   },
@@ -2031,7 +2031,7 @@ function createStyles(p: Palette) {
     padding: 20,
   },
   modalContent: {
-    backgroundColor: p.white,
+    backgroundColor: p.surface,
     borderRadius: 16,
     padding: 20,
   },

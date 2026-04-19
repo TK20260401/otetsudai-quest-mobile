@@ -134,7 +134,7 @@ function createStyles(p: Palette, width: number) {
       padding: 32,
     },
     card: {
-      backgroundColor: p.white,
+      backgroundColor: p.surface,
       borderRadius: 16,
       padding: 24,
       width: Math.min(width - 64, 340),

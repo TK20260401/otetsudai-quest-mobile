@@ -71,16 +71,19 @@ export function RubyText({
   parts,
   style,
   rubySize = 8,
+  noWrap = false,
 }: {
   parts: (string | [string, string])[];
   style?: any;
   rubySize?: number;
+  /** true にすると flexWrap を無効化し、単一行に収める（はみ出し要素は切り詰め） */
+  noWrap?: boolean;
 }) {
   const { palette } = useTheme();
   const tight = tightStyle(style, palette.textStrong);
   const rs = rubyStyle(rubySize, palette.textMuted);
   return (
-    <View style={layoutStyles.textRow}>
+    <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
           // ルビなしsegmentにも同じ縦構造（透明スペーサー）を与え、ルビ付きと
@@ -230,10 +233,12 @@ export function AutoRubyText({
   text,
   style,
   rubySize = 8,
+  noWrap = false,
 }: {
   text: string;
   style?: any;
   rubySize?: number;
+  noWrap?: boolean;
 }) {
   if (!text) return null;
   const parts: (string | [string, string])[] = [];
@@ -269,7 +274,7 @@ export function AutoRubyText({
       remaining = remaining.slice(1);
     }
   }
-  return <RubyText parts={parts} style={style} rubySize={rubySize} />;
+  return <RubyText parts={parts} style={style} rubySize={rubySize} noWrap={noWrap} />;
 }
 
 const layoutStyles = StyleSheet.create({
@@ -277,6 +282,12 @@ const layoutStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-end",
     flexWrap: "wrap",
+  },
+  textRowNoWrap: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    flexWrap: "nowrap",
+    flexShrink: 1,
   },
   center: {
     alignItems: "center",

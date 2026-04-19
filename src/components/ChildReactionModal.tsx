@@ -271,7 +271,7 @@ function createStyles(p: Palette) {
       color: p.textStrong,
     },
     parentMsgBubble: {
-      backgroundColor: p.white,
+      backgroundColor: p.surface,
       borderRadius: 12,
       padding: 12,
       width: "100%",
@@ -303,7 +303,7 @@ function createStyles(p: Palette) {
     },
     stampItem: {
       alignItems: "center",
-      backgroundColor: p.white,
+      backgroundColor: p.surface,
       borderRadius: 12,
       padding: 10,
       borderWidth: 2,

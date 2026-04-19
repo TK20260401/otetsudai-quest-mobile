@@ -148,7 +148,7 @@ function createStyles(p: Palette) {
       padding: 20,
     },
     card: {
-      backgroundColor: p.white,
+      backgroundColor: p.surface,
       borderRadius: 16,
       padding: 20,
     },
