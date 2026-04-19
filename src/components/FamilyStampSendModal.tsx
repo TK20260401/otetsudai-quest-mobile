@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
+import { RubyText } from "./Ruby";
 import { rf } from "../lib/responsive";
 import { FAMILY_STAMPS } from "../lib/family-stamps";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
@@ -105,7 +106,7 @@ export default function FamilyStampSendModal({
             >
               {/* ヘッダー */}
               <View style={styles.headerRow}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><PixelLetterIcon size={20} /><Text style={styles.header}>エールを おくる</Text></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><PixelLetterIcon size={20} /><RubyText style={styles.header} parts={["エールを", ["送", "おく"], "る"]} rubySize={6} /></View>
                 <TouchableOpacity
                   onPress={handleClose}
                   style={styles.closeBtn}
@@ -210,7 +211,7 @@ export default function FamilyStampSendModal({
                 ) : (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                     <PixelLetterIcon size={20} />
-                    <Text style={styles.sendText}>エールを おくる！</Text>
+                    <RubyText style={styles.sendText} parts={["エールを", ["送", "おく"], "る！"]} rubySize={5} />
                   </View>
                 )}
               </TouchableOpacity>

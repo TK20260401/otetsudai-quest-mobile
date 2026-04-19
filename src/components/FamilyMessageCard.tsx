@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getFamilyStampById } from "../lib/family-stamps";
-import { AutoRubyText } from "./Ruby";
+import { AutoRubyText, RubyStr } from "./Ruby";
 import type { FamilyMessage } from "../lib/types";
 import { PixelChatIcon } from "./PixelIcons";
 import StampSvg from "./StampSvg";
@@ -13,15 +13,19 @@ type Props = {
   currentUserId: string;
 };
 
+/**
+ * 相対時刻をルビマーカー記法で返す。呼び出し側で <RubyStr text={...} />
+ * で描画すれば漢字＋ふりがな表示になる。
+ */
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
   if (mins < 1) return "たったいま";
-  if (mins < 60) return `${mins}ふんまえ`;
+  if (mins < 60) return `${mins}[分|ふん][前|まえ]`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}じかんまえ`;
+  if (hours < 24) return `${hours}[時間|じかん][前|まえ]`;
   const days = Math.floor(hours / 24);
-  return `${days}にちまえ`;
+  return `${days}[日|にち][前|まえ]`;
 }
 
 export default function FamilyMessageCard({ messages, currentUserId }: Props) {
@@ -89,7 +93,7 @@ export default function FamilyMessageCard({ messages, currentUserId }: Props) {
               </View>
 
               {/* 時間 */}
-              <Text style={styles.timeText}>{timeAgo(msg.created_at)}</Text>
+              <RubyStr text={timeAgo(msg.created_at)} style={styles.timeText} rubySize={4} />
             </View>
           </View>
         );

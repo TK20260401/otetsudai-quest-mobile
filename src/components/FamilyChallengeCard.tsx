@@ -4,7 +4,7 @@ import Svg, { Rect, Circle, Ellipse, Path, G, Defs, LinearGradient, RadialGradie
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
-import { AutoRubyText } from "./Ruby";
+import { AutoRubyText, RubyText } from "./Ruby";
 import type { FamilyChallenge, User } from "../lib/types";
 import { PixelCrownIcon, PixelGiftIcon, PixelConfettiIcon } from "./PixelIcons";
 
@@ -83,9 +83,13 @@ export default function FamilyChallengeCard({
     <View style={[styles.container, isComplete && styles.containerComplete]}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
         <PixelCrownIcon size={20} />
-        <AutoRubyText
-          text={isComplete ? "かぞくチャレンジ たっせい！" : "かぞくチャレンジ"}
+        <RubyText
           style={styles.header}
+          parts={
+            isComplete
+              ? [["家族", "かぞく"], "チャレンジ ", ["達成", "たっせい"], "！"]
+              : [["家族", "かぞく"], "チャレンジ"]
+          }
           rubySize={6}
         />
       </View>
@@ -93,9 +97,17 @@ export default function FamilyChallengeCard({
       {/* ボスモンスター */}
       <View style={{ alignItems: "center", marginVertical: 8 }}>
         <PixelBossMonster defeated={isComplete} size={64} />
-        <Text style={{ fontSize: 10, color: isComplete ? "#4CAF50" : "#C0392B", fontWeight: "bold", marginTop: 2 }}>
-          {isComplete ? "たおした！" : `HP: ${remaining}/${challenge.target_quests}`}
-        </Text>
+        {isComplete ? (
+          <RubyText
+            style={{ fontSize: 10, color: "#4CAF50", fontWeight: "bold", marginTop: 2 }}
+            parts={[["倒", "たお"], "した！"]}
+            rubySize={5}
+          />
+        ) : (
+          <Text style={{ fontSize: 10, color: "#C0392B", fontWeight: "bold", marginTop: 2 }}>
+            HP: {remaining}/{challenge.target_quests}
+          </Text>
+        )}
       </View>
 
       <Text style={styles.title}>「{challenge.title}」</Text>
@@ -128,9 +140,15 @@ export default function FamilyChallengeCard({
 
       {/* 合計進捗バー */}
       <View style={styles.totalSection}>
-        <Text style={styles.totalText}>
-          かぞく ごうけい: {totalCount}/{challenge.target_quests} クエスト
-        </Text>
+        <RubyText
+          style={styles.totalText}
+          parts={[
+            ["家族", "かぞく"],
+            ["合計", "ごうけい"],
+            `: ${totalCount}/${challenge.target_quests} クエスト`,
+          ]}
+          rubySize={5}
+        />
         <View style={styles.totalBarBg}>
           <View
             style={[
@@ -149,16 +167,36 @@ export default function FamilyChallengeCard({
       <View style={styles.footer}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
           <PixelGiftIcon size={16} />
-          <Text style={styles.bonusText}>たっせいボーナス: みんなに {challenge.bonus_amount}えん！</Text>
+          <RubyText
+            style={styles.bonusText}
+            parts={[["達成", "たっせい"], `ボーナス: みんなに ${challenge.bonus_amount}`, ["円", "えん"], "！"]}
+            rubySize={5}
+            noWrap
+          />
         </View>
         {!isComplete && isActive && (
-          <Text style={styles.remainText}>
-            あと {remaining}クエスト！ のこり{daysLeft}にち がんばろう！
-          </Text>
+          <RubyText
+            style={styles.remainText}
+            parts={[
+              `あと ${remaining}クエスト！ `,
+              ["残", "のこ"],
+              `り${daysLeft}`,
+              ["日", "にち"],
+              " ",
+              ["頑張", "がんば"],
+              "ろう！",
+            ]}
+            rubySize={5}
+            noWrap
+          />
         )}
         {isComplete && (
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-            <Text style={styles.completeText}>みんなで たっせいした！ おめでとう！</Text>
+            <RubyText
+              style={styles.completeText}
+              parts={["みんなで ", ["達成", "たっせい"], "した！ おめでとう！"]}
+              rubySize={5}
+            />
             <PixelConfettiIcon size={16} />
           </View>
         )}

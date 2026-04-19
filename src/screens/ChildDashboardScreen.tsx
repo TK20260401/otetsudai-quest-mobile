@@ -574,7 +574,11 @@ export default function ChildDashboardScreen({
       <View style={styles.center}>
         <PixelCrossedSwordsIcon size={40} />
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={styles.loadingText}>ぼうけんの じゅんび ちゅう...</Text>
+        <RubyText
+          style={styles.loadingText}
+          parts={[["冒険", "ぼうけん"], "の", ["準備", "じゅんび"], "ちゅう..."]}
+          rubySize={6}
+        />
       </View>
     );
   }
@@ -770,7 +774,7 @@ export default function ChildDashboardScreen({
             style={styles.stampRelayBtn}
             accessibilityLabel="かぞくに エールを おくる"
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><Text style={styles.stampRelayBtnText}>エールを おくる</Text></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={["エールを", ["送", "おく"], "る"]} rubySize={5} /></View>
           </AnimatedButton>
         </View>
 
@@ -836,7 +840,7 @@ export default function ChildDashboardScreen({
               haptic="light"
               accessibilityLabel="つかうリクエスト"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCartIcon size={18} /><Text style={styles.spendShortcutText}>つかう</Text></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCartIcon size={18} /><RubyText style={styles.spendShortcutText} parts={[["使", "つか"], "う"]} rubySize={5} /></View>
             </AnimatedButton>
             <AnimatedButton
               style={styles.investShortcut}
@@ -847,7 +851,7 @@ export default function ChildDashboardScreen({
               haptic="light"
               accessibilityLabel="とうしがめん"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChartIcon size={18} /><Text style={styles.investShortcutText}>ふやす</Text></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChartIcon size={18} /><RubyText style={styles.investShortcutText} parts={[["増", "ふ"], "やす"]} rubySize={5} /></View>
             </AnimatedButton>
           </View>
           </RpgCard>
@@ -1143,7 +1147,7 @@ export default function ChildDashboardScreen({
               onPress={() => setProposalVisible(true)}
               accessibilityLabel="じぶんクエストを提案する"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><Text style={styles.proposalButtonText}>じぶんクエストを提案する</Text></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={[["自分", "じぶん"], "クエストを", ["提案", "ていあん"], "する"]} rubySize={5} /></View>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1362,7 +1366,7 @@ export default function ChildDashboardScreen({
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <View style={styles.proposalCard}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><Text style={styles.proposalModalTitle}>じぶんクエストを提案</Text></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={[["自分", "じぶん"], "クエストを", ["提案", "ていあん"]]} rubySize={6} /></View>
             <AutoRubyText text="親に新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} />
 
             <Text style={styles.proposalLabel}>クエストの名前</Text>
