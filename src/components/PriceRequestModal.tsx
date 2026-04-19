@@ -122,7 +122,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
               style={styles.messageInput}
               value={message}
               onChangeText={setMessage}
-              placeholder="親にひとこと！（入力しなくてもOK）"
+              placeholder="親に一言！（入力しなくてもOK）"
               placeholderTextColor={palette.textPlaceholder}
               multiline
               maxLength={100}
@@ -133,7 +133,12 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
 
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-                <Text style={styles.cancelText}>やめる</Text>
+                <RubyText
+                  style={styles.cancelText}
+                  parts={[["止", "や"], "める"]}
+                  rubySize={5}
+                  noWrap
+                />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.sendButton, sending && { opacity: 0.5 }]}
@@ -148,7 +153,13 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
                     noWrap
                   />
                 ) : (
-                  <Text style={styles.sendText}>📩 リクエスト！</Text>
+                  <Text
+                    style={styles.sendText}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                  >
+                    📩 リクエスト！
+                  </Text>
                 )}
               </TouchableOpacity>
             </View>
