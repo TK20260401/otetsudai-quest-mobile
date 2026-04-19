@@ -944,9 +944,14 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 style={styles.selectButton}
                 onPress={() => handleUserSelect(m)}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
                   <ChildCharacterSvg gender={resolveChildGender(m.icon)} size={36} />
-                  <Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit>
+                  <Text
+                    style={styles.selectText}
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.7}
+                  >
                     {m.name}
                   </Text>
                 </View>
@@ -1098,7 +1103,8 @@ function createStyles(p: Palette) {
     roleText: {
       fontSize: rf(12),
       color: p.textMuted,
-      marginLeft: 4,
+      marginLeft: 8,
+      flexShrink: 0,
     },
     pinInput: {
       borderWidth: 2,
