@@ -14,7 +14,7 @@ import { rf } from "../lib/responsive";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task } from "../lib/types";
 import { useAppAlert } from "./AppAlert";
-import { RubyText } from "./Ruby";
+import { RubyText, AutoRubyText } from "./Ruby";
 import { PixelCoinIcon } from "./PixelIcons";
 import RubyPlaceholderInput from "./RubyPlaceholderInput";
 
@@ -78,7 +78,12 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
                 noWrap
               />
             </View>
-            <Text style={styles.taskName} numberOfLines={1} adjustsFontSizeToFit>{task.title}</Text>
+            <AutoRubyText
+              text={task.title}
+              style={styles.taskName}
+              rubySize={5}
+              noWrap
+            />
 
             <View style={styles.currentRow}>
               <RubyText
@@ -130,6 +135,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
               onChangeText={setMessage}
               placeholderParts={[["親", "おや"], "に", ["一言", "ひとこと"], "！（", ["入力", "にゅうりょく"], "しなくても OK）"]}
               placeholderRubySize={4}
+              placeholderNoWrap={false}
               placeholderTextColor={palette.textPlaceholder}
               multiline
               maxLength={100}

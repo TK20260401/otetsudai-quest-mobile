@@ -15,6 +15,9 @@ type Props = Omit<TextInputProps, "placeholder"> & {
   placeholderRubySize?: number;
   /** オーバーレイのインセット。TextInput の padding に合わせる */
   placeholderInset?: { top?: number; left?: number; right?: number };
+  /** true の場合は placeholder を 1 行に強制（既定）。
+   * 長い placeholder で複数行 TextInput に合わせて折り返したい時は false */
+  placeholderNoWrap?: boolean;
   containerStyle?: ViewStyle;
 };
 
@@ -28,6 +31,7 @@ export default function RubyPlaceholderInput({
   placeholderParts,
   placeholderRubySize = 4,
   placeholderInset = { top: 14, left: 14, right: 14 },
+  placeholderNoWrap = true,
   containerStyle,
   value,
   style,
@@ -56,7 +60,7 @@ export default function RubyPlaceholderInput({
             parts={placeholderParts}
             rubySize={placeholderRubySize}
             style={styles.placeholderText}
-            noWrap
+            noWrap={placeholderNoWrap}
           />
         </View>
       ) : null}
