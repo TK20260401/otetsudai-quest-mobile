@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   ScrollView,
-  Linking,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -23,6 +22,8 @@ import PixelHeroSvg from "../components/PixelHeroSvg";
 import { PixelKeyIcon, PixelScrollIcon, PixelHouseIcon, PixelTrashIcon, PixelPencilIcon, PixelDoorIcon, PixelCheckIcon, PixelPersonIcon, PixelFamilyIcon } from "../components/PixelIcons";
 import ChildCharacterSvg, { resolveChildGender, type ChildGender } from "../components/ChildCharacterSvg";
 import RpgButton from "../components/RpgButton";
+import LegalModal from "../components/LegalModal";
+import { TERMS, PRIVACY } from "../lib/legal-texts";
 
 type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
 
@@ -42,6 +43,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [legalModal, setLegalModal] = useState<"terms" | "privacy" | null>(null);
 
   // Admin login
   const [adminEmail, setAdminEmail] = useState("");
@@ -984,17 +986,32 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         )}
       </View>
 
-      {/* 利用規約・プライバシーポリシー */}
+      {/* 利用規約・プライバシーポリシー — LandingScreen と同一仕様（アプリ内 LegalModal で表示） */}
       <View style={styles.legalRow}>
-        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/terms")}>
+        <TouchableOpacity onPress={() => setLegalModal("terms")} accessibilityRole="button" accessibilityLabel="利用規約を開く">
           <RubyText style={styles.legalLink} parts={[["利用規約", "りようきやく"]]} rubySize={6} />
         </TouchableOpacity>
         <Text style={styles.legalSep}>|</Text>
-        <TouchableOpacity onPress={() => Linking.openURL("https://otetsudai-bank-beta.vercel.app/privacy")}>
+        <TouchableOpacity onPress={() => setLegalModal("privacy")} accessibilityRole="button" accessibilityLabel="プライバシーポリシーを開く">
           <AutoRubyText text="プライバシーポリシー" style={styles.legalLink} rubySize={6} />
         </TouchableOpacity>
       </View>
     </ScrollView>
+
+    <LegalModal
+      visible={legalModal === "terms"}
+      onClose={() => setLegalModal(null)}
+      title={TERMS.title}
+      updated={TERMS.updated}
+      sections={TERMS.sections}
+    />
+    <LegalModal
+      visible={legalModal === "privacy"}
+      onClose={() => setLegalModal(null)}
+      title={PRIVACY.title}
+      updated={PRIVACY.updated}
+      sections={PRIVACY.sections}
+    />
     </KeyboardAvoidingView>
   );
 }
