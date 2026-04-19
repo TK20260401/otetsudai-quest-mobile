@@ -891,6 +891,22 @@ export default function ChildDashboardScreen({
           </RpgCard>
         </TouchableOpacity>
 
+        {/* 画面タイトル — 子供名＋現在画面を明示 */}
+        <View style={styles.screenTitleBar} accessibilityRole="header">
+          <View style={styles.screenTitleAccent} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.screenTitleText} numberOfLines={1}>
+              {childName}
+              {tab === "quests" ? " のクエスト" : " のりれき"}
+            </Text>
+            <Text style={styles.screenTitleSub} numberOfLines={1}>
+              {tab === "quests"
+                ? "いまやるクエストをえらぼう"
+                : "これまでクリアしたクエスト"}
+            </Text>
+          </View>
+        </View>
+
         {/* Tabs */}
         <View style={styles.tabRow} accessibilityRole="tabbar">
           <TouchableOpacity
@@ -1689,9 +1705,41 @@ function createStyles(p: Palette) {
     borderRadius: 8,
     alignItems: "center",
   },
-  tabActive: { backgroundColor: p.white },
+  tabActive: { backgroundColor: p.primary },
   tabText: { fontSize: 14, color: p.textMuted },
-  tabTextActive: { color: p.textStrong, fontWeight: "bold" },
+  tabTextActive: { color: p.black, fontWeight: "bold" },
+
+  // Screen title bar — 子供名＋現在画面を明示
+  screenTitleBar: {
+    marginHorizontal: 12,
+    marginBottom: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: p.surface,
+    borderWidth: 1,
+    borderColor: `${p.primary}66`,
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 8,
+  },
+  screenTitleAccent: {
+    width: 4,
+    height: 20,
+    backgroundColor: p.primary,
+    borderRadius: 2,
+  },
+  screenTitleText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "800" as const,
+    color: p.textStrong,
+    letterSpacing: 0.5,
+  },
+  screenTitleSub: {
+    fontSize: 11,
+    color: p.textMuted,
+  },
 
   // Quests
   section: { margin: 12, marginBottom: 0 },

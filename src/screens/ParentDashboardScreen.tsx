@@ -644,6 +644,28 @@ export default function ParentDashboardScreen({
         />
       </View>
 
+      {/* 画面タイトル — 現在どの画面にいるかを明示 */}
+      <View style={styles.screenTitleBar} accessibilityRole="header">
+        <View style={styles.screenTitleAccent} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.screenTitleText} numberOfLines={1}>
+            {tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "家族メンバー"}
+          </Text>
+          <Text style={styles.screenTitleSub} numberOfLines={1}>
+            {tab === "approve"
+              ? "子どものクエストを確認・承認する"
+              : tab === "tasks"
+              ? "クエストの追加・編集・割当"
+              : "子どもと家族メンバーの管理"}
+          </Text>
+        </View>
+        {tab === "approve" && pendingCount > 0 ? (
+          <View style={styles.screenTitleBadge}>
+            <Text style={styles.screenTitleBadgeText}>{pendingCount}</Text>
+          </View>
+        ) : null}
+      </View>
+
       {/* Tabs */}
       <View style={styles.tabRow} accessibilityRole="tabbar">
         <TouchableOpacity
@@ -1705,9 +1727,55 @@ function createStyles(p: Palette) {
     borderRadius: 8,
     alignItems: "center",
   },
-  tabActive: { backgroundColor: p.white },
+  tabActive: { backgroundColor: p.primary },
   tabText: { fontSize: 12, color: p.textMuted },
-  tabTextActive: { color: p.textStrong, fontWeight: "bold" },
+  tabTextActive: { color: p.black, fontWeight: "bold" },
+
+  // Screen title bar — 現在どの画面にいるか明示（色の都合で見えない問題への対応）
+  screenTitleBar: {
+    marginHorizontal: 12,
+    marginBottom: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: p.surface,
+    borderWidth: 1,
+    borderColor: `${p.primary}66`,
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 8,
+  },
+  screenTitleAccent: {
+    width: 4,
+    height: 20,
+    backgroundColor: p.primary,
+    borderRadius: 2,
+  },
+  screenTitleText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "800" as const,
+    color: p.textStrong,
+    letterSpacing: 0.5,
+  },
+  screenTitleSub: {
+    fontSize: 11,
+    color: p.textMuted,
+  },
+  screenTitleBadge: {
+    backgroundColor: p.red,
+    borderRadius: 10,
+    minWidth: 24,
+    height: 22,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    paddingHorizontal: 6,
+  },
+  screenTitleBadgeText: {
+    fontSize: 12,
+    fontWeight: "700" as const,
+    color: "#ffffff",
+  },
   badge: {
     backgroundColor: p.red,
     borderRadius: 10,
