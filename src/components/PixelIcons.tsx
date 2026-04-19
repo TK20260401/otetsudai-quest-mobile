@@ -6,26 +6,40 @@ const PX = 4;
 
 /**
  * ピクセルアートを潰れさせない最小サイズ下限。
- * 14px 以下だと anti-alias + 非整数スケーリングで細部が消え、
+ * 5x5 グリッドのアイコン（犬・花・本等）が判別可能になるには
+ * 1セル最低 4px 必要 → 5 * 4 = 20px が下限。
+ * 20px 以下だと anti-alias + 非整数スケーリングで細部が消え、
  * 何のアイコンか判別できなくなる。
  */
-const MIN_SIZE = 16;
+const MIN_SIZE = 20;
 
 type PixelDef = [number, number, string]; // [x, y, color]
 
 function PixelGrid({ pixels, gridW, gridH, size }: { pixels: PixelDef[]; gridW: number; gridH: number; size: number }) {
-  // 小さすぎる指定は 16px に底上げして視認性を担保
-  const clamped = Math.max(MIN_SIZE, size);
+  // 小さすぎる指定は 20px に底上げして視認性を担保。
+  // また「1セル = 整数px」になるよう丸めて、非整数スケーリングでの
+  // サブピクセル滲みを防ぐ（cellSize は 4 以上を保証）。
+  const cellSize = Math.max(4, Math.ceil(Math.max(MIN_SIZE, size) / gridW));
+  const rendered = cellSize * gridW;
   return (
     <Svg
-      width={clamped}
-      height={clamped * (gridH / gridW)}
+      width={rendered}
+      height={rendered * (gridH / gridW)}
       viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}
       shapeRendering="crispEdges"
+      preserveAspectRatio="xMidYMid meet"
     >
       <G>
         {pixels.map(([x, y, color], i) => (
-          <Rect key={i} x={x * PX} y={y * PX} width={PX} height={PX} fill={color} />
+          <Rect
+            key={i}
+            x={x * PX}
+            y={y * PX}
+            width={PX}
+            height={PX}
+            fill={color}
+            shapeRendering="crispEdges"
+          />
         ))}
       </G>
     </Svg>
