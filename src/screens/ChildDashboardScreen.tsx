@@ -610,6 +610,113 @@ export default function ChildDashboardScreen({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* Wallet — 3分割ウォレット（使う/貯める/増やす）を対等な3リンクで配置。
+            株画面への発見性を担保するため ScrollView 最上部に配置する。
+            各セル下部に具体的アクションラベル（買い物 → / 目標 → / 株 →）を
+            併記し、タップ可能性と遷移先を同時に伝える。 */}
+        {wallet && (
+          <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
+              accessibilityLabel="おさいふの くわしい じょうほう"
+              accessibilityRole="button"
+            >
+              <View style={styles.walletTitleRow}>
+                <PixelChestOpenIcon size={24} />
+                <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
+              </View>
+              <Text
+                style={styles.walletTotal}
+                adjustsFontSizeToFit
+                numberOfLines={1}
+                accessibilityLabel={`ごうけい ${((wallet.spending_balance ?? 0) + (wallet.saving_balance ?? 0) + (wallet.invest_balance ?? 0)).toLocaleString()}えん`}
+              >
+                {(
+                  (wallet.spending_balance ?? 0) +
+                  (wallet.saving_balance ?? 0) +
+                  (wallet.invest_balance ?? 0)
+                ).toLocaleString()}
+                円
+              </Text>
+            </TouchableOpacity>
+
+            <View style={styles.walletRow}>
+              <TouchableOpacity
+                style={[styles.walletItem, { borderColor: palette.walletSpend, backgroundColor: `${palette.walletSpend}15` }]}
+                activeOpacity={0.6}
+                onPress={() => {
+                  console.log('[nav] SpendRequest', { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
+                  navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
+                }}
+                accessibilityLabel="買い物する画面へ"
+                accessibilityRole="button"
+              >
+                <View style={styles.walletCellHeader}>
+                  <PixelCartIcon size={14} />
+                  <RubyText style={styles.walletLabel} parts={[["使", "つか"], "う"]} />
+                </View>
+                <Text style={[styles.walletAmount, { color: palette.walletSpend }]}>
+                  {(wallet.spending_balance ?? 0).toLocaleString()}
+                </Text>
+                <RubyText
+                  style={[styles.walletActionText, { color: palette.walletSpend }]}
+                  parts={[["買", "か"], "い", ["物", "もの"], " →"]}
+                  rubySize={4}
+                  noWrap
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.walletItem, { borderColor: palette.walletSave, backgroundColor: `${palette.walletSave}15` }]}
+                activeOpacity={0.6}
+                onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
+                accessibilityLabel="目標を見る画面へ"
+                accessibilityRole="button"
+              >
+                <View style={styles.walletCellHeader}>
+                  <PixelPiggyIcon size={14} />
+                  <RubyText style={styles.walletLabel} parts={[["貯", "た"], "める"]} />
+                </View>
+                <Text style={[styles.walletAmount, { color: palette.walletSave }]}>
+                  {(wallet.saving_balance ?? 0).toLocaleString()}
+                </Text>
+                <RubyText
+                  style={[styles.walletActionText, { color: palette.walletSave }]}
+                  parts={[["目標", "もくひょう"], " →"]}
+                  rubySize={4}
+                  noWrap
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.walletItem, { borderColor: palette.walletInvest, backgroundColor: `${palette.walletInvest}15` }]}
+                activeOpacity={0.6}
+                onPress={() => {
+                  console.log('[nav] Invest', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+                  navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+                }}
+                accessibilityLabel="株を買う画面へ"
+                accessibilityRole="button"
+              >
+                <View style={styles.walletCellHeader}>
+                  <PixelChartIcon size={14} />
+                  <RubyText style={styles.walletLabel} parts={[["増", "ふ"], "やす"]} />
+                </View>
+                <Text style={[styles.walletAmount, { color: palette.walletInvest }]}>
+                  {(wallet.invest_balance ?? 0).toLocaleString()}
+                </Text>
+                <RubyText
+                  style={[styles.walletActionText, { color: palette.walletInvest }]}
+                  parts={[["株", "かぶ"], "を", ["買", "か"], "う →"]}
+                  rubySize={4}
+                  noWrap
+                />
+              </TouchableOpacity>
+            </View>
+          </RpgCard>
+        )}
+
         {/* キャラクター育成 */}
         <RpgCard
           tier="violet"
@@ -779,90 +886,6 @@ export default function ChildDashboardScreen({
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={["エールを", ["送", "おく"], "る"]} rubySize={5} /></View>
           </AnimatedButton>
         </View>
-
-        {/* Wallet — 3分割ウォレット（使う/貯める/増やす）を対等な
-            3リンクとして配置。タイトル行・合計は WalletDetail への
-            ヘッダーリンク、各残高セルは個別の遷移先にタップ可能。
-            ヒト中心設計：3機能の等価性とメンタルモデル（3分割）を
-            UI でも担保する。 */}
-        {wallet && (
-          <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
-              accessibilityLabel="おさいふの くわしい じょうほう"
-              accessibilityRole="button"
-            >
-              <View style={styles.walletTitleRow}>
-                <PixelChestOpenIcon size={24} />
-                <RubyText style={styles.walletTitle} parts={[["財布", "さいふ"]]} />
-              </View>
-              <Text
-                style={styles.walletTotal}
-                adjustsFontSizeToFit
-                numberOfLines={1}
-                accessibilityLabel={`ごうけい ${((wallet.spending_balance ?? 0) + (wallet.saving_balance ?? 0) + (wallet.invest_balance ?? 0)).toLocaleString()}えん`}
-              >
-                {(
-                  (wallet.spending_balance ?? 0) +
-                  (wallet.saving_balance ?? 0) +
-                  (wallet.invest_balance ?? 0)
-                ).toLocaleString()}
-                円
-              </Text>
-            </TouchableOpacity>
-
-            <View style={styles.walletRow}>
-              <TouchableOpacity
-                style={[styles.walletItem, { borderColor: palette.walletSpend }]}
-                activeOpacity={0.7}
-                onPress={() => {
-                  console.log('[nav] SpendRequest', { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
-                  navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
-                }}
-                accessibilityLabel="つかう画面へ"
-                accessibilityRole="button"
-              >
-                <RubyText style={styles.walletLabel} parts={[["使", "つか"], "う"]} />
-                <Text style={[styles.walletAmount, { color: palette.walletSpend }]}>
-                  {(wallet.spending_balance ?? 0).toLocaleString()}
-                </Text>
-                <Text style={[styles.walletTapHint, { color: palette.walletSpend }]}>タップ→</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.walletItem, { borderColor: palette.walletSave }]}
-                activeOpacity={0.7}
-                onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet.id })}
-                accessibilityLabel="ためる画面へ"
-                accessibilityRole="button"
-              >
-                <RubyText style={styles.walletLabel} parts={[["貯", "た"], "める"]} />
-                <Text style={[styles.walletAmount, { color: palette.walletSave }]}>
-                  {(wallet.saving_balance ?? 0).toLocaleString()}
-                </Text>
-                <Text style={[styles.walletTapHint, { color: palette.walletSave }]}>タップ→</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.walletItem, { borderColor: palette.walletInvest }]}
-                activeOpacity={0.7}
-                onPress={() => {
-                  console.log('[nav] Invest', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-                  navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
-                }}
-                accessibilityLabel="ふやす画面へ"
-                accessibilityRole="button"
-              >
-                <RubyText style={styles.walletLabel} parts={[["増", "ふ"], "やす"]} />
-                <Text style={[styles.walletAmount, { color: palette.walletInvest }]}>
-                  {(wallet.invest_balance ?? 0).toLocaleString()}
-                </Text>
-                <Text style={[styles.walletTapHint, { color: palette.walletInvest }]}>タップ→</Text>
-              </TouchableOpacity>
-            </View>
-          </RpgCard>
-        )}
 
         {/* つかうリクエスト状況 */}
         {recentSpendRequests.length > 0 && (
@@ -1633,6 +1656,18 @@ function createStyles(p: Palette) {
     fontWeight: "600" as const,
     marginTop: 2,
     opacity: 0.8,
+  },
+  walletCellHeader: {
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 4,
+    marginBottom: 2,
+  },
+  walletActionText: {
+    fontSize: 10,
+    fontWeight: "700" as const,
+    marginTop: 4,
+    letterSpacing: 0.3,
   },
   walletFooter: {
     flexDirection: "row" as const,
