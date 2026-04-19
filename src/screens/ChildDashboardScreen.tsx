@@ -629,12 +629,15 @@ export default function ChildDashboardScreen({
           <RubyText
             style={styles.quickNavLabel}
             parts={[["買", "か"], "いもの"]}
+            rubySize={6}
+            noWrap
+          />
+          <RubyText
+            style={styles.quickNavBalance}
+            parts={[`${(wallet?.spending_balance ?? 0).toLocaleString()}`, ["円", "えん"]]}
             rubySize={4}
             noWrap
           />
-          <Text style={styles.quickNavBalance}>
-            {(wallet?.spending_balance ?? 0).toLocaleString()}円
-          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -648,12 +651,15 @@ export default function ChildDashboardScreen({
           <RubyText
             style={styles.quickNavLabel}
             parts={[["貯金", "ちょきん"]]}
+            rubySize={6}
+            noWrap
+          />
+          <RubyText
+            style={styles.quickNavBalance}
+            parts={[`${(wallet?.saving_balance ?? 0).toLocaleString()}`, ["円", "えん"]]}
             rubySize={4}
             noWrap
           />
-          <Text style={styles.quickNavBalance}>
-            {(wallet?.saving_balance ?? 0).toLocaleString()}円
-          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -670,12 +676,15 @@ export default function ChildDashboardScreen({
           <RubyText
             style={styles.quickNavLabel}
             parts={[["株", "かぶ"]]}
+            rubySize={6}
+            noWrap
+          />
+          <RubyText
+            style={styles.quickNavBalance}
+            parts={[`${(wallet?.invest_balance ?? 0).toLocaleString()}`, ["円", "えん"]]}
             rubySize={4}
             noWrap
           />
-          <Text style={styles.quickNavBalance}>
-            {(wallet?.invest_balance ?? 0).toLocaleString()}円
-          </Text>
         </TouchableOpacity>
       </View>
 
