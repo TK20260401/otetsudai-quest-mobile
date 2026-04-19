@@ -16,7 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
 import { useTheme, type Palette } from "../theme";
-import { palettes, type PaletteName } from "../theme/palettes";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
 import { getLevelProgress, getCurrentLevel } from "../lib/levels";
@@ -70,7 +69,7 @@ export default function ChildDashboardScreen({
 }) {
   const { childId } = route.params;
   const { alert } = useAppAlert();
-  const { palette, paletteName, setPalette } = useTheme();
+  const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
   const [childName, setChildName] = useState("");
@@ -594,28 +593,6 @@ export default function ChildDashboardScreen({
           gold={totalEarned}
           onBack={handleLogout}
           onLogout={handleLogout}
-          rightSlot={
-            <View style={styles.themeRow}>
-              {(Object.keys(palettes) as PaletteName[]).map((name) => (
-                <TouchableOpacity
-                  key={name}
-                  onPress={() => setPalette(name)}
-                  accessibilityLabel={`テーマ: ${palettes[name].name}`}
-                  accessibilityRole="button"
-                  hitSlop={{ top: 8, bottom: 8, left: 2, right: 2 }}
-                  style={{
-                    width: 16,
-                    height: 16,
-                    borderRadius: 8,
-                    backgroundColor: palettes[name].primary,
-                    borderWidth: paletteName === name ? 2 : 0,
-                    borderColor: palette.textStrong,
-                    opacity: paletteName === name ? 1 : 0.5,
-                  }}
-                />
-              ))}
-            </View>
-          }
         />
       </View>
       <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
@@ -2020,7 +1997,6 @@ function createStyles(p: Palette) {
   loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
   headerDate: { fontSize: rf(10), color: p.textMuted, paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 },
   headerActions: { flexDirection: "row", alignItems: "center", gap: 8 } as const,
-  themeRow: { flexDirection: "row", gap: 2 } as const,
   weeklyStatValue: { fontSize: rf(24), fontWeight: "bold", color: p.accent } as const,
   weeklyStatLabel: { fontSize: rf(11), color: p.textMuted },
   bottomSpacer: { height: 40 },

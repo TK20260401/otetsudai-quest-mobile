@@ -310,5 +310,5 @@ export const dungeon: Palette = {
   overlay: "rgba(0,0,0,0.65)",
 };
 
-export const palettes = { dungeon, forest, adventure, breeze } as const;
+export const palettes = { dungeon } as const;
 export type PaletteName = keyof typeof palettes;
