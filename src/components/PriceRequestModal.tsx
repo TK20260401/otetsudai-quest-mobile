@@ -14,6 +14,7 @@ import { rf } from "../lib/responsive";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task } from "../lib/types";
 import { useAppAlert } from "./AppAlert";
+import { RubyText } from "./Ruby";
 
 type Props = {
   visible: boolean;
@@ -66,12 +67,27 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
           keyboardDismissMode="interactive"
         >
           <View style={styles.card}>
-            <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>💰 ねあげリクエスト</Text>
-            <Text style={styles.taskName}>{task.title}</Text>
+            <RubyText
+              style={styles.title}
+              parts={["💰 ", ["値上", "ねあ"], "げリクエスト"]}
+              rubySize={6}
+              noWrap
+            />
+            <Text style={styles.taskName} numberOfLines={1} adjustsFontSizeToFit>{task.title}</Text>
 
             <View style={styles.currentRow}>
-              <Text style={styles.currentLabel}>いまの おだちん</Text>
-              <Text style={styles.currentAmount}>{task.reward_amount}えん</Text>
+              <RubyText
+                style={styles.currentLabel}
+                parts={[["今", "いま"], "の お", ["駄賃", "だちん"]]}
+                rubySize={5}
+                noWrap
+              />
+              <RubyText
+                style={styles.currentAmount}
+                parts={[`${task.reward_amount}`, ["円", "えん"]]}
+                rubySize={5}
+                noWrap
+              />
             </View>
 
             <View style={styles.arrowRow}>
@@ -79,24 +95,34 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
             </View>
 
             <View style={styles.inputRow}>
-              <Text style={styles.inputLabel}>きぼうの きんがく</Text>
+              <RubyText
+                style={styles.inputLabel}
+                parts={[["希望", "きぼう"], "の ", ["金額", "きんがく"]]}
+                rubySize={5}
+                noWrap
+              />
               <TextInput
                 style={styles.amountInput}
                 value={amount}
                 onChangeText={setAmount}
                 keyboardType="number-pad"
-                placeholder="きんがく"
+                placeholder="金額"
                 placeholderTextColor={palette.textPlaceholder}
                 textAlign="center"
               />
-              <Text style={styles.yen}>えん</Text>
+              <RubyText
+                style={styles.yen}
+                parts={[["円", "えん"]]}
+                rubySize={5}
+                noWrap
+              />
             </View>
 
             <TextInput
               style={styles.messageInput}
               value={message}
               onChangeText={setMessage}
-              placeholder="おやに ひとこと！（にゅうりょく しなくても OK）"
+              placeholder="親にひとこと！（入力しなくてもOK）"
               placeholderTextColor={palette.textPlaceholder}
               multiline
               maxLength={100}
@@ -114,9 +140,16 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
                 onPress={handleSend}
                 disabled={sending}
               >
-                <Text style={styles.sendText}>
-                  {sending ? "おくりちゅう..." : "📩 リクエスト！"}
-                </Text>
+                {sending ? (
+                  <RubyText
+                    style={styles.sendText}
+                    parts={[["送", "おく"], "り", ["中", "ちゅう"], "..."]}
+                    rubySize={5}
+                    noWrap
+                  />
+                ) : (
+                  <Text style={styles.sendText}>📩 リクエスト！</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
