@@ -822,26 +822,58 @@ export default function ChildDashboardScreen({
                 </Text>
               </View>
             </View>
-            <View style={styles.walletFooter}>
-              <AnimatedButton
-                style={styles.spendShortcut}
-                onPress={() => navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance })}
-                haptic="light"
-                accessibilityLabel="つかうリクエスト"
-              >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCartIcon size={14} /><Text style={styles.spendShortcutText}>つかう</Text></View>
-              </AnimatedButton>
-              <AnimatedButton
-                style={styles.investShortcut}
-                onPress={() => navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance })}
-                haptic="light"
-                accessibilityLabel="とうしがめん"
-              >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChartIcon size={14} /><Text style={styles.investShortcutText}>ふやす</Text></View>
-              </AnimatedButton>
-            </View>
           </TouchableOpacity>
+          {/* ショートカットは TouchableOpacity 外に配置しないと
+              親の WalletDetail 遷移に吸い上げられ、タップしても
+              何も起きないように見える（実際は別画面に飛んでしまう） */}
+          <View style={styles.walletFooter}>
+            <AnimatedButton
+              style={styles.spendShortcut}
+              onPress={() => {
+                console.log('[nav] SpendRequest', { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
+                navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
+              }}
+              haptic="light"
+              accessibilityLabel="つかうリクエスト"
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelCartIcon size={18} /><Text style={styles.spendShortcutText}>つかう</Text></View>
+            </AnimatedButton>
+            <AnimatedButton
+              style={styles.investShortcut}
+              onPress={() => {
+                console.log('[nav] Invest', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+                navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+              }}
+              haptic="light"
+              accessibilityLabel="とうしがめん"
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChartIcon size={18} /><Text style={styles.investShortcutText}>ふやす</Text></View>
+            </AnimatedButton>
+          </View>
           </RpgCard>
+        )}
+
+        {/* 投資への独立CTA — wallet カードより上に大きく配置、
+            スクロールしなくても視認できる明示的な動線 */}
+        {wallet && (
+          <AnimatedButton
+            style={styles.investMainCta}
+            onPress={() => {
+              console.log('[nav] Invest (mainCta)', { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+              navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+            }}
+            haptic="light"
+            accessibilityLabel="とうしがめんへ いく"
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <PixelChartIcon size={22} />
+              <RubyText
+                parts={[["株", "かぶ"], "を", ["買", "か"], "いたい！"]}
+                style={styles.investMainCtaText}
+                rubySize={6}
+              />
+            </View>
+          </AnimatedButton>
         )}
 
         {/* つかうリクエスト状況 */}
@@ -1579,6 +1611,27 @@ function createStyles(p: Palette) {
   investShortcutText: {
     color: p.white,
     fontSize: 13,
+    fontWeight: "bold" as const,
+  },
+  // 投資画面への独立CTA（wallet カードの直下に配置）
+  investMainCta: {
+    backgroundColor: p.walletInvest,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    marginHorizontal: 12,
+    marginTop: 12,
+    borderWidth: 2,
+    borderColor: p.walletInvestBorder,
+    shadowColor: p.walletInvest,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  investMainCtaText: {
+    color: p.white,
+    fontSize: 16,
     fontWeight: "bold" as const,
   },
   walletHint: {
