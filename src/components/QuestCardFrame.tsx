@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, StyleSheet } from "react-native";
 import Svg, { Rect, Path, Circle, G, Defs, LinearGradient, Stop } from "react-native-svg";
+import { useTheme, type Palette } from "../theme";
 
 type Tier = "bronze" | "silver" | "gold";
 
@@ -21,6 +22,8 @@ const TIER_COLORS = {
  */
 export default function QuestCardFrame({ tier, children }: Props) {
   const c = TIER_COLORS[tier];
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
 
   return (
     <View style={styles.container}>
@@ -69,26 +72,30 @@ export default function QuestCardFrame({ tier, children }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 8,
-    borderRadius: 8,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  frameWrap: {
-    height: 8,
-  },
-  frameWrapBottom: {
-    height: 4,
-  },
-  content: {
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-});
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    container: {
+      marginBottom: 8,
+      borderRadius: 8,
+      overflow: "hidden",
+      shadowColor: p.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    frameWrap: {
+      height: 8,
+    },
+    frameWrapBottom: {
+      height: 4,
+    },
+    // ダンジョンテーマでは surface (dark purple) を使用。以前 "#FFFFFF"
+    // ハードコードで白地となり、textStrong (near-white) の本文が沈んでいた。
+    content: {
+      backgroundColor: p.surface,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+    },
+  });
+}
