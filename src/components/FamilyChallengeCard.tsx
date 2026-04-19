@@ -128,7 +128,12 @@ export default function FamilyChallengeCard({
           return (
             <View key={p.childId} style={styles.memberRow}>
               <Text style={styles.memberIcon}>{p.icon}</Text>
-              <Text style={styles.memberName} numberOfLines={1}>
+              <Text
+                style={styles.memberName}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.7}
+              >
                 {p.name}
               </Text>
               <View style={styles.barBg}>
@@ -327,7 +332,9 @@ function createStyles(p: Palette) {
       fontSize: 12,
       fontWeight: "bold",
       color: p.textBase,
-      width: 50,
+      minWidth: 50,
+      maxWidth: 96,
+      flexShrink: 0,
     },
     barBg: {
       flex: 1,

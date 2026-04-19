@@ -93,7 +93,14 @@ export function RubyText({
             <Text style={[rs, { opacity: 0 }]} numberOfLines={1}>
               .
             </Text>
-            <Text style={[tight, { marginTop: -2 }]}>{part}</Text>
+            <Text
+              style={[tight, { marginTop: -2 }]}
+              numberOfLines={noWrap ? 1 : undefined}
+              adjustsFontSizeToFit={noWrap}
+              minimumFontScale={noWrap ? 0.7 : undefined}
+            >
+              {part}
+            </Text>
           </View>
         ) : (
           <View key={i} style={layoutStyles.center}>
@@ -105,7 +112,14 @@ export function RubyText({
             >
               {part[1]}
             </Text>
-            <Text style={[tight, { marginTop: -2 }]}>{part[0]}</Text>
+            <Text
+              style={[tight, { marginTop: -2 }]}
+              numberOfLines={noWrap ? 1 : undefined}
+              adjustsFontSizeToFit={noWrap}
+              minimumFontScale={noWrap ? 0.7 : undefined}
+            >
+              {part[0]}
+            </Text>
           </View>
         )
       )}
