@@ -11,6 +11,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
@@ -61,6 +62,7 @@ import RpgStatusBar from "../components/RpgStatusBar";
 import EquipmentView from "../components/EquipmentView";
 import { getQuestCardTier, calculateRpgStats } from "../lib/rpg-stats";
 import RewardSequence from "../components/RewardSequence";
+import CoinBurstAnimation from "../components/animations/CoinBurstAnimation";
 
 export default function ChildDashboardScreen({
   route,
@@ -74,6 +76,7 @@ export default function ChildDashboardScreen({
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
+  const { width: screenW, height: screenH } = useWindowDimensions();
   const [childName, setChildName] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [wallet, setWallet] = useState<Wallet | null>(null);
@@ -98,6 +101,7 @@ export default function ChildDashboardScreen({
   // クエストクリア演出
   const [questClearMsg, setQuestClearMsg] = useState<string | null>(null);
   const [showRewardSequence, setShowRewardSequence] = useState(false);
+  const [coinBurst, setCoinBurst] = useState(false);
   // ねあげリクエスト
   const [priceRequestTask, setPriceRequestTask] = useState<Task | null>(null);
   // 返信済みメッセージ履歴
@@ -460,6 +464,7 @@ export default function ChildDashboardScreen({
     setQuestClearMsg(msg);
     setTimeout(() => setQuestClearMsg(null), 3000);
     setShowRewardSequence(true);
+    setCoinBurst(true);
 
     const newBadges = await checkAndAwardBadges(childId);
     if (newBadges.length > 0) {
@@ -1243,6 +1248,14 @@ export default function ChildDashboardScreen({
         show={showRewardSequence}
         level={levelInfo.current.level}
         onComplete={() => setShowRewardSequence(false)}
+      />
+
+      {/* コイン飛散バースト — クエストクリア瞬間の気持ちよさ演出 */}
+      <CoinBurstAnimation
+        visible={coinBurst}
+        origin={{ x: screenW / 2 - 14, y: screenH / 2 - 14 }}
+        count={12}
+        onComplete={() => setCoinBurst(false)}
       />
 
       {/* ファミリースタンプ送信モーダル */}
