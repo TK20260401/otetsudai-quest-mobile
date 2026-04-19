@@ -577,8 +577,9 @@ export default function ChildDashboardScreen({
         <ActivityIndicator size="large" color={palette.primary} />
         <RubyText
           style={styles.loadingText}
-          parts={[["冒険", "ぼうけん"], "の", ["準備", "じゅんび"], "ちゅう..."]}
+          parts={[["冒険", "ぼうけん"], "の", ["準備", "じゅんび"], ["中", "ちゅう"], "..."]}
           rubySize={6}
+          noWrap
         />
       </View>
     );
@@ -609,6 +610,34 @@ export default function ChildDashboardScreen({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* 投資画面への最優先CTA — ScrollView の一番上に配置して
+            スクロール前から視認可能に。wallet がまだ undefined でも
+            balance=0 で遷移を許容 */}
+        <AnimatedButton
+          style={styles.investTopCta}
+          onPress={() => {
+            console.log('[nav] Invest (topCta)', { childId, walletId: wallet?.id, investBalance: wallet?.invest_balance });
+            navigation.navigate("Invest", {
+              childId,
+              walletId: wallet?.id ?? "",
+              investBalance: wallet?.invest_balance ?? 0,
+            });
+          }}
+          haptic="medium"
+          accessibilityLabel="とうしがめんへ いく"
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10 }}>
+            <PixelChartIcon size={26} />
+            <RubyText
+              parts={[["株", "かぶ"], "を", ["買", "か"], "いたい！"]}
+              style={styles.investTopCtaText}
+              rubySize={7}
+              noWrap
+            />
+            <PixelChartIcon size={26} />
+          </View>
+        </AnimatedButton>
+
         {/* キャラクター育成 */}
         <RpgCard
           tier="violet"
@@ -1696,6 +1725,28 @@ function createStyles(p: Palette) {
     color: p.white,
     fontSize: 16,
     fontWeight: "bold" as const,
+  },
+  // ScrollView 最上部のトップCTA — スクロール前に必ず見える位置
+  investTopCta: {
+    backgroundColor: p.walletInvest,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    marginHorizontal: 12,
+    marginTop: 12,
+    borderWidth: 3,
+    borderColor: p.walletInvestBorder,
+    shadowColor: p.walletInvest,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  investTopCtaText: {
+    color: p.white,
+    fontSize: 18,
+    fontWeight: "bold" as const,
+    letterSpacing: 1,
   },
   walletHint: {
     fontSize: 12,

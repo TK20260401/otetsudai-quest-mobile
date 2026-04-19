@@ -15,7 +15,21 @@ const MIN_SIZE = 20;
 
 type PixelDef = [number, number, string]; // [x, y, color]
 
-function PixelGrid({ pixels, gridW, gridH, size }: { pixels: PixelDef[]; gridW: number; gridH: number; size: number }) {
+function PixelGrid({
+  pixels,
+  gridW,
+  gridH,
+  size,
+  label,
+}: {
+  pixels: PixelDef[];
+  gridW: number;
+  gridH: number;
+  size: number;
+  /** スクリーンリーダー用ラベル（VoiceOver/TalkBack で読み上げ）。
+   * HTML の alt 属性相当。未指定でも role="image" は付与する。 */
+  label?: string;
+}) {
   // 小さすぎる指定は 20px に底上げして視認性を担保。
   // また「1セル = 整数px」になるよう丸めて、非整数スケーリングでの
   // サブピクセル滲みを防ぐ（cellSize は 4 以上を保証）。
@@ -28,6 +42,9 @@ function PixelGrid({ pixels, gridW, gridH, size }: { pixels: PixelDef[]; gridW: 
       viewBox={`0 0 ${gridW * PX} ${gridH * PX}`}
       shapeRendering="crispEdges"
       preserveAspectRatio="xMidYMid meet"
+      accessible={!!label}
+      accessibilityLabel={label}
+      accessibilityRole="image"
     >
       <G>
         {pixels.map(([x, y, color], i) => (
@@ -196,7 +213,7 @@ const COIN_PIXELS: PixelDef[] = [
 ];
 
 export function PixelCoinIcon({ size = 20 }: { size?: number }) {
-  return <PixelGrid pixels={COIN_PIXELS} gridW={5} gridH={5} size={size} />;
+  return <PixelGrid pixels={COIN_PIXELS} gridW={5} gridH={5} size={size} label="コイン" />;
 }
 
 // ============================================================
