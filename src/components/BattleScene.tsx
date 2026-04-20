@@ -95,7 +95,7 @@ export default function BattleScene({ show, level, onComplete }: Props) {
 
         {/* Character */}
         <Animated.View style={[styles.character, { transform: [{ translateX: charX }] }]}>
-          <CharacterSvg level={Math.min(level, 7)} mood="active" size={64} />
+          <CharacterSvg level={Math.min(level, 7)} mood="active" size={64} animated mode={phase === "enter" ? "walk" : "idle"} />
         </Animated.View>
 
         {/* Slash */}

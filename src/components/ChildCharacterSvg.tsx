@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import { Animated, Easing } from "react-native";
 import Svg, { Rect, G } from "react-native-svg";
-import IdleAnimationWrapper from "./IdleAnimationWrapper";
 
 export type ChildGender = "boy" | "girl" | "other";
 
@@ -21,21 +21,13 @@ const BOY_SHIRT_DARK = "#2980B9";
 const BOY_PANTS = "#2C3E50";
 
 const BOY_PIXELS: PixelDef[] = [
-  // Row 0: spiky hair top
   [1,0,BOY_HAIR],[2,0,BOY_HAIR],[3,0,BOY_HAIR_LIGHT],[4,0,BOY_HAIR],
-  // Row 1: hair full
   [0,1,BOY_HAIR],[1,1,BOY_HAIR_LIGHT],[2,1,BOY_HAIR],[3,1,BOY_HAIR],[4,1,BOY_HAIR_LIGHT],[5,1,BOY_HAIR],
-  // Row 2: face with hair sides
   [0,2,BOY_HAIR],[1,2,SKIN],[2,2,SKIN],[3,2,SKIN],[4,2,SKIN],[5,2,BOY_HAIR],
-  // Row 3: eyes
   [1,3,SKIN],[2,3,EYE],[3,3,SKIN],[4,3,EYE],[5,3,SKIN_SHADE],
-  // Row 4: mouth
   [1,4,SKIN_SHADE],[2,4,SKIN],[3,4,MOUTH],[4,4,SKIN],[5,4,SKIN_SHADE],
-  // Row 5: shirt top
   [1,5,BOY_SHIRT],[2,5,BOY_SHIRT],[3,5,BOY_SHIRT],[4,5,BOY_SHIRT],
-  // Row 6: shirt body
   [0,6,BOY_SHIRT_DARK],[1,6,BOY_SHIRT],[2,6,BOY_SHIRT],[3,6,BOY_SHIRT],[4,6,BOY_SHIRT],[5,6,BOY_SHIRT_DARK],
-  // Row 7: pants/legs
   [1,7,BOY_PANTS],[2,7,BOY_PANTS],[3,7,BOY_PANTS],[4,7,BOY_PANTS],
 ];
 
@@ -48,21 +40,13 @@ const GIRL_SHIRT_DARK = "#E4B000";
 const GIRL_SKIRT = "#E88DA0";
 
 const GIRL_PIXELS: PixelDef[] = [
-  // Row 0: ribbon + hair top
   [0,0,GIRL_HAIR],[1,0,GIRL_RIBBON],[2,0,GIRL_HAIR],[3,0,GIRL_HAIR_LIGHT],[4,0,GIRL_RIBBON],[5,0,GIRL_HAIR],
-  // Row 1: hair wide
   [0,1,GIRL_HAIR],[1,1,GIRL_HAIR_LIGHT],[2,1,GIRL_HAIR],[3,1,GIRL_HAIR],[4,1,GIRL_HAIR_LIGHT],[5,1,GIRL_HAIR],
-  // Row 2: face framed by long hair
   [0,2,GIRL_HAIR],[1,2,SKIN],[2,2,SKIN],[3,2,SKIN],[4,2,SKIN],[5,2,GIRL_HAIR],
-  // Row 3: eyes
   [0,3,GIRL_HAIR],[1,3,SKIN],[2,3,EYE],[3,3,SKIN],[4,3,EYE],[5,3,GIRL_HAIR],
-  // Row 4: mouth, hair hanging down sides
   [0,4,GIRL_HAIR],[1,4,SKIN_SHADE],[2,4,SKIN],[3,4,MOUTH],[4,4,SKIN],[5,4,GIRL_HAIR],
-  // Row 5: shirt top
   [0,5,GIRL_HAIR_LIGHT],[1,5,GIRL_SHIRT],[2,5,GIRL_SHIRT],[3,5,GIRL_SHIRT],[4,5,GIRL_SHIRT],[5,5,GIRL_HAIR_LIGHT],
-  // Row 6: shirt body
   [0,6,GIRL_SHIRT_DARK],[1,6,GIRL_SHIRT],[2,6,GIRL_SHIRT],[3,6,GIRL_SHIRT],[4,6,GIRL_SHIRT],[5,6,GIRL_SHIRT_DARK],
-  // Row 7: skirt/legs
   [1,7,GIRL_SKIRT],[2,7,GIRL_SKIRT],[3,7,GIRL_SKIRT],[4,7,GIRL_SKIRT],
 ];
 
@@ -74,21 +58,13 @@ const OTHER_SHIRT_DARK = "#1E8449";
 const OTHER_PANTS = "#6B7580";
 
 const OTHER_PIXELS: PixelDef[] = [
-  // Row 0: hair top
   [1,0,OTHER_HAIR],[2,0,OTHER_HAIR_LIGHT],[3,0,OTHER_HAIR],[4,0,OTHER_HAIR_LIGHT],
-  // Row 1: hair wide
   [0,1,OTHER_HAIR],[1,1,OTHER_HAIR_LIGHT],[2,1,OTHER_HAIR],[3,1,OTHER_HAIR_LIGHT],[4,1,OTHER_HAIR],[5,1,OTHER_HAIR_LIGHT],
-  // Row 2: face + hair sides (medium length)
   [0,2,OTHER_HAIR],[1,2,SKIN],[2,2,SKIN],[3,2,SKIN],[4,2,SKIN],[5,2,OTHER_HAIR],
-  // Row 3: eyes
   [0,3,OTHER_HAIR],[1,3,SKIN],[2,3,EYE],[3,3,SKIN],[4,3,EYE],[5,3,SKIN_SHADE],
-  // Row 4: mouth
   [1,4,SKIN_SHADE],[2,4,SKIN],[3,4,MOUTH],[4,4,SKIN],[5,4,SKIN_SHADE],
-  // Row 5: shirt top
   [1,5,OTHER_SHIRT],[2,5,OTHER_SHIRT],[3,5,OTHER_SHIRT],[4,5,OTHER_SHIRT],
-  // Row 6: shirt body
   [0,6,OTHER_SHIRT_DARK],[1,6,OTHER_SHIRT],[2,6,OTHER_SHIRT],[3,6,OTHER_SHIRT],[4,6,OTHER_SHIRT],[5,6,OTHER_SHIRT_DARK],
-  // Row 7: pants/legs
   [1,7,OTHER_PANTS],[2,7,OTHER_PANTS],[3,7,OTHER_PANTS],[4,7,OTHER_PANTS],
 ];
 
@@ -96,12 +72,39 @@ const OTHER_PIXELS: PixelDef[] = [
  * 子供選択用キャラクターSVG
  * gender: boy / girl / other の3種
  * ピクセルアート（6x8グリッド）で描画
+ * animated=true で上下にぴょんぴょん跳ねる
  */
 export default function ChildCharacterSvg({ gender, size = 48, animated = false }: { gender: ChildGender; size?: number; animated?: boolean }) {
   const pixels =
     gender === "boy" ? BOY_PIXELS : gender === "girl" ? GIRL_PIXELS : OTHER_PIXELS;
   const gridW = 6;
   const gridH = 8;
+
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!animated) return;
+    const dur = gender === "boy" ? 600 : gender === "girl" ? 800 : 700;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: dur,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+        Animated.timing(anim, {
+          toValue: 0,
+          duration: dur,
+          easing: Easing.inOut(Easing.quad),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [animated, gender, anim]);
+
   const svg = (
     <Svg
       width={size}
@@ -123,10 +126,22 @@ export default function ChildCharacterSvg({ gender, size = 48, animated = false 
 
   if (!animated) return svg;
 
+  // 男の子: 上下ジャンプ、女の子: 左右スイング、other: 上下ジャンプ
+  const translateY = gender !== "girl"
+    ? anim.interpolate({ inputRange: [0, 1], outputRange: [0, -10] })
+    : undefined;
+  const rotate = gender === "girl"
+    ? anim.interpolate({ inputRange: [0, 0.5, 1], outputRange: ["-6deg", "6deg", "-6deg"] })
+    : undefined;
+
+  const transform: Animated.WithAnimatedObject<any>[] = [];
+  if (translateY) transform.push({ translateY });
+  if (rotate) transform.push({ rotate });
+
   return (
-    <IdleAnimationWrapper type="sway" duration={4}>
+    <Animated.View style={{ transform }}>
       {svg}
-    </IdleAnimationWrapper>
+    </Animated.View>
   );
 }
 

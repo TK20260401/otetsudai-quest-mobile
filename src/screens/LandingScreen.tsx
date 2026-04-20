@@ -39,8 +39,8 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
     >
       <View style={[styles.hero, isTablet && { maxWidth: 480, alignSelf: "center", width: "100%" }]}>
         <View style={styles.heroRow} accessibilityLabel="おこづかいクエスト">
-          <PixelHeroSvg type="warrior" size={isSmallScreen ? 48 : 64} />
-          <PixelHeroSvg type="mage" size={isSmallScreen ? 48 : 64} />
+          <PixelHeroSvg type="warrior" size={isSmallScreen ? 48 : 64} animated mode="walk" />
+          <PixelHeroSvg type="mage" size={isSmallScreen ? 48 : 64} animated mode="walk" />
         </View>
         <Text
           style={[styles.title, isTablet && { fontSize: 38 }, isSmallScreen && { fontSize: 24 }]}
@@ -50,7 +50,8 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
           おこづかいクエスト
         </Text>
         <View style={styles.subtitleWrap}>
-          <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["クエストをクリアして、コインを ", ["稼", "かせ"], "ごう！"]} rubySize={6} />
+          <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["クエストをクリアして、"]} rubySize={6} />
+          <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["コインを", ["稼", "かせ"], "ごう！"]} rubySize={6} />
         </View>
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 12 }]}>

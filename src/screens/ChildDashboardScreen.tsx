@@ -33,8 +33,11 @@ import { getDailyLoginStatus } from "../lib/daily-login";
 import ShopModal from "../components/ShopModal";
 import CoinKunChat from "../components/CoinKunChat";
 import { getEquippedTitle, RARITY_COLORS, type ShopItem } from "../lib/shop";
+import BackgroundAmbient from "../components/BackgroundAmbient";
+import CelebrationBurst from "../components/animations/CelebrationBurst";
 import EggDropAnimation from "../components/EggDropAnimation";
 import GameStatusHeader from "../components/GameStatusHeader";
+import IdleAnimationWrapper from "../components/IdleAnimationWrapper";
 import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
@@ -103,6 +106,7 @@ export default function ChildDashboardScreen({
   const [questClearMsg, setQuestClearMsg] = useState<string | null>(null);
   const [showRewardSequence, setShowRewardSequence] = useState(false);
   const [coinBurst, setCoinBurst] = useState(false);
+  const [charJump, setCharJump] = useState(false);
   // ねあげリクエスト
   const [priceRequestTask, setPriceRequestTask] = useState<Task | null>(null);
   // 返信済みメッセージ履歴
@@ -178,8 +182,9 @@ export default function ChildDashboardScreen({
     const session = await getSession();
     if (!session) return;
 
-    setChildName(session.name);
     setSessionFamilyId(session.familyId);
+
+    setChildName(session.name);
 
     const [taskRes, walletRes, txRes, badgeRes, stampRes, spendRes] = await Promise.all([
       supabase
@@ -466,6 +471,8 @@ export default function ChildDashboardScreen({
     setTimeout(() => setQuestClearMsg(null), 3000);
     setShowRewardSequence(true);
     setCoinBurst(true);
+    setCharJump(true);
+    setTimeout(() => setCharJump(false), 500);
 
     const newBadges = await checkAndAwardBadges(childId);
     if (newBadges.length > 0) {
@@ -598,14 +605,12 @@ export default function ChildDashboardScreen({
       <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
         <GameStatusHeader
           title={childName}
-          userName=""
           level={levelInfo.current.level}
           hp={Math.round((weeklySummary.streak / 7) * 100)}
           mp={Math.min(10, weeklySummary.streak)}
           exp={levelInfo.progress}
           gold={totalEarned}
           onBack={handleLogout}
-          onLogout={handleLogout}
         />
       </View>
       <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
@@ -629,8 +634,9 @@ export default function ChildDashboardScreen({
           <RubyText
             style={styles.quickNavLabel}
             parts={[["買", "か"], "いもの"]}
-            rubySize={6}
+            rubySize={8}
             noWrap
+            rubyColor="rgba(255,255,200,0.7)"
           />
           <RubyText
             style={styles.quickNavBalance}
@@ -651,8 +657,9 @@ export default function ChildDashboardScreen({
           <RubyText
             style={styles.quickNavLabel}
             parts={[["貯金", "ちょきん"]]}
-            rubySize={6}
+            rubySize={8}
             noWrap
+            rubyColor="rgba(255,255,200,0.7)"
           />
           <RubyText
             style={styles.quickNavBalance}
@@ -676,8 +683,9 @@ export default function ChildDashboardScreen({
           <RubyText
             style={styles.quickNavLabel}
             parts={[["株", "かぶ"]]}
-            rubySize={6}
+            rubySize={8}
             noWrap
+            rubyColor="rgba(255,255,200,0.7)"
           />
           <RubyText
             style={styles.quickNavBalance}
@@ -690,6 +698,9 @@ export default function ChildDashboardScreen({
 
       <ScrollView
         style={styles.scroll}
+        minimumZoomScale={1}
+        maximumZoomScale={3}
+        bouncesZoom
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -697,11 +708,18 @@ export default function ChildDashboardScreen({
         {/* キャラクター育成 */}
         <RpgCard
           tier="violet"
-          style={{ marginHorizontal: 12, marginTop: 12 }}
+          style={{ marginHorizontal: 12, marginTop: 12, overflow: "hidden" }}
           contentStyle={{ flexDirection: "row", alignItems: "flex-start" }}
         >
+          <BackgroundAmbient preset="home" width={400} height={300} />
           <View style={styles.characterColumn}>
-            <CharacterSvg level={levelInfo.current.level} mood={mood} size={100} />
+            {charJump ? (
+              <IdleAnimationWrapper type="jump" duration={0.4}>
+                <CharacterSvg level={levelInfo.current.level} mood={mood} size={100} />
+              </IdleAnimationWrapper>
+            ) : (
+              <CharacterSvg level={levelInfo.current.level} mood={mood} size={100} animated />
+            )}
             {equippedTitle && (
               <View
                 style={[
@@ -717,7 +735,7 @@ export default function ChildDashboardScreen({
                 </Text>
               </View>
             )}
-            <RubyStr text={levelInfo.current.appearance} style={styles.appearanceText} rubySize={6} />
+            <RubyStr text={levelInfo.current.appearance} style={styles.appearanceText} rubySize={7} />
             <PetDisplay
               pet={activePet}
               onTapEgg={async () => {
@@ -769,12 +787,11 @@ export default function ChildDashboardScreen({
                 savingStreakWeeks: Math.min(weeklySummary.streak, 10),
                 expProgress: levelInfo.progress,
               })}
-              appearance={levelInfo.current.appearance.replace(/\[([^\]|]+)\|[^\]]+\]/g, "$1")}
+              appearance={levelInfo.current.appearance}
             />
             {levelInfo.next ? (
               <View style={{ marginTop: 4 }}>
-                <AutoRubyText text="次のレベルまで" style={styles.levelNext} rubySize={5} />
-                <AutoRubyText text={`あと ${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} />
+                <AutoRubyText text={`次のレベルまであと${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} noWrap />
               </View>
             ) : (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
@@ -1178,15 +1195,23 @@ export default function ChildDashboardScreen({
                     <View key={log.id} style={styles.repliedCard}>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelTargetIcon size={14} /><AutoRubyText text={log.task?.title ?? ""} style={styles.repliedTaskName} rubySize={5} noWrap /></View>
                       {pStamp && (
-                        <Text style={styles.repliedParent}>
-                          おや: {pStamp.emoji} {pStamp.label}
-                          {log.approval_message ? ` 「${log.approval_message}」` : ""}
-                        </Text>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <Text style={styles.repliedParent}>おや: </Text>
+                          <StampSvg id={pStamp.id} size={20} />
+                          <Text style={styles.repliedParent}>
+                            {pStamp.label}
+                            {log.approval_message ? ` 「${log.approval_message}」` : ""}
+                          </Text>
+                        </View>
                       )}
-                      <Text style={styles.repliedChild}>
-                        じぶん: {cStamp ? `${cStamp.emoji} ${cStamp.label}` : ""}
-                        {log.child_reaction_message ? ` 「${log.child_reaction_message}」` : ""}
-                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
+                        <Text style={styles.repliedChild}>じぶん: </Text>
+                        {cStamp && <StampSvg id={cStamp.id} size={20} />}
+                        <Text style={styles.repliedChild}>
+                          {cStamp ? cStamp.label : ""}
+                          {log.child_reaction_message ? ` 「${log.child_reaction_message}」` : ""}
+                        </Text>
+                      </View>
                     </View>
                   );
                 })}
@@ -1229,13 +1254,6 @@ export default function ChildDashboardScreen({
               ))
             )}
           </View>
-        )}
-
-        {/* 開発用リセット */}
-        {__DEV__ && (
-          <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelRefreshIcon size={14} /><Text style={styles.resetText}>データリセット（テスト用）</Text></View>
-          </TouchableOpacity>
         )}
 
         <View style={styles.bottomSpacer} />
@@ -1309,6 +1327,7 @@ export default function ChildDashboardScreen({
       )}
 
       {/* バッジ獲得演出モーダル */}
+      <CelebrationBurst visible={!!unlockedBadge} />
       {unlockedBadge && (
         <BadgeUnlockModal
           visible={!!unlockedBadge}
@@ -1543,14 +1562,14 @@ function createStyles(p: Palette) {
   characterColumn: {
     alignItems: "center" as const,
     marginRight: 8,
-    width: 90,
+    width: 100,
   },
   appearanceText: {
-    fontSize: 9,
+    fontSize: 10,
     color: p.textMuted,
     marginTop: 2,
     textAlign: "center" as const,
-    lineHeight: 14,
+    lineHeight: 16,
   },
   levelInfo: { flex: 1, overflow: "hidden" as const },
   levelTitle: { fontSize: rf(14), fontWeight: "bold" as const, color: p.textStrong },
@@ -1595,7 +1614,7 @@ function createStyles(p: Palette) {
     fontWeight: "bold" as const,
     letterSpacing: 1,
   },
-  levelNext: { fontSize: 11, color: p.textMuted, marginTop: 4, lineHeight: 18 },
+  levelNext: { fontSize: 9, color: p.textMuted, marginTop: 4, lineHeight: 14 },
 
   // Wallet
   walletCard: {
@@ -2122,9 +2141,10 @@ function createStyles(p: Palette) {
     textAlign: "center",
   },
   shopBtn: {
-    marginTop: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    marginTop: 8,
+    marginBottom: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: p.primary,

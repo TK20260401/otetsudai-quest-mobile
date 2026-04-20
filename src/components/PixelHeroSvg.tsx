@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Svg, { Rect, G } from "react-native-svg";
+import IdleAnimationWrapper from "./IdleAnimationWrapper";
 
 type HeroType = "warrior" | "mage";
 
 type Props = {
   type: HeroType;
   size?: number;
+  animated?: boolean;
+  /** "walk" で歩行アニメ、デフォルトは "idle"（sway） */
+  mode?: "idle" | "walk";
 };
 
 /** 1ピクセル = 4pt のグリッドで描画 */
@@ -103,27 +107,73 @@ const MAGE_PIXELS: PixelDef[] = [
  * Habitica風ピクセルアートキャラクター
  * ランディング画面・ログイン画面用
  */
-export default function PixelHeroSvg({ type, size = 60 }: Props) {
-  const pixels = type === "warrior" ? WARRIOR_PIXELS : MAGE_PIXELS;
+export default function PixelHeroSvg({ type, size = 60, animated = false, mode = "idle" }: Props) {
+  const basePixels = type === "warrior" ? WARRIOR_PIXELS : MAGE_PIXELS;
   const gridW = 13;
   const gridH = 13;
   const vw = gridW * PX;
   const vh = gridH * PX;
 
+  // walkFrame: 0=通常, 1=左足上げ, 2=右足上げ
+  const renderBody = (walkFrame: number = 0) => {
+    const legMinY = type === "warrior" ? 10 : 11;
+    const pixels = basePixels.filter(([x, y]) => {
+      if (walkFrame === 0 || y < legMinY) return true;
+      // フレーム1: 左足(x<=6)を1px上げる → 右足そのまま
+      // フレーム2: 右足(x>=7)を1px上げる → 左足そのまま
+      if (walkFrame === 1 && x <= 6 && y === legMinY) return false; // 左足最上段を消す
+      if (walkFrame === 2 && x >= 7 && y === legMinY) return false; // 右足最上段を消す
+      return true;
+    }).map(([x, y, color]) => {
+      if (walkFrame === 0 || y < legMinY) return [x, y, color] as PixelDef;
+      // フレーム1: 左足を1px上にずらす
+      if (walkFrame === 1 && x <= 6) return [x, y - 1, color] as PixelDef;
+      // フレーム2: 右足を1px上にずらす
+      if (walkFrame === 2 && x >= 7) return [x, y - 1, color] as PixelDef;
+      return [x, y, color] as PixelDef;
+    });
+
+    return (
+      <Svg width={size} height={size} viewBox={`0 0 ${vw} ${vh}`}>
+        <G>
+          {pixels.map(([x, y, color], i) => (
+            <Rect
+              key={i}
+              x={x * PX}
+              y={y * PX}
+              width={PX}
+              height={PX}
+              fill={color}
+            />
+          ))}
+        </G>
+      </Svg>
+    );
+  };
+
+  const [walkFrame, setWalkFrame] = useState(1);
+
+  useEffect(() => {
+    if (!animated || mode !== "walk") return;
+    const interval = setInterval(() => {
+      setWalkFrame((f) => (f === 1 ? 2 : 1));
+    }, 250);
+    return () => clearInterval(interval);
+  }, [animated, mode]);
+
+  if (!animated) return renderBody();
+
+  if (mode === "walk") {
+    return (
+      <IdleAnimationWrapper type="bob" duration={0.25}>
+        {renderBody(walkFrame)}
+      </IdleAnimationWrapper>
+    );
+  }
+
   return (
-    <Svg width={size} height={size} viewBox={`0 0 ${vw} ${vh}`}>
-      <G>
-        {pixels.map(([x, y, color], i) => (
-          <Rect
-            key={i}
-            x={x * PX}
-            y={y * PX}
-            width={PX}
-            height={PX}
-            fill={color}
-          />
-        ))}
-      </G>
-    </Svg>
+    <IdleAnimationWrapper type="sway" duration={4}>
+      {renderBody()}
+    </IdleAnimationWrapper>
   );
 }

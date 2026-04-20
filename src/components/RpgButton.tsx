@@ -1,6 +1,7 @@
 import React from "react";
-import { Pressable, Text, View, StyleSheet, StyleProp, ViewStyle, GestureResponderEvent } from "react-native";
+import { Text, View, StyleSheet, StyleProp, ViewStyle } from "react-native";
 import Svg, { Rect, Defs, LinearGradient, Stop } from "react-native-svg";
+import TapFeedback from "./TapFeedback";
 
 type Tier = "gold" | "silver" | "violet" | "emerald" | "ruby" | "sapphire";
 type Size = "sm" | "md" | "lg";
@@ -11,7 +12,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
   fullWidth?: boolean;
   disabled?: boolean;
-  onPress?: (e: GestureResponderEvent) => void;
+  onPress?: () => void;
   children: React.ReactNode;
   accessibilityLabel?: string;
 };
@@ -46,70 +47,69 @@ export default function RpgButton({
   const uid = `rpgbtn-${tier}`;
 
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      style={({ pressed }) => [
-        styles.root,
-        {
-          height: s.height,
-          paddingHorizontal: s.paddingH,
-          borderColor: c.stroke,
-          shadowColor: c.glow,
-          opacity: disabled ? 0.5 : 1,
-          transform: [{ translateY: pressed && !disabled ? 1 : 0 }],
-        },
-        fullWidth && styles.fullWidth,
-        style,
-      ]}
-    >
-      {/* SVG グラデ背景 */}
-      <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
-        <Svg width="100%" height="100%" viewBox="0 0 200 48" preserveAspectRatio="none">
-          <Defs>
-            <LinearGradient id={`${uid}-bg`} x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor={c.light} />
-              <Stop offset="45%" stopColor={c.mid} />
-              <Stop offset="100%" stopColor={c.dark} />
-            </LinearGradient>
-            <LinearGradient id={`${uid}-shine`} x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-              <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-            </LinearGradient>
-          </Defs>
-          <Rect x={0} y={0} width={200} height={48} fill={`url(#${uid}-bg)`} />
-          <Rect x={0} y={0} width={200} height={18} fill={`url(#${uid}-shine)`} />
-          <Rect x={0} y={0} width={200} height={2} fill={c.light} opacity={0.8} />
-          <Rect x={0} y={2} width={200} height={1} fill="#ffffff" opacity={0.35} />
-          <Rect x={0} y={45} width={200} height={3} fill={c.dark} opacity={0.7} />
-          {(tier === "gold" || tier === "violet") && (
-            <>
-              <Rect x={3} y={3} width={3} height={3} fill={c.light} />
-              <Rect x={194} y={3} width={3} height={3} fill={c.light} />
-              <Rect x={3} y={42} width={3} height={3} fill={c.dark} />
-              <Rect x={194} y={42} width={3} height={3} fill={c.dark} />
-            </>
-          )}
-        </Svg>
-      </View>
+    <TapFeedback onPress={onPress} disabled={disabled}>
+      <View
+        accessible
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        style={[
+          styles.root,
+          {
+            height: s.height,
+            paddingHorizontal: s.paddingH,
+            borderColor: c.stroke,
+            shadowColor: c.glow,
+            opacity: disabled ? 0.5 : 1,
+          },
+          fullWidth && styles.fullWidth,
+          style,
+        ]}
+      >
+        {/* SVG グラデ背景 */}
+        <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+          <Svg width="100%" height="100%" viewBox="0 0 200 48" preserveAspectRatio="none">
+            <Defs>
+              <LinearGradient id={`${uid}-bg`} x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0%" stopColor={c.light} />
+                <Stop offset="45%" stopColor={c.mid} />
+                <Stop offset="100%" stopColor={c.dark} />
+              </LinearGradient>
+              <LinearGradient id={`${uid}-shine`} x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
+                <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+              </LinearGradient>
+            </Defs>
+            <Rect x={0} y={0} width={200} height={48} fill={`url(#${uid}-bg)`} />
+            <Rect x={0} y={0} width={200} height={18} fill={`url(#${uid}-shine)`} />
+            <Rect x={0} y={0} width={200} height={2} fill={c.light} opacity={0.8} />
+            <Rect x={0} y={2} width={200} height={1} fill="#ffffff" opacity={0.35} />
+            <Rect x={0} y={45} width={200} height={3} fill={c.dark} opacity={0.7} />
+            {(tier === "gold" || tier === "violet") && (
+              <>
+                <Rect x={3} y={3} width={3} height={3} fill={c.light} />
+                <Rect x={194} y={3} width={3} height={3} fill={c.light} />
+                <Rect x={3} y={42} width={3} height={3} fill={c.dark} />
+                <Rect x={194} y={42} width={3} height={3} fill={c.dark} />
+              </>
+            )}
+          </Svg>
+        </View>
 
-      {/* コンテンツ */}
-      <View style={styles.content}>
-        {typeof children === "string" ? (
-          <Text style={[styles.text, { color: c.text, fontSize: s.fontSize }]}>{children}</Text>
-        ) : (
-          // React.Children.map でText要素に色を適用
-          React.Children.map(children, (child) => {
-            if (typeof child === "string" || typeof child === "number") {
-              return <Text style={[styles.text, { color: c.text, fontSize: s.fontSize }]}>{child}</Text>;
-            }
-            return child;
-          })
-        )}
+        {/* コンテンツ */}
+        <View style={styles.content}>
+          {typeof children === "string" ? (
+            <Text style={[styles.text, { color: c.text, fontSize: s.fontSize }]} numberOfLines={1} adjustsFontSizeToFit>{children}</Text>
+          ) : (
+            React.Children.map(children, (child) => {
+              if (typeof child === "string" || typeof child === "number") {
+                return <Text style={[styles.text, { color: c.text, fontSize: s.fontSize }]} numberOfLines={1} adjustsFontSizeToFit>{child}</Text>;
+              }
+              return child;
+            })
+          )}
+        </View>
       </View>
-    </Pressable>
+    </TapFeedback>
   );
 }
 
@@ -132,6 +132,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 6,
     zIndex: 1,
+    flexShrink: 1,
+    paddingHorizontal: 4,
   },
   text: {
     fontWeight: "bold",

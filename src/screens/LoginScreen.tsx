@@ -72,6 +72,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   const [editPin, setEditPin] = useState("");
   const [savingMember, setSavingMember] = useState(false);
   const adminScrollRef = useRef<ScrollView>(null);
+  const childScrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     loadFamilies();
@@ -125,9 +126,11 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     onLoginSuccess();
   }
 
-  async function handlePinLogin() {
+  async function handlePinLogin(pinOverride?: string) {
     if (!selectedUser || !selectedFamily) return;
-    const valid = await verifyPin(selectedUser.id, pin);
+    const pinValue = pinOverride ?? pin;
+    if (!pinValue) return;
+    const valid = await verifyPin(selectedUser.id, pinValue);
     if (!valid) {
       setError("PINが ちがいます");
       return;
@@ -487,10 +490,12 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
         <View style={styles.card}>
           {!adminLoggedIn ? (
             <>
-              {isSignUp ? <PixelScrollIcon size={40} /> : <PixelKeyIcon size={40} />}
-              <Text style={styles.titleAdmin} adjustsFontSizeToFit numberOfLines={1}>
-                {isSignUp ? "アカウント作成" : "ログイン"}
-              </Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 8 }}>
+                {isSignUp ? <PixelScrollIcon size={40} /> : <PixelKeyIcon size={40} />}
+                <Text style={[styles.titleAdmin, { marginBottom: 0 }]} adjustsFontSizeToFit numberOfLines={1}>
+                  {isSignUp ? "アカウント作成" : "ログイン"}
+                </Text>
+              </View>
 
               <TextInput
                 style={styles.input}
@@ -568,23 +573,25 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             </>
           ) : (
             <>
-              <PixelHouseIcon size={40} />
-              <Text style={styles.titleAdmin}>家族管理</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 8 }}>
+                <PixelHouseIcon size={40} />
+                <Text style={[styles.titleAdmin, { marginBottom: 0 }]}>家族管理</Text>
+              </View>
 
               {/* 家族一覧 */}
               {managingFamily ? (
                 <>
                   {/* 家族メンバー管理画面 */}
-                  <TouchableOpacity onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>家族一覧に戻る</Text></View>
+                  <TouchableOpacity style={styles.backButton} onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
+                    <PixelDoorIcon size={14} /><Text style={styles.backText}>家族一覧に戻る</Text>
                   </TouchableOpacity>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8, marginBottom: 12 }}>
                     <PixelHouseIcon size={18} />
                     <Text style={[styles.titleAdmin, { fontSize: rf(18), marginBottom: 0 }]}>{managingFamily.name}</Text>
                   </View>
 
-                  {/* 既存メンバー */}
-                  {familyMembers.map((m) => (
+                  {/* 既存メンバー（子供のみ表示、親は非表示） */}
+                  {familyMembers.filter((m) => m.role === "child").map((m) => (
                     <View key={m.id}>
                       {editingMember?.id === m.id ? (
                         /* 編集モード */
@@ -607,7 +614,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                                 accessibilityLabel={g.label}
                                 accessibilityState={{ selected: editIcon === g.key }}
                               >
-                                <ChildCharacterSvg gender={g.key} size={36} />
+                                <ChildCharacterSvg gender={g.key} size={36} animated />
                                 <Text style={{ fontSize: 10, marginTop: 2, fontWeight: "bold", color: editIcon === g.key ? palette.primary : palette.textMuted }}>
                                   {g.label}
                                 </Text>
@@ -618,7 +625,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                             style={styles.input}
                             value={editName}
                             onChangeText={setEditName}
-                            placeholder="なまえ"
+                            placeholder="名前"
                             placeholderTextColor={palette.textPlaceholder}
                             onFocus={() => setTimeout(() => adminScrollRef.current?.scrollToEnd({ animated: true }), 200)}
                           />
@@ -626,7 +633,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                             style={styles.input}
                             value={editPin}
                             onChangeText={setEditPin}
-                            placeholder="あんしょうばんごう（なくてもOK）"
+                            placeholder="暗証番号（なくてもOK）"
                             placeholderTextColor={palette.textPlaceholder}
                             keyboardType="number-pad"
                             maxLength={6}
@@ -639,14 +646,14 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                               disabled={savingMember || !editName.trim()}
                             >
                               <Text style={styles.buttonText}>
-                                {savingMember ? "ほぞんちゅう..." : "ほぞん"}
+                                {savingMember ? "保存中..." : "保存"}
                               </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                               style={[styles.button, { flex: 1, backgroundColor: palette.surfaceMuted }]}
                               onPress={() => setEditingMember(null)}
                             >
-                              <Text style={[styles.buttonText, { color: palette.textBase }]}>キャンセル</Text>
+                              <Text style={[styles.buttonText, { color: palette.textBase, fontSize: 12 }]} numberOfLines={1} adjustsFontSizeToFit>キャンセル</Text>
                             </TouchableOpacity>
                           </View>
                           <TouchableOpacity
@@ -664,12 +671,12 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                         >
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1 }}>
                             {m.role === "child" ? (
-                              <ChildCharacterSvg gender={resolveChildGender(m.icon)} size={22} />
+                              <ChildCharacterSvg gender={resolveChildGender(m.icon)} size={22} animated />
                             ) : (
                               <PixelFamilyIcon size={18} />
                             )}
                             <Text style={styles.familyName}>
-                              {m.name}（{m.role === "child" ? "こども" : "おや"}）
+                              {m.name}（{m.role === "child" ? "子供" : "親"}）
                             </Text>
                           </View>
                           <PixelPencilIcon size={14} />
@@ -678,7 +685,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                     </View>
                   ))}
 
-                  {familyMembers.length === 0 && (
+                  {familyMembers.filter((m) => m.role === "child").length === 0 && (
                     <Text style={{ textAlign: "center", color: palette.textMuted, marginVertical: 12 }}>
                       まだメンバーがいません
                     </Text>
@@ -707,7 +714,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                           accessibilityLabel={g.label}
                           accessibilityState={{ selected: newChildIcon === g.key }}
                         >
-                          <ChildCharacterSvg gender={g.key} size={44} />
+                          <ChildCharacterSvg gender={g.key} size={44} animated />
                           <Text
                             style={{
                               fontSize: 11,
@@ -724,7 +731,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
 
                     <TextInput
                       style={styles.input}
-                      placeholder="なまえ（れい: ハルト）"
+                      placeholder="名前（例: ハルト）"
                       placeholderTextColor={palette.textPlaceholder}
                       value={newChildName}
                       onChangeText={setNewChildName}
@@ -732,7 +739,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                     />
                     <TextInput
                       style={styles.input}
-                      placeholder="あんしょうばんごう（なくてもOK）"
+                      placeholder="暗証番号（なくてもOK）"
                       placeholderTextColor={palette.textPlaceholder}
                       value={newChildPin}
                       onChangeText={setNewChildPin}
@@ -785,7 +792,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                           )}
                         </View>
                         {!isSample && (
-                          <View style={{ flexDirection: "row", gap: 8, marginBottom: 8, marginTop: -4 }}>
+                          <View style={{ flexDirection: "row", gap: 8, marginBottom: 8, marginTop: 4, marginHorizontal: 4 }}>
                             <TouchableOpacity
                               style={{
                                 flex: 1,
@@ -793,6 +800,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                                 borderRadius: 10,
                                 paddingVertical: 10,
                                 alignItems: "center",
+                                justifyContent: "center",
                               }}
                               onPress={async () => {
                                 await setSession({
@@ -806,7 +814,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                                 onLoginSuccess();
                               }}
                             >
-                              <Text style={{ color: palette.white, fontWeight: "bold", fontSize: 14 }}>▶ ダッシュボード</Text>
+                              <Text style={{ color: palette.white, fontWeight: "bold", fontSize: 12 }} numberOfLines={1}>▶ ダッシュボード</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                               style={{
@@ -815,12 +823,13 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                                 borderRadius: 10,
                                 paddingVertical: 10,
                                 alignItems: "center",
+                                justifyContent: "center",
                                 borderWidth: 1,
                                 borderColor: palette.border,
                               }}
                               onPress={() => openFamilyMembers(f)}
                             >
-                              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelPencilIcon size={14} /><Text style={{ color: palette.textBase, fontWeight: "bold", fontSize: 14 }}>メンバー管理</Text></View>
+                              <Text style={{ color: palette.textBase, fontWeight: "bold", fontSize: 12 }} numberOfLines={1}>メンバー管理</Text>
                             </TouchableOpacity>
                           </View>
                         )}
@@ -836,7 +845,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                   <View style={styles.addFamilyRow}>
                     <TextInput
                       style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                      placeholder="あたらしい かぞくめい（れい: たなかけ）"
+                      placeholder="新しい家族名（例: 田中家）"
                       placeholderTextColor={palette.textPlaceholder}
                       value={newFamilyName}
                       onChangeText={setNewFamilyName}
@@ -857,14 +866,6 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             </>
           )}
 
-          <TouchableOpacity style={styles.backButton} onPress={() => {
-            setAdminLoggedIn(false);
-            setAdminEmail("");
-            setAdminPassword("");
-            goBack();
-          }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
-          </TouchableOpacity>
         </View>
       </ScrollView>
       </KeyboardAvoidingView>
@@ -874,23 +875,29 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "position" : undefined}
+      contentContainerStyle={{ flex: 1 }}
     >
     <ScrollView
+      ref={childScrollRef}
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="interactive"
     >
       <View style={styles.card}>
-        {/* Header */}
-        <View style={{ flexDirection: "row", gap: 8, marginBottom: 4 }}>
-          <PixelHeroSvg type="warrior" size={48} />
-          <PixelHeroSvg type="mage" size={48} />
-        </View>
-        <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>おこづかいクエスト</Text>
-        <Text style={styles.subtitle} adjustsFontSizeToFit numberOfLines={1}>
-          クエストをクリアしてコインをかせごう！
-        </Text>
+        {/* Header — PIN入力中は非表示にしてキーボードスペース確保 */}
+        {step !== "pin" && (
+          <>
+            <View style={{ flexDirection: "row", gap: 8, marginBottom: 4 }}>
+              <PixelHeroSvg type="warrior" size={48} animated mode="walk" />
+              <PixelHeroSvg type="mage" size={48} animated mode="walk" />
+            </View>
+            <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>おこづかいクエスト</Text>
+            <Text style={styles.subtitle} adjustsFontSizeToFit numberOfLines={1}>
+              クエストをクリアしてコインをかせごう！
+            </Text>
+          </>
+        )}
 
         {/* Step: Mode selection */}
         {step === "mode" && (
@@ -900,7 +907,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
               <RpgButton tier="gold" size="lg" fullWidth onPress={() => { setStep("family"); loadFamilies(); }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <PixelPersonIcon size={24} />
-                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }}>こどもモード</Text>
+                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }}>子供モード</Text>
                 </View>
               </RpgButton>
               <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>おうちをえらんでログイン</Text>
@@ -930,7 +937,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 style={styles.selectButton}
                 onPress={() => handleFamilySelect(f)}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelHouseIcon size={16} /><Text style={styles.selectText}>{f.name}</Text></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flex: 1 }}><PixelHouseIcon size={16} /><Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{f.name}</Text></View>
               </TouchableOpacity>
             ))}
           </>
@@ -950,7 +957,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                 onPress={() => handleUserSelect(m)}
               >
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                  <ChildCharacterSvg gender={resolveChildGender(m.icon)} size={36} />
+                  <ChildCharacterSvg gender={resolveChildGender(m.icon)} size={36} animated />
                   <Text
                     style={styles.selectText}
                     numberOfLines={1}
@@ -960,7 +967,7 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                     {m.name}
                   </Text>
                 </View>
-                <Text style={styles.roleText} numberOfLines={1}>こどもこうざ</Text>
+                <RubyText style={styles.roleText} parts={[["子供", "こども"], ["口座", "こうざ"]]} rubySize={6} noWrap />
               </TouchableOpacity>
             ))}
           </>
@@ -979,17 +986,30 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
             <TextInput
               style={styles.pinInput}
               value={pin}
-              onChangeText={setPin}
+              onChangeText={(text) => {
+                setPin(text);
+                if (text.length === 4) {
+                  setTimeout(() => handlePinLogin(text), 200);
+                }
+              }}
               maxLength={4}
               keyboardType="number-pad"
               secureTextEntry
               placeholder="4けたのPIN"
               placeholderTextColor={palette.textPlaceholder}
               textAlign="center"
-              onSubmitEditing={handlePinLogin}
+              onSubmitEditing={() => handlePinLogin()}
+              autoFocus
+              onFocus={() => setTimeout(() => childScrollRef.current?.scrollToEnd({ animated: true }), 300)}
             />
+            <TouchableOpacity
+              style={{ alignSelf: "center", paddingVertical: 8, paddingHorizontal: 16, marginBottom: 8 }}
+              onPress={() => Keyboard.dismiss()}
+            >
+              <Text style={{ color: palette.textMuted, fontSize: 13 }}>▼ キーボードをとじる</Text>
+            </TouchableOpacity>
             {error ? <Text style={styles.error}>{error}</Text> : null}
-            <RpgButton tier="gold" size="lg" fullWidth onPress={handlePinLogin}>
+            <RpgButton tier="gold" size="lg" fullWidth onPress={() => { Keyboard.dismiss(); handlePinLogin(); }}>
               クエストをはじめる！
             </RpgButton>
           </>
@@ -1101,12 +1121,13 @@ function createStyles(p: Palette) {
       justifyContent: "space-between",
     },
     selectText: {
-      fontSize: rf(18),
+      fontSize: rf(22),
+      fontWeight: "bold",
       color: p.textStrong,
       flexShrink: 1,
     },
     roleText: {
-      fontSize: rf(12),
+      fontSize: rf(10),
       color: p.textMuted,
       marginLeft: 8,
       flexShrink: 0,
@@ -1164,10 +1185,20 @@ function createStyles(p: Palette) {
     backButton: {
       marginTop: 16,
       marginBottom: 12,
+      alignSelf: "center",
+      flexDirection: "row",
       alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 2,
+      borderColor: p.primary,
+      backgroundColor: p.background,
     } as const,
     backText: {
       fontSize: 14,
+      fontWeight: "bold",
       color: p.textMuted,
     },
     modeButton: {

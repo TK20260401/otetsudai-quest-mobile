@@ -127,7 +127,7 @@ export default function FamilyAdventureMap({
           const level = getCurrentLevel(total);
           return (
             <View key={kid.id} style={styles.memberCard}>
-              <CharacterSvg level={level.level} mood="normal" size={48} />
+              <CharacterSvg level={level.level} mood="normal" size={48} animated mode="walk" />
               <Text style={styles.memberLevel}>Lv.{level.level}</Text>
               <Text style={styles.memberName} numberOfLines={1}>
                 {kid.name}

@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Pressable } from "react-nativ
 import type { Pet } from "../lib/types";
 import { PET_TYPE_INFO, GROWTH_THRESHOLDS, HATCH_QUESTS_REQUIRED, calculateHappiness } from "../lib/pets";
 import PetSvg from "./PetSvg";
+import EggShake from "./animations/EggShake";
+import { RubyStr } from "./Ruby";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -18,7 +20,7 @@ export default function PetDisplay({ pet, onTapEgg, onManage }: Props) {
   if (!pet) {
     return (
       <TouchableOpacity onPress={onManage} style={styles.emptyBtn}>
-        <Text style={styles.emptyText}>ペットを さがそう！</Text>
+        <RubyStr text="ペットを[探|さが]そう！" style={styles.emptyText} rubySize={6} noWrap />
       </TouchableOpacity>
     );
   }
@@ -32,7 +34,9 @@ export default function PetDisplay({ pet, onTapEgg, onManage }: Props) {
     return (
       <View style={styles.container}>
         <Pressable onPress={ready ? onTapEgg : undefined}>
-          <PetSvg type={pet.pet_type} stage="egg" size={44} animated />
+          <EggShake shaking={!ready} intensity={ready ? "strong" : "subtle"}>
+            <PetSvg type={pet.pet_type} stage="egg" size={44} animated />
+          </EggShake>
         </Pressable>
         <View style={styles.progressTrack}>
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
@@ -78,7 +82,7 @@ function createStyles(palette: Palette) {
       paddingVertical: 2,
     },
     emptyText: {
-      fontSize: 10,
+      fontSize: 8,
       color: palette.textMuted,
     },
     progressTrack: {

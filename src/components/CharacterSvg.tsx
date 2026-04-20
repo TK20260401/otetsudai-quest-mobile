@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Svg, { Circle, Rect, Path, Ellipse, G, Defs, RadialGradient, Stop, LinearGradient } from "react-native-svg";
 import IdleAnimationWrapper from "./IdleAnimationWrapper";
 
@@ -7,6 +7,8 @@ type Props = {
   mood: "active" | "normal" | "lonely";
   size?: number;
   animated?: boolean;
+  /** "walk" で歩行アニメ、デフォルトは "idle"（sway） */
+  mode?: "idle" | "walk";
 };
 
 /**
@@ -19,28 +21,49 @@ type Props = {
  * Lv6: 輝く鎧+賢者の杖
  * Lv7: 王冠+聖剣の伝説の勇者
  */
-export default function CharacterSvg({ level, mood, size = 120, animated = false }: Props) {
-  // 機嫌による目の表現
+export default function CharacterSvg({ level, mood, size = 120, animated = false, mode = "idle" }: Props) {
   const eyeExpr = mood === "active" ? "happy" : mood === "lonely" ? "sad" : "normal";
+  const [frame, setFrame] = useState(0); // 0 or 1
 
-  const svg = (
+  useEffect(() => {
+    if (!animated) return;
+    const interval = setInterval(() => {
+      setFrame((f) => (f === 0 ? 1 : 0));
+    }, mode === "walk" ? 250 : 400);
+    return () => clearInterval(interval);
+  }, [animated, mode]);
+
+  const renderBody = (legOff: number = 0, armOff: number = 0) => (
     <Svg width={size} height={size} viewBox="0 0 120 120">
       {commonDefs()}
-      {level === 1 && renderLv1(eyeExpr)}
-      {level === 2 && renderLv2(eyeExpr)}
-      {level === 3 && renderLv3(eyeExpr)}
-      {level === 4 && renderLv4(eyeExpr)}
-      {level === 5 && renderLv5(eyeExpr)}
-      {level === 6 && renderLv6(eyeExpr)}
-      {level >= 7 && renderLv7(eyeExpr)}
+      {level === 1 && renderLv1(eyeExpr, legOff, armOff)}
+      {level === 2 && renderLv2(eyeExpr, legOff, armOff)}
+      {level === 3 && renderLv3(eyeExpr, legOff, armOff)}
+      {level === 4 && renderLv4(eyeExpr, legOff, armOff)}
+      {level === 5 && renderLv5(eyeExpr, legOff, armOff)}
+      {level === 6 && renderLv6(eyeExpr, legOff, armOff)}
+      {level >= 7 && renderLv7(eyeExpr, legOff, armOff)}
     </Svg>
   );
 
-  if (!animated) return svg;
+  if (!animated) return renderBody();
 
+  // 腕振り+足踏み: frame 0→左腕上+右足上, frame 1→右腕上+左足上
+  const legOff = frame === 0 ? -2 : 2;
+  const armOff = frame === 0 ? -3 : 3;
+
+  if (mode === "walk") {
+    return (
+      <IdleAnimationWrapper type="bob" duration={0.25}>
+        {renderBody(legOff, armOff)}
+      </IdleAnimationWrapper>
+    );
+  }
+
+  // idle: 足踏み+腕振り + breathe
   return (
-    <IdleAnimationWrapper type="sway" duration={4}>
-      {svg}
+    <IdleAnimationWrapper type="breathe" duration={3}>
+      {renderBody(legOff, armOff)}
     </IdleAnimationWrapper>
   );
 }
@@ -111,21 +134,21 @@ function face(eyeExpr: EyeExpr, yOff = 0) {
 }
 
 /** Lv1: 布の服の赤ちゃん冒険者 */
-function renderLv1(eyeExpr: EyeExpr) {
+function renderLv1(eyeExpr: EyeExpr, legOffset: number = 0, armOffset: number = 0) {
   return (
     <G>
       {/* 体（布の服） */}
       <Rect x={42} y={52} width={36} height={35} rx={8} fill="#C4A96A" />
       <Rect x={46} y={52} width={28} height={10} rx={4} fill="#D4B97A" />
       {/* 腕 */}
-      <Rect x={32} y={55} width={12} height={20} rx={6} fill="url(#skin)" />
-      <Rect x={76} y={55} width={12} height={20} rx={6} fill="url(#skin)" />
+      <Rect x={32} y={55 + armOffset} width={12} height={20} rx={6} fill="url(#skin)" />
+      <Rect x={76} y={55 - armOffset} width={12} height={20} rx={6} fill="url(#skin)" />
       {/* 足 */}
-      <Rect x={46} y={85} width={10} height={16} rx={5} fill="url(#skin)" />
-      <Rect x={64} y={85} width={10} height={16} rx={5} fill="url(#skin)" />
+      <Rect x={46} y={85 + legOffset} width={10} height={16} rx={5} fill="url(#skin)" />
+      <Rect x={64} y={85 - legOffset} width={10} height={16} rx={5} fill="url(#skin)" />
       {/* 靴 */}
-      <Ellipse cx={51} cy={100} rx={7} ry={5} fill="#8B6D4A" />
-      <Ellipse cx={69} cy={100} rx={7} ry={5} fill="#8B6D4A" />
+      <Ellipse cx={51} cy={100 + legOffset} rx={7} ry={5} fill="#8B6D4A" />
+      <Ellipse cx={69} cy={100 - legOffset} rx={7} ry={5} fill="#8B6D4A" />
       {face(eyeExpr)}
       {/* 小さな木の剣 */}
       <Rect x={84} y={48} width={3} height={22} rx={1} fill="#8B6D4A" />
@@ -135,7 +158,7 @@ function renderLv1(eyeExpr: EyeExpr) {
 }
 
 /** Lv2: 革装備の見習い騎士 */
-function renderLv2(eyeExpr: EyeExpr) {
+function renderLv2(eyeExpr: EyeExpr, legOffset: number = 0, armOffset: number = 0) {
   return (
     <G>
       {/* 体（革の鎧） */}
@@ -145,13 +168,13 @@ function renderLv2(eyeExpr: EyeExpr) {
       <Rect x={42} y={70} width={36} height={4} rx={2} fill="#5C3A1E" />
       <Circle cx={60} cy={72} r={3} fill="#D4A030" />
       {/* 腕（革のグローブ） */}
-      <Rect x={30} y={55} width={14} height={22} rx={7} fill="#8B5E3C" />
-      <Rect x={76} y={55} width={14} height={22} rx={7} fill="#8B5E3C" />
+      <Rect x={30} y={55 + armOffset} width={14} height={22} rx={7} fill="#8B5E3C" />
+      <Rect x={76} y={55 - armOffset} width={14} height={22} rx={7} fill="#8B5E3C" />
       {/* 足（革のブーツ） */}
-      <Rect x={45} y={85} width={11} height={18} rx={5} fill="#5C3A1E" />
-      <Rect x={64} y={85} width={11} height={18} rx={5} fill="#5C3A1E" />
-      <Ellipse cx={50} cy={102} rx={8} ry={5} fill="#5C3A1E" />
-      <Ellipse cx={70} cy={102} rx={8} ry={5} fill="#5C3A1E" />
+      <Rect x={45} y={85 + legOffset} width={11} height={18} rx={5} fill="#5C3A1E" />
+      <Rect x={64} y={85 - legOffset} width={11} height={18} rx={5} fill="#5C3A1E" />
+      <Ellipse cx={50} cy={102 + legOffset} rx={8} ry={5} fill="#5C3A1E" />
+      <Ellipse cx={70} cy={102 - legOffset} rx={8} ry={5} fill="#5C3A1E" />
       {face(eyeExpr)}
       {/* 革の盾 */}
       <Ellipse cx={30} cy={68} rx={10} ry={12} fill="#A0704C" />
@@ -162,7 +185,7 @@ function renderLv2(eyeExpr: EyeExpr) {
 }
 
 /** Lv3: 鉄の鎧のクエストナイト */
-function renderLv3(eyeExpr: EyeExpr) {
+function renderLv3(eyeExpr: EyeExpr, legOffset: number = 0, armOffset: number = 0) {
   return (
     <G>
       <Defs>
@@ -176,13 +199,13 @@ function renderLv3(eyeExpr: EyeExpr) {
       {/* 胸当て */}
       <Path d="M46,54 L60,60 L74,54 L74,66 L60,72 L46,66 Z" fill="#8090A0" />
       {/* 腕（鉄のガントレット） */}
-      <Rect x={28} y={54} width={14} height={24} rx={7} fill="url(#iron)" />
-      <Rect x={78} y={54} width={14} height={24} rx={7} fill="url(#iron)" />
+      <Rect x={28} y={54 + armOffset} width={14} height={24} rx={7} fill="url(#iron)" />
+      <Rect x={78} y={54 - armOffset} width={14} height={24} rx={7} fill="url(#iron)" />
       {/* 足（鉄のブーツ） */}
-      <Rect x={44} y={86} width={12} height={18} rx={5} fill="#6B7580" />
-      <Rect x={64} y={86} width={12} height={18} rx={5} fill="#6B7580" />
-      <Ellipse cx={50} cy={103} rx={9} ry={5} fill="#6B7580" />
-      <Ellipse cx={70} cy={103} rx={9} ry={5} fill="#6B7580" />
+      <Rect x={44} y={86 + legOffset} width={12} height={18} rx={5} fill="#6B7580" />
+      <Rect x={64} y={86 - legOffset} width={12} height={18} rx={5} fill="#6B7580" />
+      <Ellipse cx={50} cy={103 + legOffset} rx={9} ry={5} fill="#6B7580" />
+      <Ellipse cx={70} cy={103 - legOffset} rx={9} ry={5} fill="#6B7580" />
       {face(eyeExpr)}
       {/* 鉄の剣 */}
       <Rect x={86} y={38} width={4} height={30} rx={1} fill="#A8B0B8" />
@@ -196,7 +219,7 @@ function renderLv3(eyeExpr: EyeExpr) {
 }
 
 /** Lv4: 銀装備+マント */
-function renderLv4(eyeExpr: EyeExpr) {
+function renderLv4(eyeExpr: EyeExpr, legOffset: number = 0, armOffset: number = 0) {
   return (
     <G>
       <Defs>
@@ -215,13 +238,13 @@ function renderLv4(eyeExpr: EyeExpr) {
       <Ellipse cx={38} cy={54} rx={8} ry={5} fill="url(#silver)" />
       <Ellipse cx={82} cy={54} rx={8} ry={5} fill="url(#silver)" />
       {/* 腕 */}
-      <Rect x={26} y={56} width={14} height={24} rx={7} fill="url(#silver)" />
-      <Rect x={80} y={56} width={14} height={24} rx={7} fill="url(#silver)" />
+      <Rect x={26} y={56 + armOffset} width={14} height={24} rx={7} fill="url(#silver)" />
+      <Rect x={80} y={56 - armOffset} width={14} height={24} rx={7} fill="url(#silver)" />
       {/* 足 */}
-      <Rect x={44} y={86} width={12} height={18} rx={5} fill="#A0A8B0" />
-      <Rect x={64} y={86} width={12} height={18} rx={5} fill="#A0A8B0" />
-      <Ellipse cx={50} cy={103} rx={9} ry={5} fill="#A0A8B0" />
-      <Ellipse cx={70} cy={103} rx={9} ry={5} fill="#A0A8B0" />
+      <Rect x={44} y={86 + legOffset} width={12} height={18} rx={5} fill="#A0A8B0" />
+      <Rect x={64} y={86 - legOffset} width={12} height={18} rx={5} fill="#A0A8B0" />
+      <Ellipse cx={50} cy={103 + legOffset} rx={9} ry={5} fill="#A0A8B0" />
+      <Ellipse cx={70} cy={103 - legOffset} rx={9} ry={5} fill="#A0A8B0" />
       {face(eyeExpr)}
       {/* 銀の剣 */}
       <Rect x={88} y={34} width={4} height={34} rx={1} fill="#D0D8E0" />
@@ -232,7 +255,7 @@ function renderLv4(eyeExpr: EyeExpr) {
 }
 
 /** Lv5: 金装備+英雄マント */
-function renderLv5(eyeExpr: EyeExpr) {
+function renderLv5(eyeExpr: EyeExpr, legOffset: number = 0, armOffset: number = 0) {
   return (
     <G>
       <Defs>
@@ -252,13 +275,13 @@ function renderLv5(eyeExpr: EyeExpr) {
       <Ellipse cx={36} cy={53} rx={10} ry={6} fill="url(#gold)" />
       <Ellipse cx={84} cy={53} rx={10} ry={6} fill="url(#gold)" />
       {/* 腕 */}
-      <Rect x={24} y={56} width={14} height={24} rx={7} fill="url(#gold)" />
-      <Rect x={82} y={56} width={14} height={24} rx={7} fill="url(#gold)" />
+      <Rect x={24} y={56 + armOffset} width={14} height={24} rx={7} fill="url(#gold)" />
+      <Rect x={82} y={56 - armOffset} width={14} height={24} rx={7} fill="url(#gold)" />
       {/* 足 */}
-      <Rect x={44} y={86} width={12} height={18} rx={5} fill="#DAA520" />
-      <Rect x={64} y={86} width={12} height={18} rx={5} fill="#DAA520" />
-      <Ellipse cx={50} cy={103} rx={9} ry={5} fill="#DAA520" />
-      <Ellipse cx={70} cy={103} rx={9} ry={5} fill="#DAA520" />
+      <Rect x={44} y={86 + legOffset} width={12} height={18} rx={5} fill="#DAA520" />
+      <Rect x={64} y={86 - legOffset} width={12} height={18} rx={5} fill="#DAA520" />
+      <Ellipse cx={50} cy={103 + legOffset} rx={9} ry={5} fill="#DAA520" />
+      <Ellipse cx={70} cy={103 - legOffset} rx={9} ry={5} fill="#DAA520" />
       {face(eyeExpr)}
       {/* 金の大剣 */}
       <Rect x={90} y={28} width={5} height={40} rx={2} fill="#FFD700" />
@@ -271,7 +294,7 @@ function renderLv5(eyeExpr: EyeExpr) {
 }
 
 /** Lv6: 輝く鎧+賢者の杖 */
-function renderLv6(eyeExpr: EyeExpr) {
+function renderLv6(eyeExpr: EyeExpr, legOffset: number = 0, armOffset: number = 0) {
   return (
     <G>
       <Defs>
@@ -296,13 +319,13 @@ function renderLv6(eyeExpr: EyeExpr) {
       <Ellipse cx={36} cy={53} rx={10} ry={7} fill="url(#platinum)" />
       <Ellipse cx={84} cy={53} rx={10} ry={7} fill="url(#platinum)" />
       {/* 腕 */}
-      <Rect x={24} y={56} width={14} height={24} rx={7} fill="url(#platinum)" />
-      <Rect x={82} y={56} width={14} height={24} rx={7} fill="url(#platinum)" />
+      <Rect x={24} y={56 + armOffset} width={14} height={24} rx={7} fill="url(#platinum)" />
+      <Rect x={82} y={56 - armOffset} width={14} height={24} rx={7} fill="url(#platinum)" />
       {/* 足 */}
-      <Rect x={44} y={86} width={12} height={18} rx={5} fill="#90B0E0" />
-      <Rect x={64} y={86} width={12} height={18} rx={5} fill="#90B0E0" />
-      <Ellipse cx={50} cy={103} rx={9} ry={5} fill="#90B0E0" />
-      <Ellipse cx={70} cy={103} rx={9} ry={5} fill="#90B0E0" />
+      <Rect x={44} y={86 + legOffset} width={12} height={18} rx={5} fill="#90B0E0" />
+      <Rect x={64} y={86 - legOffset} width={12} height={18} rx={5} fill="#90B0E0" />
+      <Ellipse cx={50} cy={103 + legOffset} rx={9} ry={5} fill="#90B0E0" />
+      <Ellipse cx={70} cy={103 - legOffset} rx={9} ry={5} fill="#90B0E0" />
       {face(eyeExpr)}
       {/* 賢者の杖 */}
       <Rect x={16} y={24} width={4} height={55} rx={2} fill="#6B4C8A" />
@@ -315,7 +338,7 @@ function renderLv6(eyeExpr: EyeExpr) {
 }
 
 /** Lv7: 王冠+聖剣の伝説の勇者 */
-function renderLv7(eyeExpr: EyeExpr) {
+function renderLv7(eyeExpr: EyeExpr, legOffset: number = 0, armOffset: number = 0) {
   return (
     <G>
       <Defs>
@@ -342,13 +365,13 @@ function renderLv7(eyeExpr: EyeExpr) {
       <Ellipse cx={34} cy={52} rx={12} ry={8} fill="url(#holy)" />
       <Ellipse cx={86} cy={52} rx={12} ry={8} fill="url(#holy)" />
       {/* 腕 */}
-      <Rect x={22} y={54} width={14} height={26} rx={7} fill="url(#holy)" />
-      <Rect x={84} y={54} width={14} height={26} rx={7} fill="url(#holy)" />
+      <Rect x={22} y={54 + armOffset} width={14} height={26} rx={7} fill="url(#holy)" />
+      <Rect x={84} y={54 - armOffset} width={14} height={26} rx={7} fill="url(#holy)" />
       {/* 足 */}
-      <Rect x={44} y={86} width={12} height={18} rx={5} fill="#DAA520" />
-      <Rect x={64} y={86} width={12} height={18} rx={5} fill="#DAA520" />
-      <Ellipse cx={50} cy={103} rx={9} ry={5} fill="#DAA520" />
-      <Ellipse cx={70} cy={103} rx={9} ry={5} fill="#DAA520" />
+      <Rect x={44} y={86 + legOffset} width={12} height={18} rx={5} fill="#DAA520" />
+      <Rect x={64} y={86 - legOffset} width={12} height={18} rx={5} fill="#DAA520" />
+      <Ellipse cx={50} cy={103 + legOffset} rx={9} ry={5} fill="#DAA520" />
+      <Ellipse cx={70} cy={103 - legOffset} rx={9} ry={5} fill="#DAA520" />
       {face(eyeExpr)}
       {/* 王冠 */}
       <Path d="M44,12 L48,22 L54,14 L60,24 L66,14 L72,22 L76,12 L78,26 L42,26 Z" fill="#FFD700" />

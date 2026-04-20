@@ -44,6 +44,7 @@ export type Palette = {
   textBase: string; // 本文 (on白 7:1↑ AAA)
   textMuted: string; // 補助 (on白 4.5:1↑ AA)
   textPlaceholder: string; // 入力プレースホルダー (on surface 3:1〜4.5:1、本文より薄い透かし)
+  rubyColor: string; // ルビ文字色 — 漢字(textStrong)と明確に区別 (on背景 4.5:1↑ AA)
 
   // Surface
   background: string; // 画面背景
@@ -148,6 +149,7 @@ export const forest: Palette = {
   textBase: "#374a3b", // on白: 9.2:1 ✓ AAA
   textMuted: "#5e7363", // on白: 4.6:1 ✓ AA
   textPlaceholder: "#8a9889", // on #eeeae2 surfaceMuted: 3.3:1 ✓
+  rubyColor: "#7a5418", // on #f6f4ef bg: 6.4:1 ✓ AA — 茶金色でtextStrongと明確に区別
 
   background: "#f6f4ef",
   backgroundLanding: "#f3efe4",
@@ -191,6 +193,7 @@ export const adventure: Palette = {
   textBase: "#332e55", // on白: 10.0:1 ✓ AAA
   textMuted: "#605890", // on白: 4.6:1 ✓ AA
   textPlaceholder: "#8a84b0", // on #efedfa surfaceMuted: 3.2:1 ✓
+  rubyColor: "#965410", // on #f7f6fd bg: 5.6:1 ✓ AA — オレンジ茶でtextStrongと区別
 
   background: "#f7f6fd",
   backgroundLanding: "#fdf4e6",
@@ -234,6 +237,7 @@ export const breeze: Palette = {
   textBase: "#334155", // on白: 9.6:1 ✓ AAA (slate-700)
   textMuted: "#64748b", // on白: 4.6:1 ✓ AA (slate-500)
   textPlaceholder: "#94a3b8", // on #f1f5f9 surfaceMuted: 3.1:1 ✓ (slate-400)
+  rubyColor: "#8a5c08", // on白 bg: 6.0:1 ✓ AA — 琥珀色でtextStrongと区別
 
   background: "#ffffff",
   backgroundLanding: "#fefce8",
@@ -277,6 +281,7 @@ export const dungeon: Palette = {
   textBase: "#c8b8e0", // on bg #1a0f2e: 7.8:1 ✓ AAA
   textMuted: "#9a88b8", // on bg #1a0f2e: 4.8:1 ✓ AA (ボーダーライン)
   textPlaceholder: "#8a7aa8", // on surface #2a1a3e: 3.6:1 ✓ 透かしとして認識可能
+  rubyColor: "#f0c060", // on bg #1a0f2e: 8.6:1 ✓ AAA — ゴールド系でtextStrong(白)と明確に区別
 
   background: "#1a0f2e",
   backgroundLanding: "#150a24",

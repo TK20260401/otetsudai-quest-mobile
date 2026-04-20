@@ -645,8 +645,8 @@ export default function ParentDashboardScreen({
           mp={Math.min(10, children.length * 2)}
           exp={0}
           pendingCount={pendingCount}
-          onBack={handleLogout}
-          onLogout={handleLogout}
+          onBack={() => navigation.navigate("Login")}
+          onLogout={undefined}
         />
       </View>
 
@@ -725,6 +725,9 @@ export default function ParentDashboardScreen({
 
       <ScrollView
         style={styles.scroll}
+        minimumZoomScale={1}
+        maximumZoomScale={3}
+        bouncesZoom
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -1290,6 +1293,26 @@ export default function ParentDashboardScreen({
             })}
           </View>
         )}
+
+        {/* ログアウト */}
+        <TouchableOpacity
+          style={{
+            alignSelf: "center",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6,
+            paddingHorizontal: 14,
+            paddingVertical: 8,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: palette.border,
+            marginTop: 16,
+          }}
+          onPress={handleLogout}
+        >
+          <PixelDoorIcon size={14} />
+          <Text style={{ color: palette.textMuted, fontSize: 13 }}>ログアウト</Text>
+        </TouchableOpacity>
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

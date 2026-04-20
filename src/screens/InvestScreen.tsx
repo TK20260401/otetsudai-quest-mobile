@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
@@ -52,6 +52,7 @@ export default function InvestScreen({
     investBalance: number;
   };
   const { palette } = useTheme();
+  const insets = useSafeAreaInsets();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const orderScrollRef = useRef<ScrollView>(null);
 
@@ -255,17 +256,20 @@ export default function InvestScreen({
           accessibilityLabel="前の画面に戻る"
           accessibilityRole="button"
         >
-          <PixelHouseIcon size={20} />
+          <PixelHouseIcon size={14} />
           <Text style={styles.backText}>もどる</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
-          <PixelSeedlingIcon size={20} />
+          <PixelSeedlingIcon size={18} />
           <RubyText style={styles.headerTitle} parts={[["投資", "とうし"]]} rubySize={6} />
         </View>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
+        minimumZoomScale={1}
+        maximumZoomScale={3}
+        bouncesZoom
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); loadData(); }} />
         }
@@ -382,7 +386,7 @@ export default function InvestScreen({
             style={styles.flex1}
             behavior={Platform.OS === "ios" ? "padding" : undefined}
           >
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
               <TouchableOpacity
                 onPress={() => setOrderVisible(false)}
                 style={styles.backButton}
@@ -390,12 +394,12 @@ export default function InvestScreen({
                 accessibilityLabel="閉じる"
                 accessibilityRole="button"
               >
-                <PixelCrossIcon size={20} />
-                <Text style={styles.backText}>とじる</Text>
+                <PixelHouseIcon size={14} />
+                <Text style={styles.backText}>もどる</Text>
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
-                <PixelSeedlingIcon size={20} />
-                <RubyText style={styles.headerTitle} parts={[["株", "かぶ"], "を", ["買", "か"], "う"]} rubySize={5} />
+                <PixelSeedlingIcon size={18} />
+                <RubyText style={styles.headerTitle} parts={[["株", "かぶ"], "を", ["買", "か"], "う"]} rubySize={6} />
               </View>
             </View>
 
@@ -579,13 +583,11 @@ function createStyles(p: Palette) {
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 12,
-      paddingTop: 12,
+      paddingTop: 8,
       paddingBottom: 10,
       borderBottomWidth: 1,
       borderBottomColor: p.border,
       gap: 10,
-      // iOS ステータスバー／ノッチと重なる事故を避けるため SafeAreaView
-      // に加えて backgroundColor を明示
       backgroundColor: p.background,
     },
     backButton: {
@@ -593,18 +595,14 @@ function createStyles(p: Palette) {
       alignItems: "center",
       gap: 6,
       paddingHorizontal: 14,
-      paddingVertical: 12,
-      borderRadius: 10,
-      backgroundColor: p.primaryLight,
+      paddingVertical: 8,
+      borderRadius: 8,
+      backgroundColor: p.background,
       borderWidth: 2,
       borderColor: p.primary,
-      minHeight: 48,
-      minWidth: 88,
-      justifyContent: "center",
-      // 親が flexDirection:"row" なので自動的にサイズされる
     },
-    backText: { fontSize: rf(15), color: p.primary, fontWeight: "800" },
-    headerTitle: { fontSize: rf(16), fontWeight: "bold", color: p.textStrong, flexShrink: 1 },
+    backText: { fontSize: 16, fontWeight: "bold", color: p.textMuted },
+    headerTitle: { fontSize: rf(18), fontWeight: "bold", color: p.primaryDark, flexShrink: 1 },
 
     scrollContent: { padding: 16, paddingBottom: 140 },
 

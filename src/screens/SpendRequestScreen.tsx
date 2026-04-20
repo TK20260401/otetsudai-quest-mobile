@@ -13,9 +13,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
-import { AutoRubyText } from "../components/Ruby";
+import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
-import { PixelCoinIcon } from "../components/PixelIcons";
+import { PixelCoinIcon, PixelHouseIcon } from "../components/PixelIcons";
+import ShakeView from "../components/ShakeView";
 
 const NUM_KEYS = [
   { label: "1", value: "1", a11y: "いち" },
@@ -127,14 +128,14 @@ export default function SpendRequestScreen({
 
           <View style={styles.confirmButtons}>
             <TouchableOpacity
-              style={styles.backButton}
+              style={styles.confirmBackBtn}
               onPress={() => setStep("input")}
               accessibilityRole="button"
               accessibilityLabel="もどる"
             >
               <AutoRubyText
                 text="← もどる"
-                style={styles.backButtonText}
+                style={styles.confirmBackBtnText}
                 rubySize={7}
               />
             </TouchableOpacity>
@@ -165,27 +166,33 @@ export default function SpendRequestScreen({
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="もどる"
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <PixelHouseIcon size={18} />
+              <Text style={styles.backText}>もどる</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
+            <PixelCoinIcon size={18} />
+            <RubyText parts={[["使", "つか"], "いたい！"]} style={styles.title} rubySize={6} noWrap />
+          </View>
+        </View>
+
         <ScrollView
           style={styles.flex}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
+          minimumZoomScale={1}
+          maximumZoomScale={3}
+          bouncesZoom
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-              <PixelCoinIcon size={22} />
-              <AutoRubyText text="つかいたい！" style={styles.title} rubySize={8} />
-            </View>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => navigation.goBack()}
-              accessibilityRole="button"
-              accessibilityLabel="とじる"
-            >
-              <Text style={styles.closeButtonText}>✕</Text>
-            </TouchableOpacity>
-          </View>
-
           {/* Balance display */}
           <View style={styles.balanceCard}>
             <AutoRubyText
@@ -196,12 +203,14 @@ export default function SpendRequestScreen({
           </View>
 
           {/* Amount display */}
-          <View style={styles.amountDisplay}>
-            <Text style={styles.amountValue}>
-              {amount.length > 0 ? parseInt(amount, 10).toLocaleString() : "0"}
-            </Text>
-            <Text style={styles.amountYen}>円</Text>
-          </View>
+          <ShakeView shake={overBalance}>
+            <View style={styles.amountDisplay}>
+              <Text style={styles.amountValue}>
+                {amount.length > 0 ? parseInt(amount, 10).toLocaleString() : "0"}
+              </Text>
+              <Text style={styles.amountYen}>円</Text>
+            </View>
+          </ShakeView>
 
           {overBalance && (
             <AutoRubyText
@@ -228,9 +237,10 @@ export default function SpendRequestScreen({
 
           {/* Purpose input */}
           <View style={styles.purposeSection}>
+            <RubyText parts={[["何", "なに"], "に", ["使", "つか"], "いたい？"]} style={styles.purposeLabel} rubySize={5} noWrap />
             <TextInput
               style={styles.purposeInput}
-              placeholder="なにに つかいたい？"
+              placeholder=""
               placeholderTextColor={palette.textPlaceholder}
               value={purpose}
               onChangeText={setPurpose}
@@ -281,31 +291,35 @@ function createStyles(p: Palette) {
     header: {
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      marginBottom: 16,
-      position: "relative",
+      paddingHorizontal: 12,
+      paddingTop: 8,
+      paddingBottom: 10,
+      backgroundColor: p.background,
+      borderBottomWidth: 1,
+      borderBottomColor: p.border,
     },
     title: {
-      fontSize: rf(22),
+      fontSize: rf(18),
       fontWeight: "bold",
+      color: p.primaryDark,
       color: p.textStrong,
       textAlign: "center",
     },
-    closeButton: {
-      position: "absolute",
-      right: 0,
-      top: 0,
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: p.surfaceMuted,
+    backButton: {
+      flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 2,
+      borderColor: p.primary,
+      backgroundColor: p.background,
     },
-    closeButtonText: {
-      fontSize: rf(18),
-      color: p.textMuted,
+    backText: {
+      fontSize: 16,
       fontWeight: "bold",
+      color: p.textMuted,
     },
 
     // Balance card
@@ -381,6 +395,11 @@ function createStyles(p: Palette) {
     purposeSection: {
       marginBottom: 20,
     },
+    purposeLabel: {
+      fontSize: 12,
+      color: p.textMuted,
+      marginBottom: 4,
+    },
     purposeInput: {
       backgroundColor: p.surfaceMuted,
       borderRadius: 12,
@@ -450,7 +469,7 @@ function createStyles(p: Palette) {
       flexDirection: "row",
       gap: 12,
     },
-    backButton: {
+    confirmBackBtn: {
       flex: 1,
       backgroundColor: p.surfaceMuted,
       borderRadius: 14,
@@ -461,7 +480,7 @@ function createStyles(p: Palette) {
       borderWidth: 1,
       borderColor: p.border,
     },
-    backButtonText: {
+    confirmBackBtnText: {
       fontSize: rf(16),
       fontWeight: "bold",
       color: p.textMuted,

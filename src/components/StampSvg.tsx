@@ -11,6 +11,7 @@ import {
   PixelShieldIcon,
   PixelGiftIcon,
 } from "./PixelIcons";
+import IdleAnimationWrapper, { type IdleAnimationType } from "./IdleAnimationWrapper";
 
 /**
  * スタンプID → ピクセルSVG の集約マッピング。
@@ -25,49 +26,56 @@ import {
 
 type IconComponent = (props: { size?: number }) => React.ReactElement;
 
-// 全スタンプの id を SVG コンポーネントに対応づけ
-const STAMP_MAP: Record<string, IconComponent> = {
-  // 承認スタンプ（stamps.ts）
-  great: PixelStarIcon,
-  thankyou: PixelHeartIcon,
-  ganbare: PixelCrossedSwordsIcon,
-  perfect: PixelMedalIcon,
-  heart: PixelHeartIcon,
-  fire: PixelFlameIcon,
-  crown: PixelCrownIcon,
-  sparkle: PixelStarIcon,
+type StampEntry = { icon: IconComponent; anim: IdleAnimationType };
 
-  // ファミリースタンプ（family-stamps.ts・エール）
-  cheer: PixelFlameIcon,
-  thanks: PixelHeartIcon,
-  // "great" / "love" と重複する id はここで上書きしない
-  love: PixelHeartIcon,
-  muscle: PixelCrossedSwordsIcon,
-  highfive: PixelConfettiIcon,
-  hug: PixelHeartIcon,
-  salute: PixelShieldIcon,
+// 全スタンプの id を SVG + アニメーションに対応づけ
+const STAMP_MAP: Record<string, StampEntry> = {
+  // 承認スタンプ
+  great:      { icon: PixelStarIcon,          anim: "pulse" },    // ⭐キラキラ
+  thankyou:   { icon: PixelHeartIcon,         anim: "breathe" },  // ❤️ドキドキ
+  ganbare:    { icon: PixelCrossedSwordsIcon, anim: "sway" },     // ⚔️振り
+  perfect:    { icon: PixelMedalIcon,         anim: "spin" },     // 🏅回転
+  heart:      { icon: PixelHeartIcon,         anim: "breathe" },  // ❤️ドキドキ
+  fire:       { icon: PixelFlameIcon,         anim: "flicker" },  // 🔥メラメラ
+  crown:      { icon: PixelCrownIcon,         anim: "pulse" },    // 👑キラキラ
+  sparkle:    { icon: PixelStarIcon,          anim: "pulse" },    // ✨キラキラ
 
-  // 子スタンプ（child-stamps.ts）
-  try_harder: PixelCrossedSwordsIcon,
-  yay: PixelConfettiIcon,
-  next_time: PixelFlameIcon,
-  roger: PixelShieldIcon,
-  // "thanks" / "love" は上と同じマッピングを再利用
+  // ファミリースタンプ（エール）
+  cheer:      { icon: PixelFlameIcon,         anim: "flicker" },  // 🔥応援
+  thanks:     { icon: PixelHeartIcon,         anim: "breathe" },
+  love:       { icon: PixelHeartIcon,         anim: "breathe" },
+  muscle:     { icon: PixelCrossedSwordsIcon, anim: "bounce" },   // 💪バウンス
+  highfive:   { icon: PixelConfettiIcon,      anim: "flutter" },  // 🎉ひらひら
+  hug:        { icon: PixelHeartIcon,         anim: "breathe" },
+  salute:     { icon: PixelShieldIcon,        anim: "bob" },      // 🫡うなずき
+
+  // 子スタンプ
+  try_harder: { icon: PixelCrossedSwordsIcon, anim: "bounce" },
+  yay:        { icon: PixelConfettiIcon,      anim: "flutter" },
+  next_time:  { icon: PixelFlameIcon,         anim: "flicker" },
+  roger:      { icon: PixelShieldIcon,        anim: "bob" },
 };
 
 export default function StampSvg({
   id,
   size = 20,
+  animated = true,
 }: {
   id: string;
   size?: number;
+  animated?: boolean;
 }) {
-  const Icon = STAMP_MAP[id];
-  if (!Icon) {
-    // 未マッピング id は 1px の透明 View でスロットだけ確保（フォールバック）
+  const entry = STAMP_MAP[id];
+  if (!entry) {
     return <View style={{ width: size, height: size }} />;
   }
-  return <Icon size={size} />;
+  const { icon: Icon, anim } = entry;
+  if (!animated) return <Icon size={size} />;
+  return (
+    <IdleAnimationWrapper type={anim}>
+      <Icon size={size} />
+    </IdleAnimationWrapper>
+  );
 }
 
 export function hasStampSvg(id: string): boolean {

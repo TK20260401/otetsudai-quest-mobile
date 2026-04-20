@@ -13,7 +13,7 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import { useAppAlert } from "./AppAlert";
-import { AutoRubyText } from "./Ruby";
+import { AutoRubyText, RubyText } from "./Ruby";
 import { PixelPiggyIcon, PixelWarningIcon } from "./PixelIcons";
 
 type Props = {
@@ -78,15 +78,16 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
           <View style={styles.card}>
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
               <PixelPiggyIcon size={22} />
-              <AutoRubyText text="ちょきん目標をつくる" style={styles.title} rubySize={8} />
+              <RubyText parts={[["貯金", "ちょきん"], ["目標", "もくひょう"], "を", ["作", "つく"], "る"]} style={styles.title} rubySize={8} />
             </View>
 
-            <Text style={styles.inputLabel}>何を 買いたい？</Text>
+            <RubyText parts={[["何", "なに"], "を ", ["買", "か"], "いたい？"]} style={styles.inputLabel} rubySize={6} />
             <TextInput
               style={[styles.titleInput, titleError && styles.inputError]}
               value={title}
               onChangeText={(t) => { setTitle(t); setTitleError(false); }}
-              placeholder="何を 買いたい？（例：ゲーム、自転車）"
+              placeholder={"例（れい）：\n自転車（じてんしゃ）、\n本（ほん）"}
+              multiline
               placeholderTextColor={palette.textPlaceholder}
               maxLength={50}
               accessibilityLabel="貯金 目標の 名前"
@@ -94,23 +95,23 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
                 setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
               }}
             />
-            {titleError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><Text style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]}>なまえを いれてね</Text></View>}
+            {titleError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><AutoRubyText text="名前を入れてね" style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]} rubySize={5} /></View>}
 
-            <Text style={styles.inputLabel}>いくら 貯める？</Text>
+            <RubyText parts={["いくら ", ["貯", "た"], "める？"]} style={styles.inputLabel} rubySize={6} />
             <View style={styles.amountRow}>
               <TextInput
                 style={[styles.amountInput, amountError && styles.inputError]}
                 value={targetAmount}
                 onChangeText={(t) => { setTargetAmount(t); setAmountError(false); }}
                 keyboardType="number-pad"
-                placeholder="金額"
+                placeholder="金額（きんがく）"
                 placeholderTextColor={palette.textPlaceholder}
                 textAlign="center"
                 accessibilityLabel="目標 金額"
               />
               <Text style={styles.yen}>円</Text>
             </View>
-            {amountError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><Text style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]}>きんがくを いれてね</Text></View>}
+            {amountError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><AutoRubyText text="金額を入れてね" style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]} rubySize={5} /></View>}
 
             <View style={styles.buttonRow}>
               <TouchableOpacity
@@ -119,7 +120,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
                 accessibilityLabel="やめる"
                 accessibilityRole="button"
               >
-                <Text style={styles.cancelText}>やめる</Text>
+                <Text style={styles.cancelText} numberOfLines={1}>やめる</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.submitButton, submitting && { opacity: 0.5 }]}
@@ -212,7 +213,7 @@ function createStyles(p: Palette) {
       backgroundColor: p.surfaceMuted,
     },
     cancelText: {
-      fontSize: 16,
+      fontSize: 13,
       fontWeight: "bold",
       color: p.textMuted,
     },

@@ -32,13 +32,19 @@ function tightStyle(style: any, defaultColor: string): TextStyle {
   return { ...rest, color: c ?? defaultColor, includeFontPadding: false } as TextStyle;
 }
 
-/** ルビテキストのスタイル — palette.textMuted を使いダーク/ライト両対応 */
+/** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み） */
+function rubyGap(_rubySize: number): number {
+  return -2;
+}
+
+/** ルビテキストのスタイル — palette.rubyColor を使いダーク/ライト両対応
+ *  marginBottom: -2 で漢字に密着（iOS検証済み。lineHeight/translateYは効かない） */
 function rubyStyle(size: number, color: string): TextStyle {
   return {
     fontSize: size,
     color,
     textAlign: "center",
-    marginBottom: -2,
+    marginBottom: -1,
     includeFontPadding: false,
   } as TextStyle;
 }
@@ -47,7 +53,8 @@ function rubyStyle(size: number, color: string): TextStyle {
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
   const { palette } = useTheme();
   const baseColor = palette.textStrong;
-  const rubyColor = palette.textMuted;
+  const rubyColor = palette.rubyColor;
+  const gap = rubyGap(rubySize);
   return (
     <View style={layoutStyles.center}>
       <Text
@@ -58,7 +65,7 @@ export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
       >
         {ruby}
       </Text>
-      <Text style={[tightStyle(style, baseColor), { marginTop: -2 }]}>{kanji}</Text>
+      <Text style={[tightStyle(style, baseColor), { marginTop: gap }]}>{kanji}</Text>
     </View>
   );
 }
@@ -72,29 +79,30 @@ export function RubyText({
   style,
   rubySize = 8,
   noWrap = false,
+  rubyColor,
 }: {
   parts: (string | [string, string])[];
   style?: any;
   rubySize?: number;
   /** true にすると flexWrap を無効化し、単一行に収める（はみ出し要素は切り詰め） */
   noWrap?: boolean;
+  /** ルビ文字の色を明示指定（デフォルトはpalette.textMuted） */
+  rubyColor?: string;
 }) {
   const { palette } = useTheme();
   const tight = tightStyle(style, palette.textStrong);
-  const rs = rubyStyle(rubySize, palette.textMuted);
+  const rs = rubyStyle(rubySize, rubyColor ?? palette.rubyColor);
+  const gap = rubyGap(rubySize);
   return (
     <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          // ルビなしsegmentにも同じ縦構造（透明スペーサー）を与え、ルビ付きと
-          // ベースラインが一致するようにする。以前はpaddingTopで近似していたが
-          // ルビ実体の高さと一致せず、混在時に文字が波打っていた。
           <View key={i} style={layoutStyles.center}>
             <Text style={[rs, { opacity: 0 }]} numberOfLines={1}>
               .
             </Text>
             <Text
-              style={[tight, { marginTop: -2 }]}
+              style={[tight, { marginTop: gap }]}
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
@@ -113,7 +121,7 @@ export function RubyText({
               {part[1]}
             </Text>
             <Text
-              style={[tight, { marginTop: -2 }]}
+              style={[tight, { marginTop: gap }]}
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
@@ -135,10 +143,12 @@ export function RubyStr({
   text,
   style,
   rubySize = 8,
+  noWrap = false,
 }: {
   text: string;
   style?: any;
   rubySize?: number;
+  noWrap?: boolean;
 }) {
   if (!text) return null;
   const parts: (string | [string, string])[] = [];
@@ -155,7 +165,7 @@ export function RubyStr({
   if (lastIndex < text.length) {
     parts.push(text.slice(lastIndex));
   }
-  return <RubyText parts={parts} style={style} rubySize={rubySize} />;
+  return <RubyText parts={parts} style={style} rubySize={rubySize} noWrap={noWrap} />;
 }
 
 // 漢字→読みの辞書（お手伝い系の頻出漢字 + UI用語）
@@ -168,7 +178,7 @@ const RUBY_DICT: [string, string][] = [
   ["気持", "きも"], ["目標達成", "もくひょうたっせい"], ["目標", "もくひょう"],
   ["達成済", "たっせいず"], ["達成", "たっせい"], ["提案", "ていあん"], ["報酬", "ほうしゅう"],
   ["冒険", "ぼうけん"], ["履歴", "りれき"], ["入力", "にゅうりょく"], ["表示", "ひょうじ"],
-  ["確認", "かくにん"], ["失敗", "しっぱい"], ["成功", "せいこう"], ["現金", "げんきん"],
+  ["確認", "かくにん"], ["失敗", "しっぱい"], ["成長", "せいちょう"], ["成功", "せいこう"], ["現金", "げんきん"],
   ["貯金目標", "ちょきんもくひょう"], ["貯金", "ちょきん"], ["貯蓄", "ちょちく"], ["貯", "た"],
   ["投資", "とうし"], ["銘柄", "めいがら"], ["価格", "かかく"], ["値段", "ねだん"],
   ["更新", "こうしん"], ["承認待", "しょうにんま"], ["承認", "しょうにん"],

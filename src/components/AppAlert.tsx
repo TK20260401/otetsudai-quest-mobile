@@ -108,6 +108,8 @@ export function AppAlertProvider({ children }: { children: React.ReactNode }) {
                         isCancel && styles.buttonTextCancel,
                         isDestructive && styles.buttonTextDestructive,
                       ]}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
                     >
                       {btn.text}
                     </Text>

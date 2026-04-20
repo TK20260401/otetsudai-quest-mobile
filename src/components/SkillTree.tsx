@@ -1,9 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { BADGE_DEFINITIONS } from "../lib/badges";
 import { AutoRubyText } from "./Ruby";
 import type { Badge } from "../lib/types";
 import type { Palette } from "../theme";
+import IdleAnimationWrapper, { type IdleAnimationType } from "./IdleAnimationWrapper";
+import {
+  PixelCrossedSwordsIcon,
+  PixelFlameIcon,
+  PixelCoinIcon,
+  PixelPiggyIcon,
+  PixelTrophyIcon,
+} from "./PixelIcons";
 
 /** バッジの表示順序と獲得条件テキスト */
 const TREE_ORDER: { key: string; condition: string }[] = [
@@ -13,6 +21,15 @@ const TREE_ORDER: { key: string; condition: string }[] = [
   { key: "saving_master", condition: "貯金目標 達成" },
   { key: "quest_master", condition: "50回クリア" },
 ];
+
+/** バッジキー → SVGアイコン + アニメーション種別 */
+const BADGE_ICON_MAP: Record<string, { icon: React.ComponentType<{ size?: number }>; anim: IdleAnimationType }> = {
+  first_task:    { icon: PixelCrossedSwordsIcon, anim: "sway" },
+  streak_3:      { icon: PixelFlameIcon,         anim: "flicker" },
+  earned_1000:   { icon: PixelCoinIcon,          anim: "spin" },
+  saving_master: { icon: PixelPiggyIcon,         anim: "bounce" },
+  quest_master:  { icon: PixelTrophyIcon,        anim: "pulse" },
+};
 
 type Props = {
   badges: Badge[];
@@ -29,6 +46,7 @@ export default function SkillTree({ badges, palette }: Props) {
         if (!def) return null;
         const earned = earnedSet.has(item.key);
         const isLast = index === TREE_ORDER.length - 1;
+        const iconEntry = BADGE_ICON_MAP[item.key];
 
         return (
           <View key={item.key} style={styles.row}>
@@ -42,9 +60,19 @@ export default function SkillTree({ badges, palette }: Props) {
                     : { backgroundColor: palette.surfaceMuted, borderColor: palette.border },
                 ]}
               >
-                <Text style={[styles.nodeEmoji, !earned && styles.nodeEmojiLocked]}>
-                  {def.emoji}
-                </Text>
+                {iconEntry ? (
+                  earned ? (
+                    <IdleAnimationWrapper type={iconEntry.anim}>
+                      <View>
+                        <iconEntry.icon size={24} />
+                      </View>
+                    </IdleAnimationWrapper>
+                  ) : (
+                    <View style={{ opacity: 0.3 }}>
+                      <iconEntry.icon size={24} />
+                    </View>
+                  )
+                ) : null}
               </View>
               {/* 接続線 */}
               {!isLast && (
@@ -108,12 +136,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
-  },
-  nodeEmoji: {
-    fontSize: 22,
-  },
-  nodeEmojiLocked: {
-    opacity: 0.3,
   },
   connector: {
     width: 3,

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Rect, Path, G, Defs, LinearGradient, Stop } from "react-native-svg";
+import WalletBalanceAnimation from "./WalletBalanceAnimation";
 
 type Props = {
   hp: number;     // 0-100
@@ -20,9 +21,9 @@ export default function RpgStatusBar({ hp, mp, exp, maxMp = 10 }: Props) {
 
   return (
     <View style={styles.container}>
-      <GaugeRow label="HP" value={hp} max={100} color1="#E74C3C" color2="#C0392B" icon="heart" suffix={`${Math.round(hp)}%`} />
-      <GaugeRow label="MP" value={mpPercent} max={100} color1="#3498DB" color2="#2980B9" icon="magic" suffix={`${mp}wk`} />
-      <GaugeRow label="EXP" value={exp} max={100} color1="#FFD700" color2="#DAA520" icon="sword" suffix={`${exp}%`} />
+      <GaugeRow label="HP" value={hp} max={100} color1="#E74C3C" color2="#C0392B" icon="heart" numValue={Math.round(hp)} />
+      <GaugeRow label="MP" value={mpPercent} max={100} color1="#3498DB" color2="#2980B9" icon="magic" numValue={mpPercent} />
+      <GaugeRow label="EXP" value={exp} max={100} color1="#FFD700" color2="#DAA520" icon="sword" numValue={exp} />
     </View>
   );
 }
@@ -34,10 +35,10 @@ type GaugeProps = {
   color1: string;
   color2: string;
   icon: "heart" | "magic" | "sword";
-  suffix: string;
+  numValue: number;
 };
 
-function GaugeRow({ label, value, max, color1, color2, icon, suffix }: GaugeProps) {
+function GaugeRow({ label, value, max, color1, color2, icon, numValue }: GaugeProps) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
     <View style={styles.row}>
@@ -65,7 +66,12 @@ function GaugeRow({ label, value, max, color1, color2, icon, suffix }: GaugeProp
           ))}
         </Svg>
       </View>
-      <Text style={styles.suffix}>{suffix}</Text>
+      <WalletBalanceAnimation
+        value={numValue}
+        duration={600}
+        formatFn={(n) => `${n}%`}
+        textStyle={styles.suffix}
+      />
     </View>
   );
 }

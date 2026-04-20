@@ -16,6 +16,7 @@ import {
 import RpgButton from "./RpgButton";
 import { PixelGiftIcon } from "./PixelIcons";
 import { useTheme, type Palette } from "../theme";
+import { RubyText } from "./Ruby";
 
 type Props = {
   visible: boolean;
@@ -76,13 +77,13 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
             <PixelGiftIcon size={18} />
             <Text style={styles.title}>ログインボーナス</Text>
           </View>
-          <Text style={styles.subtitle}>
+          <View style={{ alignItems: "center", marginTop: 4, marginBottom: 12 }}>
             {result?.awarded
-              ? `${result.streak}日れんぞく ログイン！`
+              ? <RubyText parts={[`${result.streak}`, ["日", "にち"], ["連続", "れんぞく"], " ログイン！"]} style={styles.subtitle} rubySize={5} />
               : result?.alreadyClaimedToday
-                ? "きょうは もう もらったよ"
-                : "まいにち ログインで コインゲット！"}
-          </Text>
+                ? <RubyText parts={[["今日", "きょう"], "は もう もらったよ"]} style={styles.subtitle} rubySize={5} />
+                : <RubyText parts={[["毎日", "まいにち"], " ログインで コインゲット！"]} style={styles.subtitle} rubySize={5} />}
+          </View>
 
           {loading ? (
             <ActivityIndicator color={palette.primary} style={{ marginVertical: 24 }} />
@@ -118,12 +119,12 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
                 })}
               </View>
 
-              <Text style={styles.hint}>つづけると ますます おおく もらえる！</Text>
+              <RubyText parts={[["続", "つづ"], "けると ", ["益々", "ますます"], " ", ["多", "おお"], "く もらえる！"]} style={styles.hint} rubySize={5} />
 
               {result?.awarded ? (
                 <View style={styles.amountWrap}>
                   <Text style={styles.bigAmount}>+{result.amount}円</Text>
-                  <Text style={styles.amountNote}>「つかう」に ついかされたよ！</Text>
+                  <RubyText parts={["「", ["使", "つか"], "う」に ", ["追加", "ついか"], "されたよ！"]} style={styles.amountNote} rubySize={5} />
                 </View>
               ) : status?.canClaimToday ? (
                 <View style={{ marginVertical: 12 }}>
@@ -133,21 +134,18 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
                     onPress={handleClaim}
                     disabled={claiming || !walletId}
                   >
-                    {claiming ? "うけとりちゅう..." : `+${status.nextAmount}円 うけとる`}
+                    {claiming ? "受取中..." : `+${status.nextAmount}円 受取る`}
                   </RpgButton>
                 </View>
               ) : (
-                <Text style={styles.laterText}>あしたも きてね！</Text>
+                <RubyText parts={[["明日", "あした"], "も ", ["来", "き"], "てね！"]} style={styles.laterText} rubySize={5} />
               )}
 
-              <Text style={styles.streakText}>
-                <Text style={{ color: palette.accent, fontWeight: "bold" }}>🔥{effectiveStreak}</Text>
-                日れんぞく
-              </Text>
+              <RubyText parts={["🔥", `${effectiveStreak}`, ["日", "にち"], ["連続", "れんぞく"]]} style={styles.streakText} rubySize={5} />
 
               <View style={{ marginTop: 12 }}>
                 <RpgButton tier="silver" size="md" onPress={onClose}>
-                  とじる
+                  閉じる
                 </RpgButton>
               </View>
             </>

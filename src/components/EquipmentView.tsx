@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Rect, Path, G } from "react-native-svg";
 import type { RpgStats } from "../lib/rpg-stats";
+import { RubyStr } from "./Ruby";
 
 type Props = {
   stats: RpgStats;
@@ -15,7 +16,7 @@ type Props = {
 export default function EquipmentView({ stats, appearance }: Props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{appearance}</Text>
+      <RubyStr text={appearance} style={styles.title} rubySize={6} noWrap />
       <View style={styles.statsRow}>
         <StatItem icon="sword" label="ATK" value={stats.atk} color="#E74C3C" />
         <StatItem icon="shield" label="DEF" value={stats.def} color="#3498DB" />

@@ -55,9 +55,25 @@ export default function GameStatusHeader({
         <Rect x={395} y={1} width={3} height={3} fill="#E74C3C" />
       </Svg>
 
+      {/* 名前行 */}
+      <View style={styles.nameRow}>
+        <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{title}</Text>
+        {pendingCount !== undefined && pendingCount > 0 ? (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{pendingCount}</Text>
+          </View>
+        ) : null}
+        {gold !== undefined ? (
+          <View style={styles.goldChip}>
+            <PixelCoinIcon size={12} />
+            <WalletBalanceAnimation value={gold} textStyle={styles.goldText} />
+          </View>
+        ) : null}
+      </View>
+
       <View style={styles.row}>
         {onBack ? (
-          <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel="TOPにもどる">
+          <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel="もどる">
             <PixelHouseIcon size={18} />
             <Text style={styles.backText}>もどる</Text>
           </TouchableOpacity>
@@ -73,17 +89,8 @@ export default function GameStatusHeader({
           </View>
         </View>
 
-        {/* タイトル + 名前 + ゲージ */}
+        {/* ゲージ */}
         <View style={styles.middle}>
-          <View style={styles.titleRow}>
-            <Text style={styles.title} numberOfLines={1}>{title}</Text>
-            {pendingCount !== undefined && pendingCount > 0 ? (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{pendingCount}</Text>
-              </View>
-            ) : null}
-          </View>
-          {userName ? <Text style={styles.userName} numberOfLines={1}>{userName}</Text> : null}
           <View style={styles.gauges}>
             <MiniGauge label="HP" value={hp} color1="#E74C3C" color2="#8A2218" gid="hp" />
             <MiniGauge label="MP" value={Math.min(100, mp * 10)} color1="#3498DB" color2="#164E72" gid="mp" />
@@ -91,14 +98,8 @@ export default function GameStatusHeader({
           </View>
         </View>
 
-        {/* 右: ゴールド残高 + アクション */}
+        {/* 右: アクション */}
         <View style={styles.right}>
-          {gold !== undefined ? (
-            <View style={styles.goldChip}>
-              <PixelCoinIcon size={12} />
-              <WalletBalanceAnimation value={gold} textStyle={styles.goldText} />
-            </View>
-          ) : null}
           <View style={styles.rightRow}>
             {rightSlot}
             {onLogout ? (
@@ -163,11 +164,21 @@ function createStyles(palette: Palette) {
       shadowRadius: 10,
       elevation: 5,
     },
+    nameRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 10,
+      paddingTop: 8,
+      paddingBottom: 2,
+      gap: 8,
+    },
     row: {
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 10,
-      paddingVertical: 8,
+      paddingTop: 2,
+      paddingBottom: 8,
       gap: 8,
     },
     iconBtn: {
@@ -179,20 +190,18 @@ function createStyles(palette: Palette) {
     backBtn: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
-      paddingHorizontal: 8,
-      paddingVertical: 6,
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
       borderRadius: 8,
-      borderWidth: 1,
+      borderWidth: 2,
       borderColor: palette.primary,
-      backgroundColor: palette.primaryLight,
-      minHeight: 36,
-      minWidth: 60,
+      backgroundColor: palette.background,
     },
     backText: {
-      fontSize: 11,
-      color: palette.primary,
+      fontSize: 16,
       fontWeight: "bold",
+      color: palette.textMuted,
     },
     characterWrap: {
       position: "relative",
@@ -227,21 +236,11 @@ function createStyles(palette: Palette) {
       flex: 1,
       minWidth: 0,
     },
-    titleRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-      flexWrap: "wrap",
-    },
     title: {
-      fontSize: 13,
+      fontSize: 16,
       fontWeight: "bold",
-      color: palette.primary,
+      color: palette.accent,
       flexShrink: 1,
-    },
-    userName: {
-      fontSize: 10,
-      color: palette.textMuted,
     },
     badge: {
       backgroundColor: palette.red,
