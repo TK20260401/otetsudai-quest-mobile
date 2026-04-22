@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -143,6 +143,9 @@ export default function ChildDashboardScreen({
   const [sessionFamilyId, setSessionFamilyId] = useState<string | null>(null);
   // 家族チャレンジ
   const [activeChallenge, setActiveChallenge] = useState<FamilyChallenge | null>(null);
+  // ScrollView ref（「かせぐ」タップでクエスト一覧へスクロール）
+  const scrollRef = useRef<ScrollView>(null);
+  const questSectionY = useRef(0);
   // 提案中のクエスト数
   const pendingProposals = useMemo(() => tasks.filter((t) => t.created_by === childId && t.proposal_status === "pending").length, [tasks, childId]);
 
@@ -229,7 +232,21 @@ export default function ChildDashboardScreen({
     ]);
 
     setTasks(taskRes.data || []);
-    setWallet(walletRes.data);
+    // ウォレットが未作成の場合、自動作成する（ガード）
+    let walletData = walletRes.data;
+    if (!walletData) {
+      const { data: created } = await supabase.from("otetsudai_wallets").insert({
+        child_id: childId,
+        spending_balance: 0,
+        saving_balance: 0,
+        invest_balance: 0,
+        save_ratio: 30,
+        invest_ratio: 0,
+        split_ratio: 30,
+      }).select().single();
+      walletData = created;
+    }
+    setWallet(walletData);
     setTransactions(txRes.data || []);
     setBadges(badgeRes.data || []);
     setRecentSpendRequests(spendRes.data || []);
@@ -615,88 +632,109 @@ export default function ChildDashboardScreen({
       </View>
       <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
-      {/* ★固定 Quick Nav — 子供が迷わないよう常時表示。スクロールしても
-          消えない3大アクション動線（かいもの／ちょきん／かぶ）。
-          子ども向けに「かぶ」のような具体動詞で表示、大きなアイコン＋
-          大文字ラベルで「これはボタン」と一目でわかる設計。 */}
+      {/* ★固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド。
+          お金のサイクル全体が一目でわかる設計。
+          「かせぐ」はクエスト一覧へスクロール、他3つは各専用画面へナビゲート。 */}
       <View style={styles.quickNav}>
+        {/* かせぐ（クエスト） */}
         <TouchableOpacity
-          style={[styles.quickNavBtn, { backgroundColor: palette.walletSpend, shadowColor: palette.walletSpend }]}
+          style={[styles.quickNavBtn, { backgroundColor: palette.primary, shadowColor: palette.primary }]}
           activeOpacity={0.7}
           onPress={() => {
-            console.log('[nav] SpendRequest', { childId, walletId: wallet?.id });
-            navigation.navigate("SpendRequest", { childId, walletId: wallet?.id ?? "", spendingBalance: wallet?.spending_balance ?? 0 });
+            scrollRef.current?.scrollTo({ y: questSectionY.current, animated: true });
           }}
-          accessibilityLabel="かいもの画面へ"
+          accessibilityLabel="クエスト一覧へスクロール"
           accessibilityRole="button"
         >
-          <PixelCartIcon size={28} />
+          <PixelSwordIcon size={24} />
           <RubyText
             style={styles.quickNavLabel}
-            parts={[["買", "か"], "いもの"]}
-            rubySize={8}
+            parts={[["稼", "かせ"], "ぐ"]}
+            rubySize={7}
             noWrap
             rubyColor="rgba(255,255,200,0.7)"
           />
-          <RubyText
-            style={styles.quickNavBalance}
-            parts={[`${(wallet?.spending_balance ?? 0).toLocaleString()}`, ["円", "えん"]]}
-            rubySize={4}
-            noWrap
-          />
+          <Text style={styles.quickNavSub}>クエスト</Text>
         </TouchableOpacity>
 
+        {/* つかう */}
         <TouchableOpacity
-          style={[styles.quickNavBtn, { backgroundColor: palette.walletSave, shadowColor: palette.walletSave }]}
+          style={[styles.quickNavBtn, { backgroundColor: palette.walletSpend, shadowColor: palette.walletSpend }, !wallet && { opacity: 0.5 }]}
           activeOpacity={0.7}
-          onPress={() => navigation.navigate("WalletDetail", { childId, walletId: wallet?.id ?? "" })}
-          accessibilityLabel="ちょきん画面へ"
-          accessibilityRole="button"
-        >
-          <PixelPiggyIcon size={28} />
-          <RubyText
-            style={styles.quickNavLabel}
-            parts={[["貯金", "ちょきん"]]}
-            rubySize={8}
-            noWrap
-            rubyColor="rgba(255,255,200,0.7)"
-          />
-          <RubyText
-            style={styles.quickNavBalance}
-            parts={[`${(wallet?.saving_balance ?? 0).toLocaleString()}`, ["円", "えん"]]}
-            rubySize={4}
-            noWrap
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.quickNavBtn, { backgroundColor: palette.walletInvest, shadowColor: palette.walletInvest }]}
-          activeOpacity={0.7}
+          disabled={!wallet}
           onPress={() => {
-            console.log('[nav] Invest', { childId, walletId: wallet?.id });
-            navigation.navigate("Invest", { childId, walletId: wallet?.id ?? "", investBalance: wallet?.invest_balance ?? 0 });
+            if (!wallet) return;
+            navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
           }}
-          accessibilityLabel="株を買う画面へ"
+          accessibilityLabel="つかう画面へ"
           accessibilityRole="button"
         >
-          <PixelChartIcon size={28} />
+          <PixelCartIcon size={24} />
           <RubyText
             style={styles.quickNavLabel}
-            parts={[["株", "かぶ"]]}
-            rubySize={8}
+            parts={[["使", "つか"], "う"]}
+            rubySize={7}
             noWrap
             rubyColor="rgba(255,255,200,0.7)"
           />
+          <Text style={styles.quickNavAmount}>
+            {(wallet?.spending_balance ?? 0).toLocaleString()}
+          </Text>
+        </TouchableOpacity>
+
+        {/* ためる */}
+        <TouchableOpacity
+          style={[styles.quickNavBtn, { backgroundColor: palette.walletSave, shadowColor: palette.walletSave }, !wallet && { opacity: 0.5 }]}
+          activeOpacity={0.7}
+          disabled={!wallet}
+          onPress={() => {
+            if (!wallet) return;
+            navigation.navigate("WalletDetail", { childId, walletId: wallet.id });
+          }}
+          accessibilityLabel="ためる画面へ"
+          accessibilityRole="button"
+        >
+          <PixelPiggyIcon size={24} />
           <RubyText
-            style={styles.quickNavBalance}
-            parts={[`${(wallet?.invest_balance ?? 0).toLocaleString()}`, ["円", "えん"]]}
-            rubySize={4}
+            style={styles.quickNavLabel}
+            parts={[["貯", "た"], "める"]}
+            rubySize={7}
             noWrap
+            rubyColor="rgba(255,255,200,0.7)"
           />
+          <Text style={styles.quickNavAmount}>
+            {(wallet?.saving_balance ?? 0).toLocaleString()}
+          </Text>
+        </TouchableOpacity>
+
+        {/* ふやす */}
+        <TouchableOpacity
+          style={[styles.quickNavBtn, { backgroundColor: palette.walletInvest, shadowColor: palette.walletInvest }, !wallet && { opacity: 0.5 }]}
+          activeOpacity={0.7}
+          disabled={!wallet}
+          onPress={() => {
+            if (!wallet) return;
+            navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
+          }}
+          accessibilityLabel="ふやす画面へ"
+          accessibilityRole="button"
+        >
+          <PixelChartIcon size={24} />
+          <RubyText
+            style={styles.quickNavLabel}
+            parts={[["増", "ふ"], "やす"]}
+            rubySize={7}
+            noWrap
+            rubyColor="rgba(255,255,200,0.7)"
+          />
+          <Text style={styles.quickNavAmount}>
+            {(wallet?.invest_balance ?? 0).toLocaleString()}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
         minimumZoomScale={1}
         maximumZoomScale={3}
@@ -932,7 +970,11 @@ export default function ChildDashboardScreen({
         </TouchableOpacity>
 
         {/* 画面タイトル — 子供名＋現在画面を明示 */}
-        <View style={styles.screenTitleBar} accessibilityRole="header">
+        <View
+          style={styles.screenTitleBar}
+          accessibilityRole="header"
+          onLayout={(e) => { questSectionY.current = e.nativeEvent.layout.y; }}
+        >
           <View style={styles.screenTitleAccent} />
           <View style={{ flex: 1 }}>
             {tab === "quests" ? (
@@ -1403,7 +1445,7 @@ export default function ChildDashboardScreen({
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <View style={styles.proposalCard}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={[["自分", "じぶん"], "クエストを", ["提案", "ていあん"]]} rubySize={6} /></View>
-            <AutoRubyText text="親に新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} noWrap />
+            <AutoRubyText text="おうちのひとに新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} noWrap />
 
             <RubyText
               style={styles.proposalLabel}
@@ -1677,43 +1719,51 @@ function createStyles(p: Palette) {
     marginTop: 4,
     letterSpacing: 0.3,
   },
-  // 固定 Quick Nav — 子ども向けの3大アクション動線
+  // 固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド
   quickNav: {
     flexDirection: "row" as const,
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    flexWrap: "wrap" as const,
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
   quickNavBtn: {
-    flex: 1,
+    flexBasis: "23%" as any,
+    flexGrow: 1,
     alignItems: "center" as const,
     justifyContent: "center" as const,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
-    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+    borderRadius: 12,
     borderWidth: 2,
     borderColor: "rgba(255,255,255,0.3)",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
-    elevation: 6,
-    minHeight: 88,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 4,
+    elevation: 4,
+    minHeight: 72,
   },
   quickNavLabel: {
     color: "#ffffff",
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "800" as const,
-    marginTop: 4,
-    letterSpacing: 0.5,
+    marginTop: 3,
+    letterSpacing: 0.3,
     textShadowColor: "rgba(0,0,0,0.4)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
-  quickNavBalance: {
-    color: "#ffffff",
-    fontSize: 11,
+  quickNavSub: {
+    color: "rgba(255,255,255,0.8)",
+    fontSize: 9,
     fontWeight: "700" as const,
-    marginTop: 2,
+    marginTop: 1,
+  },
+  quickNavAmount: {
+    color: "#ffffff",
+    fontSize: 10,
+    fontWeight: "700" as const,
+    marginTop: 1,
     opacity: 0.95,
   },
   walletFooter: {

@@ -412,8 +412,8 @@ export default function InvestScreen({
               {orderSuccess ? (
                 <View style={styles.successContainer}>
                   <PixelChartIcon size={56} />
-                  <AutoRubyText text="親にお願いしたよ！" style={styles.successTitle} rubySize={5} />
-                  <AutoRubyText text="承認を待ってね" style={styles.successSub} rubySize={5} />
+                  <AutoRubyText text="注文クエスト発動！" style={styles.successTitle} rubySize={5} />
+                  <AutoRubyText text="おうちのひとの承認を待ってね" style={styles.successSub} rubySize={5} />
                 </View>
               ) : (
                 <>
@@ -802,7 +802,15 @@ function createStyles(p: Palette) {
       elevation: 3,
     },
     orderButtonDisabled: { opacity: 0.5 },
-    orderButtonText: { fontSize: rf(18), fontWeight: "bold", color: p.white },
+    orderButtonText: {
+      fontSize: rf(18),
+      fontWeight: "900",
+      color: "#1a0f2e",
+      letterSpacing: 1,
+      textShadowColor: "rgba(255,255,255,0.4)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 2,
+    },
 
     orderHint: { fontSize: 10, color: p.textMuted, textAlign: "center", marginTop: 12, lineHeight: 16 },
   });

@@ -19,9 +19,10 @@ import { TERMS, PRIVACY } from "../lib/legal-texts";
 type Props = {
   onSignup?: () => void;
   onLogin: () => void;
+  onParentLogin?: () => void;
 };
 
-export default function LandingScreen({ onSignup, onLogin }: Props) {
+export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Props) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { palette } = useTheme();
@@ -55,12 +56,22 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
         </View>
 
         <View style={[styles.buttons, isSmallScreen && { marginBottom: 12 }]}>
-          <RpgButton tier="gold" size="lg" fullWidth onPress={onLogin} accessibilityLabel="ログイン">
+          <RpgButton tier="gold" size="lg" fullWidth onPress={onLogin} accessibilityLabel="子供ログイン">
             <PixelKeyIcon size={22} />
             <Text style={{ fontSize: isTablet ? 18 : 16, fontWeight: "bold", color: "#2A1800" }} adjustsFontSizeToFit numberOfLines={1}>
               クエストをはじめる！
             </Text>
           </RpgButton>
+          {onParentLogin && (
+            <TouchableOpacity
+              onPress={onParentLogin}
+              style={{ alignSelf: "center", paddingVertical: 8, paddingHorizontal: 16 }}
+              accessibilityLabel="おうちのひとログイン"
+              accessibilityRole="button"
+            >
+              <RubyText style={{ fontSize: 12, color: palette.textMuted }} parts={["おうちのひと（", ["親", "おや"], "モード）"]} rubySize={5} />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.features}>
@@ -100,6 +111,8 @@ export default function LandingScreen({ onSignup, onLogin }: Props) {
           <AutoRubyText text="プライバシーポリシー" style={styles.legalLink} rubySize={5} />
         </TouchableOpacity>
       </View>
+
+      <Text style={styles.copyright}>CC BY-NC-SA 4.0 Snafty inc.</Text>
 
       <LegalModal
         visible={legalModal === "terms"}
@@ -245,6 +258,13 @@ function createStyles(p: Palette) {
     legalSep: {
       fontSize: 10,
       color: p.textMuted,
+    },
+    copyright: {
+      fontSize: 9,
+      color: p.textMuted,
+      textAlign: "center" as const,
+      marginTop: 8,
+      opacity: 0.7,
     },
     subtitleWrap: {
       alignItems: "center",

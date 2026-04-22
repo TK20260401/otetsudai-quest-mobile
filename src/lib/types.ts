@@ -2,6 +2,20 @@ export type Family = {
   id: string;
   name: string;
   created_at: string;
+  invite_words?: string[];
+  created_by_auth?: string;
+  has_parent?: boolean;
+};
+
+export type InviteToken = {
+  id: string;
+  family_id: string;
+  token: string;
+  created_by: string;
+  used_by: string | null;
+  expires_at: string;
+  used_at: string | null;
+  created_at: string;
 };
 
 export type User = {
@@ -13,6 +27,10 @@ export type User = {
   icon: string;
   display_order: number;
   created_at: string;
+  auth_id?: string;
+  backup_words?: string[];
+  is_anonymous?: boolean;
+  registered_at?: string;
 };
 
 export type Task = {

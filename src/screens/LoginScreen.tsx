@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
 } from "react-native";
 import { supabase } from "../lib/supabase";
@@ -27,15 +28,21 @@ import { TERMS, PRIVACY } from "../lib/legal-texts";
 
 type LoginStep = "mode" | "family" | "member" | "pin" | "admin";
 
+type LoginMode = "child" | "parent";
+
 type Props = {
   onLoginSuccess: () => void;
+  mode?: LoginMode;
+  onBack?: () => void;
 };
 
-export default function LoginScreen({ onLoginSuccess }: Props) {
+export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const { alert } = useAppAlert();
-  const [step, setStep] = useState<LoginStep>("mode");
+  // mode が指定されている場合はモード選択をスキップ
+  const initialStep: LoginStep = mode === "child" ? "family" : mode === "parent" ? "admin" : "mode";
+  const [step, setStep] = useState<LoginStep>(initialStep);
   const [families, setFamilies] = useState<Family[]>([]);
   const [selectedFamily, setSelectedFamily] = useState<Family | null>(null);
   const [members, setMembers] = useState<User[]>([]);
@@ -77,6 +84,14 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   useEffect(() => {
     loadFamilies();
   }, []);
+
+  // mode="parent" の場合、初回からadminステップなのでisSignUpをリセット
+  useEffect(() => {
+    if (mode === "parent") {
+      setIsSignUp(false);
+      setError("");
+    }
+  }, [mode]);
 
   async function loadFamilies() {
     const { data } = await supabase
@@ -122,7 +137,10 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
   }
 
   async function handleDirectLogin(user: User) {
-    await loginAsUser(user, selectedFamily!.id);
+    await loginAsUser(
+      { id: user.id, role: user.role, name: user.name },
+      selectedFamily!.id,
+    );
     onLoginSuccess();
   }
 
@@ -130,13 +148,21 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
     if (!selectedUser || !selectedFamily) return;
     const pinValue = pinOverride ?? pin;
     if (!pinValue) return;
-    const valid = await verifyPin(selectedUser.id, pinValue);
-    if (!valid) {
+    try {
+      const result = await verifyPin(selectedUser.id, pinValue);
+      if (!result.valid) {
+        setError("PINが ちがいます");
+        return;
+      }
+      await loginAsUser(
+        { id: result.userId, role: result.role as "admin" | "parent" | "child", name: result.name },
+        result.familyId,
+        result.authId,
+      );
+      onLoginSuccess();
+    } catch {
       setError("PINが ちがいます");
-      return;
     }
-    await loginAsUser(selectedUser, selectedFamily.id);
-    onLoginSuccess();
   }
 
   async function handleAdminLogin() {
@@ -448,8 +474,13 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
       setMembers([]);
       setStep("family");
     } else if (step === "family") {
+      // mode が指定されている場合はモード選択に戻さない（子供が親モードに到達するのを防止）
+      if (mode && onBack) { onBack(); return; }
+      if (mode) return;
       setStep("mode");
     } else if (step === "admin") {
+      if (mode && onBack) { onBack(); return; }
+      if (mode) return;
       setStep("mode");
       setAdminEmail("");
       setAdminPassword("");
@@ -803,15 +834,20 @@ export default function LoginScreen({ onLoginSuccess }: Props) {
                                 justifyContent: "center",
                               }}
                               onPress={async () => {
-                                await setSession({
-                                  userId: loggedInUserId,
-                                  familyId: f.id,
-                                  role: "admin",
-                                  name: adminEmail.split("@")[0],
-                                });
-                                // DB側も更新
-                                await supabase.from("otetsudai_users").update({ family_id: f.id }).eq("id", loggedInUserId);
-                                onLoginSuccess();
+                                try {
+                                  await setSession({
+                                    userId: loggedInUserId,
+                                    familyId: f.id,
+                                    role: "admin",
+                                    name: adminEmail.split("@")[0],
+                                    authId: loggedInAuthId || undefined,
+                                  });
+                                  // DB側も更新
+                                  await supabase.from("otetsudai_users").update({ family_id: f.id }).eq("id", loggedInUserId);
+                                  onLoginSuccess();
+                                } catch {
+                                  alert("エラー", "ダッシュボードを開けませんでした");
+                                }
                               }}
                             >
                               <Text style={{ color: palette.white, fontWeight: "bold", fontSize: 12 }} numberOfLines={1}>▶ ダッシュボード</Text>
