@@ -922,7 +922,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
               <RpgButton tier="violet" size="lg" fullWidth onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <PixelFamilyIcon size={24} />
-                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#FFFFFF" }}>親モード</Text>
+                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#FFFFFF" }}>冒険団マスターモード</Text>
                 </View>
               </RpgButton>
               <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>メール・パスワードでログイン</Text>

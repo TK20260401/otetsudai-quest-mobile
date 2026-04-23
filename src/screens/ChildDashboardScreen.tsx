@@ -173,7 +173,7 @@ export default function ChildDashboardScreen({
       setProposalTitle("");
       setProposalReason("");
       setProposalReward("");
-      alert("送信しました！", "親がクエストを確認するよ！");
+      alert("送信しました！", "冒険団マスターがクエストを確認するよ！");
       loadData();
     } catch {
       alert("エラー", "送信に失敗しました");
@@ -882,7 +882,7 @@ export default function ChildDashboardScreen({
         {/* Stamp Notifications */}
         {stampNotifs.length > 0 && (
           <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
-            <RubyText style={styles.sectionTitle} parts={[["親", "おや"], "からのメッセージ"]} />
+            <RubyText style={styles.sectionTitle} parts={[["冒険団", "ぼうけんだん"], "マスターからのメッセージ"]} />
             {stampNotifs.map((s) => {
               const stampDef = s.stamp ? getStampById(s.stamp) : null;
               return (
@@ -1243,7 +1243,7 @@ export default function ChildDashboardScreen({
               <View style={styles.emptyCard}>
                 <PixelMapIcon size={40} />
                 <AutoRubyText text="クエストが まだないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={7} />
-                <AutoRubyText text="親に たのんで クエストを つくってもらおう！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
+                <AutoRubyText text="冒険団マスターに たのんで クエストを つくってもらおう！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} noWrap />
               </View>
             )}
 
@@ -1267,7 +1267,7 @@ export default function ChildDashboardScreen({
             {/* 返信済みメッセージ履歴 */}
             {repliedMessages.length > 0 && (
               <View style={styles.repliedSection}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={18} /><RubyText style={styles.repliedTitle} parts={[["親", "おや"], "との やりとり"]} /></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={18} /><RubyText style={styles.repliedTitle} parts={[["冒険団", "ぼうけんだん"], "マスターとの やりとり"]} /></View>
                 {repliedMessages.map((log: any) => {
                   const cStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)

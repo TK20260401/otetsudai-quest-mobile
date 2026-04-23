@@ -616,7 +616,7 @@ export default function InvestScreen({
                       <Text style={styles.orderButtonText}>送り中...</Text>
                     ) : (
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                        <AutoRubyText text="親に お願いする" style={styles.orderButtonText} />
+                        <AutoRubyText text="冒険団マスターに お願いする" style={styles.orderButtonText} />
                         <PixelChartIcon size={18} />
                       </View>
                     )}
