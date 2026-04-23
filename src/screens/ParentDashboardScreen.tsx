@@ -296,7 +296,7 @@ export default function ParentDashboardScreen({
     endDate.setDate(endDate.getDate() + 6);
     const titles = [
       "みんなで 20クエスト クリアしよう！",
-      "家族で力を合わせよう！",
+      "冒険団で力を合わせよう！",
       "今週も頑張ろう！",
       "目指せクエストマスター！",
     ];
@@ -656,14 +656,14 @@ export default function ParentDashboardScreen({
         <View style={styles.screenTitleAccent} />
         <View style={{ flex: 1 }}>
           <Text style={styles.screenTitleText} numberOfLines={1}>
-            {tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "家族メンバー"}
+            {tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "冒険団メンバー"}
           </Text>
           <Text style={styles.screenTitleSub} numberOfLines={1}>
             {tab === "approve"
               ? "子どものクエストを確認・承認する"
               : tab === "tasks"
               ? "クエストの追加・編集・割当"
-              : "子どもと家族メンバーの管理"}
+              : "子どもと冒険団メンバーの管理"}
           </Text>
         </View>
         {tab === "approve" && pendingCount > 0 ? (
@@ -736,7 +736,7 @@ export default function ParentDashboardScreen({
         {/* 週次サマリー */}
         {tab === "approve" && weeklySummary.quests > 0 && (
           <RpgCard tier="silver" style={{ marginHorizontal: 12, marginTop: 12 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={16} /><Text style={styles.weeklySummaryTitle}>今週の家族記録</Text></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={16} /><Text style={styles.weeklySummaryTitle}>今週の冒険団記録</Text></View>
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
                 <Text style={styles.weeklyStatValue}>{weeklySummary.quests}</Text>
@@ -764,7 +764,7 @@ export default function ParentDashboardScreen({
                 style={[styles.stampRelayBtn, { backgroundColor: palette.accentLight, borderColor: palette.accent }]}
                 onPress={handleCreateChallenge}
                 disabled={challengeCreating}
-                accessibilityLabel="今週の家族チャレンジを作る"
+                accessibilityLabel="今週の冒険団チャレンジを作る"
                 accessibilityRole="button"
               >
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
@@ -785,7 +785,7 @@ export default function ParentDashboardScreen({
             <TouchableOpacity
               style={[styles.stampRelayBtn, { backgroundColor: palette.primaryLight, borderColor: palette.primary }]}
               onPress={() => setStampSendVisible(true)}
-              accessibilityLabel="家族にエールを送る"
+              accessibilityLabel="冒険団にエールを送る"
               accessibilityRole="button"
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
@@ -1208,7 +1208,7 @@ export default function ParentDashboardScreen({
             {/* 冒険の地図 */}
             {children.length > 0 && (
               <FamilyAdventureMap
-                familyName={familyName || "かぞく"}
+                familyName={familyName || "冒険団"}
                 children={children}
                 wallets={wallets}
               />

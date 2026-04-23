@@ -578,7 +578,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             <>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, justifyContent: "center", marginBottom: 8 }}>
                 <PixelHouseIcon size={40} />
-                <Text style={[styles.titleAdmin, { marginBottom: 0 }]}>家族管理</Text>
+                <Text style={[styles.titleAdmin, { marginBottom: 0 }]}>冒険団管理</Text>
               </View>
 
               {/* 家族一覧 */}
@@ -586,7 +586,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                 <>
                   {/* 家族メンバー管理画面 */}
                   <TouchableOpacity style={styles.backButton} onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
-                    <PixelDoorIcon size={14} /><Text style={styles.backText}>家族一覧に戻る</Text>
+                    <PixelDoorIcon size={14} /><Text style={styles.backText}>冒険団一覧に戻る</Text>
                   </TouchableOpacity>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8, marginBottom: 12 }}>
                     <PixelHouseIcon size={18} />
@@ -853,7 +853,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                   <View style={styles.addFamilyRow}>
                     <TextInput
                       style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                      placeholder="新しい家族名（例: 田中家）"
+                      placeholder="新しい冒険団名（例: 田中の冒険団）"
                       placeholderTextColor={palette.textPlaceholder}
                       value={newFamilyName}
                       onChangeText={setNewFamilyName}
@@ -866,7 +866,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                     disabled={addingFamily || !newFamilyName.trim()}
                   >
                     <Text style={styles.buttonText}>
-                      {addingFamily ? "追加中..." : "＋ 家族を追加"}
+                      {addingFamily ? "追加中..." : "＋ 冒険団を追加"}
                     </Text>
                   </TouchableOpacity>
                 </>
@@ -943,7 +943,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                 style={styles.selectButton}
                 onPress={() => handleFamilySelect(f)}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flex: 1 }}><PixelHouseIcon size={16} /><Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{f.name}</Text></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flex: 1 }}><PixelHouseIcon size={16} /><AutoRubyText text={f.name} style={styles.selectText} rubySize={5} /></View>
               </TouchableOpacity>
             ))}
           </>
@@ -962,7 +962,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                 onPress={() => handleFamilySelect(f)}
               >
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                  <Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{f.name}</Text>
+                  <AutoRubyText text={f.name} style={styles.selectText} rubySize={5} />
                 </View>
               </TouchableOpacity>
             ))}
@@ -973,7 +973,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
         {step === "member" && (
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>{selectedFamily?.name}</Text></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><AutoRubyText text={selectedFamily?.name || ""} style={styles.backText} rubySize={5} /></View>
             </TouchableOpacity>
             <RubyText style={styles.label} parts={[["誰", "だれ"], "かな？"]} rubySize={6} />
             {members.map((m) => (

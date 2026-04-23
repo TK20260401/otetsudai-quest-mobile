@@ -87,8 +87,8 @@ export default function FamilyChallengeCard({
           style={styles.header}
           parts={
             isComplete
-              ? [["家族", "かぞく"], "チャレンジ ", ["達成", "たっせい"], "！"]
-              : [["家族", "かぞく"], "チャレンジ"]
+              ? [["冒険団", "ぼうけんだん"], "チャレンジ ", ["達成", "たっせい"], "！"]
+              : [["冒険団", "ぼうけんだん"], "チャレンジ"]
           }
           rubySize={6}
         />
@@ -155,7 +155,7 @@ export default function FamilyChallengeCard({
         <RubyText
           style={styles.totalText}
           parts={[
-            ["家族", "かぞく"],
+            ["冒険団", "ぼうけんだん"],
             ["合計", "ごうけい"],
             `: ${totalCount}/${challenge.target_quests} クエスト`,
           ]}

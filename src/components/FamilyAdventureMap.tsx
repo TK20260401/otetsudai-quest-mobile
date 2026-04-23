@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { AutoRubyText } from "./Ruby";
 import Svg, { Rect, Circle, Ellipse, Path, G, Defs, LinearGradient, Stop } from "react-native-svg";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
@@ -114,7 +115,8 @@ export default function FamilyAdventureMap({
       {/* ヘッダー */}
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, zIndex: 1 }}>
         <PixelMapIcon size={22} />
-        <Text style={styles.header}>{familyName}の ぼうけんちず</Text>
+        <AutoRubyText text={familyName} style={styles.header} rubySize={7} />
+        <Text style={styles.header}> ぼうけんちず</Text>
       </View>
 
       {/* メンバーカード横並び */}

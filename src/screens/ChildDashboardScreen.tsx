@@ -941,7 +941,7 @@ export default function ChildDashboardScreen({
           </RpgCard>
         )}
 
-        {/* 家族チャレンジ */}
+        {/* 冒険団チャレンジ */}
         {activeChallenge && (
           <FamilyChallengeCard
             challenge={activeChallenge}
