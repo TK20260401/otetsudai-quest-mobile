@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from "react";
+import React, { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
   ScrollView,
   Platform,
   Linking,
+  KeyboardAvoidingView,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,6 +27,7 @@ import { getSession } from "../lib/session";
 type Props = {
   onBack: () => void;
   onSkip: () => void;
+  onGoToLogin?: () => void;
 };
 
 type MessageTone = "casual" | "polite" | "fun";
@@ -65,15 +67,17 @@ function buildMessage(words: string[], tone: MessageTone): string {
   }
 }
 
-export default function InviteParentScreen({ onBack, onSkip }: Props) {
+export default function InviteParentScreen({ onBack, onSkip, onGoToLogin }: Props) {
   const insets = useSafeAreaInsets();
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
+  const scrollRef = useRef<ScrollView>(null);
 
   const [inviteWords, setInviteWords] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedTone, setSelectedTone] = useState<MessageTone>("polite");
   const [editedMessage, setEditedMessage] = useState<string>("");
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     fetchInviteWords();
@@ -108,34 +112,42 @@ export default function InviteParentScreen({ onBack, onSkip }: Props) {
 
   const getMsg = useCallback(() => editedMessage, [editedMessage]);
 
+  const markSent = useCallback(() => setSent(true), []);
+
   const handleShareLINE = useCallback(async () => {
     const url = `https://line.me/R/share?text=${encodeURIComponent(getMsg())}`;
     await Linking.openURL(url);
-  }, [getMsg]);
+    markSent();
+  }, [getMsg, markSent]);
 
   const handleShareEmail = useCallback(async () => {
     const subject = encodeURIComponent("ジョブサガへの招待");
     const body = encodeURIComponent(getMsg());
     await Linking.openURL(`mailto:?subject=${subject}&body=${body}`);
-  }, [getMsg]);
+    markSent();
+  }, [getMsg, markSent]);
 
   const handleShareSMS = useCallback(async () => {
     const sep = Platform.OS === "ios" ? "&" : "?";
     await Linking.openURL(`sms:${sep}body=${encodeURIComponent(getMsg())}`);
-  }, [getMsg]);
+    markSent();
+  }, [getMsg, markSent]);
 
   const handleCopy = useCallback(async () => {
     await Clipboard.setStringAsync(getMsg());
-    Alert.alert("コピーしました", "メッセージをコピーしました");
-  }, [getMsg]);
+    markSent();
+  }, [getMsg, markSent]);
 
   const handleShareOther = useCallback(async () => {
     try {
-      await Share.share({ message: getMsg() });
+      const result = await Share.share({ message: getMsg() });
+      if (result.action === Share.sharedAction) {
+        markSent();
+      }
     } catch {
       // cancelled
     }
-  }, [getMsg]);
+  }, [getMsg, markSent]);
 
   if (loading) {
     return (
@@ -171,129 +183,190 @@ export default function InviteParentScreen({ onBack, onSkip }: Props) {
 
   const qrData = JSON.stringify({ type: "otetsudai-invite", words: inviteWords });
 
-  return (
-    <View
-      style={[
-        styles.screen,
-        { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 },
-      ]}
-    >
-      <TouchableOpacity
-        onPress={onBack}
-        style={styles.backButton}
-        accessibilityLabel="もどる"
-        accessibilityRole="button"
-        hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+  // 送信完了画面
+  if (sent) {
+    return (
+      <View
+        style={[
+          styles.screen,
+          { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 },
+        ]}
       >
-        <Text style={styles.backArrow}>{"\u2190"}</Text>
-      </TouchableOpacity>
-
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <RubyText style={styles.title} parts={["おうちの", ["人", "ひと"], "を よぼう！"]} rubySize={8} />
-        <RubyText style={styles.subtitle} parts={["おうちの", ["人", "ひと"], "にこの", ["画面", "がめん"], "を", ["見", "み"], "せるか メッセージを", ["送", "おく"], "ってね"]} rubySize={6} />
-
-        {/* あいことばカード */}
-        <RpgCard tier="gold" variant="compact" style={styles.wordsCard}>
-          <RubyText style={styles.sectionLabel} parts={[["合言葉", "あいことば"]]} rubySize={5} />
-          <View style={styles.wordsRow}>
-            {inviteWords.map((word, i) => (
-              <View key={i} style={styles.wordChip}>
-                <Text style={styles.wordText}>{word}</Text>
-              </View>
-            ))}
-          </View>
-        </RpgCard>
-
-        {/* QRコード */}
-        <RpgCard tier="silver" variant="compact" style={styles.qrCard}>
-          <Text style={styles.sectionLabel}>QRコード</Text>
-          <RubyText style={styles.qrHint} parts={["おうちの", ["人", "ひと"], "のスマホで ", ["読", "よ"], "み", ["取", "と"], "ってね"]} rubySize={5} />
-          <View style={styles.qrWrap}>
-            <View style={styles.qrBackground}>
-              <QRCode
-                value={qrData}
-                size={160}
-                backgroundColor="#FFFFFF"
-                color={palette.primaryDark}
-              />
-            </View>
-          </View>
-        </RpgCard>
-
-        {/* テキストシェア */}
-        <RpgCard tier="silver" variant="compact" style={styles.shareCard}>
-          <RubyText style={styles.sectionLabel} parts={["メッセージで ", ["送", "おく"], "る"]} rubySize={5} />
-
-          <View style={styles.toneRow}>
-            {(["casual", "polite", "fun"] as MessageTone[]).map((tone) => (
-              <TouchableOpacity
-                key={tone}
-                onPress={() => setSelectedTone(tone)}
-                style={[
-                  styles.toneChip,
-                  selectedTone === tone && styles.toneChipActive,
-                ]}
-                accessibilityLabel={TONE_LABELS[tone]}
-                accessibilityRole="button"
-                accessibilityState={{ selected: selectedTone === tone }}
-              >
-                <Text
-                  style={[
-                    styles.toneText,
-                    selectedTone === tone && styles.toneTextActive,
-                  ]}
-                  numberOfLines={1}
-                >
-                  {TONE_LABELS[tone]}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <TextInput
-            style={styles.previewInput}
-            value={editedMessage}
-            onChangeText={setEditedMessage}
-            multiline
-            textAlignVertical="top"
-            placeholderTextColor={palette.textPlaceholder}
-            accessibilityLabel="送信メッセージを編集"
+        <View style={styles.sentContainer}>
+          <Text style={styles.sentIcon}>✉️</Text>
+          <RubyText
+            style={styles.sentTitle}
+            parts={["メッセージを", ["送", "おく"], "ったよ！"]}
+            rubySize={8}
+          />
+          <RubyText
+            style={styles.sentSubtitle}
+            parts={["おうちの", ["人", "ひと"], "が", ["合言葉", "あいことば"], "を", ["入", "い"], "れるのを", ["待", "ま"], "とうね"]}
+            rubySize={6}
           />
 
-          <View style={styles.shareRow}>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleShareLINE} accessibilityLabel="LINEで送る">
-              <Text style={styles.shareBtnLabel}>LINE</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleShareEmail} accessibilityLabel="メールで送る">
-              <Text style={styles.shareBtnLabel}>メール</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleShareSMS} accessibilityLabel="SMSで送る">
-              <Text style={styles.shareBtnLabel}>SMS</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleCopy} accessibilityLabel="コピーする">
-              <Text style={styles.shareBtnLabel}>コピー</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.shareBtn} onPress={handleShareOther} accessibilityLabel="その他の方法で送る">
-              <RubyText style={styles.shareBtnLabel} parts={[["他", "ほか"]]} rubySize={4} />
-            </TouchableOpacity>
-          </View>
-        </RpgCard>
+          {onGoToLogin ? (
+            <RpgButton
+              onPress={onGoToLogin}
+              style={styles.sentButton}
+            >
+              <RubyText style={styles.sentBtnText} parts={["ログイン", ["画面", "がめん"], "へ"]} rubySize={6} />
+            </RpgButton>
+          ) : (
+            <RpgButton
+              onPress={onSkip}
+              style={styles.sentButton}
+            >
+              <Text style={styles.sentBtnText}>ダッシュボードへ</Text>
+            </RpgButton>
+          )}
 
-        {/* スキップ */}
+          <TouchableOpacity
+            onPress={() => setSent(false)}
+            style={styles.skipLink}
+            accessibilityLabel="もどる"
+            accessibilityRole="button"
+          >
+            <RubyText style={styles.skipText} parts={["もどる"]} rubySize={5} />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View
+        style={[
+          styles.screen,
+          { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 },
+        ]}
+      >
         <TouchableOpacity
-          onPress={onSkip}
-          style={styles.skipLink}
-          accessibilityLabel="あとでやる"
+          onPress={onBack}
+          style={styles.backButton}
+          accessibilityLabel="もどる"
           accessibilityRole="button"
           hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
         >
-          <RubyText style={styles.skipText} parts={["あとで よぶ"]} rubySize={5} />
+          <Text style={styles.backArrow}>{"\u2190"}</Text>
         </TouchableOpacity>
-      </ScrollView>
-    </View>
+
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <RubyText style={styles.title} parts={["おうちの", ["人", "ひと"], "を よぼう！"]} rubySize={8} />
+          <RubyText style={styles.subtitle} parts={["おうちの", ["人", "ひと"], "にこの", ["画面", "がめん"], "を", ["見", "み"], "せるか メッセージを", ["送", "おく"], "ってね"]} rubySize={6} />
+
+          {/* あいことばカード */}
+          <RpgCard tier="gold" variant="compact" style={styles.wordsCard}>
+            <RubyText style={styles.sectionLabel} parts={[["合言葉", "あいことば"]]} rubySize={5} />
+            <View style={styles.wordsRow}>
+              {inviteWords.map((word, i) => (
+                <View key={i} style={styles.wordChip}>
+                  <Text style={styles.wordText}>{word}</Text>
+                </View>
+              ))}
+            </View>
+          </RpgCard>
+
+          {/* QRコード */}
+          <RpgCard tier="silver" variant="compact" style={styles.qrCard}>
+            <Text style={styles.sectionLabel}>QRコード</Text>
+            <RubyText style={styles.qrHint} parts={["おうちの", ["人", "ひと"], "のスマホで ", ["読", "よ"], "み", ["取", "と"], "ってね"]} rubySize={5} />
+            <View style={styles.qrWrap}>
+              <View style={styles.qrBackground}>
+                <QRCode
+                  value={qrData}
+                  size={160}
+                  backgroundColor="#FFFFFF"
+                  color={palette.primaryDark}
+                />
+              </View>
+            </View>
+          </RpgCard>
+
+          {/* テキストシェア */}
+          <RpgCard tier="silver" variant="compact" style={styles.shareCard}>
+            <RubyText style={styles.sectionLabel} parts={["メッセージで ", ["送", "おく"], "る"]} rubySize={5} />
+
+            <View style={styles.toneRow}>
+              {(["casual", "polite", "fun"] as MessageTone[]).map((tone) => (
+                <TouchableOpacity
+                  key={tone}
+                  onPress={() => setSelectedTone(tone)}
+                  style={[
+                    styles.toneChip,
+                    selectedTone === tone && styles.toneChipActive,
+                  ]}
+                  accessibilityLabel={TONE_LABELS[tone]}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: selectedTone === tone }}
+                >
+                  <Text
+                    style={[
+                      styles.toneText,
+                      selectedTone === tone && styles.toneTextActive,
+                    ]}
+                    numberOfLines={1}
+                  >
+                    {TONE_LABELS[tone]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TextInput
+              style={styles.previewInput}
+              value={editedMessage}
+              onChangeText={setEditedMessage}
+              multiline
+              textAlignVertical="top"
+              placeholderTextColor={palette.textPlaceholder}
+              accessibilityLabel="送信メッセージを編集"
+              onFocus={() => {
+                setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 300);
+              }}
+            />
+
+            <View style={styles.shareRow}>
+              <TouchableOpacity style={styles.shareBtn} onPress={handleShareLINE} accessibilityLabel="LINEで送る">
+                <Text style={styles.shareBtnLabel}>LINE</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareBtn} onPress={handleShareEmail} accessibilityLabel="メールで送る">
+                <Text style={styles.shareBtnLabel}>メール</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareBtn} onPress={handleShareSMS} accessibilityLabel="SMSで送る">
+                <Text style={styles.shareBtnLabel}>SMS</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareBtn} onPress={handleCopy} accessibilityLabel="コピーする">
+                <Text style={styles.shareBtnLabel}>コピー</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.shareBtn} onPress={handleShareOther} accessibilityLabel="その他の方法で送る">
+                <RubyText style={styles.shareBtnLabel} parts={[["他", "ほか"]]} rubySize={4} />
+              </TouchableOpacity>
+            </View>
+          </RpgCard>
+
+          {/* スキップ */}
+          <TouchableOpacity
+            onPress={onSkip}
+            style={styles.skipLink}
+            accessibilityLabel="あとでやる"
+            accessibilityRole="button"
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          >
+            <RubyText style={styles.skipText} parts={["あとで よぶ"]} rubySize={5} />
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -303,6 +376,41 @@ function createStyles(p: Palette) {
       flex: 1,
       backgroundColor: p.backgroundLanding,
       paddingHorizontal: 20,
+    },
+    // 送信完了画面
+    sentContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 20,
+    },
+    sentIcon: {
+      fontSize: 64,
+      marginBottom: 20,
+    },
+    sentTitle: {
+      fontSize: rf(22),
+      fontWeight: "800",
+      color: p.primaryDark,
+      marginBottom: 12,
+      textAlign: "center",
+    },
+    sentSubtitle: {
+      fontSize: rf(14),
+      color: p.primary,
+      marginBottom: 32,
+      textAlign: "center",
+      lineHeight: rf(22),
+    },
+    sentButton: {
+      width: "100%",
+      marginBottom: 16,
+    },
+    sentBtnText: {
+      fontSize: rf(16),
+      fontWeight: "bold",
+      color: "#fff",
+      textAlign: "center",
     },
     backButton: {
       width: 44,

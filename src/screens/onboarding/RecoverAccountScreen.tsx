@@ -10,7 +10,9 @@ import {
   Platform,
   ScrollView,
   Animated,
+  Keyboard,
 } from "react-native";
+import KeyboardAwareScreen from "../../components/KeyboardAwareScreen";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../../theme";
 import { rf } from "../../lib/responsive";
@@ -114,7 +116,7 @@ export default function RecoverAccountScreen({ onRecover, onBack }: Props) {
   }, []);
 
   return (
-    <View
+    <KeyboardAwareScreen
       style={[
         styles.screen,
         { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 },
@@ -285,7 +287,7 @@ export default function RecoverAccountScreen({ onRecover, onBack }: Props) {
           </View>
         </View>
       )}
-    </View>
+    </KeyboardAwareScreen>
   );
 }
 

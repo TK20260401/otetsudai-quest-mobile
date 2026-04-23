@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Pet } from "../lib/types";
@@ -74,7 +76,10 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
 
   return (
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
-      <View style={[styles.container, { paddingTop: insets.top }]}>
+      <KeyboardAvoidingView
+        style={[styles.container, { paddingTop: insets.top }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <View style={styles.header}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <PixelPawIcon size={18} />
@@ -91,6 +96,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
 
         <ScrollView
           contentContainerStyle={{ padding: 12, paddingBottom: insets.bottom + 20 }}
+          keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator
         >
           {loading ? (
@@ -211,7 +217,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
             </RpgButton>
           </View>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

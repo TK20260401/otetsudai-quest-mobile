@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
@@ -58,7 +60,10 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
 
   return (
     <Modal transparent animationType="slide" visible={visible}>
-      <View style={styles.overlay}>
+      <KeyboardAvoidingView
+        style={styles.overlay}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <ScrollView
           ref={scrollRef}
           contentContainerStyle={[
@@ -178,7 +183,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
             </View>
           </View>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

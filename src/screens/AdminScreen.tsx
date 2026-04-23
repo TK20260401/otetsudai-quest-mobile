@@ -7,7 +7,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
-  TextInput,
+
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase, supabaseAnonKey } from "../lib/supabase";

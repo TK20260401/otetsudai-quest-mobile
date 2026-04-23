@@ -286,6 +286,7 @@ export default function InvestScreen({
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
         minimumZoomScale={1}
         maximumZoomScale={3}
         bouncesZoom

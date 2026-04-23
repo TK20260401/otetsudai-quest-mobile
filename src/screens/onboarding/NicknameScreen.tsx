@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+import KeyboardAwareScreen from "../../components/KeyboardAwareScreen";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../../theme";
 import { rf } from "../../lib/responsive";
@@ -34,7 +35,7 @@ export default function NicknameScreen({ onNext, onBack }: Props) {
   const canProceed = nickname.trim().length > 0;
 
   return (
-    <View
+    <KeyboardAwareScreen
       style={[
         styles.screen,
         { paddingTop: insets.top + 8, paddingBottom: insets.bottom + 16 },
@@ -91,7 +92,7 @@ export default function NicknameScreen({ onNext, onBack }: Props) {
           </RpgButton>
         </View>
       </View>
-    </View>
+    </KeyboardAwareScreen>
   );
 }
 

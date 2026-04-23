@@ -287,10 +287,18 @@ function InviteParentWrapper({ navigation }: { navigation: any }) {
     });
   }, [navigation]);
 
+  const goToLogin = useCallback(() => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
+  }, [navigation]);
+
   return (
     <InviteParentScreen
       onBack={() => navigation.goBack()}
       onSkip={goToDashboard}
+      onGoToLogin={goToLogin}
     />
   );
 }

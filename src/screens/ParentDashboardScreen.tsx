@@ -11,6 +11,7 @@ import {
   Modal,
   Platform,
   Switch,
+  KeyboardAvoidingView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -1324,7 +1325,10 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setApprovalTarget(null)}
       >
-        <View style={styles.flex1}>
+        <KeyboardAvoidingView
+          style={styles.flex1}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
           <ScrollView
             ref={approvalScrollRef}
             contentContainerStyle={[
@@ -1398,7 +1402,7 @@ export default function ParentDashboardScreen({
               </View>
             </View>
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* === Task Form Modal === */}
@@ -1408,7 +1412,10 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setTaskFormVisible(false)}
       >
-        <View style={{ flex: 1, backgroundColor: palette.overlay }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1, backgroundColor: palette.overlay }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
           <ScrollView
             ref={taskFormScrollRef}
             contentContainerStyle={[
@@ -1686,7 +1693,7 @@ export default function ParentDashboardScreen({
               </View>
             </View>
           </ScrollView>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
       {/* ファミリースタンプ送信モーダル */}
       {familyId && (
