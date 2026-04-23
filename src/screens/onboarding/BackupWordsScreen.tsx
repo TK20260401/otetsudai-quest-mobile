@@ -8,6 +8,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../../theme";
 import { rf } from "../../lib/responsive";
+import { RubyText } from "../../components/Ruby";
 import RpgButton from "../../components/RpgButton";
 
 type Props = {
@@ -40,10 +41,8 @@ export default function BackupWordsScreen({ words, onConfirm, onBack }: Props) {
       </TouchableOpacity>
 
       <View style={styles.content}>
-        <Text style={styles.title}>だいじな あいことば</Text>
-        <Text style={styles.subtitle}>
-          かみに かいて たいせつに しまってね
-        </Text>
+        <RubyText style={styles.title} parts={[["大事", "だいじ"], "な", ["合言葉", "あいことば"]]} rubySize={8} />
+        <RubyText style={styles.subtitle} parts={[["紙", "かみ"], "に ", ["書", "か"], "いて ", ["大切", "たいせつ"], "に しまってね"]} rubySize={6} />
 
         <View style={styles.card}>
           {words.slice(0, 3).map((word, i) => (
@@ -64,7 +63,7 @@ export default function BackupWordsScreen({ words, onConfirm, onBack }: Props) {
           <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
             {checked && <Text style={styles.checkmark}>{"\u2713"}</Text>}
           </View>
-          <Text style={styles.checkboxLabel}>かみに かいたよ！</Text>
+          <RubyText style={styles.checkboxLabel} parts={[["紙", "かみ"], "に ", ["書", "か"], "いたよ！"]} rubySize={6} />
         </TouchableOpacity>
 
         <View style={styles.buttonWrap}>
@@ -87,9 +86,7 @@ export default function BackupWordsScreen({ words, onConfirm, onBack }: Props) {
           </RpgButton>
         </View>
 
-        <Text style={styles.warningText}>
-          このあいことばは、アカウントを{"\n"}ふっきゅうするときにつかいます
-        </Text>
+        <RubyText style={styles.warningText} parts={["この", ["合言葉", "あいことば"], "は、アカウントを", ["復旧", "ふっきゅう"], "するときに", ["使", "つか"], "います"]} rubySize={5} />
       </View>
     </View>
   );

@@ -1,9 +1,9 @@
-import React, { useMemo } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useMemo, useState, useCallback } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, type LayoutChangeEvent } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../../theme";
 import { rf } from "../../lib/responsive";
-import { AutoRubyText } from "../../components/Ruby";
+import { RubyText } from "../../components/Ruby";
 import PixelHeroSvg from "../../components/PixelHeroSvg";
 import RpgButton from "../../components/RpgButton";
 
@@ -16,6 +16,17 @@ export default function WelcomeScreen({ onNext, onRecover }: Props) {
   const insets = useSafeAreaInsets();
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
+  const [subtitleWrap, setSubtitleWrap] = useState(false);
+  const [measured, setMeasured] = useState(false);
+
+  const onSubtitleLayout = useCallback((e: LayoutChangeEvent) => {
+    if (measured) return;
+    const containerWidth = e.nativeEvent.layout.width;
+    const fontSize = rf(14);
+    const estimatedWidth = 18 * fontSize * 0.85;
+    setSubtitleWrap(estimatedWidth > containerWidth);
+    setMeasured(true);
+  }, [measured]);
 
   return (
     <View
@@ -25,7 +36,7 @@ export default function WelcomeScreen({ onNext, onRecover }: Props) {
       ]}
     >
       <View style={styles.content}>
-        <View style={styles.heroRow} accessibilityLabel="おこづかいクエスト キャラクター">
+        <View style={styles.heroRow} accessibilityLabel="ジョブサガ">
           <PixelHeroSvg type="warrior" size={64} animated mode="walk" />
           <PixelHeroSvg type="mage" size={64} animated mode="walk" />
         </View>
@@ -35,15 +46,18 @@ export default function WelcomeScreen({ onNext, onRecover }: Props) {
           adjustsFontSizeToFit
           numberOfLines={1}
         >
-          おこづかいクエスト
+          ジョブサガ
         </Text>
 
-        <View style={styles.subtitleWrap}>
-          <AutoRubyText
-            text="クエストをクリアして、コインをかせごう！"
-            style={styles.subtitle}
-            rubySize={6}
-          />
+        <View style={styles.subtitleWrap} onLayout={onSubtitleLayout}>
+          {subtitleWrap ? (
+            <>
+              <RubyText style={styles.subtitle} parts={["クエストをクリアして、"]} rubySize={6} />
+              <RubyText style={styles.subtitle} parts={[["金貨", "きんか"], "をかせごう！"]} rubySize={6} />
+            </>
+          ) : (
+            <RubyText style={styles.subtitle} parts={["クエストをクリアして、", ["金貨", "きんか"], "をかせごう！"]} rubySize={6} />
+          )}
         </View>
 
         <View style={styles.buttonWrap}>
@@ -62,11 +76,11 @@ export default function WelcomeScreen({ onNext, onRecover }: Props) {
       <TouchableOpacity
         onPress={onRecover}
         style={styles.recoverLink}
-        accessibilityLabel="アカウントをふっきゅうする"
+        accessibilityLabel="アカウントを復旧する"
         accessibilityRole="button"
         hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
       >
-        <Text style={styles.recoverText}>アカウントをふっきゅうする</Text>
+        <RubyText style={styles.recoverText} parts={["アカウントを", ["復旧", "ふっきゅう"], "する"]} rubySize={5} />
       </TouchableOpacity>
     </View>
   );

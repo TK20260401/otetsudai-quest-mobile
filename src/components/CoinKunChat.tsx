@@ -149,7 +149,7 @@ export default function CoinKunChat({ role }: { role: Role }) {
                       ? "コインくんになんでもきいてね！"
                       : role === "parent"
                         ? "クエスト教育についてご相談ください"
-                        : "おこづかいクエストについて何でもきいてね！"}
+                        : "ジョブサガについて何でもきいてね！"}
                   </Text>
                 </View>
               )}

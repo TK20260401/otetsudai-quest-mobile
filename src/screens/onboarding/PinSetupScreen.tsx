@@ -9,17 +9,19 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../../theme";
 import { rf } from "../../lib/responsive";
+import { RubyText } from "../../components/Ruby";
 
 type Props = {
-  onNext: (pin: string) => void;
+  onNext: (pin: string) => void | Promise<void>;
   onBack: () => void;
+  loading?: boolean;
 };
 
 type Phase = "create" | "confirm";
 
 const PIN_LENGTH = 4;
 
-export default function PinSetupScreen({ onNext, onBack }: Props) {
+export default function PinSetupScreen({ onNext, onBack, loading: externalLoading }: Props) {
   const insets = useSafeAreaInsets();
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
@@ -28,7 +30,9 @@ export default function PinSetupScreen({ onNext, onBack }: Props) {
   const [pin, setPin] = useState("");
   const [firstPin, setFirstPin] = useState("");
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const shakeAnim = useRef(new Animated.Value(0)).current;
+  const isLoading = submitting || externalLoading;
 
   const shake = useCallback(() => {
     Animated.sequence([
@@ -42,6 +46,7 @@ export default function PinSetupScreen({ onNext, onBack }: Props) {
 
   const handlePress = useCallback(
     (digit: string) => {
+      if (isLoading) return;
       setError("");
       if (pin.length >= PIN_LENGTH) return;
 
@@ -55,10 +60,14 @@ export default function PinSetupScreen({ onNext, onBack }: Props) {
           setPhase("confirm");
         } else {
           if (newPin === firstPin) {
-            onNext(newPin);
+            setSubmitting(true);
+            Promise.resolve(onNext(newPin)).catch(() => {
+              setSubmitting(false);
+              setPin("");
+            });
           } else {
             shake();
-            setError("ちがうよ！もういちど やりなおしてね");
+            setError("ちがうよ！やりなおしてね");
             setTimeout(() => {
               setPin("");
               setFirstPin("");
@@ -68,7 +77,7 @@ export default function PinSetupScreen({ onNext, onBack }: Props) {
         }
       }
     },
-    [pin, phase, firstPin, onNext, shake],
+    [pin, phase, firstPin, onNext, shake, isLoading],
   );
 
   const handleBackspace = useCallback(() => {
@@ -76,10 +85,10 @@ export default function PinSetupScreen({ onNext, onBack }: Props) {
     setPin((prev) => prev.slice(0, -1));
   }, []);
 
-  const titleText =
+  const titleParts: (string | [string, string])[] =
     phase === "create"
-      ? "ひみつのパスワードをつくろう"
-      : "もういちど おなじすうじを いれてね";
+      ? [["秘密", "ひみつ"], "のパスワードを", ["作", "つく"], "ろう"]
+      : ["もう", ["一度", "いちど"], ["入", "い"], "れてね"];
 
   return (
     <View
@@ -99,8 +108,8 @@ export default function PinSetupScreen({ onNext, onBack }: Props) {
       </TouchableOpacity>
 
       <View style={styles.content}>
-        <Text style={styles.title}>{titleText}</Text>
-        <Text style={styles.subtitle}>4けたのすうじ</Text>
+        <RubyText style={styles.title} parts={titleParts} rubySize={7} />
+        <RubyText style={styles.subtitle} parts={["4", ["桁", "けた"], "の", ["数字", "すうじ"]]} rubySize={6} />
 
         <Animated.View
           style={[styles.dotsRow, { transform: [{ translateX: shakeAnim }] }]}
@@ -115,6 +124,7 @@ export default function PinSetupScreen({ onNext, onBack }: Props) {
         </Animated.View>
 
         {error !== "" && <Text style={styles.errorText}>{error}</Text>}
+        {isLoading && <RubyText style={styles.loadingText} parts={["アカウントを", ["作成中", "さくせいちゅう"], "..."]} rubySize={6} />}
 
         <View style={styles.numpad}>
           {[
@@ -186,7 +196,7 @@ function createStyles(p: Palette) {
       marginTop: -20,
     },
     title: {
-      fontSize: rf(18),
+      fontSize: rf(15),
       fontWeight: "800",
       color: p.primaryDark,
       marginBottom: 6,
@@ -218,6 +228,13 @@ function createStyles(p: Palette) {
     errorText: {
       fontSize: rf(13),
       color: "#E74C3C",
+      fontWeight: "bold",
+      marginBottom: 12,
+      textAlign: "center",
+    },
+    loadingText: {
+      fontSize: rf(13),
+      color: p.primary,
       fontWeight: "bold",
       marginBottom: 12,
       textAlign: "center",

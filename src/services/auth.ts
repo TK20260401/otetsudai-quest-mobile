@@ -1,8 +1,8 @@
-import { supabase } from "../lib/supabase";
+import { supabase, supabaseUrl, supabaseAnonKey } from "../lib/supabase";
 import type { User } from "../lib/types";
 import { setSession, clearSession } from "../lib/session";
 
-const FUNCTIONS_URL = `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1`;
+const FUNCTIONS_URL = `${supabaseUrl}/functions/v1`;
 
 /** Get current Supabase Auth JWT token */
 async function getAuthToken(): Promise<string> {
@@ -11,13 +11,18 @@ async function getAuthToken(): Promise<string> {
 }
 
 /** Helper: call Edge Function with JWT */
-async function callEdgeFunction<T>(name: string, body: Record<string, unknown>): Promise<T> {
-  const token = await getAuthToken();
+async function callEdgeFunction<T>(name: string, body: Record<string, unknown>, tokenOverride?: string): Promise<T> {
+  const token = tokenOverride || await getAuthToken();
+  if (!token) {
+    throw new Error("認証トークンが取得できませんでした");
+  }
+  const anonKey = supabaseAnonKey;
   const res = await fetch(`${FUNCTIONS_URL}/${name}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${token}`,
+      "apikey": anonKey,
     },
     body: JSON.stringify(body),
   });
@@ -34,7 +39,7 @@ export async function signInAnonymously() {
   return supabase.auth.signInAnonymously();
 }
 
-export async function createChildAccount(nickname: string, pin: string, icon?: string) {
+export async function createChildAccount(nickname: string, pin: string, token?: string, icon?: string) {
   return callEdgeFunction<{
     familyId: string;
     familyName: string;
@@ -42,7 +47,7 @@ export async function createChildAccount(nickname: string, pin: string, icon?: s
     walletId: string;
     inviteWords: string[];
     backupWords: string[];
-  }>("create-child-account", { nickname, pin, icon });
+  }>("create-child-account", { nickname, pin, icon }, token);
 }
 
 // ── Email Auth (親) ──
@@ -95,14 +100,14 @@ export async function joinFamilyByWords(words: string[], name: string, icon?: st
 
 // ── Account Recovery ──
 
-export async function recoverAccount(backupWords: string[], newPin: string) {
+export async function recoverAccount(backupWords: string[], newPin: string, token?: string) {
   return callEdgeFunction<{
     familyId: string;
     familyName: string;
     userId: string;
     userName: string;
     role: string;
-  }>("recover-account", { backupWords, newPin });
+  }>("recover-account", { backupWords, newPin }, token);
 }
 
 // ── Session ──

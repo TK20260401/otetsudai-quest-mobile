@@ -18,7 +18,9 @@ import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
 import type { StockPrice } from "../lib/types";
-import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon, PixelBarChartIcon, PixelDoorIcon, PixelHouseIcon, PixelCrossIcon } from "../components/PixelIcons";
+import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon, PixelBarChartIcon, PixelDoorIcon, PixelHouseIcon, PixelCrossIcon, PixelShieldIcon } from "../components/PixelIcons";
+import RpgButton from "../components/RpgButton";
+import { getSession } from "../lib/session";
 
 type Portfolio = {
   id: string;
@@ -56,6 +58,7 @@ export default function InvestScreen({
   const styles = useMemo(() => createStyles(palette), [palette]);
   const orderScrollRef = useRef<ScrollView>(null);
 
+  const [hasParent, setHasParent] = useState<boolean | null>(null);
   const [investBalance, setInvestBalance] = useState(initialBalance);
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [syncing, setSyncing] = useState(false);
@@ -77,8 +80,24 @@ export default function InvestScreen({
   const [orderSuccess, setOrderSuccess] = useState(false);
 
   useEffect(() => {
+    checkHasParent();
     loadData();
   }, [childId]);
+
+  async function checkHasParent() {
+    try {
+      const session = await getSession();
+      if (!session?.familyId) return;
+      const { data } = await supabase
+        .from("otetsudai_families")
+        .select("has_parent")
+        .eq("id", session.familyId)
+        .single();
+      setHasParent(data?.has_parent ?? false);
+    } catch {
+      setHasParent(false);
+    }
+  }
 
   // 初回訪問＆ポートフォリオ空なら、銘柄一覧モーダルを自動表示。
   // 子供が迷わずに株画面（カテゴリタブ＋銘柄リスト）を見られるようにする。
@@ -373,6 +392,49 @@ export default function InvestScreen({
           </View>
         </TouchableOpacity>
       </View>
+
+      {/* Parent Lock Modal */}
+      {hasParent === false && (
+        <Modal
+          visible={true}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => navigation.goBack()}
+        >
+          <View style={styles.lockOverlay}>
+            <View style={styles.lockCard}>
+              <PixelShieldIcon size={48} />
+              <Text style={styles.lockTitle}>
+                おうちの ひとが ひつよう！
+              </Text>
+              <Text style={styles.lockDesc}>
+                「ふやす」は おうちの ひとが{"\n"}
+                さんかすると つかえるようになるよ
+              </Text>
+              <RpgButton
+                tier="gold"
+                size="md"
+                fullWidth
+                onPress={() => navigation.navigate("InviteParent")}
+                accessibilityLabel="おうちのひとをよぶ"
+              >
+                <Text style={styles.lockButtonText}>
+                  おうちの ひとを よぶ
+                </Text>
+              </RpgButton>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.lockBackLink}
+                accessibilityLabel="もどる"
+                accessibilityRole="button"
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <Text style={styles.lockBackText}>もどる</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
 
       {/* Order Modal */}
       <Modal
@@ -813,5 +875,56 @@ function createStyles(p: Palette) {
     },
 
     orderHint: { fontSize: 10, color: p.textMuted, textAlign: "center", marginTop: 12, lineHeight: 16 },
+
+    // Lock modal
+    lockOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 24,
+    },
+    lockCard: {
+      backgroundColor: p.background,
+      borderRadius: 20,
+      padding: 28,
+      alignItems: "center",
+      width: "100%",
+      maxWidth: 340,
+      borderWidth: 2,
+      borderColor: p.borderStrong,
+    },
+    lockTitle: {
+      fontSize: rf(18),
+      fontWeight: "800",
+      color: p.primaryDark,
+      marginTop: 16,
+      marginBottom: 8,
+      textAlign: "center",
+    },
+    lockDesc: {
+      fontSize: rf(13),
+      color: p.textMuted,
+      textAlign: "center",
+      lineHeight: rf(20),
+      marginBottom: 20,
+    },
+    lockButtonText: {
+      fontSize: rf(16),
+      fontWeight: "bold",
+      color: "#2A1800",
+    },
+    lockBackLink: {
+      marginTop: 16,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      minHeight: 44,
+      justifyContent: "center",
+    },
+    lockBackText: {
+      fontSize: rf(13),
+      color: p.textMuted,
+      textDecorationLine: "underline",
+    },
   });
 }

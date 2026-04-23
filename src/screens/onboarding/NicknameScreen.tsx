@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, type Palette } from "../../theme";
 import { rf } from "../../lib/responsive";
 import RpgButton from "../../components/RpgButton";
+import { RubyText } from "../../components/Ruby";
 
 type Props = {
   onNext: (nickname: string) => void;
@@ -51,7 +52,7 @@ export default function NicknameScreen({ onNext, onBack }: Props) {
 
       <View style={styles.content}>
         <Text style={styles.title}>はじめまして！</Text>
-        <Text style={styles.subtitle}>なまえをおしえて</Text>
+        <RubyText style={styles.subtitle} parts={[["名前", "なまえ"], "を", ["教", "おし"], "えて"]} rubySize={7} />
 
         <View style={styles.inputWrap}>
           <TextInput
@@ -142,7 +143,7 @@ function createStyles(p: Palette) {
       paddingVertical: 14,
       paddingHorizontal: 16,
       fontSize: rf(18),
-      color: p.textStrong,
+      color: "#1a1a1a",
       backgroundColor: p.white,
       textAlign: "center",
     },

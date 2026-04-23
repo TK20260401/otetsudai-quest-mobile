@@ -134,7 +134,7 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
                     onPress={handleClaim}
                     disabled={claiming || !walletId}
                   >
-                    {claiming ? "受取中..." : `+${status.nextAmount}円 受取る`}
+                    {claiming ? "うけとり中..." : `+${status.nextAmount}えん うけとる`}
                   </RpgButton>
                 </View>
               ) : (
@@ -145,7 +145,7 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
 
               <View style={{ marginTop: 12 }}>
                 <RpgButton tier="silver" size="md" onPress={onClose}>
-                  閉じる
+                  とじる
                 </RpgButton>
               </View>
             </>

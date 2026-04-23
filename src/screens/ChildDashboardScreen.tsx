@@ -427,6 +427,48 @@ export default function ChildDashboardScreen({
     }, [loadData])
   );
 
+  // 親未参加7日後ナッジ
+  const [nudgeVisible, setNudgeVisible] = useState(false);
+  useEffect(() => {
+    if (!sessionFamilyId) return;
+    checkNudge();
+    async function checkNudge() {
+      try {
+        // 親がいるか確認
+        const { data: family } = await supabase
+          .from("otetsudai_families")
+          .select("has_parent, created_at")
+          .eq("id", sessionFamilyId!)
+          .single();
+        if (!family || family.has_parent) return;
+
+        // 作成から7日経過しているか
+        const created = new Date(family.created_at);
+        const daysSince = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
+        if (daysSince < 7) return;
+
+        // 既にこのタイプのナッジを表示済みか
+        const { data: nudgeLog } = await supabase
+          .from("otetsudai_nudge_log")
+          .select("id")
+          .eq("family_id", sessionFamilyId!)
+          .eq("nudge_type", "invite_parent_7d")
+          .limit(1);
+        if (nudgeLog && nudgeLog.length > 0) return;
+
+        // ナッジ表示 + ログ記録
+        setNudgeVisible(true);
+        await supabase.from("otetsudai_nudge_log").insert({
+          family_id: sessionFamilyId,
+          nudge_type: "invite_parent_7d",
+          child_id: childId,
+        });
+      } catch {
+        // silent
+      }
+    }
+  }, [sessionFamilyId, childId]);
+
   // 初回のみデイリーログインチェック（wallet取得後）
   useEffect(() => {
     if (dailyLoginChecked) return;
@@ -1418,6 +1460,50 @@ export default function ChildDashboardScreen({
         childId={childId}
       />
 
+      {/* 親招待ナッジ（7日後） */}
+      <Modal
+        visible={nudgeVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setNudgeVisible(false)}
+      >
+        <View style={styles.nudgeOverlay}>
+          <View style={styles.nudgeCard}>
+            <Text style={styles.nudgeEmoji}>{"\u{1F31F}"}</Text>
+            <Text style={styles.nudgeTitle}>
+              おうちの ひとを よんでみない？
+            </Text>
+            <Text style={styles.nudgeDesc}>
+              おうちの ひとが さんかすると{"\n"}
+              「ふやす」が つかえるようになるよ！
+            </Text>
+            <RpgButton
+              tier="gold"
+              size="md"
+              fullWidth
+              onPress={() => {
+                setNudgeVisible(false);
+                navigation.navigate("InviteParent");
+              }}
+              accessibilityLabel="おうちのひとをよぶ"
+            >
+              <Text style={styles.nudgeButtonText}>
+                おうちの ひとを よぶ
+              </Text>
+            </RpgButton>
+            <TouchableOpacity
+              onPress={() => setNudgeVisible(false)}
+              style={styles.nudgeSkipLink}
+              accessibilityLabel="あとで"
+              accessibilityRole="button"
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Text style={styles.nudgeSkipText}>あとで</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* デイリーログインボーナス */}
       <DailyLoginModal
         visible={dailyLoginVisible}
@@ -2391,6 +2477,59 @@ function createStyles(p: Palette) {
     fontSize: 16,
     fontWeight: "bold" as const,
     color: p.primaryDark,
+  },
+  // ナッジモーダル
+  nudgeOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
+    padding: 24,
+  },
+  nudgeCard: {
+    backgroundColor: p.background,
+    borderRadius: 20,
+    padding: 28,
+    alignItems: "center" as const,
+    width: "100%" as const,
+    maxWidth: 340,
+    borderWidth: 2,
+    borderColor: p.borderStrong,
+  },
+  nudgeEmoji: {
+    fontSize: 48,
+    marginBottom: 8,
+  },
+  nudgeTitle: {
+    fontSize: rf(18),
+    fontWeight: "800" as const,
+    color: p.primaryDark,
+    marginBottom: 8,
+    textAlign: "center" as const,
+  },
+  nudgeDesc: {
+    fontSize: rf(13),
+    color: p.textMuted,
+    textAlign: "center" as const,
+    lineHeight: rf(20),
+    marginBottom: 20,
+  },
+  nudgeButtonText: {
+    fontSize: rf(16),
+    fontWeight: "bold" as const,
+    color: "#2A1800",
+  },
+  nudgeSkipLink: {
+    marginTop: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    minHeight: 44,
+    justifyContent: "center" as const,
+  },
+  nudgeSkipText: {
+    fontSize: rf(13),
+    color: p.textMuted,
+    textDecorationLine: "underline" as const,
   },
   });
 }

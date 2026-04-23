@@ -99,6 +99,11 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
       .select("*");
     setFamilies(data || []);
     setLoading(false);
+
+    // 子供モード: 家族が1つなら自動スキップ
+    if (mode === "child" && data && data.length === 1) {
+      handleFamilySelect(data[0]);
+    }
   }
 
   async function loadMyFamilies(authId: string) {
@@ -151,7 +156,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
     try {
       const result = await verifyPin(selectedUser.id, pinValue);
       if (!result.valid) {
-        setError("PINが ちがいます");
+        setError("PINがちがいます");
         return;
       }
       await loginAsUser(
@@ -161,7 +166,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
       );
       onLoginSuccess();
     } catch {
-      setError("PINが ちがいます");
+      setError("PINがちがいます");
     }
   }
 
@@ -178,58 +183,20 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
         setAdminLoading(false);
         return;
       }
-      let { data: authUser } = await supabase
-        .from("otetsudai_users")
-        .select("*")
-        .eq("auth_id", authData.user.id)
-        .in("role", ["admin", "parent"])
-        .limit(1)
-        .single();
-      if (!authUser) {
-        // レコードが未作成の場合、自動でadminとして登録
-        const { data: newUser } = await supabase.from("otetsudai_users").insert({
-          auth_id: authData.user.id,
-          role: "admin",
-          name: adminEmail.split("@")[0],
-          icon: "👨‍👩‍👧‍👦",
-          display_order: 0,
-        }).select().single();
-        authUser = newUser;
-      }
-      if (!authUser) {
-        await supabase.auth.signOut();
-        setError("このアカウントでは ログインできません");
-        setAdminLoading(false);
-        return;
-      }
-      // admin の family_id が null なら最新の自分の家族を探す
-      let familyId = authUser.family_id;
-      if (!familyId) {
-        const { data: myFamilies } = await supabase
-          .from("otetsudai_families")
-          .select("id, name")
-          .neq("name", SAMPLE_FAMILY_NAME)
-          .order("created_at", { ascending: false })
-          .limit(1);
-        if (myFamilies && myFamilies.length > 0) {
-          familyId = myFamilies[0].id;
-          // DB側も更新
-          await supabase.from("otetsudai_users").update({ family_id: familyId }).eq("id", authUser.id);
-        }
-      }
-      // セッション保存
+      // auth.users の user_metadata.role でadmin判定（RLS不要）
+      const userMeta = authData.user.user_metadata;
+      const isAdmin = userMeta?.role === "admin";
+
+      // セッション保存（RLSクエリを使わない）
       await setSession({
-        userId: authUser.id,
-        familyId,
-        role: authUser.role as "admin" | "parent",
-        name: authUser.name,
+        userId: authData.user.id,
+        familyId: null,
+        role: isAdmin ? "admin" : "parent",
+        name: adminEmail.split("@")[0],
         authId: authData.user.id,
       });
-      // 常に家族管理画面へ（ダッシュボードへはボタンで遷移）
-      setLoggedInUserId(authUser.id);
-      setLoggedInAuthId(authData.user.id);
-      setAdminLoggedIn(true);
-      await loadMyFamilies(authData.user.id);
+      // 直接ダッシュボードへ
+      onLoginSuccess();
     } catch {
       setError("ログインに 失敗しました");
     }
@@ -470,6 +437,11 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
       setSelectedUser(null);
       setStep("member");
     } else if (step === "member") {
+      if (mode === "child") {
+        // 子供モードでは家族選択をスキップしたので、そのまま戻る
+        if (onBack) { onBack(); return; }
+        return;
+      }
       setSelectedFamily(null);
       setMembers([]);
       setStep("family");
@@ -928,10 +900,8 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
               <PixelHeroSvg type="warrior" size={48} animated mode="walk" />
               <PixelHeroSvg type="mage" size={48} animated mode="walk" />
             </View>
-            <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>おこづかいクエスト</Text>
-            <Text style={styles.subtitle} adjustsFontSizeToFit numberOfLines={1}>
-              クエストをクリアしてコインをかせごう！
-            </Text>
+            <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>ジョブサガ</Text>
+            <RubyText style={styles.subtitle} parts={["クエストをクリアして、", ["金貨", "きんか"], "をかせごう！"]} rubySize={5} />
           </>
         )}
 
@@ -946,7 +916,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                   <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }}>子供モード</Text>
                 </View>
               </RpgButton>
-              <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>おうちをえらんでログイン</Text>
+              <RubyText style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]} parts={["おうちを", ["選", "えら"], "んでログイン"]} rubySize={5} />
             </View>
             <View style={{ marginBottom: 8 }}>
               <RpgButton tier="violet" size="lg" fullWidth onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}>
@@ -960,13 +930,13 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
           </>
         )}
 
-        {/* Step: Family selection */}
-        {step === "family" && (
+        {/* Step: Family selection (子供モード以外で表示) */}
+        {step === "family" && mode !== "child" && (
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
             </TouchableOpacity>
-            <Text style={styles.label}>おうちを選んでね</Text>
+            <RubyText style={styles.label} parts={["おうちを", ["選", "えら"], "んでね"]} rubySize={6} />
             {families.map((f) => (
               <TouchableOpacity
                 key={f.id}
@@ -978,6 +948,26 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             ))}
           </>
         )}
+        {/* 子供モード: 家族スキップ → 全子供から名前を選ぶ */}
+        {step === "family" && mode === "child" && (
+          <>
+            <TouchableOpacity style={styles.backButton} onPress={goBack}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
+            </TouchableOpacity>
+            <RubyText style={styles.label} parts={[["名前", "なまえ"], "を", ["選", "えら"], "んでね"]} rubySize={6} />
+            {families.map((f) => (
+              <TouchableOpacity
+                key={f.id}
+                style={styles.selectButton}
+                onPress={() => handleFamilySelect(f)}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
+                  <Text style={styles.selectText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{f.name}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
 
         {/* Step: Member selection */}
         {step === "member" && (
@@ -985,7 +975,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>{selectedFamily?.name}</Text></View>
             </TouchableOpacity>
-            <Text style={styles.label}>だれかな？</Text>
+            <RubyText style={styles.label} parts={[["誰", "だれ"], "かな？"]} rubySize={6} />
             {members.map((m) => (
               <TouchableOpacity
                 key={m.id}
@@ -1015,10 +1005,8 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>{selectedUser?.name}</Text></View>
             </TouchableOpacity>
-            <Text style={styles.label}>PINをいれてね 🔑</Text>
-            <Text style={styles.hint}>
-              おうちのひとにきいた4けたのばんごうをいれてね
-            </Text>
+            <RubyText style={styles.label} parts={["PINを", ["入", "い"], "れてね 🔑"]} rubySize={6} />
+            <RubyText style={styles.hint} parts={[["自分", "じぶん"], "で", ["決", "き"], "めた4", ["桁", "けた"], "の", ["数字", "すうじ"], "を", ["入", "い"], "れてね"]} rubySize={5} />
             <TextInput
               style={styles.pinInput}
               value={pin}
@@ -1046,7 +1034,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             </TouchableOpacity>
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <RpgButton tier="gold" size="lg" fullWidth onPress={() => { Keyboard.dismiss(); handlePinLogin(); }}>
-              クエストをはじめる！
+              はじめる！
             </RpgButton>
           </>
         )}
