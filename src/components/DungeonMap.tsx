@@ -73,7 +73,7 @@ export default function DungeonMap({ totalQuests }: Props) {
               )}
 
               <SvgText x={66} y={y + 18} fontSize={9} fill={isCurrent ? "#FFF" : "#666"}>
-                {floorType === "boss" ? "ボスフロア" : floorType === "treasure" ? "たからべや" : `フロア ${f.num}`}
+                {floorType === "boss" ? "ボスフロア" : floorType === "treasure" ? "宝部屋" : `フロア ${f.num}`}
               </SvgText>
 
               {isCurrent && (

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { supabase } from "../lib/supabase";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
+import { AutoRubyText } from "./Ruby";
 import { getCurrentLevel } from "../lib/levels";
 import type { User, Wallet } from "../lib/types";
 import { PixelScrollIcon, PixelFlameIcon, PixelCrossedSwordsIcon, PixelPiggyIcon, PixelCrownIcon, PixelLightbulbIcon } from "./PixelIcons";
@@ -197,7 +198,7 @@ export default function MonthlyReport({ child, wallet }: Props) {
         <View style={styles.statItem}>
           <PixelCrownIcon size={20} />
           <Text style={styles.statValue}>¥{data.totalEarned.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>稼いだ</Text>
+          <AutoRubyText text="稼いだ" style={styles.statLabel} rubySize={4} noWrap />
         </View>
         <View style={styles.statItem}>
           <PixelFlameIcon size={20} />

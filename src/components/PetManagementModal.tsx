@@ -90,8 +90,8 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.subtitle}>
-          アクティブに できるのは 1ぴきだけ！
+        <Text style={styles.subtitle} numberOfLines={1} adjustsFontSizeToFit>
+          アクティブにできるのは1ぴきだけ！
         </Text>
 
         <ScrollView

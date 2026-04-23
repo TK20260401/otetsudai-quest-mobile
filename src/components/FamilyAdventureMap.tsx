@@ -116,7 +116,7 @@ export default function FamilyAdventureMap({
       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, zIndex: 1 }}>
         <PixelMapIcon size={22} />
         <AutoRubyText text={familyName} style={styles.header} rubySize={7} />
-        <Text style={styles.header}> ぼうけんちず</Text>
+        <AutoRubyText text=" 冒険地図" style={styles.header} rubySize={5} noWrap />
       </View>
 
       {/* メンバーカード横並び */}
@@ -146,11 +146,11 @@ export default function FamilyAdventureMap({
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{stats.weeklyQuests}</Text>
-          <Text style={styles.statLabel}>今週クエスト</Text>
+          <AutoRubyText text="今週クエスト" style={styles.statLabel} rubySize={4} noWrap />
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>¥{stats.weeklyEarned.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>稼いだ</Text>
+          <AutoRubyText text="稼いだ" style={styles.statLabel} rubySize={4} noWrap />
         </View>
         <View style={styles.statItem}>
           {stats.familyStreak > 0 ? (
@@ -161,11 +161,11 @@ export default function FamilyAdventureMap({
           ) : (
             <Text style={styles.statValue}>—</Text>
           )}
-          <Text style={styles.statLabel}>連続日</Text>
+          <AutoRubyText text="連続日" style={styles.statLabel} rubySize={4} noWrap />
         </View>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>¥{familyTotal.toLocaleString()}</Text>
-          <Text style={styles.statLabel}>合計</Text>
+          <AutoRubyText text="合計" style={styles.statLabel} rubySize={4} noWrap />
         </View>
       </View>
 

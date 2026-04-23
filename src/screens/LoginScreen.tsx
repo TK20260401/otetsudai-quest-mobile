@@ -34,9 +34,10 @@ type Props = {
   onLoginSuccess: () => void;
   mode?: LoginMode;
   onBack?: () => void;
+  onRecover?: () => void;
 };
 
-export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
+export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }: Props) {
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const { alert } = useAppAlert();
@@ -85,6 +86,16 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
     loadFamilies();
   }, []);
 
+  // PIN入力中: キーボード表示時にボタンが見えるよう自動スクロール
+  useEffect(() => {
+    if (step !== "pin") return;
+    const event = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const sub = Keyboard.addListener(event, () => {
+      setTimeout(() => childScrollRef.current?.scrollToEnd({ animated: true }), 100);
+    });
+    return () => sub.remove();
+  }, [step]);
+
   // mode="parent" の場合、初回からadminステップなのでisSignUpをリセット
   useEffect(() => {
     if (mode === "parent") {
@@ -100,8 +111,8 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
     setFamilies(data || []);
     setLoading(false);
 
-    // 子供モード: 冒険団が1つなら自動スキップ
-    if (mode === "child" && data && data.length === 1) {
+    // 子供モード: 冒険団は常に1つ。選択画面を表示せず直接メンバー選択へ
+    if (mode === "child" && data && data.length > 0) {
       handleFamilySelect(data[0]);
     }
   }
@@ -883,14 +894,15 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "position" : undefined}
-      contentContainerStyle={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
     <ScrollView
       ref={childScrollRef}
-      contentContainerStyle={styles.container}
+      contentContainerStyle={[styles.container, step === "pin" && { justifyContent: "flex-start", paddingTop: 40 }]}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="interactive"
+      showsVerticalScrollIndicator
+      alwaysBounceVertical
     >
       <View style={styles.card}>
         {/* Header — PIN入力中は非表示にしてキーボードスペース確保 */}
@@ -903,7 +915,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>ジョブサガ</Text>
             <View style={{ alignItems: "center", marginBottom: 20 }}>
               <AutoRubyText text="クエストをクリアして、" style={[styles.subtitle, { marginBottom: 0 }]} rubySize={5} />
-              <AutoRubyText text="金貨をかせごう！" style={[styles.subtitle, { marginBottom: 0 }]} rubySize={5} />
+              <AutoRubyText text="金貨を稼ごう！" style={[styles.subtitle, { marginBottom: 0 }]} rubySize={5} />
             </View>
           </>
         )}
@@ -911,24 +923,24 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
         {/* Step: Mode selection */}
         {step === "mode" && (
           <>
-            <Text style={styles.label}>どっちのモード？</Text>
+            <RubyText style={styles.label} parts={["どっちのモード？"]} rubySize={5} />
             <View style={{ marginBottom: 12 }}>
               <RpgButton tier="gold" size="lg" fullWidth onPress={() => { setStep("family"); loadFamilies(); }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                   <PixelPersonIcon size={24} />
-                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }}>子供モード</Text>
+                  <RubyText style={{ fontSize: 18, fontWeight: "bold", color: "#2A1800" }} parts={[["子供", "こども"], "モード"]} rubySize={5} noWrap />
                 </View>
               </RpgButton>
-              <RubyText style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]} parts={["おうちを", ["選", "えら"], "んでログイン"]} rubySize={5} />
+              <RubyText style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]} parts={[["冒険団", "ぼうけんだん"], "を", ["選", "えら"], "んでログイン"]} rubySize={5} />
             </View>
             <View style={{ marginBottom: 8 }}>
               <RpgButton tier="violet" size="lg" fullWidth onPress={() => { setStep("admin"); setIsSignUp(false); setError(""); }}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                  <PixelFamilyIcon size={24} />
-                  <Text style={{ fontSize: 18, fontWeight: "bold", color: "#FFFFFF" }}>冒険団マスターモード</Text>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                  <PixelFamilyIcon size={22} />
+                  <RubyText style={{ fontSize: 13, fontWeight: "bold", color: "#FFFFFF" }} parts={[["冒険団", "ぼうけんだん"], "マスター"]} rubySize={4} noWrap />
                 </View>
               </RpgButton>
-              <Text style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]}>メール・パスワードでログイン</Text>
+              <AutoRubyText text="メール・パスワードでログイン" style={[styles.modeHint, { textAlign: "center", marginTop: 4 }]} rubySize={4} />
             </View>
           </>
         )}
@@ -939,7 +951,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
             </TouchableOpacity>
-            <RubyText style={styles.label} parts={["おうちを", ["選", "えら"], "んでね"]} rubySize={6} />
+            <RubyText style={styles.label} parts={[["冒険団", "ぼうけんだん"], "を", ["選", "えら"], "んでね"]} rubySize={6} />
             {families.map((f) => (
               <TouchableOpacity
                 key={f.id}
@@ -951,34 +963,15 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             ))}
           </>
         )}
-        {/* 子供モード: 冒険団スキップ → 全子供から名前を選ぶ */}
-        {step === "family" && mode === "child" && (
-          <>
-            <TouchableOpacity style={styles.backButton} onPress={goBack}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
-            </TouchableOpacity>
-            <RubyText style={styles.label} parts={[["名前", "なまえ"], "を", ["選", "えら"], "んでね"]} rubySize={6} />
-            {families.map((f) => (
-              <TouchableOpacity
-                key={f.id}
-                style={styles.selectButton}
-                onPress={() => handleFamilySelect(f)}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                  <AutoRubyText text={f.name} style={styles.selectText} rubySize={5} />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </>
-        )}
+        {/* 子供モード: 冒険団は1つ。loadFamilies()で自動スキップ済み。UIなし */}
 
         {/* Step: Member selection */}
         {step === "member" && (
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><AutoRubyText text={selectedFamily?.name || ""} style={styles.backText} rubySize={5} /></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelDoorIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
             </TouchableOpacity>
-            <RubyText style={styles.label} parts={[["誰", "だれ"], "かな？"]} rubySize={6} />
+            <RubyText style={styles.label} parts={[["冒険者", "ぼうけんしゃ"], "を", ["選", "えら"], "びます"]} rubySize={6} />
             {members.map((m) => (
               <TouchableOpacity
                 key={m.id}
@@ -1026,19 +1019,23 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
               placeholderTextColor={palette.textPlaceholder}
               textAlign="center"
               onSubmitEditing={() => handlePinLogin()}
-              autoFocus
               onFocus={() => setTimeout(() => childScrollRef.current?.scrollToEnd({ animated: true }), 300)}
             />
-            <TouchableOpacity
-              style={{ alignSelf: "center", paddingVertical: 8, paddingHorizontal: 16, marginBottom: 8 }}
-              onPress={() => Keyboard.dismiss()}
-            >
-              <Text style={{ color: palette.textMuted, fontSize: 13 }}>▼ キーボードをとじる</Text>
-            </TouchableOpacity>
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <RpgButton tier="gold" size="lg" fullWidth onPress={() => { Keyboard.dismiss(); handlePinLogin(); }}>
-              冒険に出発！
+              <RubyText style={{ fontSize: rf(18), fontWeight: "bold", color: "#2A1800" }} parts={[["冒険", "ぼうけん"], "に", ["出発", "しゅっぱつ"], "！"]} rubySize={6} />
             </RpgButton>
+            {onRecover && (
+              <TouchableOpacity style={styles.recoverLink} onPress={onRecover}>
+                <RubyText
+                  style={styles.recoverText}
+                  parts={["PINを", ["忘", "わす"], "れた？"]}
+                  rubySize={5}
+                />
+              </TouchableOpacity>
+            )}
+            {/* キーボード表示時にスクロールでボタンが見えるようスペース確保 */}
+            <View style={{ height: 120 }} />
           </>
         )}
       </View>
@@ -1212,7 +1209,7 @@ function createStyles(p: Palette) {
     backButton: {
       marginTop: 16,
       marginBottom: 12,
-      alignSelf: "center",
+      alignSelf: "flex-start",
       flexDirection: "row",
       alignItems: "center",
       gap: 6,
@@ -1279,6 +1276,16 @@ function createStyles(p: Palette) {
       flexDirection: "row",
       gap: 8,
       marginTop: 12,
+    },
+    recoverLink: {
+      marginTop: 16,
+      alignItems: "center",
+      paddingVertical: 8,
+    },
+    recoverText: {
+      fontSize: 13,
+      color: p.primary,
+      textDecorationLine: "underline",
     },
     legalRow: {
       flexDirection: "row",

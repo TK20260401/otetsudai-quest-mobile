@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
+import { resetSampleFamily } from "../lib/sample-reset";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
@@ -26,7 +27,7 @@ import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings, FamilyMessage, FamilyChallenge } from "../lib/types";
 import { useAppAlert } from "../components/AppAlert";
 import FamilyStampSendModal from "../components/FamilyStampSendModal";
-import { RubyText } from "../components/Ruby";
+import { RubyText, AutoRubyText } from "../components/Ruby";
 import FamilyMessageCard from "../components/FamilyMessageCard";
 import MonthlyReport from "../components/MonthlyReport";
 import FamilyAdventureMap from "../components/FamilyAdventureMap";
@@ -614,6 +615,7 @@ export default function ParentDashboardScreen({
   }
 
   function handleLogout() {
+    resetSampleFamily().catch(() => {});
     clearSession().then(() => {
       navigation.reset({ index: 0, routes: [{ name: "Landing" }] });
     });
@@ -655,16 +657,12 @@ export default function ParentDashboardScreen({
       <View style={styles.screenTitleBar} accessibilityRole="header">
         <View style={styles.screenTitleAccent} />
         <View style={{ flex: 1 }}>
-          <Text style={styles.screenTitleText} numberOfLines={1}>
-            {tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "冒険団メンバー"}
-          </Text>
-          <Text style={styles.screenTitleSub} numberOfLines={1}>
-            {tab === "approve"
+          <AutoRubyText style={styles.screenTitleText} text={tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "冒険団メンバー"} rubySize={5} noWrap />
+          <AutoRubyText style={styles.screenTitleSub} text={tab === "approve"
               ? "子どものクエストを確認・承認する"
               : tab === "tasks"
               ? "クエストの追加・編集・割当"
-              : "子どもと冒険団メンバーの管理"}
-          </Text>
+              : "子どもと冒険団メンバーの管理"} rubySize={4} noWrap />
         </View>
         {tab === "approve" && pendingCount > 0 ? (
           <View style={styles.screenTitleBadge}>
@@ -683,7 +681,7 @@ export default function ParentDashboardScreen({
           accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
           <View style={styles.headerBadgeRow}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><Text style={tab === "approve" ? styles.tabTextActive : styles.tabText} numberOfLines={1}>承認</Text></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><AutoRubyText style={tab === "approve" ? styles.tabTextActive : styles.tabText} text="承認" rubySize={5} noWrap /></View>
             {pendingCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{pendingCount}</Text>
@@ -698,12 +696,7 @@ export default function ParentDashboardScreen({
           accessibilityState={{ selected: tab === "tasks" }}
           accessibilityLabel="クエストタブ"
         >
-          <Text
-            style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}
-            numberOfLines={1}
-          >
-            クエスト
-          </Text>
+          <AutoRubyText style={[styles.tabText, tab === "tasks" && styles.tabTextActive]} text="クエスト" rubySize={5} noWrap />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, tab === "children" && styles.tabActive]}
@@ -712,15 +705,7 @@ export default function ParentDashboardScreen({
           accessibilityState={{ selected: tab === "children" }}
           accessibilityLabel="こどもタブ"
         >
-          <Text
-            style={[
-              styles.tabText,
-              tab === "children" && styles.tabTextActive,
-            ]}
-            numberOfLines={1}
-          >
-            子ども
-          </Text>
+          <RubyText style={[styles.tabText, tab === "children" && styles.tabTextActive]} parts={[["子", "こ"], "ども"]} rubySize={5} noWrap />
         </TouchableOpacity>
       </View>
 

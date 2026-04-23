@@ -10,6 +10,7 @@ import {
   TextInput,
   Modal,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -87,6 +88,11 @@ export default function InvestScreen({
   async function checkHasParent() {
     try {
       const session = await getSession();
+      // admin/parentロールならロック解除
+      if (session?.role === "admin" || session?.role === "parent") {
+        setHasParent(true);
+        return;
+      }
       if (!session?.familyId) return;
       const { data } = await supabase
         .from("otetsudai_families")
@@ -98,6 +104,16 @@ export default function InvestScreen({
       setHasParent(false);
     }
   }
+
+  // 注文モーダル表示中: キーボード表示時にボタンまで自動スクロール
+  useEffect(() => {
+    if (!orderVisible) return;
+    const event = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const sub = Keyboard.addListener(event, () => {
+      setTimeout(() => orderScrollRef.current?.scrollToEnd({ animated: true }), 100);
+    });
+    return () => sub.remove();
+  }, [orderVisible]);
 
   // 初回訪問＆ポートフォリオ空なら、銘柄一覧モーダルを自動表示。
   // 子供が迷わずに株画面（カテゴリタブ＋銘柄リスト）を見られるようにする。
@@ -313,7 +329,7 @@ export default function InvestScreen({
             ) : isCoolingDown ? (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelHourglassIcon size={12} />
-                <Text style={styles.syncButtonText}>あと{Math.ceil(cooldownRemain / 60000)}分</Text>
+                <AutoRubyText text={`あと${Math.ceil(cooldownRemain / 60000)}分`} style={styles.syncButtonText} rubySize={4} noWrap />
               </View>
             ) : (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
@@ -358,7 +374,7 @@ export default function InvestScreen({
                   <View style={styles.portfolioLeft}>
                     <Text style={styles.portfolioName}>{p.name}</Text>
                     <Text style={styles.portfolioSub}>
-                      {p.symbol} ・ {p.shares.toFixed(2)}かぶ
+                      {p.symbol} ・ {p.shares.toFixed(2)}株
                     </Text>
                   </View>
                   <View style={styles.portfolioRight}>
@@ -405,23 +421,16 @@ export default function InvestScreen({
           <View style={styles.lockOverlay}>
             <View style={styles.lockCard}>
               <PixelShieldIcon size={48} />
-              <Text style={styles.lockTitle}>
-                おうちの ひとが ひつよう！
-              </Text>
-              <Text style={styles.lockDesc}>
-                「ふやす」は おうちの ひとが{"\n"}
-                さんかすると つかえるようになるよ
-              </Text>
+              <RubyText style={styles.lockTitle} parts={["冒険団マスターが", ["必要", "ひつよう"], "！"]} rubySize={6} noWrap />
+              <RubyText style={styles.lockDesc} parts={["「", ["増", "ふ"], "やす」は冒険団マスターが", ["参加", "さんか"], "すると", ["使", "つか"], "えるようになるよ"]} rubySize={5} />
               <RpgButton
                 tier="gold"
                 size="md"
                 fullWidth
                 onPress={() => navigation.navigate("InviteParent")}
-                accessibilityLabel="おうちのひとをよぶ"
+                accessibilityLabel="冒険団マスターを呼ぶ"
               >
-                <Text style={styles.lockButtonText}>
-                  おうちの ひとを よぶ
-                </Text>
+                <AutoRubyText text="冒険団マスターを呼ぶ" style={styles.lockButtonText} rubySize={5} noWrap />
               </RpgButton>
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
@@ -444,10 +453,10 @@ export default function InvestScreen({
         transparent={false}
         onRequestClose={() => setOrderVisible(false)}
       >
-        <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+        <SafeAreaView style={styles.container} edges={["top"]}>
           <KeyboardAvoidingView
             style={styles.flex1}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
             <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
               <TouchableOpacity
@@ -476,7 +485,7 @@ export default function InvestScreen({
                 <View style={styles.successContainer}>
                   <PixelChartIcon size={56} />
                   <AutoRubyText text="注文クエスト発動！" style={styles.successTitle} rubySize={5} />
-                  <AutoRubyText text="おうちのひとの承認を待ってね" style={styles.successSub} rubySize={5} />
+                  <AutoRubyText text="冒険団マスターの承認を待ってね" style={styles.successSub} rubySize={5} />
                 </View>
               ) : (
                 <>
@@ -506,16 +515,15 @@ export default function InvestScreen({
                           setOrderError("");
                         }}
                       >
-                        <Text
+                        <AutoRubyText
                           style={[
                             styles.categoryTabText,
                             activeCategory === cat.key && styles.categoryTabTextActive,
                           ]}
-                          numberOfLines={1}
-                          adjustsFontSizeToFit
-                        >
-                          {cat.label}
-                        </Text>
+                          text={cat.label}
+                          rubySize={4}
+                          noWrap
+                        />
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -547,8 +555,8 @@ export default function InvestScreen({
                     >
                       <Text style={styles.stockIcon}>{stock.icon}</Text>
                       <View style={styles.flex1}>
-                        <View style={styles.stockNameRow}>
-                          <Text style={styles.stockName} numberOfLines={1}>
+                        <View style={{ flexDirection: "column", gap: 2 }}>
+                          <Text style={styles.stockName}>
                             {stock.name_ja || stock.name}
                           </Text>
                           <Text style={styles.stockSymbol}>{stock.symbol}</Text>
@@ -579,9 +587,7 @@ export default function InvestScreen({
                     </TouchableOpacity>
                   ))}
                   {filteredStocks.length === 0 && (
-                    <Text style={styles.emptyStockText}>
-                      この カテゴリの 銘柄は ありません
-                    </Text>
+                    <AutoRubyText text="このカテゴリの銘柄はありません" style={styles.emptyStockText} rubySize={5} />
                   )}
 
                   {/* Amount input */}
@@ -598,7 +604,7 @@ export default function InvestScreen({
                     placeholderTextColor={palette.textPlaceholder}
                     keyboardType="number-pad"
                     onFocus={() => {
-                      setTimeout(() => orderScrollRef.current?.scrollToEnd({ animated: true }), 200);
+                      setTimeout(() => orderScrollRef.current?.scrollToEnd({ animated: true }), 400);
                     }}
                   />
                   <AutoRubyText text="100円から投資できるよ" style={styles.amountHint} rubySize={4} />
@@ -613,10 +619,10 @@ export default function InvestScreen({
                     disabled={orderLoading}
                   >
                     {orderLoading ? (
-                      <Text style={styles.orderButtonText}>送り中...</Text>
+                      <RubyText style={styles.orderButtonText} parts={[["送信中", "そうしんちゅう"], "..."]} rubySize={4} noWrap />
                     ) : (
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                        <AutoRubyText text="冒険団マスターに お願いする" style={styles.orderButtonText} />
+                        <RubyText style={styles.orderButtonText} parts={[["冒険団", "ぼうけんだん"], "マスターに", ["依頼", "いらい"]]} rubySize={4} noWrap />
                         <PixelChartIcon size={18} />
                       </View>
                     )}
@@ -624,8 +630,9 @@ export default function InvestScreen({
 
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <PixelLightbulbIcon size={14} />
-                    <AutoRubyText text="買いたい株がないときは、ギルドマスターに相談してね" style={styles.orderHint} rubySize={4} />
+                    <RubyText style={styles.orderHint} parts={[["買", "か"], "いたい", ["株", "かぶ"], "がないときは、", ["冒険団", "ぼうけんだん"], "マスターに", ["相談", "そうだん"], "してね"]} rubySize={4} />
                   </View>
+                  <View style={{ height: 180 }} />
                 </>
               )}
             </ScrollView>

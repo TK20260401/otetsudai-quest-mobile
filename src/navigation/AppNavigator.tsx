@@ -4,6 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getSession, clearSession } from "../lib/session";
 import { useTheme } from "../theme";
+import { useRuby } from "../components/Ruby";
+import { startAutoLogout } from "../lib/auto-logout";
 import LandingScreen from "../screens/LandingScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ChildDashboardScreen from "../screens/ChildDashboardScreen";
@@ -55,9 +57,6 @@ export default function AppNavigator() {
   const [initialRoute, setInitialRoute] = useState<
     keyof RootStackParamList | null
   >(null);
-  const [initialParams, setInitialParams] = useState<Record<string, string>>(
-    {}
-  );
 
   useEffect(() => {
     checkSession();
@@ -87,7 +86,7 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator
         initialRouteName={initialRoute}
-        screenOptions={{ headerShown: false }}
+        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#1a0f2e" } }}
       >
         <Stack.Screen name="Landing" component={LandingWrapper} />
         {/* Onboarding */}
@@ -107,7 +106,6 @@ export default function AppNavigator() {
         <Stack.Screen
           name="ChildDashboard"
           component={ChildDashboardScreen}
-          initialParams={initialParams}
         />
         <Stack.Screen
           name="ParentDashboard"
@@ -306,21 +304,25 @@ function InviteParentWrapper({ navigation }: { navigation: any }) {
 // ── Admin ──
 
 function AdminWrapper({ navigation }: { navigation: any }) {
+  const { setRubyVisible } = useRuby();
+
   const handleLoginAs = useCallback(
     async (userId: string, familyId: string, role: string, name: string) => {
       if (role === "child") {
+        setRubyVisible(true);
         navigation.reset({
           index: 0,
           routes: [{ name: "ChildDashboard", params: { childId: userId } }],
         });
       } else {
+        setRubyVisible(false);
         navigation.reset({
           index: 0,
           routes: [{ name: "ParentDashboard" }],
         });
       }
     },
-    [navigation]
+    [navigation, setRubyVisible]
   );
 
   const handleLogout = useCallback(async () => {
@@ -338,16 +340,23 @@ function AdminWrapper({ navigation }: { navigation: any }) {
 
 // ── Login Wrappers ──
 
-function makeLoginSuccess(navigation: any) {
+function makeLoginSuccess(navigation: any, setRubyVisible?: (v: boolean) => void) {
   return async () => {
     const session = await getSession();
     if (!session) return;
-    if (session.role === "admin") {
+    // 自動ログアウトタイマー開始
+    startAutoLogout(() => {
+      clearSession();
+      navigation.reset({ index: 0, routes: [{ name: "Landing" }] });
+    });
+    if (session.role === "admin" || session.role === "parent") {
+      setRubyVisible?.(false);
       navigation.reset({
         index: 0,
-        routes: [{ name: "Admin" }],
+        routes: [session.role === "admin" ? { name: "Admin" } : { name: "ParentDashboard" }],
       });
-    } else if (session.role === "child") {
+    } else {
+      setRubyVisible?.(true);
       navigation.reset({
         index: 0,
         routes: [
@@ -357,38 +366,37 @@ function makeLoginSuccess(navigation: any) {
           },
         ],
       });
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "ParentDashboard" }],
-      });
     }
   };
 }
 
 function LoginWrapper({ navigation }: { navigation: any }) {
+  const { setRubyVisible } = useRuby();
   return (
     <LoginScreen
-      onLoginSuccess={makeLoginSuccess(navigation)}
+      onLoginSuccess={makeLoginSuccess(navigation, setRubyVisible)}
     />
   );
 }
 
 function ChildLoginWrapper({ navigation }: { navigation: any }) {
+  const { setRubyVisible } = useRuby();
   return (
     <LoginScreen
       mode="child"
-      onLoginSuccess={makeLoginSuccess(navigation)}
+      onLoginSuccess={makeLoginSuccess(navigation, setRubyVisible)}
       onBack={() => navigation.goBack()}
+      onRecover={() => navigation.navigate("RecoverAccount")}
     />
   );
 }
 
 function ParentLoginWrapper({ navigation }: { navigation: any }) {
+  const { setRubyVisible } = useRuby();
   return (
     <LoginScreen
       mode="parent"
-      onLoginSuccess={makeLoginSuccess(navigation)}
+      onLoginSuccess={makeLoginSuccess(navigation, setRubyVisible)}
       onBack={() => navigation.goBack()}
     />
   );

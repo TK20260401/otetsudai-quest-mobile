@@ -301,7 +301,6 @@ function createStyles(p: Palette) {
     title: {
       fontSize: rf(18),
       fontWeight: "bold",
-      color: p.primaryDark,
       color: p.textStrong,
       textAlign: "center",
     },

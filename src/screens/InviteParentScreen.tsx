@@ -44,11 +44,11 @@ function buildMessage(words: string[], tone: MessageTone): string {
   switch (tone) {
     case "casual":
       return (
-        `おうちのひとへ\n` +
-        `「ジョブサガ」をはじめたよ！\n` +
-        `いっしょにみてくれる？\n\n` +
-        `あいことば: ${wordsStr}\n\n` +
-        `アプリをひらいて「ぼうけんだんマスターとしてさんかする」からあいことばをいれてね`
+        `冒険団マスターへ\n` +
+        `「ジョブサガ」を始めたよ！\n` +
+        `一緒に見てくれる？\n\n` +
+        `合言葉: ${wordsStr}\n\n` +
+        `アプリを開いて「冒険団マスターとして参加する」から合言葉を入れてね`
       );
     case "polite":
       return (
@@ -201,7 +201,7 @@ export default function InviteParentScreen({ onBack, onSkip, onGoToLogin }: Prop
           />
           <RubyText
             style={styles.sentSubtitle}
-            parts={["おうちの", ["人", "ひと"], "が", ["合言葉", "あいことば"], "を", ["入", "い"], "れるのを", ["待", "ま"], "とうね"]}
+            parts={["冒険団マスターが", ["合言葉", "あいことば"], "を", ["入", "い"], "れるのを", ["待", "ま"], "とうね"]}
             rubySize={6}
           />
 
@@ -261,8 +261,8 @@ export default function InviteParentScreen({ onBack, onSkip, onGoToLogin }: Prop
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <RubyText style={styles.title} parts={["おうちの", ["人", "ひと"], "を よぼう！"]} rubySize={8} />
-          <RubyText style={styles.subtitle} parts={["おうちの", ["人", "ひと"], "にこの", ["画面", "がめん"], "を", ["見", "み"], "せるか メッセージを", ["送", "おく"], "ってね"]} rubySize={6} />
+          <RubyText style={styles.title} parts={["冒険団マスターを", ["呼", "よ"], "ぼう！"]} rubySize={8} />
+          <RubyText style={styles.subtitle} parts={["冒険団マスターにこの", ["画面", "がめん"], "を", ["見", "み"], "せるか メッセージを", ["送", "おく"], "ってね"]} rubySize={6} />
 
           {/* あいことばカード */}
           <RpgCard tier="gold" variant="compact" style={styles.wordsCard}>
@@ -279,7 +279,7 @@ export default function InviteParentScreen({ onBack, onSkip, onGoToLogin }: Prop
           {/* QRコード */}
           <RpgCard tier="silver" variant="compact" style={styles.qrCard}>
             <Text style={styles.sectionLabel}>QRコード</Text>
-            <RubyText style={styles.qrHint} parts={["おうちの", ["人", "ひと"], "のスマホで ", ["読", "よ"], "み", ["取", "と"], "ってね"]} rubySize={5} />
+            <RubyText style={styles.qrHint} parts={["冒険団マスターのスマホで ", ["読", "よ"], "み", ["取", "と"], "ってね"]} rubySize={5} />
             <View style={styles.qrWrap}>
               <View style={styles.qrBackground}>
                 <QRCode

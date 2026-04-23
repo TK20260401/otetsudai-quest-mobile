@@ -2,8 +2,7 @@ import React from "react";
 import {
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
-  Keyboard,
+  ScrollView,
   StyleSheet,
   type ViewStyle,
   type StyleProp,
@@ -19,7 +18,8 @@ type Props = {
  * 全画面共通のキーボード対応ラッパー
  * - iOS: behavior="padding" でキーボード分を押し上げ
  * - Android: behavior="height"
- * - 入力欄外タップでキーボードを閉じる
+ * - keyboardShouldPersistTaps="handled" でキーボード表示中もボタンをタップ可能
+ * - keyboardDismissMode="interactive" でスクロールドラッグでキーボードを閉じる
  */
 export default function KeyboardAwareScreen({
   children,
@@ -32,9 +32,14 @@ export default function KeyboardAwareScreen({
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={keyboardVerticalOffset}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <>{children}</>
-      </TouchableWithoutFeedback>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
+        bounces={false}
+      >
+        {children}
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -42,5 +47,8 @@ export default function KeyboardAwareScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
 });

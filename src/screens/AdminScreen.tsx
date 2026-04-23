@@ -47,6 +47,7 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFamily, setSelectedFamily] = useState<string | null>(null);
+  const [deletingFamily, setDeletingFamily] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -120,36 +121,46 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
   );
 
   const handleDeleteFamily = useCallback(
-    (family: Family) => {
-      const memberCount = users.filter((u) => u.family_id === family.id).length;
-      Alert.alert(
-        `${family.name} を削除`,
-        `メンバー ${memberCount} 人と関連データが全て削除されます。`,
-        [
-          { text: "やめる", style: "cancel" },
-          {
-            text: "削除する",
-            style: "destructive",
-            onPress: async () => {
-              const memberIds = users.filter((u) => u.family_id === family.id).map((u) => u.id);
-              for (const id of memberIds) {
-                await supabase.from("otetsudai_wallets").delete().eq("child_id", id);
-                await supabase.from("otetsudai_badges").delete().eq("child_id", id);
-                await supabase.from("otetsudai_task_logs").delete().eq("child_id", id);
-              }
-              await supabase.from("otetsudai_users").delete().eq("family_id", family.id);
-              await supabase.from("otetsudai_family_settings").delete().eq("family_id", family.id);
-              await supabase.from("otetsudai_tasks").delete().eq("family_id", family.id);
-              await supabase.from("otetsudai_families").delete().eq("id", family.id);
-              Alert.alert("削除しました", `${family.name} を削除しました`);
-              setSelectedFamily(null);
-              loadData();
-            },
-          },
-        ]
-      );
+    async (family: Family) => {
+      if (deletingFamily) return; // 削除中は無視
+      setDeletingFamily(family.id);
+      setSelectedFamily(null);
+      try {
+        const { data: freshUsers } = await supabase
+          .from("otetsudai_users")
+          .select("id")
+          .eq("family_id", family.id);
+        const memberIds = (freshUsers || []).map((u: { id: string }) => u.id);
+        if (memberIds.length > 0) {
+          const { data: wallets } = await supabase.from("otetsudai_wallets").select("id").in("child_id", memberIds);
+          const walletIds = (wallets || []).map((w: { id: string }) => w.id);
+          if (walletIds.length > 0) {
+            await supabase.from("otetsudai_transactions").delete().in("wallet_id", walletIds);
+            await supabase.from("otetsudai_spend_requests").delete().in("wallet_id", walletIds);
+            await supabase.from("otetsudai_invest_orders").delete().in("wallet_id", walletIds);
+            await supabase.from("otetsudai_wallets").delete().in("id", walletIds);
+          }
+          await supabase.from("otetsudai_task_logs").delete().in("child_id", memberIds);
+          await supabase.from("otetsudai_badges").delete().in("child_id", memberIds);
+          await supabase.from("otetsudai_saving_goals").delete().in("child_id", memberIds);
+          await supabase.from("otetsudai_shop_purchases").delete().in("child_id", memberIds);
+          await supabase.from("otetsudai_family_messages").delete().in("sender_id", memberIds);
+          await supabase.from("otetsudai_family_messages").delete().in("recipient_id", memberIds);
+        }
+        await supabase.from("otetsudai_family_messages").delete().eq("family_id", family.id);
+        await supabase.from("otetsudai_family_challenges").delete().eq("family_id", family.id);
+        await supabase.from("otetsudai_family_settings").delete().eq("family_id", family.id);
+        await supabase.from("otetsudai_tasks").delete().eq("family_id", family.id);
+        await supabase.from("otetsudai_users").delete().eq("family_id", family.id);
+        const { error } = await supabase.from("otetsudai_families").delete().eq("id", family.id);
+        if (error) throw error;
+      } catch (e: any) {
+        Alert.alert("削除エラー", e.message || "削除に失敗しました");
+      }
+      setDeletingFamily(null);
+      loadData();
     },
-    [users]
+    [deletingFamily]
   );
 
   const handleResetWallet = useCallback(
@@ -189,7 +200,7 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onLogout} style={styles.backBtn}>
           <PixelDoorIcon size={14} />
@@ -199,9 +210,6 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
           <PixelShieldIcon size={18} />
           <Text style={styles.headerTitle}>Admin</Text>
         </View>
-        <TouchableOpacity onPress={loadData} style={styles.refreshBtn}>
-          <Text style={styles.refreshText}>更新</Text>
-        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -211,30 +219,35 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
 
         {families.map((fam) => (
           <View key={fam.id}>
-            <TouchableOpacity
-              style={[
-                styles.familyCard,
-                selectedFamily === fam.id && styles.familyCardSelected,
-              ]}
-              onPress={() =>
-                setSelectedFamily(selectedFamily === fam.id ? null : fam.id)
-              }
-            >
-              <View style={styles.familyInfo}>
+            <View style={[
+              styles.familyCard,
+              selectedFamily === fam.id && styles.familyCardSelected,
+            ]}>
+              <TouchableOpacity
+                style={styles.familyInfo}
+                onPress={() =>
+                  setSelectedFamily(selectedFamily === fam.id ? null : fam.id)
+                }
+              >
                 <Text style={styles.familyName}>{fam.name}</Text>
                 <Text style={styles.familyMeta}>
                   {fam.has_parent ? "親あり" : "親なし"} ・{" "}
                   {users.filter((u) => u.family_id === fam.id).length}人 ・{" "}
                   {new Date(fam.created_at).toLocaleDateString("ja-JP")}
                 </Text>
-              </View>
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => handleDeleteFamily(fam)}
+                disabled={deletingFamily === fam.id}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <PixelCrossIcon size={16} />
+                {deletingFamily === fam.id ? (
+                  <ActivityIndicator size="small" color={palette.red} />
+                ) : (
+                  <PixelCrossIcon size={16} />
+                )}
               </TouchableOpacity>
-            </TouchableOpacity>
+            </View>
 
             {selectedFamily === fam.id && (
               <View style={styles.usersSection}>
@@ -314,28 +327,23 @@ function createStyles(p: Palette) {
     backBtn: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+      gap: 4,
+      paddingHorizontal: 8,
+      paddingVertical: 6,
       borderRadius: 8,
       borderWidth: 2,
       borderColor: p.primary,
+      flexShrink: 1,
     },
-    backText: { fontSize: 14, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 12, fontWeight: "bold", color: p.textMuted },
     headerCenter: {
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
+      justifyContent: "center",
+      gap: 4,
     },
-    headerTitle: { fontSize: rf(18), fontWeight: "bold", color: p.primaryDark },
-    refreshBtn: {
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: p.border,
-    },
-    refreshText: { fontSize: 12, color: p.textMuted, fontWeight: "600" },
+    headerTitle: { fontSize: rf(20), fontWeight: "bold", color: p.primaryDark },
     scrollContent: { padding: 16, paddingBottom: 40 },
     sectionTitle: {
       fontSize: rf(14),

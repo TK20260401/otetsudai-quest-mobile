@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
+import { resetSampleFamily } from "../lib/sample-reset";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
@@ -174,7 +175,7 @@ export default function ChildDashboardScreen({
       setProposalTitle("");
       setProposalReason("");
       setProposalReward("");
-      alert("送信しました！", "ギルドマスターがクエストを確認するよ！");
+      alert("送信しました！", "冒険団マスターがクエストを確認するよ！");
       loadData();
     } catch {
       alert("エラー", "送信に失敗しました");
@@ -559,6 +560,7 @@ export default function ChildDashboardScreen({
   }
 
   function handleLogout() {
+    resetSampleFamily().catch(() => {});
     clearSession().then(() => {
       navigation.reset({ index: 0, routes: [{ name: "Landing" }] });
     });
@@ -677,10 +679,11 @@ export default function ChildDashboardScreen({
         <Text style={[styles.headerDate, { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }]}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
         <TouchableOpacity
           onPress={() => setRubyVisible(!rubyVisible)}
-          style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: rubyVisible ? palette.accent : palette.surfaceMuted, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 }}
+          style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: rubyVisible ? palette.accent : palette.surfaceMuted, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}
           accessibilityLabel="ルビ表示切替"
+          accessibilityRole="switch"
         >
-          <Text style={{ fontSize: 10, fontWeight: "bold", color: rubyVisible ? palette.white : palette.textMuted }}>ルビ {rubyVisible ? "ON" : "OFF"}</Text>
+          <Text style={{ fontSize: 11, fontWeight: "bold", color: rubyVisible ? "#fff" : palette.textMuted }}>ルビ {rubyVisible ? "ON" : "OFF"}</Text>
         </TouchableOpacity>
       </View>
 
@@ -1480,13 +1483,8 @@ export default function ChildDashboardScreen({
         <View style={styles.nudgeOverlay}>
           <View style={styles.nudgeCard}>
             <Text style={styles.nudgeEmoji}>{"\u{1F31F}"}</Text>
-            <Text style={styles.nudgeTitle}>
-              おうちの ひとを よんでみない？
-            </Text>
-            <Text style={styles.nudgeDesc}>
-              おうちの ひとが さんかすると{"\n"}
-              「ふやす」が つかえるようになるよ！
-            </Text>
+            <AutoRubyText text="冒険団マスターを呼んでみない？" style={styles.nudgeTitle} rubySize={6} />
+            <AutoRubyText text="冒険団マスターが参加すると「増やす」が使えるようになるよ！" style={styles.nudgeDesc} rubySize={5} />
             <RpgButton
               tier="gold"
               size="md"
@@ -1495,11 +1493,9 @@ export default function ChildDashboardScreen({
                 setNudgeVisible(false);
                 navigation.navigate("InviteParent");
               }}
-              accessibilityLabel="おうちのひとをよぶ"
+              accessibilityLabel="冒険団マスターを呼ぶ"
             >
-              <Text style={styles.nudgeButtonText}>
-                おうちの ひとを よぶ
-              </Text>
+              <AutoRubyText text="冒険団マスターを呼ぶ" style={styles.nudgeButtonText} rubySize={5} noWrap />
             </RpgButton>
             <TouchableOpacity
               onPress={() => setNudgeVisible(false)}
@@ -1539,9 +1535,16 @@ export default function ChildDashboardScreen({
       {/* MYクエスト提案モーダル */}
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <View style={styles.proposalCard}>
+          <ScrollView
+            style={{ borderRadius: 16, flexGrow: 0, backgroundColor: palette.surface }}
+            contentContainerStyle={styles.proposalCard}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            showsVerticalScrollIndicator
+          >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={["MYクエストを", ["出", "だ"], "す"]} rubySize={6} /></View>
-            <Text style={styles.proposalModalSub}>ギルドマスターに新しいクエストを出そう！</Text>
+            <RubyText style={[styles.proposalModalSub, { marginBottom: 0 }]} parts={["冒険団マスターに"]} rubySize={5} />
+            <RubyText style={styles.proposalModalSub} parts={[["新", "あたら"], "しいクエストを", ["出", "だ"], "そう！"]} rubySize={5} />
 
             <RubyText
               style={styles.proposalLabel}
@@ -1598,7 +1601,7 @@ export default function ChildDashboardScreen({
                 <RubyText
                   style={styles.proposalCancelText}
                   parts={[["撤退", "てったい"]]}
-                  rubySize={5}
+                  rubySize={4}
                   noWrap
                 />
               </TouchableOpacity>
@@ -1611,20 +1614,20 @@ export default function ChildDashboardScreen({
                   <RubyText
                     style={styles.proposalSubmitText}
                     parts={[["送信", "そうしん"], ["中", "ちゅう"], "..."]}
-                    rubySize={5}
+                    rubySize={4}
                     noWrap
                   />
                 ) : (
                   <RubyText
                     style={styles.proposalSubmitText}
                     parts={["クエストを", ["出", "だ"], "す！"]}
-                    rubySize={5}
+                    rubySize={4}
                     noWrap
                   />
                 )}
               </AnimatedButton>
             </View>
-          </View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
@@ -1715,14 +1718,15 @@ function createStyles(p: Palette) {
     backgroundColor: `${p.surface}b3`,
     borderRadius: 8,
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingTop: 10,
+    paddingBottom: 4,
     marginTop: 4,
     marginBottom: 6,
   },
   speechText: {
-    fontSize: 12,
+    fontSize: 10,
     color: p.textStrong,
-    lineHeight: 20,
+    lineHeight: 16,
   },
   progressRow: {
     flexDirection: "row" as const,
@@ -2432,16 +2436,18 @@ function createStyles(p: Palette) {
   proposalOverlay: {
     flex: 1,
     backgroundColor: p.overlay,
-    justifyContent: "center" as const,
+    justifyContent: "flex-end" as const,
     padding: 20,
+    paddingBottom: 40,
   },
   proposalCard: {
     backgroundColor: p.surface,
     borderRadius: 16,
     padding: 20,
+    flexGrow: 0,
   },
   proposalModalTitle: { fontSize: rf(18), fontWeight: "bold" as const, color: p.textStrong, marginBottom: 4 },
-  proposalModalSub: { fontSize: 12, color: p.textMuted, marginBottom: 16, paddingLeft: 24 },
+  proposalModalSub: { fontSize: 12, color: p.textMuted, marginBottom: 16, textAlign: "center" as const },
   proposalLabel: { fontSize: 13, fontWeight: "bold" as const, color: p.textStrong, marginTop: 8, marginBottom: 4 },
   proposalInput: {
     borderWidth: 1,
@@ -2454,18 +2460,18 @@ function createStyles(p: Palette) {
   proposalActions: { flexDirection: "row" as const, gap: 10, marginTop: 16 },
   proposalCancel: {
     flex: 1,
-    padding: 14,
-    minHeight: 48,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
     borderRadius: 10,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     backgroundColor: p.surfaceMuted,
   },
-  proposalCancelText: { fontSize: 16, fontWeight: "bold" as const, color: p.textMuted },
+  proposalCancelText: { fontSize: 14, fontWeight: "bold" as const, color: p.textMuted },
   proposalSubmit: {
     flex: 2,
-    padding: 14,
-    minHeight: 48,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
     borderRadius: 10,
     alignItems: "center" as const,
     justifyContent: "center" as const,

@@ -138,12 +138,12 @@ export default function WalletDetailScreen({
   const invest = wallet?.invest_balance ?? 0;
   const total = spending + saving + invest;
 
-  const filterTabs: { label: string; value: string }[] = [
-    { label: "全部", value: "all", parts: [["全部", "ぜんぶ"]] as [string, string][] },
-    { label: "稼ぐ", value: "earn", parts: [["稼", "かせ"], "ぐ"] as (string | [string, string])[] },
-    { label: "使う", value: "spend", parts: [["使", "つか"], "う"] as (string | [string, string])[] },
-    { label: "貯める", value: "save", parts: [["貯", "た"], "める"] as (string | [string, string])[] },
-    { label: "増やす", value: "invest", parts: [["増", "ふ"], "やす"] as (string | [string, string])[] },
+  const filterTabs: { label: string; value: string; parts: (string | [string, string])[] }[] = [
+    { label: "全部", value: "all", parts: [["全部", "ぜんぶ"]] },
+    { label: "稼ぐ", value: "earn", parts: [["稼", "かせ"], "ぐ"] },
+    { label: "使う", value: "spend", parts: [["使", "つか"], "う"] },
+    { label: "貯める", value: "save", parts: [["貯", "た"], "める"] },
+    { label: "増やす", value: "invest", parts: [["増", "ふ"], "やす"] },
   ];
 
   function TxTypeIcon({ type }: { type: string }) {

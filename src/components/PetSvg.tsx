@@ -290,6 +290,7 @@ function getDefaultIdleDuration(type: IdleAnimationType): number {
     case "pulse": return 2;
     case "spin": return 2;
     case "flicker": return 0.8;
+    default: return 3;
   }
 }
 
