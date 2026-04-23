@@ -919,7 +919,7 @@ export default function ParentDashboardScreen({
             {/* じぶんクエスト提案 */}
             {questProposals.length > 0 && (
               <>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelScrollIcon size={18} /><Text style={styles.sectionTitle}>{`じぶんクエスト提案 (${questProposals.length})`}</Text></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelScrollIcon size={18} /><Text style={styles.sectionTitle}>{`MYクエスト提案 (${questProposals.length})`}</Text></View>
                 {questProposals.map((task) => {
                   const child = children.find((c) => c.id === task.assigned_child_id);
                   return (

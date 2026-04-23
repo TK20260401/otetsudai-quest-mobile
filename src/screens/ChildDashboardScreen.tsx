@@ -1251,9 +1251,9 @@ export default function ChildDashboardScreen({
             <AnimatedButton
               style={styles.proposalButton}
               onPress={() => setProposalVisible(true)}
-              accessibilityLabel="じぶんクエストを提案する"
+              accessibilityLabel="MYクエストを提案する"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={[["自分", "じぶん"], "クエストを", ["提案", "ていあん"], "する"]} rubySize={5} /></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["MYクエストを", ["提案", "ていあん"], "する"]} rubySize={5} /></View>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
