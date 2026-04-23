@@ -123,7 +123,7 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
 
               {result?.awarded ? (
                 <View style={styles.amountWrap}>
-                  <Text style={styles.bigAmount}>+{result.amount}円</Text>
+                  <RubyText parts={[`+${result.amount}`, ["円", "えん"]]} style={styles.bigAmount} rubySize={6} />
                   <RubyText parts={["「", ["使", "つか"], "う」に ", ["追加", "ついか"], "されたよ！"]} style={styles.amountNote} rubySize={5} />
                 </View>
               ) : status?.canClaimToday ? (
@@ -134,7 +134,11 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
                     onPress={handleClaim}
                     disabled={claiming || !walletId}
                   >
-                    {claiming ? "うけとり中..." : `+${status.nextAmount}えん うけとる`}
+                    {claiming ? (
+                      <RubyText parts={[["受", "う"], "け", ["取", "と"], "り", ["中", "ちゅう"], "…"]} style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }} rubySize={5} />
+                    ) : (
+                      <RubyText parts={[`+${status.nextAmount}`, ["円", "えん"], " ", ["受", "う"], "け", ["取", "と"], "る"]} style={{ fontSize: 18, fontWeight: "bold", color: "#fff" }} rubySize={5} />
+                    )}
                   </RpgButton>
                 </View>
               ) : (
