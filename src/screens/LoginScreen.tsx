@@ -65,7 +65,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
   // Family add
   const [newFamilyName, setNewFamilyName] = useState("");
   const [addingFamily, setAddingFamily] = useState(false);
-  // 家族メンバー管理
+  // 冒険団メンバー管理
   const [managingFamily, setManagingFamily] = useState<Family | null>(null);
   const [familyMembers, setFamilyMembers] = useState<User[]>([]);
   const [newChildName, setNewChildName] = useState("");
@@ -100,14 +100,14 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
     setFamilies(data || []);
     setLoading(false);
 
-    // 子供モード: 家族が1つなら自動スキップ
+    // 子供モード: 冒険団が1つなら自動スキップ
     if (mode === "child" && data && data.length === 1) {
       handleFamilySelect(data[0]);
     }
   }
 
   async function loadMyFamilies(authId: string) {
-    // 自分が所有する家族 + 山田家（見本）
+    // 自分が所有する冒険団 + 山田家（見本）
     const { data } = await supabase
       .from("otetsudai_families")
       .select("*")
@@ -244,12 +244,12 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             authId: authData.user.id,
           });
         }
-        // 新規登録 → 家族管理画面へ
+        // 新規登録 → 冒険団管理画面へ
         if (newAdminUser) setLoggedInUserId(newAdminUser.id);
         if (authData.user) setLoggedInAuthId(authData.user.id);
         setAdminLoggedIn(true);
         await loadMyFamilies(authData.user?.id || "");
-        alert("🎉 登録完了", "家族を追加してはじめましょう！");
+        alert("🎉 登録完了", "冒険団を追加してはじめましょう！");
       }
     } catch {
       setError("登録に失敗しました");
@@ -260,7 +260,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
   const SAMPLE_FAMILY_NAME = "山田家";
 
   function handleDeleteFamily(family: Family) {
-    alert("家族を削除", `「${family.name}」を削除しますか？\n関連するデータも全て削除されます。`, [
+    alert("冒険団を削除", `「${family.name}」を削除しますか？\n関連するデータも全て削除されます。`, [
       { text: "キャンセル", style: "cancel" },
       {
         text: "削除する",
@@ -323,7 +323,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
         await loadFamilies();
       }
     } catch {
-      alert("エラー", "家族の追加に失敗しました");
+      alert("エラー", "冒険団の追加に失敗しました");
     }
     setAddingFamily(false);
   }
@@ -438,7 +438,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
       setStep("member");
     } else if (step === "member") {
       if (mode === "child") {
-        // 子供モードでは家族選択をスキップしたので、そのまま戻る
+        // 子供モードでは冒険団選択をスキップしたので、そのまま戻る
         if (onBack) { onBack(); return; }
         return;
       }
@@ -581,10 +581,10 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                 <Text style={[styles.titleAdmin, { marginBottom: 0 }]}>冒険団管理</Text>
               </View>
 
-              {/* 家族一覧 */}
+              {/* 冒険団一覧 */}
               {managingFamily ? (
                 <>
-                  {/* 家族メンバー管理画面 */}
+                  {/* 冒険団メンバー管理画面 */}
                   <TouchableOpacity style={styles.backButton} onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
                     <PixelDoorIcon size={14} /><Text style={styles.backText}>冒険団一覧に戻る</Text>
                   </TouchableOpacity>
@@ -847,7 +847,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
                 </>
               )}
 
-              {/* 家族追加（メンバー管理中は非表示） */}
+              {/* 冒険団追加（メンバー管理中は非表示） */}
               {!managingFamily && (
                 <>
                   <View style={styles.addFamilyRow}>
@@ -901,7 +901,10 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
               <PixelHeroSvg type="mage" size={48} animated mode="walk" />
             </View>
             <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>ジョブサガ</Text>
-            <RubyText style={styles.subtitle} parts={["クエストをクリアして、", ["金貨", "きんか"], "をかせごう！"]} rubySize={5} />
+            <View style={{ alignItems: "center", marginBottom: 20 }}>
+              <AutoRubyText text="クエストをクリアして、" style={[styles.subtitle, { marginBottom: 0 }]} rubySize={5} />
+              <AutoRubyText text="金貨をかせごう！" style={[styles.subtitle, { marginBottom: 0 }]} rubySize={5} />
+            </View>
           </>
         )}
 
@@ -948,7 +951,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             ))}
           </>
         )}
-        {/* 子供モード: 家族スキップ → 全子供から名前を選ぶ */}
+        {/* 子供モード: 冒険団スキップ → 全子供から名前を選ぶ */}
         {step === "family" && mode === "child" && (
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
@@ -1034,7 +1037,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack }: Props) {
             </TouchableOpacity>
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <RpgButton tier="gold" size="lg" fullWidth onPress={() => { Keyboard.dismiss(); handlePinLogin(); }}>
-              はじめる！
+              冒険に出発！
             </RpgButton>
           </>
         )}

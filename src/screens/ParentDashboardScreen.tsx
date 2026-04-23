@@ -102,9 +102,9 @@ export default function ParentDashboardScreen({
   const [familyMessages, setFamilyMessages] = useState<FamilyMessage[]>([]);
   const [allMembers, setAllMembers] = useState<User[]>([]);
   const [stampSendVisible, setStampSendVisible] = useState(false);
-  // 家族名
+  // 冒険団名
   const [familyName, setFamilyName] = useState("");
-  // 家族チャレンジ
+  // 冒険団チャレンジ
   const [activeChallenge, setActiveChallenge] = useState<FamilyChallenge | null>(null);
   const [challengeCreating, setChallengeCreating] = useState(false);
 
@@ -268,7 +268,7 @@ export default function ParentDashboardScreen({
       setAllMembers(membersRes.data || []);
       setFamilyMessages(fmsgRes.data || []);
 
-      // アクティブな家族チャレンジ
+      // アクティブな冒険団チャレンジ
       const today = new Date().toISOString().slice(0, 10);
       const { data: challengeData } = await supabase
         .from("otetsudai_family_challenges")
@@ -750,7 +750,7 @@ export default function ParentDashboardScreen({
           </RpgCard>
         )}
 
-        {/* 家族チャレンジ（承認タブ内） */}
+        {/* 冒険団チャレンジ（承認タブ内） */}
         {tab === "approve" && (
           <View style={styles.section}>
             {activeChallenge ? (
@@ -785,13 +785,13 @@ export default function ParentDashboardScreen({
             <TouchableOpacity
               style={[styles.stampRelayBtn, { backgroundColor: palette.primaryLight, borderColor: palette.primary }]}
               onPress={() => setStampSendVisible(true)}
-              accessibilityLabel="冒険団にエールを送る"
+              accessibilityLabel="団員メッセージを送る"
               accessibilityRole="button"
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelLetterIcon size={16} />
                 <Text style={[styles.stampRelayBtnText, { color: palette.primaryDark }]}>
-                  エールを送る
+                  団員メッセージを送る
                 </Text>
               </View>
             </TouchableOpacity>
@@ -916,7 +916,7 @@ export default function ParentDashboardScreen({
               </>
             )}
 
-            {/* じぶんクエスト提案 */}
+            {/* MYクエスト提案 */}
             {questProposals.length > 0 && (
               <>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelScrollIcon size={18} /><Text style={styles.sectionTitle}>{`MYクエスト提案 (${questProposals.length})`}</Text></View>

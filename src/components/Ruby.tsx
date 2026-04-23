@@ -1,6 +1,54 @@
-import React from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { View, Text, StyleSheet, type TextStyle } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../theme";
+
+// ── ルビ表示ON/OFFコンテキスト ──────────────────────────
+const RUBY_STORAGE_KEY = "ruby_visible";
+
+type RubyContextType = {
+  rubyVisible: boolean;
+  setRubyVisible: (v: boolean) => void;
+};
+
+const RubyCtx = createContext<RubyContextType>({
+  rubyVisible: true,
+  setRubyVisible: () => {},
+});
+
+export function useRuby() {
+  return useContext(RubyCtx);
+}
+
+export function RubyProvider({
+  children,
+  initial = true,
+}: {
+  children: React.ReactNode;
+  initial?: boolean;
+}) {
+  const [rubyVisible, setVisible] = useState(initial);
+
+  const setRubyVisible = useCallback((v: boolean) => {
+    setVisible(v);
+    AsyncStorage.setItem(RUBY_STORAGE_KEY, v ? "1" : "0").catch(() => {});
+  }, []);
+
+  return (
+    <RubyCtx.Provider value={{ rubyVisible, setRubyVisible }}>
+      {children}
+    </RubyCtx.Provider>
+  );
+}
+
+/** AsyncStorageから保存済みルビ設定を復元 */
+export async function loadSavedRubyVisible(): Promise<boolean> {
+  try {
+    const saved = await AsyncStorage.getItem(RUBY_STORAGE_KEY);
+    if (saved === "0") return false;
+  } catch {}
+  return true;
+}
 
 type Props = {
   kanji: string;
@@ -52,19 +100,24 @@ function rubyStyle(size: number, color: string): TextStyle {
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
   const { palette } = useTheme();
+  const { rubyVisible } = useRuby();
   const baseColor = palette.textStrong;
   const rubyColor = palette.rubyColor;
   const gap = rubyGap(rubySize);
   return (
     <View style={layoutStyles.center}>
-      <Text
-        style={rubyStyle(rubySize, rubyColor)}
-        numberOfLines={1}
-        adjustsFontSizeToFit
-        minimumFontScale={0.6}
-      >
-        {ruby}
-      </Text>
+      {rubyVisible ? (
+        <Text
+          style={rubyStyle(rubySize, rubyColor)}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.6}
+        >
+          {ruby}
+        </Text>
+      ) : (
+        <Text style={[rubyStyle(rubySize, rubyColor), { opacity: 0 }]} numberOfLines={1}>.</Text>
+      )}
       <Text style={[tightStyle(style, baseColor), { marginTop: gap }]}>{kanji}</Text>
     </View>
   );
@@ -90,15 +143,17 @@ export function RubyText({
   rubyColor?: string;
 }) {
   const { palette } = useTheme();
+  const { rubyVisible } = useRuby();
   const tight = tightStyle(style, palette.textStrong);
   const rs = rubyStyle(rubySize, rubyColor ?? palette.rubyColor);
+  const hiddenRs = [rs, { opacity: 0 }];
   const gap = rubyGap(rubySize);
   return (
     <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
           <View key={i} style={layoutStyles.center}>
-            <Text style={[rs, { opacity: 0 }]} numberOfLines={1}>
+            <Text style={hiddenRs} numberOfLines={1}>
               .
             </Text>
             <Text
@@ -113,12 +168,12 @@ export function RubyText({
         ) : (
           <View key={i} style={layoutStyles.center}>
             <Text
-              style={rs}
+              style={rubyVisible ? rs : hiddenRs}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
             >
-              {part[1]}
+              {rubyVisible ? part[1] : "."}
             </Text>
             <Text
               style={[tight, { marginTop: gap }]}
@@ -176,8 +231,8 @@ const RUBY_DICT: [string, string][] = [
   ["最新", "さいしん"], ["最高", "さいこう"], ["最大", "さいだい"], ["最近", "さいきん"],
   ["最終", "さいしゅう"], ["以上", "いじょう"], ["以下", "いか"], ["名前", "なまえ"],
   ["気持", "きも"], ["目標達成", "もくひょうたっせい"], ["目標", "もくひょう"],
-  ["達成済", "たっせいず"], ["達成", "たっせい"], ["提案", "ていあん"], ["報酬", "ほうしゅう"],
-  ["冒険", "ぼうけん"], ["履歴", "りれき"], ["入力", "にゅうりょく"], ["表示", "ひょうじ"],
+  ["達成済", "たっせいず"], ["達成", "たっせい"], ["提案", "ていあん"], ["報酬", "ほうしゅう"], ["撤退", "てったい"],
+  ["冒険団", "ぼうけんだん"], ["冒険", "ぼうけん"], ["団員", "だんいん"], ["履歴", "りれき"], ["入力", "にゅうりょく"], ["表示", "ひょうじ"],
   ["確認", "かくにん"], ["失敗", "しっぱい"], ["成長", "せいちょう"], ["成功", "せいこう"], ["現金", "げんきん"],
   ["貯金目標", "ちょきんもくひょう"], ["貯金", "ちょきん"], ["貯蓄", "ちょちく"], ["貯", "た"],
   ["投資", "とうし"], ["銘柄", "めいがら"], ["価格", "かかく"], ["値段", "ねだん"],

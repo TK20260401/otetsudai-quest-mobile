@@ -541,7 +541,7 @@ export function PixelRefreshIcon({ size = 20 }: { size?: number }) {
 }
 
 // ============================================================
-// 🏠 家アイコン（家族・ホーム用）
+// 🏠 家アイコン（冒険団・ホーム用）
 // ============================================================
 const HOUSE_PIXELS: PixelDef[] = [
   [2,0,"#E74C3C"],
@@ -1007,7 +1007,7 @@ export function PixelToiletIcon({ size = 28 }: { size?: number }) {
 }
 
 // ============================================================
-// 👨‍👩‍👧‍👦 家族アイコン
+// 👨‍👩‍👧‍👦 冒険団アイコン
 // ============================================================
 const FAMILY_PIXELS: PixelDef[] = [
   [0,0,"#3498DB"],[1,0,"#3498DB"],[3,0,"#E74C3C"],[4,0,"#E74C3C"],
@@ -1018,7 +1018,7 @@ const FAMILY_PIXELS: PixelDef[] = [
 ];
 
 export function PixelFamilyIcon({ size = 28 }: { size?: number }) {
-  return <PixelGrid pixels={FAMILY_PIXELS} gridW={5} gridH={5} size={size} label="家族" />;
+  return <PixelGrid pixels={FAMILY_PIXELS} gridW={5} gridH={5} size={size} label="冒険団" />;
 }
 
 // ============================================================

@@ -624,7 +624,7 @@ export default function InvestScreen({
 
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <PixelLightbulbIcon size={14} />
-                    <AutoRubyText text="買いたい株がないときは、おうちの人に相談してね" style={styles.orderHint} rubySize={4} />
+                    <AutoRubyText text="買いたい株がないときは、ギルドマスターに相談してね" style={styles.orderHint} rubySize={4} />
                   </View>
                 </>
               )}

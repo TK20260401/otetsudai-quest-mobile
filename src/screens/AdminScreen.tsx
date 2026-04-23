@@ -72,7 +72,7 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
     async (user: User) => {
       Alert.alert(
         `${user.name} としてログイン`,
-        `ロール: ${user.role}\n家族ID: ${user.family_id}`,
+        `ロール: ${user.role}\n冒険団ID: ${user.family_id}`,
         [
           { text: "やめる", style: "cancel" },
           {
@@ -206,7 +206,7 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.sectionTitle}>
-          家族一覧（{families.length}件）
+          冒険団一覧（{families.length}件）
         </Text>
 
         {families.map((fam) => (
@@ -285,7 +285,7 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
         ))}
 
         {families.length === 0 && (
-          <Text style={styles.emptyText}>家族データがありません{"\n"}（RLSで制限されている可能性があります）</Text>
+          <Text style={styles.emptyText}>冒険団データがありません{"\n"}（RLSで制限されている可能性があります）</Text>
         )}
 
         <View style={{ marginTop: 24, gap: 12 }}>

@@ -41,7 +41,7 @@ import IdleAnimationWrapper from "../components/IdleAnimationWrapper";
 import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
-import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
+import { RubyText, RubyStr, AutoRubyText, useRuby } from "../components/Ruby";
 import RubyPlaceholderInput from "../components/RubyPlaceholderInput";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
@@ -78,6 +78,7 @@ export default function ChildDashboardScreen({
   const { childId } = route.params;
   const { alert } = useAppAlert();
   const { palette } = useTheme();
+  const { rubyVisible, setRubyVisible } = useRuby();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
   const { width: screenW, height: screenH } = useWindowDimensions();
@@ -121,7 +122,7 @@ export default function ChildDashboardScreen({
   const [recentSpendRequests, setRecentSpendRequests] = useState<SpendRequest[]>([]);
   // バッジ獲得演出
   const [unlockedBadge, setUnlockedBadge] = useState<{ emoji: string; label: string; description: string } | null>(null);
-  // じぶんクエスト提案
+  // MYクエスト提案
   const [proposalVisible, setProposalVisible] = useState(false);
   const [proposalTitle, setProposalTitle] = useState("");
   const [proposalReason, setProposalReason] = useState("");
@@ -141,12 +142,12 @@ export default function ChildDashboardScreen({
   const [eggDrop, setEggDrop] = useState<PetType | null>(null);
   const [stampSendVisible, setStampSendVisible] = useState(false);
   const [sessionFamilyId, setSessionFamilyId] = useState<string | null>(null);
-  // 家族チャレンジ
+  // 冒険団チャレンジ
   const [activeChallenge, setActiveChallenge] = useState<FamilyChallenge | null>(null);
   // ScrollView ref（「かせぐ」タップでクエスト一覧へスクロール）
   const scrollRef = useRef<ScrollView>(null);
   const questSectionY = useRef(0);
-  // 提案中のクエスト数
+  // MYクエスト提案中の数
   const pendingProposals = useMemo(() => tasks.filter((t) => t.created_by === childId && t.proposal_status === "pending").length, [tasks, childId]);
 
   const handleProposalSubmit = useCallback(async () => {
@@ -160,7 +161,7 @@ export default function ChildDashboardScreen({
         title: proposalTitle.trim(),
         description: proposalReason.trim() || null,
         reward_amount: 0,
-        proposed_reward: proposalReward ? parseInt(proposalReward, 10) : null,
+        proposed_reward: proposalReward ? (parseInt(proposalReward.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[^0-9]/g, ""), 10) || null) : null,
         proposal_status: "pending",
         proposal_message: proposalReason.trim() || null,
         recurrence: "once",
@@ -173,7 +174,7 @@ export default function ChildDashboardScreen({
       setProposalTitle("");
       setProposalReason("");
       setProposalReward("");
-      alert("送信しました！", "冒険団マスターがクエストを確認するよ！");
+      alert("送信しました！", "ギルドマスターがクエストを確認するよ！");
       loadData();
     } catch {
       alert("エラー", "送信に失敗しました");
@@ -397,7 +398,7 @@ export default function ChildDashboardScreen({
     setFamilyMembers(membersRes.data || []);
     setFamilyMessages(fmsgRes.data || []);
 
-    // アクティブな家族チャレンジ
+    // アクティブな冒険団チャレンジ
     const today = new Date().toISOString().slice(0, 10);
     const { data: challengeData } = await supabase
       .from("otetsudai_family_challenges")
@@ -672,7 +673,16 @@ export default function ChildDashboardScreen({
           onBack={handleLogout}
         />
       </View>
-      <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
+        <Text style={[styles.headerDate, { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }]}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
+        <TouchableOpacity
+          onPress={() => setRubyVisible(!rubyVisible)}
+          style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: rubyVisible ? palette.accent : palette.surfaceMuted, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 }}
+          accessibilityLabel="ルビ表示切替"
+        >
+          <Text style={{ fontSize: 10, fontWeight: "bold", color: rubyVisible ? palette.white : palette.textMuted }}>ルビ {rubyVisible ? "ON" : "OFF"}</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* ★固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド。
           お金のサイクル全体が一目でわかる設計。
@@ -955,9 +965,9 @@ export default function ChildDashboardScreen({
           <AnimatedButton
             onPress={() => setStampSendVisible(true)}
             style={styles.stampRelayBtn}
-            accessibilityLabel="かぞくに エールを おくる"
+            accessibilityLabel="団員メッセージを送る"
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={["エールを", ["送", "おく"], "る"]} rubySize={5} /></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={[["団員", "だんいん"], "メッセージを", ["送", "おく"], "る"]} rubySize={5} /></View>
           </AnimatedButton>
         </View>
 
@@ -1037,7 +1047,7 @@ export default function ChildDashboardScreen({
             {tab === "quests" ? (
               <RubyText
                 style={styles.screenTitleSub}
-                parts={[["今", "いま"], "やるクエストを", ["選", "えら"], "ぼう"]}
+                parts={[["受注", "じゅちゅう"], "するクエストを", ["選", "えら"], "ぼう"]}
                 rubySize={4}
                 noWrap
               />
@@ -1243,17 +1253,17 @@ export default function ChildDashboardScreen({
               <View style={styles.emptyCard}>
                 <PixelMapIcon size={40} />
                 <AutoRubyText text="クエストが まだないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={7} />
-                <AutoRubyText text="冒険団マスターに たのんで クエストを つくってもらおう！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} noWrap />
+                <AutoRubyText text="冒険団マスターに クエストを つくってもらおう！" style={styles.emptyHint} rubySize={6} />
               </View>
             )}
 
-            {/* じぶんクエスト提案 */}
+            {/* MYクエスト提案 */}
             <AnimatedButton
               style={styles.proposalButton}
               onPress={() => setProposalVisible(true)}
-              accessibilityLabel="MYクエストを提案する"
+              accessibilityLabel="MYクエストを出す"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["MYクエストを", ["提案", "ていあん"], "する"]} rubySize={5} /></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["MYクエストを", ["出", "だ"], "す"]} rubySize={5} /></View>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1526,12 +1536,12 @@ export default function ChildDashboardScreen({
       {/* コインくん AIチャット */}
       <CoinKunChat role="child" />
 
-      {/* じぶんクエスト提案モーダル */}
+      {/* MYクエスト提案モーダル */}
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <View style={styles.proposalCard}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={[["自分", "じぶん"], "クエストを", ["提案", "ていあん"]]} rubySize={6} /></View>
-            <AutoRubyText text="おうちのひとに新しいクエストを提案しよう！" style={styles.proposalModalSub} rubySize={5} noWrap />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={["MYクエストを", ["出", "だ"], "す"]} rubySize={6} /></View>
+            <Text style={styles.proposalModalSub}>ギルドマスターに新しいクエストを出そう！</Text>
 
             <RubyText
               style={styles.proposalLabel}
@@ -1568,7 +1578,7 @@ export default function ChildDashboardScreen({
 
             <RubyText
               style={styles.proposalLabel}
-              parts={[["希望", "きぼう"], "のご", ["褒美", "ほうび"], "（", ["円", "えん"], "）"]}
+              parts={[["報酬", "ほうしゅう"], "リクエスト（", ["円", "えん"], "）"]}
               rubySize={5}
               noWrap
             />
@@ -1587,7 +1597,7 @@ export default function ChildDashboardScreen({
               <TouchableOpacity style={styles.proposalCancel} onPress={() => setProposalVisible(false)}>
                 <RubyText
                   style={styles.proposalCancelText}
-                  parts={[["止", "や"], "める"]}
+                  parts={[["撤退", "てったい"]]}
                   rubySize={5}
                   noWrap
                 />
@@ -1607,7 +1617,7 @@ export default function ChildDashboardScreen({
                 ) : (
                   <RubyText
                     style={styles.proposalSubmitText}
-                    parts={[["提案", "ていあん"], "する！"]}
+                    parts={["クエストを", ["出", "だ"], "す！"]}
                     rubySize={5}
                     noWrap
                   />
@@ -2405,7 +2415,7 @@ function createStyles(p: Palette) {
   weeklyStatLabel: { fontSize: rf(11), color: p.textMuted },
   bottomSpacer: { height: 40 },
 
-  // じぶんクエスト提案
+  // MYクエスト提案
   proposalButton: {
     margin: 12,
     padding: 14,
@@ -2431,7 +2441,7 @@ function createStyles(p: Palette) {
     padding: 20,
   },
   proposalModalTitle: { fontSize: rf(18), fontWeight: "bold" as const, color: p.textStrong, marginBottom: 4 },
-  proposalModalSub: { fontSize: 12, color: p.textMuted, marginBottom: 16 },
+  proposalModalSub: { fontSize: 12, color: p.textMuted, marginBottom: 16, paddingLeft: 24 },
   proposalLabel: { fontSize: 13, fontWeight: "bold" as const, color: p.textStrong, marginTop: 8, marginBottom: 4 },
   proposalInput: {
     borderWidth: 1,
@@ -2461,7 +2471,7 @@ function createStyles(p: Palette) {
     justifyContent: "center" as const,
     backgroundColor: p.primary,
   },
-  proposalSubmitText: { fontSize: 16, fontWeight: "bold" as const, color: p.white },
+  proposalSubmitText: { fontSize: 14, fontWeight: "bold" as const, color: p.white },
   stampRelayBtn: {
     backgroundColor: p.primaryLight,
     borderRadius: 14,
@@ -2474,7 +2484,7 @@ function createStyles(p: Palette) {
     justifyContent: "center" as const,
   },
   stampRelayBtnText: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "bold" as const,
     color: p.primaryDark,
   },

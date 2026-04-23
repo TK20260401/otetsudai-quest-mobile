@@ -59,7 +59,7 @@ export default function FamilyAdventureMap({
         0
       );
 
-      // 家族ストリーク: 家族の誰かがクエストをクリアした連続日数
+      // 冒険団ストリーク: 冒険団の誰かがクエストをクリアした連続日数
       const { data: streakLogs } = await supabase
         .from("otetsudai_task_logs")
         .select("approved_at")
@@ -142,7 +142,7 @@ export default function FamilyAdventureMap({
         })}
       </View>
 
-      {/* 家族統計 */}
+      {/* 冒険団統計 */}
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{stats.weeklyQuests}</Text>
