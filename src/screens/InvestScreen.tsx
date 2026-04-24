@@ -37,7 +37,7 @@ type Portfolio = {
 const SYNC_COOLDOWN_MS = 5 * 60 * 1000;
 
 const CATEGORIES = [
-  { key: "index", label: "よくばり", desc: "初めての人におすすめ" },
+  { key: "index", label: "よくばり", desc: "冒険デビューに ぴったり！" },
   { key: "jp_stock", label: "🇯🇵 サムライタウン", desc: "" },
   { key: "us_stock", label: "🇺🇸 ロケットシティ", desc: "" },
 ] as const;
@@ -498,7 +498,7 @@ export default function InvestScreen({
                   {/* Category tabs */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={["カテゴリを", ["選", "えら"], "ぼう"]}
+                    parts={[["冒険先", "ぼうけんさき"], "を", ["選", "えら"], "ぼう"]}
                     rubySize={4}
                   />
                   <View style={styles.categoryRow}>
@@ -538,7 +538,7 @@ export default function InvestScreen({
                   {/* Stock list */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={[["銘柄", "めいがら"], "を", ["選", "えら"], "ぼう"]}
+                    parts={["トレジャーハント"]}
                     rubySize={4}
                   />
                   {filteredStocks.map((stock) => (
