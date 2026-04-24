@@ -138,12 +138,12 @@ export default function WalletDetailScreen({
   const invest = wallet?.invest_balance ?? 0;
   const total = spending + saving + invest;
 
-  const filterTabs: { label: string; value: string; parts: (string | [string, string])[] }[] = [
+  const filterTabs: { label: string; value: string; parts: (string | [string, string])[]; navigate?: string }[] = [
     { label: "全部", value: "all", parts: [["全部", "ぜんぶ"]] },
-    { label: "クエスト", value: "earn", parts: ["クエスト"] },
-    { label: "ショップ", value: "spend", parts: ["ショップ"] },
+    { label: "クエスト", value: "earn", parts: ["クエスト"], navigate: "ChildDashboard" },
+    { label: "ショップ", value: "spend", parts: ["ショップ"], navigate: "SpendRequest" },
     { label: "ストック", value: "save", parts: ["ストック"] },
-    { label: "冒険", value: "invest", parts: [["冒険", "ぼうけん"]] },
+    { label: "冒険", value: "invest", parts: [["冒険", "ぼうけん"]], navigate: "Invest" },
   ];
 
   function TxTypeIcon({ type }: { type: string }) {
@@ -327,7 +327,7 @@ export default function WalletDetailScreen({
           <View style={styles.treeInfo}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelTreeIcon size={18} />
-              <RubyText parts={[["増", "ふ"], "やすの", ["木", "き"], `: ${getStage(invest).label}`]} style={styles.treeLabel} rubySize={6} />
+              <RubyText parts={[["冒険", "ぼうけん"], "の", ["木", "き"], `: ${getStage(invest).label}`]} style={styles.treeLabel} rubySize={6} />
             </View>
             {getStage(invest).next && (
               <AutoRubyText
@@ -356,12 +356,12 @@ export default function WalletDetailScreen({
                 spendingBalance: wallet?.spending_balance ?? 0,
               })
             }
-            accessibilityLabel="つかうリクエストを おくる"
+            accessibilityLabel="ショップリクエストを おくる"
             activeOpacity={0.8}
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCartIcon size={18} />
-              <RubyText parts={[["使", "つか"], "いたい！"]} style={styles.spendRequestButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
+              <RubyText parts={[["買", "か"], "いたい！"]} style={styles.spendRequestButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -373,12 +373,12 @@ export default function WalletDetailScreen({
                 investBalance: wallet?.invest_balance ?? 0,
               })
             }
-            accessibilityLabel="とうし がめんを ひらく"
+            accessibilityLabel="冒険ショップを ひらく"
             activeOpacity={0.8}
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelChartIcon size={18} />
-              <RubyText parts={[["増", "ふ"], "やす！"]} style={styles.investButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
+              <RubyText parts={[["冒険", "ぼうけん"], "！"]} style={styles.investButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
             </View>
           </TouchableOpacity>
         </View>
@@ -388,7 +388,7 @@ export default function WalletDetailScreen({
           <View style={styles.section}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCartIcon size={18} />
-              <AutoRubyText text="つかうリクエスト" style={styles.sectionTitle} rubySize={7} />
+              <AutoRubyText text="ショップリクエスト" style={styles.sectionTitle} rubySize={7} />
             </View>
             {recentSpendRequests.map((req) => {
               if (req.status === "pending") {
@@ -544,7 +544,7 @@ export default function WalletDetailScreen({
         <View style={styles.section}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <PixelScrollIcon size={18} />
-            <AutoRubyText text="履歴" style={styles.sectionTitle} rubySize={7} />
+            <AutoRubyText text="冒険ログ" style={styles.sectionTitle} rubySize={7} />
           </View>
 
           {/* Filter tabs */}
@@ -556,7 +556,16 @@ export default function WalletDetailScreen({
                   styles.filterTab,
                   filterType === tab.value && styles.filterTabActive,
                 ]}
-                onPress={() => setFilterType(tab.value)}
+                onPress={() => {
+                  if (tab.navigate) {
+                    const params: any = { childId, walletId };
+                    if (tab.navigate === "SpendRequest") params.spendingBalance = wallet?.spending_balance ?? 0;
+                    if (tab.navigate === "Invest") params.investBalance = wallet?.invest_balance ?? 0;
+                    navigation.navigate(tab.navigate, params);
+                  } else {
+                    setFilterType(tab.value);
+                  }
+                }}
                 accessibilityLabel={tab.label}
               >
                 <RubyText
@@ -597,7 +606,7 @@ export default function WalletDetailScreen({
               </View>
             ))
           ) : (
-            <Text style={styles.emptyHint}>まだ履歴がないよ</Text>
+            <Text style={styles.emptyHint}>まだ冒険ログがないよ</Text>
           )}
         </View>
 

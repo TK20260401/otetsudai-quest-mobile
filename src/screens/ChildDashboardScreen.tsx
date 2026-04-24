@@ -681,11 +681,11 @@ export default function ChildDashboardScreen({
         <Text style={[styles.headerDate, { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }]}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
       </View>
 
-      {/* ★固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド。
-          お金のサイクル全体が一目でわかる設計。
-          「かせぐ」はクエスト一覧へスクロール、他3つは各専用画面へナビゲート。 */}
+      {/* ★固定 Quick Nav — 「クエスト・ショップ・ストック・冒険」4並列カードグリッド。
+          コインのサイクル全体が一目でわかる設計。
+          「クエスト」はクエスト一覧へスクロール、他3つは各専用画面へナビゲート。 */}
       <View style={styles.quickNav}>
-        {/* かせぐ（クエスト） */}
+        {/* クエスト */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.primary, shadowColor: palette.primary }]}
           activeOpacity={0.7}
@@ -706,7 +706,7 @@ export default function ChildDashboardScreen({
           <Text style={styles.quickNavSub}>クエスト</Text>
         </TouchableOpacity>
 
-        {/* つかう */}
+        {/* ショップ */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.walletSpend, shadowColor: palette.walletSpend }, !wallet && { opacity: 0.5 }]}
           activeOpacity={0.7}
@@ -715,7 +715,7 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
           }}
-          accessibilityLabel="つかう画面へ"
+          accessibilityLabel="ショップ画面へ"
           accessibilityRole="button"
         >
           <PixelCartIcon size={24} />
@@ -731,7 +731,7 @@ export default function ChildDashboardScreen({
           </Text>
         </TouchableOpacity>
 
-        {/* ためる */}
+        {/* ストック */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.walletSave, shadowColor: palette.walletSave }, !wallet && { opacity: 0.5 }]}
           activeOpacity={0.7}
@@ -740,7 +740,7 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("WalletDetail", { childId, walletId: wallet.id });
           }}
-          accessibilityLabel="ためる画面へ"
+          accessibilityLabel="ストック画面へ"
           accessibilityRole="button"
         >
           <PixelPiggyIcon size={24} />
@@ -756,7 +756,7 @@ export default function ChildDashboardScreen({
           </Text>
         </TouchableOpacity>
 
-        {/* ふやす */}
+        {/* 冒険 */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.walletInvest, shadowColor: palette.walletInvest }, !wallet && { opacity: 0.5 }]}
           activeOpacity={0.7}
@@ -765,7 +765,7 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
           }}
-          accessibilityLabel="ふやす画面へ"
+          accessibilityLabel="冒険ショップ画面へ"
           accessibilityRole="button"
         >
           <PixelChartIcon size={24} />
@@ -1036,7 +1036,7 @@ export default function ChildDashboardScreen({
             ) : (
               <RubyText
                 style={styles.screenTitleText}
-                parts={[`${childName} の`, ["履歴", "りれき"]]}
+                parts={[`${childName} の`, ["冒険", "ぼうけん"], "ログ"]}
                 rubySize={5}
                 noWrap
               />
@@ -1082,11 +1082,11 @@ export default function ChildDashboardScreen({
             onPress={() => setTab("history")}
             accessibilityRole="tab"
             accessibilityState={{ selected: tab === "history" }}
-            accessibilityLabel="りれきタブ"
+            accessibilityLabel="ぼうけんログタブ"
           >
             <RubyText
               style={tab === "history" ? styles.tabTextActive : styles.tabText}
-              parts={[["履歴", "りれき"]]}
+              parts={[["冒険", "ぼうけん"], "ログ"]}
               rubySize={6}
             />
           </TouchableOpacity>
@@ -1340,7 +1340,7 @@ export default function ChildDashboardScreen({
             {transactions.length === 0 && repliedMessages.length === 0 ? (
               <View style={styles.emptyCard}>
                 <PixelBookIcon size={40} />
-                <AutoRubyText text="まだ履歴がないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={6} />
+                <AutoRubyText text="まだ冒険ログがないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={6} />
                 <AutoRubyText text="クエストをクリアすると ここに きろくされるよ！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
             ) : transactions.length === 0 ? null : (
