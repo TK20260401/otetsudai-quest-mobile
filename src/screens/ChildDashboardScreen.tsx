@@ -2502,6 +2502,7 @@ function createStyles(p: Palette) {
     padding: 14,
     fontSize: 15,
     backgroundColor: p.surfaceMuted,
+    color: p.textStrong,
   },
   proposalActions: { flexDirection: "row" as const, gap: 10, marginTop: 16 },
   proposalCancel: {
