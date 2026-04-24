@@ -2110,6 +2110,7 @@ function createStyles(p: Palette) {
     fontSize: 15,
     marginBottom: 16,
     backgroundColor: p.surfaceMuted,
+    color: p.textStrong,
   },
   modalActions: { flexDirection: "row", gap: 10 },
   modalCancel: {
@@ -2144,6 +2145,7 @@ function createStyles(p: Palette) {
     padding: 14,
     fontSize: 15,
     backgroundColor: p.surfaceMuted,
+    color: p.textStrong,
   },
   datePickerButton: {
     flexDirection: "row",

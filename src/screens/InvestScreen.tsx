@@ -857,6 +857,7 @@ function createStyles(p: Palette) {
       fontSize: rf(20),
       textAlign: "center",
       backgroundColor: p.surfaceMuted,
+      color: p.textStrong,
     },
     amountHint: { fontSize: 10, color: p.textMuted, textAlign: "center", marginTop: 4 },
 

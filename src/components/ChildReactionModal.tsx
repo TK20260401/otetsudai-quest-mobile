@@ -352,6 +352,7 @@ function createStyles(p: Palette) {
       marginTop: 12,
       marginBottom: 12,
       backgroundColor: p.surfaceMuted,
+      color: p.textStrong,
     },
     sendButton: {
       backgroundColor: p.primary,
