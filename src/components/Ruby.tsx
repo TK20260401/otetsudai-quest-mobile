@@ -1,52 +1,27 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React from "react";
 import { View, Text, StyleSheet, type TextStyle } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../theme";
+import { useAccessibility } from "../accessibility";
 
-// ── ルビ表示ON/OFFコンテキスト ──────────────────────────
-const RUBY_STORAGE_KEY = "ruby_visible";
-
-type RubyContextType = {
-  rubyVisible: boolean;
-  setRubyVisible: (v: boolean) => void;
-};
-
-const RubyCtx = createContext<RubyContextType>({
-  rubyVisible: true,
-  setRubyVisible: () => {},
-});
-
+/**
+ * ルビ表示の状態は `AccessibilityContext` に統合されている。
+ * このフックは後方互換のための薄いファサード。
+ */
 export function useRuby() {
-  return useContext(RubyCtx);
+  const { rubyVisible, setRubyVisible } = useAccessibility();
+  return { rubyVisible, setRubyVisible };
 }
 
-export function RubyProvider({
-  children,
-  initial = true,
-}: {
-  children: React.ReactNode;
-  initial?: boolean;
-}) {
-  const [rubyVisible, setVisible] = useState(initial);
-
-  const setRubyVisible = useCallback((v: boolean) => {
-    setVisible(v);
-    AsyncStorage.setItem(RUBY_STORAGE_KEY, v ? "1" : "0").catch(() => {});
-  }, []);
-
-  return (
-    <RubyCtx.Provider value={{ rubyVisible, setRubyVisible }}>
-      {children}
-    </RubyCtx.Provider>
-  );
+/**
+ * 後方互換の空ラッパー。新規コードは `AccessibilityProvider` を直接使うこと。
+ * 古い App.tsx が `<RubyProvider>` を使い続けていても壊れないように残す。
+ */
+export function RubyProvider({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }
 
-/** AsyncStorageから保存済みルビ設定を復元 */
+/** @deprecated AccessibilityContext に移行済み。呼び出し不要。 */
 export async function loadSavedRubyVisible(): Promise<boolean> {
-  try {
-    const saved = await AsyncStorage.getItem(RUBY_STORAGE_KEY);
-    if (saved === "0") return false;
-  } catch {}
   return true;
 }
 
@@ -68,16 +43,22 @@ type Props = {
  */
 
 /**
- * styleからlineHeightを除去し、fontSizeに近接させる。
+ * styleからlineHeightを除去し、fontSizeに scale を掛け直す。
+ * fontScale（アクセシビリティ）が大きいほど漢字サイズも比例拡大。
  * color が呼び出し元で未指定の場合は defaultColor（palette.textStrong 相当）を
  * フォールバックで入れる。ダーク移行時に呼び出し元の color 漏れで背景に沈む
  * 事故を予防するための防御。
  */
-function tightStyle(style: any, defaultColor: string): TextStyle {
+function tightStyle(style: any, defaultColor: string, scale: number): TextStyle {
   const flat = StyleSheet.flatten(style) as TextStyle | undefined;
   if (!flat) return { color: defaultColor, includeFontPadding: false } as TextStyle;
-  const { lineHeight: _lh, color: c, ...rest } = flat;
-  return { ...rest, color: c ?? defaultColor, includeFontPadding: false } as TextStyle;
+  const { lineHeight: _lh, color: c, fontSize: fs, ...rest } = flat;
+  return {
+    ...rest,
+    color: c ?? defaultColor,
+    includeFontPadding: false,
+    ...(typeof fs === "number" ? { fontSize: fs * scale } : {}),
+  } as TextStyle;
 }
 
 /** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み） */
@@ -100,25 +81,34 @@ function rubyStyle(size: number, color: string): TextStyle {
 /** 単体ルビコンポーネント（既存API互換） */
 export default function Ruby({ kanji, ruby, style, rubySize = 8 }: Props) {
   const { palette } = useTheme();
-  const { rubyVisible } = useRuby();
+  const { rubyVisible, fontScaleValue } = useAccessibility();
   const baseColor = palette.textStrong;
   const rubyColor = palette.rubyColor;
-  const gap = rubyGap(rubySize);
+  const scaledRuby = rubySize * fontScaleValue;
+  const gap = rubyGap(scaledRuby);
   return (
     <View style={layoutStyles.center}>
       {rubyVisible ? (
         <Text
-          style={rubyStyle(rubySize, rubyColor)}
+          style={rubyStyle(scaledRuby, rubyColor)}
           numberOfLines={1}
           adjustsFontSizeToFit
           minimumFontScale={0.6}
+          allowFontScaling
+          maxFontSizeMultiplier={1.3}
         >
           {ruby}
         </Text>
       ) : (
-        <Text style={[rubyStyle(rubySize, rubyColor), { opacity: 0 }]} numberOfLines={1}>.</Text>
+        <Text style={[rubyStyle(scaledRuby, rubyColor), { opacity: 0 }]} numberOfLines={1}>.</Text>
       )}
-      <Text style={[tightStyle(style, baseColor), { marginTop: gap }]}>{kanji}</Text>
+      <Text
+        style={[tightStyle(style, baseColor, fontScaleValue), { marginTop: gap }]}
+        allowFontScaling
+        maxFontSizeMultiplier={1.3}
+      >
+        {kanji}
+      </Text>
     </View>
   );
 }
@@ -143,17 +133,18 @@ export function RubyText({
   rubyColor?: string;
 }) {
   const { palette } = useTheme();
-  const { rubyVisible } = useRuby();
-  const tight = tightStyle(style, palette.textStrong);
-  const rs = rubyStyle(rubySize, rubyColor ?? palette.rubyColor);
+  const { rubyVisible, fontScaleValue } = useAccessibility();
+  const scaledRuby = rubySize * fontScaleValue;
+  const tight = tightStyle(style, palette.textStrong, fontScaleValue);
+  const rs = rubyStyle(scaledRuby, rubyColor ?? palette.rubyColor);
   const hiddenRs = [rs, { opacity: 0 }];
-  const gap = rubyGap(rubySize);
+  const gap = rubyGap(scaledRuby);
   return (
     <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
           <View key={i} style={layoutStyles.center}>
-            <Text style={hiddenRs} numberOfLines={1}>
+            <Text style={hiddenRs} numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1.3}>
               .
             </Text>
             <Text
@@ -161,6 +152,8 @@ export function RubyText({
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
+              allowFontScaling
+              maxFontSizeMultiplier={1.3}
             >
               {part}
             </Text>
@@ -172,6 +165,8 @@ export function RubyText({
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
+              allowFontScaling
+              maxFontSizeMultiplier={1.3}
             >
               {rubyVisible ? part[1] : "."}
             </Text>
@@ -180,6 +175,8 @@ export function RubyText({
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
+              allowFontScaling
+              maxFontSizeMultiplier={1.3}
             >
               {part[0]}
             </Text>
