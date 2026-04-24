@@ -195,11 +195,11 @@ export default function WalletDetailScreen({
           style={styles.backButton}
           accessibilityLabel="ギルドに戻る"
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelHouseIcon size={14} /><Text style={styles.backText}>ギルドに戻る</Text></View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelHouseIcon size={12} /><Text style={styles.backText}>ギルドに戻る</Text></View>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <PixelCoinIcon size={22} />
-          <AutoRubyText text="お財布" style={styles.headerTitle} rubySize={7} />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: -4 }}>
+          <View style={{ marginTop: 12 }}><PixelCoinIcon size={22} /></View>
+          <AutoRubyText text="宝箱" style={styles.headerTitle} rubySize={7} />
         </View>
         <View style={styles.headerSpacer} />
       </View>
@@ -218,7 +218,7 @@ export default function WalletDetailScreen({
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <PixelChestOpenIcon size={22} />
             <AutoRubyText
-              text="全部のお金"
+              text="全部のコイン"
               style={styles.totalLabel}
               rubySize={7}
             />
@@ -331,7 +331,7 @@ export default function WalletDetailScreen({
             </View>
             {getStage(invest).next && (
               <AutoRubyText
-                text={`次の成長まで あと ${(getStage(invest).next! - invest).toLocaleString()}円`}
+                text={`レベルアップまで あと ${(getStage(invest).next! - invest).toLocaleString()}円`}
                 style={styles.treeProgress}
                 rubySize={5}
               />
@@ -467,7 +467,7 @@ export default function WalletDetailScreen({
         <View style={styles.section}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <PixelPiggyIcon size={18} />
-            <RubyText parts={[["貯金", "ちょきん"], ["目標", "もくひょう"]]} style={styles.sectionTitle} rubySize={7} />
+            <RubyText parts={["お", ["宝", "たから"], "マップ"]} style={styles.sectionTitle} rubySize={7} />
           </View>
 
           {/* Unachieved goals */}
@@ -524,16 +524,16 @@ export default function WalletDetailScreen({
           ))}
 
           {savingGoals.length === 0 && (
-            <AutoRubyText text="まだ貯金目標がないよ" style={[styles.emptyHint, { textAlign: "left" }]} rubySize={7} />
+            <AutoRubyText text="まだお宝マップがないよ" style={[styles.emptyHint, { textAlign: "left" }]} rubySize={7} />
           )}
 
           <TouchableOpacity
             style={styles.addGoalButton}
             onPress={() => setShowGoalModal(true)}
-            accessibilityLabel="ちょきん目標をつくる"
+            accessibilityLabel="お宝マップをつくる"
           >
             <AutoRubyText
-              text="＋ 目標をつくる"
+              text="＋ お宝マップを つくる"
               style={styles.addGoalText}
               rubySize={7}
             />
@@ -648,16 +648,16 @@ function createStyles(p: Palette) {
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 14,
-      paddingVertical: 8,
+      gap: 4,
+      paddingHorizontal: 10,
+      paddingVertical: 10,
       borderRadius: 8,
       borderWidth: 2,
       borderColor: p.primary,
       backgroundColor: p.background,
     },
     backText: {
-      fontSize: 16,
+      fontSize: 8,
       fontWeight: "bold",
       color: p.textMuted,
     },
