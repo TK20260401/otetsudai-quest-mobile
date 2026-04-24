@@ -43,7 +43,6 @@ import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
-import AccessibilityToggle from "../components/AccessibilityToggle";
 import RubyPlaceholderInput from "../components/RubyPlaceholderInput";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
@@ -678,7 +677,6 @@ export default function ChildDashboardScreen({
       <View style={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
         <Text style={[styles.headerDate, { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }]}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
       </View>
-      <AccessibilityToggle />
 
       {/* ★固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド。
           お金のサイクル全体が一目でわかる設計。
