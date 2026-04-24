@@ -42,7 +42,8 @@ import IdleAnimationWrapper from "../components/IdleAnimationWrapper";
 import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
-import { RubyText, RubyStr, AutoRubyText, useRuby } from "../components/Ruby";
+import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
+import AccessibilityToggle from "../components/AccessibilityToggle";
 import RubyPlaceholderInput from "../components/RubyPlaceholderInput";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
@@ -79,7 +80,6 @@ export default function ChildDashboardScreen({
   const { childId } = route.params;
   const { alert } = useAppAlert();
   const { palette } = useTheme();
-  const { rubyVisible, setRubyVisible } = useRuby();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
   const { width: screenW, height: screenH } = useWindowDimensions();
@@ -675,17 +675,10 @@ export default function ChildDashboardScreen({
           onBack={handleLogout}
         />
       </View>
-      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
+      <View style={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
         <Text style={[styles.headerDate, { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }]}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
-        <TouchableOpacity
-          onPress={() => setRubyVisible(!rubyVisible)}
-          style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: rubyVisible ? palette.accent : palette.surfaceMuted, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}
-          accessibilityLabel="ルビ表示切替"
-          accessibilityRole="switch"
-        >
-          <Text style={{ fontSize: 11, fontWeight: "bold", color: rubyVisible ? "#fff" : palette.textMuted }}>ルビ {rubyVisible ? "ON" : "OFF"}</Text>
-        </TouchableOpacity>
       </View>
+      <AccessibilityToggle />
 
       {/* ★固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド。
           お金のサイクル全体が一目でわかる設計。

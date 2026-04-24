@@ -14,6 +14,7 @@ import { RubyText, AutoRubyText } from "../components/Ruby";
 import PixelHeroSvg from "../components/PixelHeroSvg";
 import { PixelKeyIcon, PixelDoorIcon, PixelCoinIcon, PixelPiggyIcon, PixelSeedlingIcon } from "../components/PixelIcons";
 import RpgButton from "../components/RpgButton";
+import AccessibilityToggle from "../components/AccessibilityToggle";
 import LegalModal from "../components/LegalModal";
 import { TERMS, PRIVACY } from "../lib/legal-texts";
 
@@ -52,6 +53,7 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
         { paddingTop: insets.top + 12, paddingBottom: insets.bottom + 8 },
       ]}
     >
+      <AccessibilityToggle />
       <View style={[styles.hero, isTablet && { maxWidth: 480, alignSelf: "center", width: "100%" }]}>
         <View style={styles.heroRow} accessibilityLabel="Job Saga">
           <PixelHeroSvg type="warrior" size={isSmallScreen ? 48 : 64} animated mode="walk" />
@@ -98,7 +100,7 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
               accessibilityRole="button"
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Text style={{ fontSize: 12, color: palette.textMuted }}>冒険団マスターモード</Text>
+              <RubyText style={{ fontSize: 12, color: palette.textMuted }} parts={[["冒険団", "ぼうけんだん"], "マスターモード"]} rubySize={5} />
             </TouchableOpacity>
           )}
         </View>
