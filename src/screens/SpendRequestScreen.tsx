@@ -195,11 +195,14 @@ export default function SpendRequestScreen({
         >
           {/* Balance display */}
           <View style={styles.balanceCard}>
-            <AutoRubyText
-              text={`使えるお金: ${spendingBalance.toLocaleString()}円`}
-              style={styles.balanceText}
-              rubySize={7}
-            />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+              <PixelCoinIcon size={20} />
+              <AutoRubyText
+                text={`手持ちコイン: ${spendingBalance.toLocaleString()}円`}
+                style={styles.balanceText}
+                rubySize={7}
+              />
+            </View>
           </View>
 
           {/* Amount display */}
@@ -316,7 +319,7 @@ function createStyles(p: Palette) {
       backgroundColor: p.background,
     },
     backText: {
-      fontSize: 16,
+      fontSize: 8,
       fontWeight: "bold",
       color: p.textMuted,
     },
