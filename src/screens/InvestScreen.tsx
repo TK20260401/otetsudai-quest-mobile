@@ -229,7 +229,7 @@ export default function InvestScreen({
       return;
     }
     if (amountNum > investBalance) {
-      setOrderError(`残高が 足りないよ（残り ¥${investBalance.toLocaleString()}）`);
+      setOrderError(`冒険資金が 足りないよ（残り ¥${investBalance.toLocaleString()}）`);
       return;
     }
 
@@ -471,7 +471,7 @@ export default function InvestScreen({
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
                 <PixelSeedlingIcon size={18} />
-                <RubyText style={styles.headerTitle} parts={[["株", "かぶ"], "を", ["買", "か"], "う"]} rubySize={6} />
+                <RubyText style={styles.headerTitle} parts={[["冒険", "ぼうけん"], "ショップ"]} rubySize={6} />
               </View>
             </View>
 
@@ -491,7 +491,7 @@ export default function InvestScreen({
                 <>
                   {/* Balance */}
                   <View style={styles.orderBalanceCard}>
-                    <RubyText style={styles.orderBalanceLabel} parts={[["増", "ふ"], "やすウォレット ", ["残高", "ざんだか"]]} rubySize={4} />
+                    <RubyText style={styles.orderBalanceLabel} parts={[["冒険資金", "ぼうけんしきん"]]} rubySize={4} />
                     <Text style={styles.orderBalanceAmount}>¥{investBalance.toLocaleString()}</Text>
                   </View>
 
