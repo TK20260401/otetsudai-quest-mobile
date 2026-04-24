@@ -1052,3 +1052,51 @@ const HEART_PIXELS: PixelDef[] = [
 export function PixelHeartIcon({ size = 20 }: { size?: number }) {
   return <PixelGrid pixels={HEART_PIXELS} gridW={7} gridH={6} size={size} label="ハート" />;
 }
+
+// ============================================================
+// 家事クエスト追加アイコン（既存にない3種）
+// PresetQuestModalで使用。他の家事アイコン(BATH/DISH/LAUNDRY/VACUUM/
+// SHOE/WINDOW/PLANT/DOG/TOOTHBRUSH/BED) は既存定義を利用。
+// ============================================================
+
+// 片付け（🧸）— テディベア
+const TEDDY_PIXELS: PixelDef[] = [
+  [0,0,"#5C3A1E"],[1,0,"#5C3A1E"],[5,0,"#5C3A1E"],[6,0,"#5C3A1E"],
+  [0,1,"#8B5E2E"],[1,1,"#8B5E2E"],[2,1,"#8B5E2E"],[4,1,"#8B5E2E"],[5,1,"#8B5E2E"],[6,1,"#8B5E2E"],
+  [1,2,"#8B5E2E"],[2,2,"#8B5E2E"],[3,2,"#8B5E2E"],[4,2,"#8B5E2E"],[5,2,"#8B5E2E"],
+  [1,3,"#8B5E2E"],[2,3,"#222222"],[3,3,"#8B5E2E"],[4,3,"#222222"],[5,3,"#8B5E2E"],
+  [1,4,"#8B5E2E"],[2,4,"#8B5E2E"],[3,4,"#222222"],[4,4,"#8B5E2E"],[5,4,"#8B5E2E"],
+  [1,5,"#8B5E2E"],[2,5,"#8B5E2E"],[3,5,"#8B5E2E"],[4,5,"#8B5E2E"],[5,5,"#8B5E2E"],
+  [2,6,"#8B5E2E"],[3,6,"#8B5E2E"],[4,6,"#8B5E2E"],
+];
+
+export function PixelTeddyIcon({ size = 24 }: { size?: number }) {
+  return <PixelGrid pixels={TEDDY_PIXELS} gridW={7} gridH={7} size={size} label="片付け" />;
+}
+
+// 料理（🍳）— フライパンと目玉焼き
+const COOKING_PIXELS: PixelDef[] = [
+  [0,2,"#333333"],[1,2,"#333333"],[2,2,"#333333"],[3,2,"#333333"],[4,2,"#333333"],[5,2,"#8B5E2E"],[6,2,"#8B5E2E"],
+  [0,3,"#333333"],[1,3,"#FFF8E0"],[2,3,"#FFF8E0"],[3,3,"#FFF8E0"],[4,3,"#FFF8E0"],[5,3,"#333333"],
+  [0,4,"#333333"],[1,4,"#FFF8E0"],[2,4,"#F5D030"],[3,4,"#F5D030"],[4,4,"#FFF8E0"],[5,4,"#333333"],
+  [0,5,"#333333"],[1,5,"#FFF8E0"],[2,5,"#FFF8E0"],[3,5,"#FFF8E0"],[4,5,"#FFF8E0"],[5,5,"#333333"],
+  [1,6,"#333333"],[2,6,"#333333"],[3,6,"#333333"],[4,6,"#333333"],
+];
+
+export function PixelCookingPanIcon({ size = 24 }: { size?: number }) {
+  return <PixelGrid pixels={COOKING_PIXELS} gridW={7} gridH={7} size={size} label="料理" />;
+}
+
+// 力こぶ（💪）— 曲げた腕
+const MUSCLE_PIXELS: PixelDef[] = [
+  [2,1,"#F4C8A4"],[3,1,"#F4C8A4"],
+  [1,2,"#F4C8A4"],[2,2,"#F4C8A4"],[3,2,"#F4C8A4"],[4,2,"#F4C8A4"],
+  [1,3,"#F4C8A4"],[2,3,"#E2A68B"],[3,3,"#E2A68B"],[4,3,"#F4C8A4"],
+  [2,4,"#F4C8A4"],[3,4,"#F4C8A4"],
+  [3,5,"#F4C8A4"],
+  [3,6,"#F4C8A4"],
+];
+
+export function PixelMuscleIcon({ size = 24 }: { size?: number }) {
+  return <PixelGrid pixels={MUSCLE_PIXELS} gridW={7} gridH={7} size={size} label="肩もみ" />;
+}

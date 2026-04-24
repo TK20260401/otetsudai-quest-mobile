@@ -1,3 +1,23 @@
+import type React from "react";
+import {
+  PixelBathIcon,
+  PixelPlateIcon,
+  PixelLaundryIcon,
+  PixelBroomIcon,
+  PixelTrashIcon,
+  PixelDoorIcon,
+  PixelShoesIcon,
+  PixelTeddyIcon,
+  PixelWindowIcon,
+  PixelPotIcon,
+  PixelDogIcon,
+  PixelBookIcon,
+  PixelCookingPanIcon,
+  PixelToothbrushIcon,
+  PixelBedIcon,
+  PixelMuscleIcon,
+} from "../components/PixelIcons";
+
 /**
  * プリセットクエスト定義
  *
@@ -7,6 +27,10 @@
  *
  * 採用基準・根拠:
  *   → docs/kairosoft-quest-naming.md §採用決定版
+ *
+ * アイコン方針:
+ *   プラットフォーム依存の絵文字を避け、PixelIcons.tsx の SVG ピクセルアイコンで
+ *   視覚を統一する。
  *
  * 運用方針:
  *   Phase 1: このハードコード定数を使用（即動く）
@@ -26,7 +50,7 @@ export type PresetQuestCategory =
 
 export type PresetQuest = {
   id: string;
-  emoji: string;
+  icon: React.ComponentType<{ size?: number }>;
   mainTitle: string;     // 例: 泡モンスター 討伐作戦
   subLabel: string;      // 例: おふろ そうじ
   category: PresetQuestCategory;
@@ -37,7 +61,7 @@ export type PresetQuest = {
 export const PRESET_QUESTS: PresetQuest[] = [
   {
     id: "bath_cleaning",
-    emoji: "🛁",
+    icon: PixelBathIcon,
     mainTitle: "泡モンスター 討伐作戦",
     subLabel: "おふろ そうじ",
     category: "cleaning",
@@ -46,7 +70,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "dish_washing",
-    emoji: "🍽",
+    icon: PixelPlateIcon,
     mainTitle: "油汚れドラゴン 討伐作戦",
     subLabel: "しょっき あらい",
     category: "kitchen",
@@ -55,7 +79,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "laundry_folding",
-    emoji: "🧺",
+    icon: PixelLaundryIcon,
     mainTitle: "衣類王国 平定計画",
     subLabel: "せんたくもの たたみ",
     category: "cleaning",
@@ -64,7 +88,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "vacuuming",
-    emoji: "🧹",
+    icon: PixelBroomIcon,
     mainTitle: "サイクロン発動 大作戦",
     subLabel: "そうじき かけ",
     category: "cleaning",
@@ -73,7 +97,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "trash_out",
-    emoji: "🗑",
+    icon: PixelTrashIcon,
     mainTitle: "ゴミの魔物 排除任務",
     subLabel: "ゴミを だす",
     category: "errands",
@@ -82,7 +106,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "entrance_cleaning",
-    emoji: "🚪",
+    icon: PixelDoorIcon,
     mainTitle: "開運の門 磨き上げ任務",
     subLabel: "げんかん みがき",
     category: "cleaning",
@@ -91,7 +115,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "shoe_arrangement",
-    emoji: "👟",
+    icon: PixelShoesIcon,
     mainTitle: "靴の騎士団 整列任務",
     subLabel: "くつ ならべ",
     category: "cleaning",
@@ -100,7 +124,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "tidying",
-    emoji: "🧸",
+    icon: PixelTeddyIcon,
     mainTitle: "部屋の魔王 討伐作戦",
     subLabel: "かたづけ",
     category: "cleaning",
@@ -109,7 +133,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "window_wiping",
-    emoji: "🪟",
+    icon: PixelWindowIcon,
     mainTitle: "ガラスの結界 磨き上げ作戦",
     subLabel: "まど ふき",
     category: "cleaning",
@@ -118,7 +142,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "watering_plants",
-    emoji: "🪴",
+    icon: PixelPotIcon,
     mainTitle: "植物王国 守護任務",
     subLabel: "みず やり",
     category: "family_care",
@@ -127,7 +151,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "dog_walk",
-    emoji: "🐶",
+    icon: PixelDogIcon,
     mainTitle: "相棒勇者 巡回作戦",
     subLabel: "いぬの さんぽ",
     category: "family_care",
@@ -136,7 +160,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "homework",
-    emoji: "📚",
+    icon: PixelBookIcon,
     mainTitle: "知識の結晶 収集作戦",
     subLabel: "しゅくだい",
     category: "self_growth",
@@ -145,7 +169,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "cooking_help",
-    emoji: "🍳",
+    icon: PixelCookingPanIcon,
     mainTitle: "料理勇者 見習い任務",
     subLabel: "りょうり てつだい",
     category: "kitchen",
@@ -154,7 +178,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "tooth_brushing",
-    emoji: "🦷",
+    icon: PixelToothbrushIcon,
     mainTitle: "虫歯モンスター 撃退作戦",
     subLabel: "はみがき",
     category: "self_care",
@@ -163,7 +187,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "futon_folding",
-    emoji: "🛏",
+    icon: PixelBedIcon,
     mainTitle: "ふとん勇者 朝の作戦",
     subLabel: "ふとん たたみ",
     category: "self_care",
@@ -172,7 +196,7 @@ export const PRESET_QUESTS: PresetQuest[] = [
   },
   {
     id: "shoulder_massage",
-    emoji: "💪",
+    icon: PixelMuscleIcon,
     mainTitle: "肩こり モンスター撃退",
     subLabel: "かた もみ",
     category: "family_care",

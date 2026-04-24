@@ -12,6 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../theme";
 import { RubyText } from "./Ruby";
+import { PixelPencilIcon } from "./PixelIcons";
 import { PRESET_QUESTS, type PresetQuest } from "../data/presetQuests";
 
 type Props = {
@@ -75,26 +76,31 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
             contentContainerStyle={{ paddingBottom: 8 }}
             showsVerticalScrollIndicator
           >
-            {PRESET_QUESTS.map((q) => (
-              <TouchableOpacity
-                key={q.id}
-                style={styles.item}
-                onPress={() => handleSelect(q)}
-                accessibilityLabel={`${q.mainTitle}。${q.subLabel}`}
-                accessibilityRole="button"
-              >
-                <Text style={styles.emoji}>{q.emoji}</Text>
-                <View style={styles.itemText}>
-                  <Text style={styles.mainTitle} numberOfLines={1}>
-                    {q.mainTitle}
-                  </Text>
-                  <Text style={styles.subLabel} numberOfLines={1}>
-                    {q.subLabel}
-                  </Text>
-                </View>
-                <Text style={styles.reward}>¥{q.suggestedReward}</Text>
-              </TouchableOpacity>
-            ))}
+            {PRESET_QUESTS.map((q) => {
+              const Icon = q.icon;
+              return (
+                <TouchableOpacity
+                  key={q.id}
+                  style={styles.item}
+                  onPress={() => handleSelect(q)}
+                  accessibilityLabel={`${q.mainTitle}。${q.subLabel}`}
+                  accessibilityRole="button"
+                >
+                  <View style={styles.iconWrap}>
+                    <Icon size={28} />
+                  </View>
+                  <View style={styles.itemText}>
+                    <Text style={styles.mainTitle} numberOfLines={1}>
+                      {q.mainTitle}
+                    </Text>
+                    <Text style={styles.subLabel} numberOfLines={1}>
+                      {q.subLabel}
+                    </Text>
+                  </View>
+                  <Text style={styles.reward}>¥{q.suggestedReward}</Text>
+                </TouchableOpacity>
+              );
+            })}
 
             {/* その他 — 空フォームでオリジナル作成へ */}
             <TouchableOpacity
@@ -103,7 +109,9 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
               accessibilityLabel="その他。じぶんで かんがえて オリジナルクエストを つくる"
               accessibilityRole="button"
             >
-              <Text style={styles.emoji}>✏️</Text>
+              <View style={styles.iconWrap}>
+                <PixelPencilIcon size={24} />
+              </View>
               <View style={styles.itemText}>
                 <Text style={[styles.mainTitle, styles.customMainTitle]} numberOfLines={1}>
                   その他
@@ -178,8 +186,10 @@ function createStyles(p: ReturnType<typeof useTheme>["palette"]) {
       marginBottom: 8,
       minHeight: 56,
     },
-    emoji: {
-      fontSize: 28,
+    iconWrap: {
+      width: 32,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
     },
     itemText: {
       flex: 1,
