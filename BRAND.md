@@ -108,6 +108,59 @@
 - モバイル版README: `./README.md`
 - テーマ定義: `./src/theme/palettes.ts`
 - ルビコンポーネント: `./src/components/Ruby.tsx`
+- アクセシビリティ統括: `./src/accessibility/AccessibilityContext.tsx`
+
+---
+
+## 9.5 アクセシビリティ方針
+
+### 3層設計
+
+| 層 | 担当 | Job Sagaでの扱い |
+|----|------|------------------|
+| OS標準 | VoiceOver／TalkBack／Switch Control／ズーム／拡大鏡 | 委譲する。アプリ側は`accessibilityLabel`等の属性を正しく付与してサポート |
+| アプリ独自 | 子供が自分で切替える一次アクセシビリティ | 3トグル実装（ルビ／白黒／フォントサイズ） |
+| 属性サポート | `accessibilityLabel`／`accessibilityRole`／`accessibilityState`／`hitSlop` | 全TouchableOpacity／Pressableで付与を目指す |
+
+### アプリ独自3トグル（右上フローティング）
+
+| トグル | 値 | 実装参照 | 備考 |
+|--------|-----|----------|------|
+| ルビ | ON／OFF | `useAccessibility().rubyVisible` | 独自機能。OS非対応のため必須 |
+| 白黒モード | ON／OFF | `useAccessibility().monochrome` | paletteを輝度保持グレースケール化（`toGrayscalePalette`） |
+| 文字サイズ | 小（0.9）／中（1.0）／大（1.2）／特大（1.4） | `useAccessibility().fontScale`および`fontScaleValue` | Ruby系コンポーネントおよび`useScaledFont()`経由の箇所に適用 |
+
+設定は`AsyncStorage`キー`accessibility_settings`にJSON形式で永続化。
+旧キー`ruby_visible`は起動時に自動移行。
+
+### Dynamic Type連携
+
+`applyGlobalTextScaling()`を起動時に1回呼び、全`Text`／`TextInput`の
+デフォルトに`allowFontScaling: true`と`maxFontSizeMultiplier: 1.3`を適用。
+OSのフォントサイズ設定とアプリのfontScaleは乗算的に重なるが、OS側×アプリ側の
+上限は1.3でクリップしレイアウト崩れを抑止する。
+
+### タッチターゲット
+
+- 最小44pt×44pt（iOS HIG／WCAG 2.5.5 Level AAA準拠）
+- `hitSlop`で見た目を変えずに当たり判定を拡大
+
+### ルール（必須）
+
+1. 全テキストは漢字＋ルビ必須。平仮名だけのテキストは禁止（低学年に読める最低品質ライン）
+2. 色だけで意味を伝えない。白黒モードで破綻しないよう、常にアイコン／ラベル／位置を併用
+3. ダークモード×白黒×特大の3同時ONでもレイアウトを維持
+
+### フォローアップ（未完了の監査項目）
+
+以下の画面・コンポーネントは`accessibilityLabel`が未整備。今後のブラッシュアップで対応する。
+
+- `src/screens/AdminScreen.tsx`（管理者画面。社内向けのため優先度低）
+- `src/screens/onboarding/*.tsx`（オンボーディング系）
+- `src/components/EggDropAnimation.tsx`（装飾アニメーション）
+- `src/components/TapFeedback.tsx`（タップエフェクト。装飾のためlabel不要の可能性）
+- `src/components/CoinKunChat.tsx`（一部ボタン未対応）
+- `src/components/RewardSequence.tsx`（アニメーション画面）
 
 ---
 
