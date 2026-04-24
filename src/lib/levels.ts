@@ -22,7 +22,7 @@ export const LEVELS: Level[] = [
     level: 1, title: "[駆|か]け[出|だ]し[冒険者|ぼうけんしゃ]", icon: "🗡️", minAmount: 0,
     character: "👶",
     appearance: "[布|ぬの]の[服|ふく]",
-    greeting: "[冒険|ぼうけん]、[始|はじ]めるよ！",
+    greeting: "[冒険者|ぼうけんしゃ]の[強|つよ]さ",
     greetingActive: "やったー！クエスト[楽|たの]しい！",
     greetingLonely: "いっしょに [冒険|ぼうけん] しようよ〜",
   },

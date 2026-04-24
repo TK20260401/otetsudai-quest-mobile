@@ -27,7 +27,6 @@ import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings, FamilyMessage, FamilyChallenge } from "../lib/types";
 import { useAppAlert } from "../components/AppAlert";
 import FamilyStampSendModal from "../components/FamilyStampSendModal";
-import { RubyText, AutoRubyText } from "../components/Ruby";
 import FamilyMessageCard from "../components/FamilyMessageCard";
 import MonthlyReport from "../components/MonthlyReport";
 import FamilyAdventureMap from "../components/FamilyAdventureMap";
@@ -626,12 +625,7 @@ export default function ParentDashboardScreen({
       <View style={styles.center}>
         <PixelFamilyIcon size={48} />
         <ActivityIndicator size="large" color={palette.primary} />
-        <RubyText
-          style={styles.loadingText}
-          parts={[["読", "よ"], "み", ["込", "こ"], "み", ["中", "ちゅう"], "..."]}
-          rubySize={5}
-          noWrap
-        />
+        <Text style={styles.loadingText}>読み込み中...</Text>
       </View>
     );
   }
@@ -657,12 +651,12 @@ export default function ParentDashboardScreen({
       <View style={styles.screenTitleBar} accessibilityRole="header">
         <View style={styles.screenTitleAccent} />
         <View style={{ flex: 1 }}>
-          <AutoRubyText style={styles.screenTitleText} text={tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "冒険団メンバー"} rubySize={5} noWrap />
-          <AutoRubyText style={styles.screenTitleSub} text={tab === "approve"
+          <Text style={styles.screenTitleText}>{tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "冒険団メンバー"}</Text>
+          <Text style={styles.screenTitleSub}>{tab === "approve"
               ? "子どものクエストを確認・承認する"
               : tab === "tasks"
               ? "クエストの追加・編集・割当"
-              : "子どもと冒険団メンバーの管理"} rubySize={4} noWrap />
+              : "子どもと冒険団メンバーの管理"}</Text>
         </View>
         {tab === "approve" && pendingCount > 0 ? (
           <View style={styles.screenTitleBadge}>
@@ -681,7 +675,7 @@ export default function ParentDashboardScreen({
           accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
           <View style={styles.headerBadgeRow}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><AutoRubyText style={tab === "approve" ? styles.tabTextActive : styles.tabText} text="承認" rubySize={5} noWrap /></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><Text style={tab === "approve" ? styles.tabTextActive : styles.tabText}>承認</Text></View>
             {pendingCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{pendingCount}</Text>
@@ -696,7 +690,7 @@ export default function ParentDashboardScreen({
           accessibilityState={{ selected: tab === "tasks" }}
           accessibilityLabel="クエストタブ"
         >
-          <AutoRubyText style={[styles.tabText, tab === "tasks" && styles.tabTextActive]} text="クエスト" rubySize={5} noWrap />
+          <Text style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}>クエスト</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, tab === "children" && styles.tabActive]}
@@ -705,7 +699,7 @@ export default function ParentDashboardScreen({
           accessibilityState={{ selected: tab === "children" }}
           accessibilityLabel="こどもタブ"
         >
-          <RubyText style={[styles.tabText, tab === "children" && styles.tabTextActive]} parts={[["子", "こ"], "ども"]} rubySize={5} noWrap />
+          <Text style={[styles.tabText, tab === "children" && styles.tabTextActive]}>子ども</Text>
         </TouchableOpacity>
       </View>
 
