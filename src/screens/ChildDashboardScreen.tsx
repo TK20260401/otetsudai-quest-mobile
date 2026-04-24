@@ -1124,7 +1124,7 @@ export default function ChildDashboardScreen({
                           <TaskIconSvg title={task.title} size={28} />
                         </View>
                         <View style={styles.questDetails}>
-                          <AutoRubyText text={task.title} style={styles.specialQuestTitle} rubySize={7} />
+                          <AutoRubyText text={task.title} style={styles.specialQuestTitle} rubySize={7} noWrap />
                           <View style={styles.rewardRow}>
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
@@ -1188,7 +1188,7 @@ export default function ChildDashboardScreen({
                           <TaskIconSvg title={task.title} size={28} />
                         </View>
                         <View style={styles.questDetails}>
-                          <AutoRubyText text={task.title} style={styles.questTitle} rubySize={7} />
+                          <AutoRubyText text={task.title} style={styles.questTitle} rubySize={7} noWrap />
                           <View style={styles.rewardRow}>
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
@@ -2203,10 +2203,10 @@ function createStyles(p: Palette) {
     borderRadius: 6,
   },
   specialQuestTitle: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "bold" as const,
     color: p.textStrong,
-    lineHeight: 26,
+    lineHeight: 20,
   },
   specialQuestReward: {
     fontSize: 14,
@@ -2238,7 +2238,7 @@ function createStyles(p: Palette) {
   questInfo: { flexDirection: "row", alignItems: "center", flex: 1 },
   questIcon: { width: 32, marginRight: 10, alignItems: "center" as const, justifyContent: "center" as const },
   questDetails: { flex: 1 },
-  questTitle: { fontSize: 15, fontWeight: "bold", color: p.textStrong, lineHeight: 24 },
+  questTitle: { fontSize: 13, fontWeight: "bold", color: p.textStrong, lineHeight: 20 },
   rewardRow: {
     flexDirection: "row" as const,
     alignItems: "center" as const,

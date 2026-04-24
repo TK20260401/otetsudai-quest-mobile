@@ -90,7 +90,7 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
                     <Icon size={28} />
                   </View>
                   <View style={styles.itemText}>
-                    <Text style={styles.mainTitle} numberOfLines={1}>
+                    <Text style={styles.mainTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                       {q.mainTitle}
                     </Text>
                     <Text style={styles.subLabel} numberOfLines={1}>
@@ -113,7 +113,7 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
                 <PixelPencilIcon size={24} />
               </View>
               <View style={styles.itemText}>
-                <Text style={[styles.mainTitle, styles.customMainTitle]} numberOfLines={1}>
+                <Text style={[styles.mainTitle, styles.customMainTitle]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                   その他
                 </Text>
                 <Text style={styles.subLabel} numberOfLines={1}>
