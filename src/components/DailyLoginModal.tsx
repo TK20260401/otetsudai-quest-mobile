@@ -71,8 +71,13 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose}>
-        <Pressable style={styles.card} onPress={(e) => e.stopPropagation()}>
+      <Pressable
+        style={styles.backdrop}
+        onPress={onClose}
+        accessibilityLabel="ログインボーナスを閉じる"
+        accessibilityRole="button"
+      >
+        <Pressable style={styles.card} onPress={(e) => e.stopPropagation()} accessibilityRole="none">
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
             <PixelGiftIcon size={18} />
             <Text style={styles.title}>ログインボーナス</Text>

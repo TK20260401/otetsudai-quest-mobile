@@ -108,7 +108,12 @@ export default function ShopModal({
             <PixelShopIcon size={20} />
             <Text style={styles.headerTitle}>ショップ</Text>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+          <TouchableOpacity
+            onPress={onClose}
+            style={styles.closeBtn}
+            accessibilityLabel="ショップを閉じる"
+            accessibilityRole="button"
+          >
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
         </View>
@@ -147,6 +152,8 @@ export default function ShopModal({
                   onPress={handleUnequip}
                   disabled={busy === "unequip"}
                   style={styles.unequipBtn}
+                  accessibilityLabel="称号を外す"
+                  accessibilityRole="button"
                 >
                   <Text style={styles.unequipText}>しょうごうを はずす</Text>
                 </TouchableOpacity>

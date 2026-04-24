@@ -189,7 +189,12 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
 
           {/* 閉じるボタン */}
           <Animated.View style={{ opacity: textFade, width: "100%" }}>
-            <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={onClose}
+              accessibilityLabel="やったー。レベルアップを閉じる"
+              accessibilityRole="button"
+            >
               <Text style={styles.closeText}>やったー！</Text>
             </TouchableOpacity>
           </Animated.View>

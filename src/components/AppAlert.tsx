@@ -101,6 +101,8 @@ export function AppAlertProvider({ children }: { children: React.ReactNode }) {
                       state.buttons.length === 1 && styles.buttonFull,
                     ]}
                     onPress={() => handlePress(btn)}
+                    accessibilityLabel={btn.text}
+                    accessibilityRole="button"
                   >
                     <Text
                       style={[

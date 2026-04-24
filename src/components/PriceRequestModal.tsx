@@ -150,7 +150,12 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
             />
 
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={onClose}
+                accessibilityLabel="やめる"
+                accessibilityRole="button"
+              >
                 <RubyText
                   style={styles.cancelText}
                   parts={[["止", "や"], "める"]}
@@ -162,6 +167,8 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
                 style={[styles.sendButton, sending && { opacity: 0.5 }]}
                 onPress={handleSend}
                 disabled={sending}
+                accessibilityLabel={sending ? "送信中" : "リクエストを送る"}
+                accessibilityRole="button"
               >
                 {sending ? (
                   <RubyText

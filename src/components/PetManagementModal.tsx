@@ -85,7 +85,12 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
             <PixelPawIcon size={18} />
             <Text style={styles.headerTitle}>ペットずかん</Text>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+          <TouchableOpacity
+            onPress={onClose}
+            style={styles.closeBtn}
+            accessibilityLabel="ペットずかんを閉じる"
+            accessibilityRole="button"
+          >
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
         </View>
@@ -148,6 +153,8 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                           <TouchableOpacity
                             onPress={() => handleSaveName(pet.id)}
                             style={styles.okBtn}
+                            accessibilityLabel="ペットの名前を保存"
+                            accessibilityRole="button"
                           >
                             <Text style={styles.okText}>OK</Text>
                           </TouchableOpacity>
@@ -158,6 +165,8 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                             setEditingId(pet.id);
                             setNameDraft(pet.name || "");
                           }}
+                          accessibilityLabel={`${pet.name || "なまえを つけよう"} ペットの名前を編集`}
+                          accessibilityRole="button"
                         >
                           <Text style={styles.petName}>
                             {pet.name || "なまえを つけよう ✏️"}

@@ -62,7 +62,12 @@ export default function TrophyCaseModal({ visible, onClose, childId }: Props) {
             <PixelTrophyIcon size={20} />
             <Text style={styles.headerTitle}>トロフィーケース</Text>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+          <TouchableOpacity
+            onPress={onClose}
+            style={styles.closeBtn}
+            accessibilityLabel="トロフィーケースを閉じる"
+            accessibilityRole="button"
+          >
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
         </View>

@@ -157,6 +157,9 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
                 onPress={() =>
                   setSelectedStamp(selectedStamp === s.id ? null : s.id)
                 }
+                accessibilityLabel={`スタンプ ${s.label}`}
+                accessibilityRole="button"
+                accessibilityState={{ selected: selectedStamp === s.id }}
               >
                 <View style={styles.stampSvgWrap}>
                   <StampSvg id={s.id} size={28} />
@@ -192,6 +195,8 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
             onPress={handleSend}
             disabled={!canSend || sending}
+            accessibilityLabel={sending ? "送信中" : "親にメッセージを送る"}
+            accessibilityRole="button"
           >
             {sending ? (
               <Text style={styles.sendText}>おくりちゅう...</Text>
@@ -208,7 +213,12 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
           </Text>
 
           {onSkip && (
-            <TouchableOpacity style={styles.skipButton} onPress={onSkip}>
+            <TouchableOpacity
+              style={styles.skipButton}
+              onPress={onSkip}
+              accessibilityLabel="あとで返事する"
+              accessibilityRole="button"
+            >
               <Text style={styles.skipText}>あとで へんじする</Text>
             </TouchableOpacity>
           )}
