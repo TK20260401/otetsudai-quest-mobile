@@ -460,14 +460,17 @@ export default function InvestScreen({
           >
             <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
               <TouchableOpacity
-                onPress={() => setOrderVisible(false)}
+                onPress={() => {
+                  setOrderVisible(false);
+                  navigation.goBack();
+                }}
                 style={styles.backButton}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                accessibilityLabel="閉じる"
+                accessibilityLabel="ギルドへ戻る"
                 accessibilityRole="button"
               >
                 <PixelHouseIcon size={14} />
-                <Text style={styles.backText}>ショップを でる</Text>
+                <Text style={styles.backText}>ギルドへ戻る</Text>
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
                 <PixelSeedlingIcon size={18} />
