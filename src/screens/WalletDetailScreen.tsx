@@ -140,10 +140,10 @@ export default function WalletDetailScreen({
 
   const filterTabs: { label: string; value: string; parts: (string | [string, string])[]; navigate?: string }[] = [
     { label: "全部", value: "all", parts: [["全部", "ぜんぶ"]] },
-    { label: "クエスト", value: "earn", parts: ["クエスト"], navigate: "ChildDashboard" },
-    { label: "ショップ", value: "spend", parts: ["ショップ"], navigate: "SpendRequest" },
-    { label: "ストック", value: "save", parts: ["ストック"] },
-    { label: "冒険", value: "invest", parts: [["冒険", "ぼうけん"]], navigate: "Invest" },
+    { label: "・クエスト", value: "earn", parts: ["・クエスト"], navigate: "ChildDashboard" },
+    { label: "・ショップ", value: "spend", parts: ["・ショップ"], navigate: "SpendRequest" },
+    { label: "・ストック", value: "save", parts: ["・ストック"] },
+    { label: "・冒険", value: "invest", parts: ["・", ["冒険", "ぼうけん"]], navigate: "Invest" },
   ];
 
   function TxTypeIcon({ type }: { type: string }) {
@@ -356,12 +356,12 @@ export default function WalletDetailScreen({
                 spendingBalance: wallet?.spending_balance ?? 0,
               })
             }
-            accessibilityLabel="ショップリクエストを おくる"
+            accessibilityLabel="オーダーを おくる"
             activeOpacity={0.8}
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCartIcon size={18} />
-              <RubyText parts={[["買", "か"], "いたい！"]} style={styles.spendRequestButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
+              <RubyText parts={["オーダー！"]} style={styles.spendRequestButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -388,7 +388,7 @@ export default function WalletDetailScreen({
           <View style={styles.section}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCartIcon size={18} />
-              <AutoRubyText text="ショップリクエスト" style={styles.sectionTitle} rubySize={7} />
+              <AutoRubyText text="オーダーリクエスト" style={styles.sectionTitle} rubySize={7} />
             </View>
             {recentSpendRequests.map((req) => {
               if (req.status === "pending") {
@@ -568,15 +568,16 @@ export default function WalletDetailScreen({
                 }}
                 accessibilityLabel={tab.label}
               >
-                <RubyText
-                  parts={tab.parts}
+                <Text
                   style={[
                     styles.filterTabText,
                     filterType === tab.value && styles.filterTabTextActive,
                   ]}
-                  rubySize={5}
-                  noWrap
-                />
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
+                  {tab.label}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -898,11 +899,12 @@ function createStyles(p: Palette) {
       borderRadius: 10,
       padding: 3,
       marginBottom: 10,
+      justifyContent: "center",
+      gap: 2,
     },
     filterTab: {
-      flex: 1,
       minHeight: 44,
-      minWidth: 48,
+      paddingHorizontal: 8,
       borderRadius: 8,
       alignItems: "center",
       justifyContent: "center",
@@ -911,8 +913,10 @@ function createStyles(p: Palette) {
       backgroundColor: p.primary,
     },
     filterTabText: {
-      fontSize: 11,
+      fontSize: 8,
       color: p.textMuted,
+      letterSpacing: -0.5,
+      textAlign: "center" as const,
     },
     filterTabTextActive: {
       color: p.white,
