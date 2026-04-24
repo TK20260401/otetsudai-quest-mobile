@@ -172,11 +172,11 @@ export default function SpendRequestScreen({
             style={styles.backButton}
             onPress={() => navigation.goBack()}
             accessibilityRole="button"
-            accessibilityLabel="もどる"
+            accessibilityLabel="ギルドに戻る"
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <PixelHouseIcon size={18} />
-              <Text style={styles.backText}>もどる</Text>
+              <Text style={styles.backText}>ギルドに戻る</Text>
             </View>
           </TouchableOpacity>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>

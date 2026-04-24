@@ -193,9 +193,9 @@ export default function WalletDetailScreen({
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
-          accessibilityLabel="もどる"
+          accessibilityLabel="ギルドに戻る"
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelHouseIcon size={14} /><Text style={styles.backText}>もどる</Text></View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelHouseIcon size={14} /><Text style={styles.backText}>ギルドに戻る</Text></View>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
           <PixelCoinIcon size={22} />

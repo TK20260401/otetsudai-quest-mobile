@@ -292,7 +292,7 @@ export default function InvestScreen({
           accessibilityRole="button"
         >
           <PixelHouseIcon size={14} />
-          <Text style={styles.backText}>もどる</Text>
+          <Text style={styles.backText}>ギルドに戻る</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
           <PixelSeedlingIcon size={18} />
@@ -435,11 +435,11 @@ export default function InvestScreen({
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={styles.lockBackLink}
-                accessibilityLabel="もどる"
+                accessibilityLabel="ギルドに戻る"
                 accessibilityRole="button"
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
-                <Text style={styles.lockBackText}>もどる</Text>
+                <Text style={styles.lockBackText}>ギルドに戻る</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -467,7 +467,7 @@ export default function InvestScreen({
                 accessibilityRole="button"
               >
                 <PixelHouseIcon size={14} />
-                <Text style={styles.backText}>もどる</Text>
+                <Text style={styles.backText}>ショップを でる</Text>
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
                 <PixelSeedlingIcon size={18} />
