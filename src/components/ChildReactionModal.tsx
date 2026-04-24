@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
+import { useAppAlert } from "./AppAlert";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { CHILD_STAMPS } from "../lib/child-stamps";
@@ -38,6 +39,7 @@ type Props = {
 export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
+  const { alert } = useAppAlert();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null);
@@ -50,22 +52,34 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
   if (logs.length === 0) return null;
   const log = logs[currentIndex];
   const parentStampDef = log.parentStamp ? getStampById(log.parentStamp) : null;
-  const canSend = selectedStamp || message.trim().length > 0;
+  // スタンプ・メッセージ単体/併用いずれでも送信可
+  const canSend = Boolean(selectedStamp) || message.trim().length > 0;
 
   async function handleSend() {
-    if (!canSend) return;
+    if (!canSend || sending) return;
     setSending(true);
 
-    await supabase
+    const { error, data } = await supabase
       .from("otetsudai_task_logs")
       .update({
         child_reaction_stamp: selectedStamp,
         child_reaction_message: message.trim() || null,
         child_reaction_at: new Date().toISOString(),
       })
-      .eq("id", log.id);
+      .eq("id", log.id)
+      .select("id");
 
     setSending(false);
+
+    if (error) {
+      alert("送信できませんでした", `もう一度 試してね\n(${error.message})`);
+      return;
+    }
+    if (!data || data.length === 0) {
+      alert("送信できませんでした", "このメッセージには もう 返事しているかも");
+      return;
+    }
+
     setSelectedStamp(null);
     setMessage("");
 
