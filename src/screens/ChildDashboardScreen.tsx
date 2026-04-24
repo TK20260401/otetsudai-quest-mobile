@@ -1261,7 +1261,7 @@ export default function ChildDashboardScreen({
               accessibilityLabel="クエストをえらぶ。じぶんでできるクエストから"
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <Text style={{ fontSize: 18 }}>🎯</Text>
+                <PixelTargetIcon size={18} />
                 <RubyText style={styles.proposalButtonText} parts={["クエストを ", ["選", "えら"], "ぶ"]} rubySize={5} />
               </View>
               <Text style={styles.presetPickerSub}>じぶんで できる クエストから</Text>
