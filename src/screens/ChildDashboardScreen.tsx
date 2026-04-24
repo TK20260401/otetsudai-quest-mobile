@@ -845,11 +845,11 @@ export default function ChildDashboardScreen({
             {/* セリフ吹き出し */}
             <View style={styles.speechBubble}>
               <RubyStr
-                text={`「${mood === "active"
+                text={`【${mood === "active"
                   ? levelInfo.current.greetingActive
                   : mood === "lonely"
                     ? levelInfo.current.greetingLonely
-                    : levelInfo.current.greeting}」`}
+                    : levelInfo.current.greeting}】`}
                 style={styles.speechText}
                 rubySize={6}
               />
@@ -1255,9 +1255,9 @@ export default function ChildDashboardScreen({
             <AnimatedButton
               style={styles.proposalButton}
               onPress={() => setProposalVisible(true)}
-              accessibilityLabel="MYクエストを出す"
+              accessibilityLabel="クエストデプロイ"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["MYクエストを", ["出", "だ"], "す"]} rubySize={5} /></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["クエストデプロイ"]} rubySize={5} /></View>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1533,7 +1533,7 @@ export default function ChildDashboardScreen({
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={["MYクエストを", ["出", "だ"], "す"]} rubySize={6} /></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={["クエストデプロイ"]} rubySize={6} /></View>
             <RubyText style={[styles.proposalModalSub, { marginBottom: 0 }]} parts={["冒険団マスターに"]} rubySize={5} />
             <RubyText style={styles.proposalModalSub} parts={[["新", "あたら"], "しいクエストを", ["出", "だ"], "そう！"]} rubySize={5} />
 
