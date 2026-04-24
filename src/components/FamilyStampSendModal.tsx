@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from "react";
+import React, { useRef, useState, useMemo, useEffect } from "react";
 import {
   View,
   Text,
@@ -54,6 +54,14 @@ export default function FamilyStampSendModal({
     () => familyMembers.filter((m) => m.id !== senderId),
     [familyMembers, senderId]
   );
+
+  // 送り先が1人だけなら選択UIを出さずに自動選択。
+  // 2人以上いる時のみ「団員を選ぶ」セクションを表示する。
+  useEffect(() => {
+    if (recipients.length === 1 && selectedRecipient !== recipients[0].id) {
+      setSelectedRecipient(recipients[0].id);
+    }
+  }, [recipients, selectedRecipient]);
 
   const canSend = selectedRecipient && (selectedStamp || message.trim().length > 0);
 
@@ -117,37 +125,42 @@ export default function FamilyStampSendModal({
                 </TouchableOpacity>
               </View>
 
-              {/* 送り先選択 */}
-              <RubyText style={styles.sectionLabel} parts={[["団員", "だんいん"], "を", ["選", "えら"], "ぶ"]} rubySize={5} />
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.recipientRow}
-              >
-                {recipients.map((m) => (
-                  <TouchableOpacity
-                    key={m.id}
-                    style={[
-                      styles.recipientItem,
-                      selectedRecipient === m.id && styles.recipientItemSelected,
-                    ]}
-                    onPress={() => setSelectedRecipient(m.id)}
-                    accessibilityLabel={`${m.name}に おくる`}
-                    accessibilityRole="button"
+              {/* 送り先選択: 候補が2人以上いる時のみ表示。
+                  1人だけの時は useEffect で自動選択済み。 */}
+              {recipients.length >= 2 && (
+                <>
+                  <RubyText style={styles.sectionLabel} parts={[["団員", "だんいん"], "を", ["選", "えら"], "ぶ"]} rubySize={5} />
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.recipientRow}
                   >
-                    <Text style={styles.recipientIcon}>{m.icon}</Text>
-                    <Text
-                      style={[
-                        styles.recipientName,
-                        selectedRecipient === m.id && styles.recipientNameSelected,
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {m.name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+                    {recipients.map((m) => (
+                      <TouchableOpacity
+                        key={m.id}
+                        style={[
+                          styles.recipientItem,
+                          selectedRecipient === m.id && styles.recipientItemSelected,
+                        ]}
+                        onPress={() => setSelectedRecipient(m.id)}
+                        accessibilityLabel={`${m.name}に おくる`}
+                        accessibilityRole="button"
+                      >
+                        <Text style={styles.recipientIcon}>{m.icon}</Text>
+                        <Text
+                          style={[
+                            styles.recipientName,
+                            selectedRecipient === m.id && styles.recipientNameSelected,
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {m.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                </>
+              )}
 
               {/* スタンプ選択 */}
               <RubyText style={styles.sectionLabel} parts={[["団員", "だんいん"], "にスタンプ"]} rubySize={5} />
