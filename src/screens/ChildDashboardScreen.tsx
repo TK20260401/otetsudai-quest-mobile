@@ -43,6 +43,8 @@ import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
+import PresetQuestModal from "../components/PresetQuestModal";
+import type { PresetQuest } from "../data/presetQuests";
 import RubyPlaceholderInput from "../components/RubyPlaceholderInput";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
@@ -124,6 +126,7 @@ export default function ChildDashboardScreen({
   const [unlockedBadge, setUnlockedBadge] = useState<{ emoji: string; label: string; description: string } | null>(null);
   // MYクエスト提案
   const [proposalVisible, setProposalVisible] = useState(false);
+  const [presetPickerVisible, setPresetPickerVisible] = useState(false);
   const [proposalTitle, setProposalTitle] = useState("");
   const [proposalReason, setProposalReason] = useState("");
   const [proposalReward, setProposalReward] = useState("");
@@ -1251,13 +1254,27 @@ export default function ChildDashboardScreen({
               </View>
             )}
 
-            {/* MYクエスト提案 */}
+            {/* クエストを えらぶ（プリセットから選択） */}
+            <AnimatedButton
+              style={styles.presetPickerButton}
+              onPress={() => setPresetPickerVisible(true)}
+              accessibilityLabel="クエストをえらぶ。じぶんでできるクエストから"
+            >
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <Text style={{ fontSize: 18 }}>🎯</Text>
+                <RubyText style={styles.proposalButtonText} parts={["クエストを ", ["選", "えら"], "ぶ"]} rubySize={5} />
+              </View>
+              <Text style={styles.presetPickerSub}>じぶんで できる クエストから</Text>
+            </AnimatedButton>
+
+            {/* MYクエスト提案（カスタム作成） */}
             <AnimatedButton
               style={styles.proposalButton}
               onPress={() => setProposalVisible(true)}
-              accessibilityLabel="クエストデプロイ"
+              accessibilityLabel="クエストデプロイ。オリジナルクエストをつくる"
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["クエストデプロイ"]} rubySize={5} /></View>
+              <Text style={styles.presetPickerSub}>オリジナル クエストを つくる</Text>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1522,6 +1539,18 @@ export default function ChildDashboardScreen({
 
       {/* コインくん AIチャット */}
       <CoinKunChat role="child" />
+
+      {/* プリセットクエスト選択モーダル */}
+      <PresetQuestModal
+        visible={presetPickerVisible}
+        onClose={() => setPresetPickerVisible(false)}
+        onSelect={(q: PresetQuest) => {
+          setProposalTitle(q.mainTitle);
+          setProposalReason(q.defaultReason);
+          setProposalReward(String(q.suggestedReward));
+          setProposalVisible(true);
+        }}
+      />
 
       {/* MYクエスト提案モーダル */}
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
@@ -2409,6 +2438,26 @@ function createStyles(p: Palette) {
   weeklyStatValue: { fontSize: rf(24), fontWeight: "bold", color: p.accent } as const,
   weeklyStatLabel: { fontSize: rf(11), color: p.textMuted },
   bottomSpacer: { height: 40 },
+
+  // プリセット選択（クエストを えらぶ）
+  presetPickerButton: {
+    marginHorizontal: 12,
+    marginTop: 12,
+    marginBottom: 0,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: p.accentLight,
+    borderWidth: 1,
+    borderColor: p.accent,
+    alignItems: "center" as const,
+    minHeight: 48,
+    justifyContent: "center" as const,
+  },
+  presetPickerSub: {
+    fontSize: 11,
+    color: p.textMuted,
+    marginTop: 2,
+  },
 
   // MYクエスト提案
   proposalButton: {
