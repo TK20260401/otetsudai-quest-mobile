@@ -1641,14 +1641,12 @@ export default function ChildDashboardScreen({
                     style={styles.proposalSubmitText}
                     parts={[["送信", "そうしん"], ["中", "ちゅう"], "..."]}
                     rubySize={4}
-                    noWrap
                   />
                 ) : (
                   <RubyText
                     style={styles.proposalSubmitText}
                     parts={["クエストを", ["出", "だ"], "す！"]}
                     rubySize={4}
-                    noWrap
                   />
                 )}
               </AnimatedButton>
