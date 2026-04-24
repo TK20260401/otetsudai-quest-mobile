@@ -37,9 +37,9 @@ type Portfolio = {
 const SYNC_COOLDOWN_MS = 5 * 60 * 1000;
 
 const CATEGORIES = [
-  { key: "index", label: "インデックス", desc: "初めての人におすすめ" },
-  { key: "jp_stock", label: "🇯🇵 日本", desc: "" },
-  { key: "us_stock", label: "🇺🇸 アメリカ", desc: "" },
+  { key: "index", label: "よくばり", desc: "初めての人におすすめ" },
+  { key: "jp_stock", label: "🇯🇵 サムライタウン", desc: "" },
+  { key: "us_stock", label: "🇺🇸 ロケットシティ", desc: "" },
 ] as const;
 
 export default function InvestScreen({
