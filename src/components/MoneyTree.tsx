@@ -34,10 +34,10 @@ export { getStage };
  * ふやすの木 — 投資残高に応じて成長するSVGツリー
  * Habitica風ピクセルアート的な温かみのあるデザイン
  *
- * Stage 1: たね (0-99円) — 土に埋まった金の種
- * Stage 2: ふたば (100-499円) — 双葉が生えた小さな芽
- * Stage 3: わかぎ (500-999円) — 葉が茂り始めた若木
- * Stage 4: たいぼく (1000円+) — 金の実がなる大木
+ * Stage 1: たね (0-99コロ) — 土に埋まった金の種
+ * Stage 2: ふたば (100-499コロ) — 双葉が生えた小さな芽
+ * Stage 3: わかぎ (500-999コロ) — 葉が茂り始めた若木
+ * Stage 4: たいぼく (1000コロ+) — 金の実がなる大木
  */
 export default function MoneyTree({ investBalance, size = 140, animated = false }: Props) {
   const { stage } = getStage(investBalance);

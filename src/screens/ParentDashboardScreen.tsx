@@ -487,7 +487,7 @@ export default function ParentDashboardScreen({
     }
     const newAmount = parseInt(taskForm.reward_amount) || 10;
     if (taskForm.is_special && newAmount < 50) {
-      alert("エラー", "★特別クエストの 報酬は 50円以上に してください");
+      alert("エラー", "★特別クエストの 報酬は 50コロ以上に してください");
       return;
     }
 
@@ -564,10 +564,10 @@ export default function ParentDashboardScreen({
       .update({
         reward_amount: task.proposed_reward,
         proposal_status: "approved",
-        price_change_comment: `報酬 ${task.reward_amount}→${task.proposed_reward}円にアップ！`,
+        price_change_comment: `報酬 ${task.reward_amount}→${task.proposed_reward}コロにアップ！`,
       })
       .eq("id", task.id);
-    alert("✅ 承認", `${task.title}の 報酬を ${task.proposed_reward}円に しました`);
+    alert("✅ 承認", `${task.title}の 報酬を ${task.proposed_reward}コロに しました`);
     await loadData();
   }
 
@@ -798,7 +798,7 @@ export default function ParentDashboardScreen({
                           <PixelPersonIcon size={12} />
                           <Text style={styles.approvalSub}>{(log.child as any)?.name} ・</Text>
                           <PixelCoinIcon size={12} />
-                          <Text style={styles.approvalSub}>{log.task?.reward_amount}円</Text>
+                          <Text style={styles.approvalSub}>{log.task?.reward_amount}コロ</Text>
                         </View>
                       </View>
                     </View>
@@ -833,7 +833,7 @@ export default function ParentDashboardScreen({
                         <Text style={styles.approvalTitle}>{req.purpose}</Text>
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                           <PixelPersonIcon size={12} />
-                          <Text style={styles.approvalSub}>{(req.child as any)?.name} ・ {req.amount}円</Text>
+                          <Text style={styles.approvalSub}>{(req.child as any)?.name} ・ {req.amount}コロ</Text>
                         </View>
                       </View>
                     </View>
@@ -869,7 +869,7 @@ export default function ParentDashboardScreen({
                       <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>{task.title}</Text>
                         <Text style={styles.approvalSub}>
-                          {task.reward_amount}円 → {task.proposed_reward}円
+                          {task.reward_amount}コロ → {task.proposed_reward}コロ
                         </Text>
                         {task.proposal_message && (
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{task.proposal_message}」</Text></View>
@@ -909,7 +909,7 @@ export default function ParentDashboardScreen({
                           <Text style={styles.approvalTitle}>{task.title}</Text>
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                             <PixelPersonIcon size={12} />
-                            <Text style={styles.approvalSub}>{child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}円</Text>
+                            <Text style={styles.approvalSub}>{child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}コロ</Text>
                           </View>
                           {task.proposal_message && (
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{task.proposal_message}」</Text></View>
@@ -965,7 +965,7 @@ export default function ParentDashboardScreen({
                             <PixelPersonIcon size={12} />
                             <Text style={styles.approvalSub}>{log.child?.name} ・</Text>
                             <PixelCoinIcon size={12} />
-                            <Text style={styles.approvalSub}>{log.task?.reward_amount}円</Text>
+                            <Text style={styles.approvalSub}>{log.task?.reward_amount}コロ</Text>
                           </View>
                           {childStamp && (
                             <Text style={styles.recentAmount}>
@@ -1037,6 +1037,16 @@ export default function ParentDashboardScreen({
               </View>
             )}
 
+            {/* 🪙 通貨ガイド（親向けFAQ） */}
+            <View style={styles.settingsPanel}>
+              <Text style={styles.settingsPanelTitle}>🪙 つうかガイド</Text>
+              <Text style={{ fontSize: 13, color: palette.textBase, lineHeight: 20, paddingHorizontal: 4, paddingVertical: 4 }}>
+                このアプリの通貨単位は「コロ」です。{"\n"}
+                <Text style={{ fontWeight: "bold", color: palette.textStrong }}>1コロ ＝ 1円</Text> として、お子様に実際のお金の感覚を学んでいただけます。{"\n\n"}
+                例：500コロ 貯めたら、500円分の価値があります。お駄賃として渡す金額をそのままコロで設定してください。
+              </Text>
+            </View>
+
             <View style={styles.actionRow}>
               <TouchableOpacity
                 style={[styles.addButton, { flex: 1, marginBottom: 0 }]}
@@ -1089,7 +1099,7 @@ export default function ParentDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                               <PixelCoinIcon size={12} />
                               <Text style={styles.taskSub}>
-                                {task.reward_amount}円
+                                {task.reward_amount}コロ
                                 {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
                               </Text>
                             </View>
@@ -1142,7 +1152,7 @@ export default function ParentDashboardScreen({
                           style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
                         >
                           <PixelCoinIcon size={12} />
-                          <Text style={styles.taskRewardTap}>{task.reward_amount}円</Text>
+                          <Text style={styles.taskRewardTap}>{task.reward_amount}コロ</Text>
                           <PixelPencilIcon size={11} />
                         </TouchableOpacity>
                         <Text style={styles.taskSub}>
@@ -1204,7 +1214,7 @@ export default function ParentDashboardScreen({
                     <Text style={styles.childName}>{child.name}</Text>
                   </View>
                   <Text style={styles.childTotal}>
-                    {total.toLocaleString()}円
+                    {total.toLocaleString()}コロ
                   </Text>
                   {w && (
                     <View style={styles.walletRow}>
@@ -1325,7 +1335,7 @@ export default function ParentDashboardScreen({
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
                 <PixelCoinIcon size={18} />
-                <Text style={styles.modalReward}>{approvalTarget?.task?.reward_amount}円</Text>
+                <Text style={styles.modalReward}>{approvalTarget?.task?.reward_amount}コロ</Text>
               </View>
 
               {/* Stamps */}
@@ -1560,7 +1570,7 @@ export default function ParentDashboardScreen({
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelCoinIcon size={14} />
                 <Text style={styles.formLabel} adjustsFontSizeToFit numberOfLines={1}>
-                  報酬（円）{taskForm.is_special ? " ※50円〜" : ""}
+                  報酬（コロ）{taskForm.is_special ? " ※50コロ〜" : ""}
                 </Text>
               </View>
               <TextInput

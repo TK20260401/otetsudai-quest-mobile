@@ -99,7 +99,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
               />
               <RubyText
                 style={styles.currentAmount}
-                parts={[`${task.reward_amount}`, ["円", "えん"]]}
+                parts={[`${task.reward_amount}`, "コロ"]}
                 rubySize={5}
                 noWrap
               />
@@ -128,7 +128,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
               />
               <RubyText
                 style={styles.yen}
-                parts={[["円", "えん"]]}
+                parts={["コロ"]}
                 rubySize={5}
                 noWrap
               />

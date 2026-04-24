@@ -181,7 +181,7 @@ export default function FamilyChallengeCard({
           <PixelGiftIcon size={16} />
           <RubyText
             style={styles.bonusText}
-            parts={[["達成", "たっせい"], `ボーナス: みんなに ${challenge.bonus_amount}`, ["円", "えん"], "！"]}
+            parts={[["達成", "たっせい"], `ボーナス: みんなに ${challenge.bonus_amount}`, "コロ", "！"]}
             rubySize={5}
             noWrap
           />

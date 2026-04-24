@@ -16,8 +16,8 @@ export const BADGE_DEFINITIONS: Record<
   },
   earned_1000: {
     emoji: "💰",
-    label: "1000円達成",
-    description: "合わせて1000円稼いだよ！",
+    label: "1000コロ達成",
+    description: "合わせて1000コロ稼いだよ！",
   },
   saving_master: {
     emoji: "🐷",

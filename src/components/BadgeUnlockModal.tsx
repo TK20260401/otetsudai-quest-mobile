@@ -170,7 +170,7 @@ function PixelMedalFrame({ size = 140 }: { size?: number }) {
       {/* リボン */}
       <Path d="M50,110 L40,140 L55,125 L70,140 L70,110 Z" fill="url(#medalRibbon)" />
       <Path d="M90,110 L100,140 L85,125 L70,140 L70,110 Z" fill="url(#medalRibbon)" />
-      {/* 外円 */}
+      {/* 外コロ */}
       <Circle cx={70} cy={65} r={56} fill="url(#medalGold)" />
       {/* 内溝 */}
       <Circle cx={70} cy={65} r={50} fill="none" stroke="#B8860B" strokeWidth={2} />

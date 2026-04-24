@@ -225,7 +225,7 @@ export default function InvestScreen({
     }
     const amountNum = parseInt(amount);
     if (!amountNum || amountNum < 100) {
-      setOrderError("100コロ 以上 入力してね");
+      setOrderError("100円 以上 入力してね");
       return;
     }
     if (amountNum > investBalance) {
@@ -291,7 +291,7 @@ export default function InvestScreen({
           accessibilityLabel="前の画面に戻る"
           accessibilityRole="button"
         >
-          <PixelHouseIcon size={12} />
+          <PixelHouseIcon size={14} />
           <Text style={styles.backText}>ギルドに戻る</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
@@ -466,14 +466,14 @@ export default function InvestScreen({
                 }}
                 style={styles.backButton}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                accessibilityLabel="ギルドに戻る"
+                accessibilityLabel="ギルドへ戻る"
                 accessibilityRole="button"
               >
-                <PixelHouseIcon size={12} />
-                <Text style={styles.backText}>ギルドに戻る</Text>
+                <PixelHouseIcon size={14} />
+                <Text style={styles.backText}>ギルドへ戻る</Text>
               </TouchableOpacity>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center", marginTop: -4 }}>
-                <View style={{ marginTop: 12 }}><PixelSeedlingIcon size={18} /></View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
+                <PixelSeedlingIcon size={18} />
                 <RubyText style={styles.headerTitle} parts={[["冒険", "ぼうけん"], "ショップ"]} rubySize={6} />
               </View>
             </View>
@@ -596,7 +596,7 @@ export default function InvestScreen({
                   {/* Amount input */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={["いくら ", ["冒険", "ぼうけん"], "する？（", "コロ", "）"]}
+                    parts={["いくら ", ["投資", "とうし"], "する？（", ["円", "えん"], "）"]}
                     rubySize={5}
                   />
                   <TextInput
@@ -610,7 +610,7 @@ export default function InvestScreen({
                       setTimeout(() => orderScrollRef.current?.scrollToEnd({ animated: true }), 400);
                     }}
                   />
-                  <AutoRubyText text="100コロから冒険できるよ" style={styles.amountHint} rubySize={4} />
+                  <AutoRubyText text="100円から投資できるよ" style={styles.amountHint} rubySize={4} />
 
                   {orderError ? (
                     <Text style={styles.errorText}>{orderError}</Text>
@@ -633,7 +633,7 @@ export default function InvestScreen({
 
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <PixelLightbulbIcon size={14} />
-                    <RubyText style={styles.orderHint} parts={[["冒険", "ぼうけん"], "したい お", ["宝", "たから"], "が ないときは、", ["冒険団", "ぼうけんだん"], "マスターに", ["相談", "そうだん"], "してね"]} rubySize={4} />
+                    <RubyText style={styles.orderHint} parts={[["買", "か"], "いたい", ["株", "かぶ"], "がないときは、", ["冒険団", "ぼうけんだん"], "マスターに", ["相談", "そうだん"], "してね"]} rubySize={4} />
                   </View>
                   <View style={{ height: 180 }} />
                 </>
@@ -666,15 +666,15 @@ function createStyles(p: Palette) {
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
-      paddingHorizontal: 10,
-      paddingVertical: 10,
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
       borderRadius: 8,
       backgroundColor: p.background,
       borderWidth: 2,
       borderColor: p.primary,
     },
-    backText: { fontSize: 8, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 16, fontWeight: "bold", color: p.textMuted },
     headerTitle: { fontSize: rf(18), fontWeight: "bold", color: p.primaryDark, flexShrink: 1 },
 
     scrollContent: { padding: 16, paddingBottom: 140 },

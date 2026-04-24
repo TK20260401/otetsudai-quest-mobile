@@ -110,7 +110,7 @@ export default function SpendRequestScreen({
             />
             <Text style={styles.confirmAmount}>
               {parsedAmount.toLocaleString()}
-              <Text style={styles.confirmYen}>円</Text>
+              <Text style={styles.confirmYen}>コロ</Text>
             </Text>
 
             <AutoRubyText text="なにに" style={styles.confirmLabel} rubySize={7} />
@@ -122,7 +122,7 @@ export default function SpendRequestScreen({
 
             <AutoRubyText text="のこり" style={styles.confirmLabel} rubySize={7} />
             <Text style={styles.confirmRemaining}>
-              {remaining.toLocaleString()}円
+              {remaining.toLocaleString()}コロ
             </Text>
           </View>
 
@@ -175,12 +175,12 @@ export default function SpendRequestScreen({
             accessibilityLabel="ギルドに戻る"
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-              <PixelHouseIcon size={18} />
+              <PixelHouseIcon size={12} />
               <Text style={styles.backText}>ギルドに戻る</Text>
             </View>
           </TouchableOpacity>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
-            <PixelCoinIcon size={18} />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center", marginTop: -4 }}>
+            <View style={{ marginTop: 12 }}><PixelCoinIcon size={18} /></View>
             <RubyText parts={[["使", "つか"], "いたい！"]} style={styles.title} rubySize={6} noWrap />
           </View>
         </View>
@@ -198,7 +198,7 @@ export default function SpendRequestScreen({
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <PixelCoinIcon size={20} />
               <AutoRubyText
-                text={`手持ちコイン: ${spendingBalance.toLocaleString()}円`}
+                text={`手持ちコイン: ${spendingBalance.toLocaleString()}コロ`}
                 style={styles.balanceText}
                 rubySize={7}
               />
@@ -211,7 +211,7 @@ export default function SpendRequestScreen({
               <Text style={styles.amountValue}>
                 {amount.length > 0 ? parseInt(amount, 10).toLocaleString() : "0"}
               </Text>
-              <Text style={styles.amountYen}>円</Text>
+              <Text style={styles.amountYen}>コロ</Text>
             </View>
           </ShakeView>
 
@@ -310,9 +310,9 @@ function createStyles(p: Palette) {
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 14,
-      paddingVertical: 8,
+      gap: 4,
+      paddingHorizontal: 10,
+      paddingVertical: 10,
       borderRadius: 8,
       borderWidth: 2,
       borderColor: p.primary,

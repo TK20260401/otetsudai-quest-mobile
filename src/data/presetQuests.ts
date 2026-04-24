@@ -54,7 +54,7 @@ export type PresetQuest = {
   mainTitle: string;     // 例: 泡モンスター 討伐作戦
   subLabel: string;      // 例: おふろ そうじ
   category: PresetQuestCategory;
-  suggestedReward: number; // 提案時のデフォルト報酬（円）
+  suggestedReward: number; // 提案時のデフォルト報酬（コロ）
   defaultReason: string;   // 提案時のデフォルト理由（空でもOK）
 };
 

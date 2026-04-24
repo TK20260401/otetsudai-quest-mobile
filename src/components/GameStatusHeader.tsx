@@ -74,7 +74,7 @@ export default function GameStatusHeader({
       <View style={styles.row}>
         {onBack ? (
           <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel="もどる">
-            <PixelHouseIcon size={18} />
+            <PixelHouseIcon size={12} />
             <Text style={styles.backText}>もどる</Text>
           </TouchableOpacity>
         ) : null}
@@ -190,16 +190,16 @@ function createStyles(palette: Palette) {
     backBtn: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 14,
-      paddingVertical: 8,
+      gap: 4,
+      paddingHorizontal: 10,
+      paddingVertical: 10,
       borderRadius: 8,
       borderWidth: 2,
       borderColor: palette.primary,
       backgroundColor: palette.background,
     },
     backText: {
-      fontSize: 16,
+      fontSize: 8,
       fontWeight: "bold",
       color: palette.textMuted,
     },

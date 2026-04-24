@@ -16,7 +16,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
-import { resetSampleFamily } from "../lib/sample-reset";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
@@ -43,8 +42,6 @@ import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
-import PresetQuestModal from "../components/PresetQuestModal";
-import type { PresetQuest } from "../data/presetQuests";
 import RubyPlaceholderInput from "../components/RubyPlaceholderInput";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
@@ -126,7 +123,6 @@ export default function ChildDashboardScreen({
   const [unlockedBadge, setUnlockedBadge] = useState<{ emoji: string; label: string; description: string } | null>(null);
   // MYクエスト提案
   const [proposalVisible, setProposalVisible] = useState(false);
-  const [presetPickerVisible, setPresetPickerVisible] = useState(false);
   const [proposalTitle, setProposalTitle] = useState("");
   const [proposalReason, setProposalReason] = useState("");
   const [proposalReward, setProposalReward] = useState("");
@@ -164,7 +160,7 @@ export default function ChildDashboardScreen({
         title: proposalTitle.trim(),
         description: proposalReason.trim() || null,
         reward_amount: 0,
-        proposed_reward: proposalReward ? (parseInt(proposalReward.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[^0-9]/g, ""), 10) || null) : null,
+        proposed_reward: proposalReward ? parseInt(proposalReward, 10) : null,
         proposal_status: "pending",
         proposal_message: proposalReason.trim() || null,
         recurrence: "once",
@@ -177,7 +173,7 @@ export default function ChildDashboardScreen({
       setProposalTitle("");
       setProposalReason("");
       setProposalReward("");
-      alert("送信しました！", "冒険団マスターがクエストを確認するよ！");
+      alert("送信しました！", "ギルドマスターがクエストを確認するよ！");
       loadData();
     } catch {
       alert("エラー", "送信に失敗しました");
@@ -562,7 +558,6 @@ export default function ChildDashboardScreen({
   }
 
   function handleLogout() {
-    resetSampleFamily().catch(() => {});
     clearSession().then(() => {
       navigation.reset({ index: 0, routes: [{ name: "Landing" }] });
     });
@@ -677,9 +672,7 @@ export default function ChildDashboardScreen({
           onBack={handleLogout}
         />
       </View>
-      <View style={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
-        <Text style={[styles.headerDate, { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }]}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
-      </View>
+      <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
       {/* ★固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド。
           お金のサイクル全体が一目でわかる設計。
@@ -848,11 +841,11 @@ export default function ChildDashboardScreen({
             {/* セリフ吹き出し */}
             <View style={styles.speechBubble}>
               <RubyStr
-                text={`【${mood === "active"
+                text={`「${mood === "active"
                   ? levelInfo.current.greetingActive
                   : mood === "lonely"
                     ? levelInfo.current.greetingLonely
-                    : levelInfo.current.greeting}】`}
+                    : levelInfo.current.greeting}」`}
                 style={styles.speechText}
                 rubySize={6}
               />
@@ -878,7 +871,7 @@ export default function ChildDashboardScreen({
             />
             {levelInfo.next ? (
               <View style={{ marginTop: 4 }}>
-                <AutoRubyText text={`次のレベルまであと${levelInfo.remaining.toLocaleString()}コロ`} style={styles.levelNext} rubySize={5} noWrap />
+                <AutoRubyText text={`次のレベルまであと${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} noWrap />
               </View>
             ) : (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
@@ -962,9 +955,9 @@ export default function ChildDashboardScreen({
           <AnimatedButton
             onPress={() => setStampSendVisible(true)}
             style={styles.stampRelayBtn}
-            accessibilityLabel="団員メッセージを送る"
+            accessibilityLabel="かぞくに エールを おくる"
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={[["団員", "だんいん"], "メッセージを", ["送", "おく"], "る"]} rubySize={5} /></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={["エールを", ["送", "おく"], "る"]} rubySize={5} /></View>
           </AnimatedButton>
         </View>
 
@@ -986,7 +979,7 @@ export default function ChildDashboardScreen({
                 </View>
                 <View style={styles.flex1}>
                   <Text style={styles.spendStatusText} numberOfLines={1}>
-                    {req.purpose} — {req.amount}コロ
+                    {req.purpose} — {req.amount}円
                   </Text>
                   <Text style={styles.spendStatusLabel}>
                     {req.status === "pending"
@@ -1044,7 +1037,7 @@ export default function ChildDashboardScreen({
             {tab === "quests" ? (
               <RubyText
                 style={styles.screenTitleSub}
-                parts={[["受注", "じゅちゅう"], "するクエストを", ["選", "えら"], "ぼう"]}
+                parts={[["今", "いま"], "やるクエストを", ["選", "えら"], "ぼう"]}
                 rubySize={4}
                 noWrap
               />
@@ -1129,7 +1122,7 @@ export default function ChildDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
                               <AutoRubyText
-                                text={`${task.reward_amount}コロ`}
+                                text={`${task.reward_amount}円`}
                                 style={styles.specialQuestReward}
                                 rubySize={6}
                               />
@@ -1193,7 +1186,7 @@ export default function ChildDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
                               <AutoRubyText
-                                text={`${task.reward_amount}コロ`}
+                                text={`${task.reward_amount}円`}
                                 style={styles.questReward}
                                 rubySize={6}
                               />
@@ -1254,41 +1247,13 @@ export default function ChildDashboardScreen({
               </View>
             )}
 
-            {/* クエストを えらぶ（プリセットから選択） */}
-            <AnimatedButton
-              style={styles.presetPickerButton}
-              onPress={() => setPresetPickerVisible(true)}
-              accessibilityLabel="クエストを選ぶ。自分でできるクエストを選ぶ"
-            >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelTargetIcon size={18} />
-                <RubyText style={styles.proposalButtonText} parts={["クエストを ", ["選", "えら"], "ぶ"]} rubySize={5} />
-              </View>
-              <RubyText
-                style={styles.presetPickerSub}
-                parts={[["自分", "じぶん"], "にできるクエストから ", ["選", "えら"], "ぼう"]}
-                rubySize={3}
-              />
-            </AnimatedButton>
-
-            {/* MYクエスト提案（カスタム作成） */}
+            {/* MYクエスト提案 */}
             <AnimatedButton
               style={styles.proposalButton}
-              onPress={() => {
-                // プリセット選択後にこちらを押した場合の取り残し対策で明示クリア
-                setProposalTitle("");
-                setProposalReason("");
-                setProposalReward("");
-                setProposalVisible(true);
-              }}
-              accessibilityLabel="クエストデプロイ。オリジナルクエストを作る"
+              onPress={() => setProposalVisible(true)}
+              accessibilityLabel="MYクエストを出す"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["クエストデプロイ"]} rubySize={5} /></View>
-              <RubyText
-                style={styles.presetPickerSub}
-                parts={["オリジナルクエストを ", ["作", "つく"], "る"]}
-                rubySize={3}
-              />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["MYクエストを", ["出", "だ"], "す"]} rubySize={5} /></View>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1505,8 +1470,13 @@ export default function ChildDashboardScreen({
         <View style={styles.nudgeOverlay}>
           <View style={styles.nudgeCard}>
             <Text style={styles.nudgeEmoji}>{"\u{1F31F}"}</Text>
-            <AutoRubyText text="冒険団マスターを呼んでみない？" style={styles.nudgeTitle} rubySize={6} />
-            <AutoRubyText text="冒険団マスターが参加すると「増やす」が使えるようになるよ！" style={styles.nudgeDesc} rubySize={5} />
+            <Text style={styles.nudgeTitle}>
+              おうちの ひとを よんでみない？
+            </Text>
+            <Text style={styles.nudgeDesc}>
+              おうちの ひとが さんかすると{"\n"}
+              「ふやす」が つかえるようになるよ！
+            </Text>
             <RpgButton
               tier="gold"
               size="md"
@@ -1515,9 +1485,11 @@ export default function ChildDashboardScreen({
                 setNudgeVisible(false);
                 navigation.navigate("InviteParent");
               }}
-              accessibilityLabel="冒険団マスターを呼ぶ"
+              accessibilityLabel="おうちのひとをよぶ"
             >
-              <AutoRubyText text="冒険団マスターを呼ぶ" style={styles.nudgeButtonText} rubySize={5} noWrap />
+              <Text style={styles.nudgeButtonText}>
+                おうちの ひとを よぶ
+              </Text>
             </RpgButton>
             <TouchableOpacity
               onPress={() => setNudgeVisible(false)}
@@ -1554,42 +1526,12 @@ export default function ChildDashboardScreen({
       {/* コインくん AIチャット */}
       <CoinKunChat role="child" />
 
-      {/* プリセットクエスト選択モーダル */}
-      <PresetQuestModal
-        visible={presetPickerVisible}
-        onClose={() => setPresetPickerVisible(false)}
-        onSelect={(q: PresetQuest) => {
-          setProposalTitle(q.mainTitle);
-          setProposalReason(q.defaultReason);
-          setProposalReward(String(q.suggestedReward));
-          setProposalVisible(true);
-        }}
-        onSelectCustom={() => {
-          setProposalTitle("");
-          setProposalReason("");
-          setProposalReward("");
-          setProposalVisible(true);
-        }}
-      />
-
       {/* MYクエスト提案モーダル */}
-      <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => {
-        setProposalVisible(false);
-        setProposalTitle("");
-        setProposalReason("");
-        setProposalReward("");
-      }}>
+      <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-          <ScrollView
-            style={{ borderRadius: 16, flexGrow: 0, maxHeight: "85%", backgroundColor: palette.surface }}
-            contentContainerStyle={styles.proposalCard}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="interactive"
-            showsVerticalScrollIndicator
-          >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={["クエストデプロイ"]} rubySize={6} /></View>
-            <RubyText style={[styles.proposalModalSub, { marginBottom: 0 }]} parts={["冒険団マスターに"]} rubySize={5} />
-            <RubyText style={styles.proposalModalSub} parts={[["新", "あたら"], "しいクエストを", ["出", "だ"], "そう！"]} rubySize={5} />
+          <View style={styles.proposalCard}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={["MYクエストを", ["出", "だ"], "す"]} rubySize={6} /></View>
+            <AutoRubyText text="ギルドマスターに新しいクエストを出そう！" style={styles.proposalModalSub} rubySize={5} />
 
             <RubyText
               style={styles.proposalLabel}
@@ -1626,7 +1568,7 @@ export default function ChildDashboardScreen({
 
             <RubyText
               style={styles.proposalLabel}
-              parts={[["報酬", "ほうしゅう"], "リクエスト（", "コロ", "）"]}
+              parts={[["報酬", "ほうしゅう"], "リクエスト（", ["円", "えん"], "）"]}
               rubySize={5}
               noWrap
             />
@@ -1642,16 +1584,11 @@ export default function ChildDashboardScreen({
             />
 
             <View style={styles.proposalActions}>
-              <TouchableOpacity style={styles.proposalCancel} onPress={() => {
-                setProposalVisible(false);
-                setProposalTitle("");
-                setProposalReason("");
-                setProposalReward("");
-              }}>
+              <TouchableOpacity style={styles.proposalCancel} onPress={() => setProposalVisible(false)}>
                 <RubyText
                   style={styles.proposalCancelText}
                   parts={[["撤退", "てったい"]]}
-                  rubySize={4}
+                  rubySize={5}
                   noWrap
                 />
               </TouchableOpacity>
@@ -1664,18 +1601,20 @@ export default function ChildDashboardScreen({
                   <RubyText
                     style={styles.proposalSubmitText}
                     parts={[["送信", "そうしん"], ["中", "ちゅう"], "..."]}
-                    rubySize={4}
+                    rubySize={5}
+                    noWrap
                   />
                 ) : (
                   <RubyText
                     style={styles.proposalSubmitText}
                     parts={["クエストを", ["出", "だ"], "す！"]}
-                    rubySize={4}
+                    rubySize={5}
+                    noWrap
                   />
                 )}
               </AnimatedButton>
             </View>
-          </ScrollView>
+          </View>
         </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
@@ -1766,15 +1705,14 @@ function createStyles(p: Palette) {
     backgroundColor: `${p.surface}b3`,
     borderRadius: 8,
     paddingHorizontal: 10,
-    paddingTop: 10,
-    paddingBottom: 4,
+    paddingVertical: 4,
     marginTop: 4,
     marginBottom: 6,
   },
   speechText: {
-    fontSize: 10,
+    fontSize: 12,
     color: p.textStrong,
-    lineHeight: 16,
+    lineHeight: 20,
   },
   progressRow: {
     flexDirection: "row" as const,
@@ -2467,26 +2405,6 @@ function createStyles(p: Palette) {
   weeklyStatLabel: { fontSize: rf(11), color: p.textMuted },
   bottomSpacer: { height: 40 },
 
-  // プリセット選択（クエストを えらぶ）
-  presetPickerButton: {
-    marginHorizontal: 12,
-    marginTop: 12,
-    marginBottom: 0,
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: p.accentLight,
-    borderWidth: 1,
-    borderColor: p.accent,
-    alignItems: "center" as const,
-    minHeight: 48,
-    justifyContent: "center" as const,
-  },
-  presetPickerSub: {
-    fontSize: 11,
-    color: p.textMuted,
-    marginTop: 2,
-  },
-
   // MYクエスト提案
   proposalButton: {
     margin: 12,
@@ -2504,18 +2422,16 @@ function createStyles(p: Palette) {
   proposalOverlay: {
     flex: 1,
     backgroundColor: p.overlay,
-    justifyContent: "flex-end" as const,
+    justifyContent: "center" as const,
     padding: 20,
-    paddingBottom: 40,
   },
   proposalCard: {
     backgroundColor: p.surface,
     borderRadius: 16,
     padding: 20,
-    flexGrow: 0,
   },
   proposalModalTitle: { fontSize: rf(18), fontWeight: "bold" as const, color: p.textStrong, marginBottom: 4 },
-  proposalModalSub: { fontSize: 12, color: p.textMuted, marginBottom: 16, textAlign: "center" as const },
+  proposalModalSub: { fontSize: 12, color: p.textMuted, marginBottom: 16 },
   proposalLabel: { fontSize: 13, fontWeight: "bold" as const, color: p.textStrong, marginTop: 8, marginBottom: 4 },
   proposalInput: {
     borderWidth: 1,
@@ -2524,29 +2440,28 @@ function createStyles(p: Palette) {
     padding: 14,
     fontSize: 15,
     backgroundColor: p.surfaceMuted,
-    color: p.textStrong,
   },
   proposalActions: { flexDirection: "row" as const, gap: 10, marginTop: 16 },
   proposalCancel: {
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
+    padding: 14,
+    minHeight: 48,
     borderRadius: 10,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     backgroundColor: p.surfaceMuted,
   },
-  proposalCancelText: { fontSize: 14, fontWeight: "bold" as const, color: p.textMuted },
+  proposalCancelText: { fontSize: 16, fontWeight: "bold" as const, color: p.textMuted },
   proposalSubmit: {
     flex: 2,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
+    padding: 14,
+    minHeight: 48,
     borderRadius: 10,
     alignItems: "center" as const,
     justifyContent: "center" as const,
     backgroundColor: p.primary,
   },
-  proposalSubmitText: { fontSize: 14, fontWeight: "bold" as const, color: p.white },
+  proposalSubmitText: { fontSize: 16, fontWeight: "bold" as const, color: p.white },
   stampRelayBtn: {
     backgroundColor: p.primaryLight,
     borderRadius: 14,
@@ -2559,7 +2474,7 @@ function createStyles(p: Palette) {
     justifyContent: "center" as const,
   },
   stampRelayBtnText: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: "bold" as const,
     color: p.primaryDark,
   },

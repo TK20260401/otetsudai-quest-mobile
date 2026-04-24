@@ -335,7 +335,7 @@ function createStyles(p: Palette) {
       borderColor: p.primary,
       flexShrink: 1,
     },
-    backText: { fontSize: 12, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 8, fontWeight: "bold", color: p.textMuted },
     headerCenter: {
       flex: 1,
       flexDirection: "row",

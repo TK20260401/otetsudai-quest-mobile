@@ -140,10 +140,10 @@ export default function WalletDetailScreen({
 
   const filterTabs: { label: string; value: string; parts: (string | [string, string])[] }[] = [
     { label: "全部", value: "all", parts: [["全部", "ぜんぶ"]] },
-    { label: "稼ぐ", value: "earn", parts: [["稼", "かせ"], "ぐ"] },
-    { label: "使う", value: "spend", parts: [["使", "つか"], "う"] },
-    { label: "貯める", value: "save", parts: [["貯", "た"], "める"] },
-    { label: "増やす", value: "invest", parts: [["増", "ふ"], "やす"] },
+    { label: "クエスト", value: "earn", parts: ["クエスト"] },
+    { label: "ショップ", value: "spend", parts: ["ショップ"] },
+    { label: "ストック", value: "save", parts: ["ストック"] },
+    { label: "冒険", value: "invest", parts: [["冒険", "ぼうけん"]] },
   ];
 
   function TxTypeIcon({ type }: { type: string }) {
@@ -159,13 +159,13 @@ export default function WalletDetailScreen({
   function txTypeName(type: string): string {
     switch (type) {
       case "earn":
-        return "かせいだ";
+        return "クエスト報酬";
       case "spend":
-        return "つかった";
+        return "ショップ";
       case "save":
-        return "ためた";
+        return "ストック";
       case "invest":
-        return "ふやした";
+        return "冒険";
       default:
         return type;
     }
@@ -228,7 +228,7 @@ export default function WalletDetailScreen({
             adjustsFontSizeToFit
             numberOfLines={1}
           >
-            {total.toLocaleString()}円
+            {total.toLocaleString()}コロ
           </Text>
         </View>
 
@@ -244,7 +244,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletSpendBg,
               },
             ]}
-            accessibilityLabel={`つかう ${spending}円`}
+            accessibilityLabel={`ショップ ${spending}コロ`}
             onPress={() => navigation.navigate("SpendRequest", {
               childId,
               walletId,
@@ -254,7 +254,7 @@ export default function WalletDetailScreen({
             <PixelCartIcon size={20} />
             <RubyText
               style={styles.pocketLabel}
-              parts={[["使", "つか"], "う"]}
+              parts={["ショップ"]}
               rubySize={7}
               rubyColor="rgba(255,255,255,0.6)"
             />
@@ -265,7 +265,7 @@ export default function WalletDetailScreen({
             </Text>
           </TouchableOpacity>
 
-          {/* ためる → 貯金目標セクション */}
+          {/* ストック → お宝マップセクション */}
           <TouchableOpacity
             style={[
               styles.pocketCard,
@@ -274,13 +274,13 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletSaveBg,
               },
             ]}
-            accessibilityLabel={`ためる ${saving}円`}
+            accessibilityLabel={`ストック ${saving}コロ`}
             onPress={() => setShowGoalModal(true)}
           >
             <PixelPiggyIcon size={20} />
             <RubyText
               style={styles.pocketLabel}
-              parts={[["貯", "た"], "める"]}
+              parts={["ストック"]}
               rubySize={7}
               rubyColor="rgba(255,255,255,0.6)"
             />
@@ -291,7 +291,7 @@ export default function WalletDetailScreen({
             </Text>
           </TouchableOpacity>
 
-          {/* ふやす → Invest */}
+          {/* 冒険 → Invest */}
           <TouchableOpacity
             style={[
               styles.pocketCard,
@@ -300,7 +300,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletInvestBg,
               },
             ]}
-            accessibilityLabel={`ふやす ${invest}円`}
+            accessibilityLabel={`冒険 ${invest}コロ`}
             onPress={() => navigation.navigate("Invest", {
               childId,
               investBalance: wallet?.invest_balance ?? 0,
@@ -309,7 +309,7 @@ export default function WalletDetailScreen({
             <PixelChartIcon size={20} />
             <RubyText
               style={styles.pocketLabel}
-              parts={[["増", "ふ"], "やす"]}
+              parts={[["冒険", "ぼうけん"]]}
               rubySize={7}
               rubyColor="rgba(255,255,255,0.6)"
             />
@@ -331,7 +331,7 @@ export default function WalletDetailScreen({
             </View>
             {getStage(invest).next && (
               <AutoRubyText
-                text={`レベルアップまで あと ${(getStage(invest).next! - invest).toLocaleString()}円`}
+                text={`レベルアップまで あと ${(getStage(invest).next! - invest).toLocaleString()}コロ`}
                 style={styles.treeProgress}
                 rubySize={5}
               />
@@ -406,7 +406,7 @@ export default function WalletDetailScreen({
                     </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
-                      {req.amount.toLocaleString()}円
+                      {req.amount.toLocaleString()}コロ
                     </Text>
                   </View>
                 );
@@ -429,7 +429,7 @@ export default function WalletDetailScreen({
                     </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
-                      {req.amount.toLocaleString()}円
+                      {req.amount.toLocaleString()}コロ
                     </Text>
                   </View>
                 );
@@ -453,7 +453,7 @@ export default function WalletDetailScreen({
                       </Text>
                     )}
                     <Text style={styles.requestAmount}>
-                      {req.amount.toLocaleString()}円
+                      {req.amount.toLocaleString()}コロ
                     </Text>
                   </View>
                 );
@@ -500,7 +500,7 @@ export default function WalletDetailScreen({
                     </View>
                     <View style={styles.goalAmountRow}>
                       <Text style={styles.goalAmountText}>
-                        {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} 円
+                        {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} コロ
                       </Text>
                       <Text style={styles.goalPctText}>{pct}%</Text>
                     </View>
@@ -518,7 +518,7 @@ export default function WalletDetailScreen({
                 <Text style={styles.goalTitle}>{goal.title}</Text>
               </View>
               <Text style={styles.goalAmountText}>
-                {goal.target_amount.toLocaleString()} 円 達成！
+                {goal.target_amount.toLocaleString()} コロ 達成！
               </Text>
             </View>
           ))}

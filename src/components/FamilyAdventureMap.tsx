@@ -135,7 +135,7 @@ export default function FamilyAdventureMap({
                 {kid.name}
               </Text>
               <Text style={styles.memberBalance}>
-                {total.toLocaleString()}円
+                {total.toLocaleString()}コロ
               </Text>
             </View>
           );

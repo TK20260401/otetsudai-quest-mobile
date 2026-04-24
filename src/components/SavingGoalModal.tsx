@@ -57,7 +57,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
       alert("⚠️", "エラーが おきました。もういちど ためしてね");
       return;
     }
-    alert("🐷 もくひょう できたよ！", "ちょきん がんばろう！");
+    alert("🗺️ お宝マップ 完成！", "目標に向かって がんばろう！");
     setTitle("");
     setTargetAmount("");
     setTitleError(false);
@@ -83,10 +83,10 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
           <View style={styles.card}>
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
               <PixelPiggyIcon size={22} />
-              <RubyText parts={[["貯金", "ちょきん"], ["目標", "もくひょう"], "を", ["作", "つく"], "る"]} style={styles.title} rubySize={8} />
+              <RubyText parts={["お", ["宝", "たから"], "マップを ", ["作", "つく"], "る"]} style={styles.title} rubySize={8} />
             </View>
 
-            <RubyText parts={[["何", "なに"], "を ", ["買", "か"], "いたい？"]} style={styles.inputLabel} rubySize={6} />
+            <RubyText parts={[["何", "なに"], "を ", ["手", "て"], "に", ["入", "い"], "れたい？"]} style={styles.inputLabel} rubySize={6} />
             <TextInput
               style={[styles.titleInput, titleError && styles.inputError]}
               value={title}
@@ -95,47 +95,47 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
               multiline
               placeholderTextColor={palette.textPlaceholder}
               maxLength={50}
-              accessibilityLabel="貯金 目標の 名前"
+              accessibilityLabel="お宝マップの 名前"
               onFocus={() => {
                 setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 200);
               }}
             />
             {titleError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><AutoRubyText text="名前を入れてね" style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]} rubySize={5} /></View>}
 
-            <RubyText parts={["いくら ", ["貯", "た"], "める？"]} style={styles.inputLabel} rubySize={6} />
+            <RubyText parts={["いくら ", ["集", "あつ"], "める？"]} style={styles.inputLabel} rubySize={6} />
             <View style={styles.amountRow}>
               <TextInput
                 style={[styles.amountInput, amountError && styles.inputError]}
                 value={targetAmount}
                 onChangeText={(t) => { setTargetAmount(t); setAmountError(false); }}
                 keyboardType="number-pad"
-                placeholder="金額（きんがく）"
+                placeholder="コイン（まいすう）"
                 placeholderTextColor={palette.textPlaceholder}
                 textAlign="center"
-                accessibilityLabel="目標 金額"
+                accessibilityLabel="目標コイン"
               />
-              <Text style={styles.yen}>円</Text>
+              <Text style={styles.yen}>コロ</Text>
             </View>
-            {amountError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><AutoRubyText text="金額を入れてね" style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]} rubySize={5} /></View>}
+            {amountError && <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: -12, marginBottom: 12 }}><PixelWarningIcon size={14} /><AutoRubyText text="コインを入れてね" style={[styles.errorText, { marginTop: 0, marginBottom: 0 }]} rubySize={5} /></View>}
 
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 style={styles.cancelButton}
                 onPress={onClose}
-                accessibilityLabel="やめる"
+                accessibilityLabel="撤退"
                 accessibilityRole="button"
               >
-                <Text style={styles.cancelText} numberOfLines={1}>やめる</Text>
+                <RubyText parts={[["撤退", "てったい"]]} style={styles.cancelText} rubySize={4} noWrap />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.submitButton, submitting && { opacity: 0.5 }]}
                 onPress={handleSubmit}
                 disabled={submitting}
-                accessibilityLabel="ちょきん もくひょうを つくる"
+                accessibilityLabel="お宝マップを作る"
                 accessibilityRole="button"
               >
                 <Text style={styles.submitText}>
-                  {submitting ? "つくっているよ..." : "つくる！"}
+                  {submitting ? "つくっているよ..." : "作る！"}
                 </Text>
               </TouchableOpacity>
             </View>

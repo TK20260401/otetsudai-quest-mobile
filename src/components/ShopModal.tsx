@@ -118,7 +118,7 @@ export default function ShopModal({
           </TouchableOpacity>
         </View>
         <Text style={styles.subtitle}>
-          「つかう」のおかね: {spendingBalance.toLocaleString()}円
+          「つかう」のおかね: {spendingBalance.toLocaleString()}コロ
         </Text>
 
         {toast && (
@@ -184,7 +184,7 @@ export default function ShopModal({
                         {item.description}
                       </Text>
                       <Text style={[styles.itemMeta, { color: rc.text }]}>
-                        {item.rarity.toUpperCase()} ・ {item.price}円
+                        {item.rarity.toUpperCase()} ・ {item.price}コロ
                       </Text>
                     </View>
                     <View style={styles.itemAction}>
