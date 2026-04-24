@@ -1258,23 +1258,37 @@ export default function ChildDashboardScreen({
             <AnimatedButton
               style={styles.presetPickerButton}
               onPress={() => setPresetPickerVisible(true)}
-              accessibilityLabel="クエストをえらぶ。じぶんでできるクエストから"
+              accessibilityLabel="クエストを選ぶ。自分でできるクエストを選ぶ"
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelTargetIcon size={18} />
                 <RubyText style={styles.proposalButtonText} parts={["クエストを ", ["選", "えら"], "ぶ"]} rubySize={5} />
               </View>
-              <Text style={styles.presetPickerSub}>じぶんで できる クエストから</Text>
+              <RubyText
+                style={styles.presetPickerSub}
+                parts={[["自分", "じぶん"], "でできるクエストを", ["選", "えら"], "ぶ"]}
+                rubySize={3}
+              />
             </AnimatedButton>
 
             {/* MYクエスト提案（カスタム作成） */}
             <AnimatedButton
               style={styles.proposalButton}
-              onPress={() => setProposalVisible(true)}
-              accessibilityLabel="クエストデプロイ。オリジナルクエストをつくる"
+              onPress={() => {
+                // プリセット選択後にこちらを押した場合の取り残し対策で明示クリア
+                setProposalTitle("");
+                setProposalReason("");
+                setProposalReward("");
+                setProposalVisible(true);
+              }}
+              accessibilityLabel="クエストデプロイ。オリジナルクエストを作る"
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["クエストデプロイ"]} rubySize={5} /></View>
-              <Text style={styles.presetPickerSub}>オリジナル クエストを つくる</Text>
+              <RubyText
+                style={styles.presetPickerSub}
+                parts={["オリジナルクエストを", ["作", "つく"], "る"]}
+                rubySize={3}
+              />
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1559,7 +1573,12 @@ export default function ChildDashboardScreen({
       />
 
       {/* MYクエスト提案モーダル */}
-      <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => setProposalVisible(false)}>
+      <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => {
+        setProposalVisible(false);
+        setProposalTitle("");
+        setProposalReason("");
+        setProposalReward("");
+      }}>
         <KeyboardAvoidingView style={styles.proposalOverlay} behavior={Platform.OS === "ios" ? "padding" : "height"}>
           <ScrollView
             style={{ borderRadius: 16, flexGrow: 0, backgroundColor: palette.surface }}
@@ -1623,7 +1642,12 @@ export default function ChildDashboardScreen({
             />
 
             <View style={styles.proposalActions}>
-              <TouchableOpacity style={styles.proposalCancel} onPress={() => setProposalVisible(false)}>
+              <TouchableOpacity style={styles.proposalCancel} onPress={() => {
+                setProposalVisible(false);
+                setProposalTitle("");
+                setProposalReason("");
+                setProposalReward("");
+              }}>
                 <RubyText
                   style={styles.proposalCancelText}
                   parts={[["撤退", "てったい"]]}
