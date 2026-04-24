@@ -1550,6 +1550,12 @@ export default function ChildDashboardScreen({
           setProposalReward(String(q.suggestedReward));
           setProposalVisible(true);
         }}
+        onSelectCustom={() => {
+          setProposalTitle("");
+          setProposalReason("");
+          setProposalReward("");
+          setProposalVisible(true);
+        }}
       />
 
       {/* MYクエスト提案モーダル */}

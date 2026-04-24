@@ -18,6 +18,8 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   onSelect: (quest: PresetQuest) => void;
+  /** 「その他」選択時: プリセットを使わず空フォームでオリジナル作成へ遷移 */
+  onSelectCustom: () => void;
 };
 
 /**
@@ -30,13 +32,18 @@ type Props = {
  * 表示仕様（プランC）:
  *   各行: 絵文字 + メインタイトル（ゲーム風）+ サブラベル（ひらがな直接表現）
  */
-export default function PresetQuestModal({ visible, onClose, onSelect }: Props) {
+export default function PresetQuestModal({ visible, onClose, onSelect, onSelectCustom }: Props) {
   const { palette } = useTheme();
   const insets = useSafeAreaInsets();
   const styles = React.useMemo(() => createStyles(palette), [palette]);
 
   const handleSelect = (quest: PresetQuest) => {
     onSelect(quest);
+    onClose();
+  };
+
+  const handleSelectCustom = () => {
+    onSelectCustom();
     onClose();
   };
 
@@ -88,6 +95,25 @@ export default function PresetQuestModal({ visible, onClose, onSelect }: Props) 
                 <Text style={styles.reward}>¥{q.suggestedReward}</Text>
               </TouchableOpacity>
             ))}
+
+            {/* その他 — 空フォームでオリジナル作成へ */}
+            <TouchableOpacity
+              style={[styles.item, styles.customItem]}
+              onPress={handleSelectCustom}
+              accessibilityLabel="その他。じぶんで かんがえて オリジナルクエストを つくる"
+              accessibilityRole="button"
+            >
+              <Text style={styles.emoji}>✏️</Text>
+              <View style={styles.itemText}>
+                <Text style={[styles.mainTitle, styles.customMainTitle]} numberOfLines={1}>
+                  その他
+                </Text>
+                <Text style={styles.subLabel} numberOfLines={1}>
+                  じぶんで かんがえる
+                </Text>
+              </View>
+              <Text style={[styles.reward, styles.customReward]}>つくる</Text>
+            </TouchableOpacity>
           </ScrollView>
         </View>
       </View>
@@ -174,6 +200,19 @@ function createStyles(p: ReturnType<typeof useTheme>["palette"]) {
       color: p.accentDark,
       minWidth: 50,
       textAlign: "right" as const,
+    },
+    customItem: {
+      borderStyle: "dashed" as const,
+      borderColor: p.primary,
+      backgroundColor: p.primaryLight,
+      marginTop: 4,
+    },
+    customMainTitle: {
+      color: p.primaryDark,
+    },
+    customReward: {
+      color: p.primaryDark,
+      fontSize: 12,
     },
   });
 }
