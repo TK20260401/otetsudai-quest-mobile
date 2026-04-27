@@ -178,8 +178,7 @@ export default function ShopModal({
                     style={[
                       styles.itemRow,
                       {
-                        borderColor: isEquipped ? palette.primary : rc.border,
-                        backgroundColor: isEquipped ? palette.primaryLight : rc.bg,
+                        borderColor: isEquipped ? palette.primary : palette.border,
                       },
                     ]}
                   >
@@ -261,7 +260,8 @@ function createStyles(p: Palette) {
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 18,
-      backgroundColor: p.surfaceMuted,
+      borderWidth: 1.5,
+      borderColor: p.border,
     },
     closeText: {
       fontSize: 16,
@@ -317,7 +317,7 @@ function createStyles(p: Palette) {
       alignItems: "center",
       padding: 12,
       borderRadius: 12,
-      borderWidth: 2,
+      borderWidth: 1.5,
       marginBottom: 8,
       gap: 12,
     },
