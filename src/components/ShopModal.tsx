@@ -123,6 +123,11 @@ export default function ShopModal({
           style={styles.subtitle}
           rubySize={6}
         />
+        <AutoRubyText
+          text="買って装備すると、名前の横に称号がつくよ"
+          style={styles.shopHint}
+          rubySize={5}
+        />
 
         {toast && (
           <View
@@ -267,7 +272,15 @@ function createStyles(p: Palette) {
       color: p.textMuted,
       textAlign: "center",
       paddingHorizontal: 16,
-      paddingVertical: 8,
+      paddingTop: 8,
+      paddingBottom: 2,
+    },
+    shopHint: {
+      fontSize: 10,
+      color: p.textMuted,
+      textAlign: "center",
+      paddingHorizontal: 16,
+      paddingBottom: 8,
     },
     toast: {
       marginHorizontal: 12,

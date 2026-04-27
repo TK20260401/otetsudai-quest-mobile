@@ -214,13 +214,20 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                     {pet.is_active ? (
                       <Text style={styles.activeBadge}>⭐ アクティブ</Text>
                     ) : (
-                      <RpgButton
-                        tier="violet"
-                        size="sm"
-                        onPress={() => handleSetActive(pet.id)}
-                      >
-                        アクティブにする
-                      </RpgButton>
+                      <>
+                        <RpgButton
+                          tier="violet"
+                          size="sm"
+                          onPress={() => handleSetActive(pet.id)}
+                        >
+                          アクティブにする
+                        </RpgButton>
+                        <AutoRubyText
+                          text="ホーム画面で一緒に冒険するよ"
+                          style={styles.buttonHint}
+                          rubySize={5}
+                        />
+                      </>
                     )}
                   </View>
                 </RpgCard>
@@ -361,6 +368,12 @@ function createStyles(p: Palette) {
       color: p.accent,
       textAlign: "center",
       paddingVertical: 6,
+    },
+    buttonHint: {
+      fontSize: 10,
+      color: p.textMuted,
+      textAlign: "center",
+      marginTop: 4,
     },
   });
 }

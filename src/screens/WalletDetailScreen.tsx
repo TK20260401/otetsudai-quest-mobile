@@ -263,6 +263,7 @@ export default function WalletDetailScreen({
             >
               {spending.toLocaleString()}
             </Text>
+            <AutoRubyText text="買い物に使う" style={styles.pocketHint} rubySize={4} noWrap />
           </TouchableOpacity>
 
           {/* ストック → お宝マップセクション */}
@@ -289,6 +290,7 @@ export default function WalletDetailScreen({
             >
               {saving.toLocaleString()}
             </Text>
+            <AutoRubyText text="目標まで貯める" style={styles.pocketHint} rubySize={4} noWrap />
           </TouchableOpacity>
 
           {/* 冒険 → Invest */}
@@ -318,6 +320,7 @@ export default function WalletDetailScreen({
             >
               {invest.toLocaleString()}
             </Text>
+            <AutoRubyText text="株でお金を増やす" style={styles.pocketHint} rubySize={4} noWrap />
           </TouchableOpacity>
         </View>
 
@@ -739,6 +742,12 @@ function createStyles(p: Palette) {
     pocketAmount: {
       fontSize: 16,
       fontWeight: "bold",
+    },
+    pocketHint: {
+      fontSize: 9,
+      color: p.textMuted,
+      marginTop: 4,
+      textAlign: "center",
     },
 
     // Action Row
