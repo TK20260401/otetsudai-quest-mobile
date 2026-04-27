@@ -362,11 +362,14 @@ export default function InvestScreen({
           </View>
         ) : (
           <View style={styles.portfolioSection}>
-            <RubyText
-              style={styles.sectionTitle}
-              parts={[["保有", "ほゆう"], ["銘柄", "めいがら"]]}
-              rubySize={5}
-            />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8 }}>
+              <PixelBarChartIcon size={16} />
+              <RubyText
+                style={styles.sectionTitle}
+                parts={[["保有", "ほゆう"], ["銘柄", "めいがら"]]}
+                rubySize={5}
+              />
+            </View>
             {portfolios.map((p) => {
               const { amount: gain, percent, isUp } = calcGainLoss(p);
               return (
