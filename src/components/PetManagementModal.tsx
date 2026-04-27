@@ -25,6 +25,7 @@ import PetSvg from "./PetSvg";
 import RpgButton from "./RpgButton";
 import { PixelPawIcon } from "./PixelIcons";
 import RpgCard from "./RpgCard";
+import { AutoRubyText } from "./Ruby";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -83,7 +84,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
         <View style={styles.header}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
             <PixelPawIcon size={18} />
-            <Text style={styles.headerTitle}>ペットずかん</Text>
+            <AutoRubyText text="ペット図鑑" style={styles.headerTitle} rubySize={6} noWrap />
           </View>
           <TouchableOpacity
             onPress={onClose}
@@ -95,9 +96,12 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.subtitle} numberOfLines={1} adjustsFontSizeToFit>
-          アクティブにできるのは1ぴきだけ！
-        </Text>
+        <AutoRubyText
+          text="アクティブにできるのは1匹だけ！"
+          style={styles.subtitle}
+          rubySize={6}
+          noWrap
+        />
 
         <ScrollView
           contentContainerStyle={{ padding: 12, paddingBottom: insets.bottom + 20 }}
@@ -108,10 +112,12 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
             <ActivityIndicator color={palette.primary} style={{ marginTop: 40 }} />
           ) : pets.length === 0 ? (
             <View style={styles.emptyWrap}>
-              <Text style={styles.emptyText}>まだ ペットは いないよ</Text>
-              <Text style={styles.emptyHint}>
-                クエストを クリアすると たまごが みつかるかも！
-              </Text>
+              <AutoRubyText text="まだペットはいないよ" style={styles.emptyText} rubySize={6} />
+              <AutoRubyText
+                text="クエストをクリアすると卵が見つかるかも！"
+                style={styles.emptyHint}
+                rubySize={5}
+              />
             </View>
           ) : (
             pets.map((pet) => {
@@ -168,20 +174,22 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                           accessibilityLabel={`${pet.name || "なまえを つけよう"} ペットの名前を編集`}
                           accessibilityRole="button"
                         >
-                          <Text style={styles.petName}>
-                            {pet.name || "なまえを つけよう ✏️"}
-                          </Text>
+                          <AutoRubyText
+                            text={pet.name || "名前を付けよう ✏️"}
+                            style={styles.petName}
+                            rubySize={5}
+                          />
                         </TouchableOpacity>
                       )}
                       <Text style={styles.petType}>
                         {info.nameJa} ・{" "}
                         {pet.growth_stage === "egg"
-                          ? "たまご"
+                          ? "卵"
                           : pet.growth_stage === "baby"
-                            ? "ベビー"
+                            ? "赤ちゃん"
                             : pet.growth_stage === "child"
-                              ? "こども"
-                              : "おとな"}
+                              ? "子ども"
+                              : "大人"}
                       </Text>
                       <View style={styles.progressTrack}>
                         <View
@@ -197,8 +205,8 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                       </View>
                       <Text style={styles.progressLabel}>
                         {pet.growth_stage === "egg"
-                          ? `あと ${Math.max(0, HATCH_QUESTS_REQUIRED - pet.quests_since_acquired)} クエストで かえる`
-                          : `しあわせ ${happiness}％ ・ ごはん ${pet.fed_count}かい`}
+                          ? `あと ${Math.max(0, HATCH_QUESTS_REQUIRED - pet.quests_since_acquired)} クエストで孵る`
+                          : `幸せ ${happiness}％ ・ ごはん ${pet.fed_count}回`}
                       </Text>
                     </View>
                   </View>
@@ -222,7 +230,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
 
           <View style={{ marginTop: 12 }}>
             <RpgButton tier="silver" size="md" onPress={onClose}>
-              とじる
+              閉じる
             </RpgButton>
           </View>
         </ScrollView>

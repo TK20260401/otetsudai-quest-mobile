@@ -87,7 +87,7 @@ export default function SpendRequestScreen({
       alert("エラー", "リクエストできませんでした");
       return;
     }
-    alert("📩 リクエストおくったよ！", "おやの へんじを まってね！", [
+    alert("📩 リクエスト送ったよ！", "冒険団マスターの返事を待ってね！", [
       { text: "OK", onPress: () => navigation.goBack() },
     ]);
   }
@@ -99,12 +99,12 @@ export default function SpendRequestScreen({
       <SafeAreaView style={styles.safe}>
         <View style={styles.container}>
           <View style={styles.header}>
-            <AutoRubyText text="かくにん" style={styles.title} rubySize={8} />
+            <AutoRubyText text="確認" style={styles.title} rubySize={8} />
           </View>
 
           <View style={styles.confirmCard}>
             <AutoRubyText
-              text="つかう きんがく"
+              text="使う金額"
               style={styles.confirmLabel}
               rubySize={7}
             />
@@ -113,14 +113,14 @@ export default function SpendRequestScreen({
               <Text style={styles.confirmYen}>コロ</Text>
             </Text>
 
-            <AutoRubyText text="なにに" style={styles.confirmLabel} rubySize={7} />
+            <AutoRubyText text="何に" style={styles.confirmLabel} rubySize={7} />
             <AutoRubyText
               text={`「${purpose.trim()}」`}
               style={styles.confirmPurpose}
               rubySize={7}
             />
 
-            <AutoRubyText text="のこり" style={styles.confirmLabel} rubySize={7} />
+            <AutoRubyText text="残り" style={styles.confirmLabel} rubySize={7} />
             <Text style={styles.confirmRemaining}>
               {remaining.toLocaleString()}コロ
             </Text>
@@ -134,7 +134,7 @@ export default function SpendRequestScreen({
               accessibilityLabel="もどる"
             >
               <AutoRubyText
-                text="← もどる"
+                text="← 戻る"
                 style={styles.confirmBackBtnText}
                 rubySize={7}
               />
@@ -148,7 +148,7 @@ export default function SpendRequestScreen({
               accessibilityLabel="リクエストする"
             >
               <AutoRubyText
-                text={sending ? "おくっているよ…" : "📩 リクエストする！"}
+                text={sending ? "送っているよ…" : "📩 リクエストする！"}
                 style={styles.submitButtonText}
                 rubySize={7}
               />
@@ -172,11 +172,11 @@ export default function SpendRequestScreen({
             style={styles.backButton}
             onPress={() => navigation.goBack()}
             accessibilityRole="button"
-            accessibilityLabel="ギルドに戻る"
+            accessibilityLabel="戻る"
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <PixelHouseIcon size={12} />
-              <Text style={styles.backText}>ギルドに戻る</Text>
+              <AutoRubyText text="← 戻る" style={styles.backText} rubySize={5} noWrap />
             </View>
           </TouchableOpacity>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center", marginTop: -4 }}>
@@ -217,7 +217,7 @@ export default function SpendRequestScreen({
 
           {overBalance && (
             <AutoRubyText
-              text="のこりが たりないよ"
+              text="残りが足りないよ"
               style={styles.warningText}
               rubySize={7}
             />
@@ -261,7 +261,7 @@ export default function SpendRequestScreen({
             accessibilityLabel="つぎへ"
           >
             <AutoRubyText
-              text="つぎへ →"
+              text="次へ →"
               style={styles.nextButtonText}
               rubySize={7}
             />

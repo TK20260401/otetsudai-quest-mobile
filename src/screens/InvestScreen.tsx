@@ -292,7 +292,7 @@ export default function InvestScreen({
           accessibilityRole="button"
         >
           <PixelHouseIcon size={12} />
-          <Text style={styles.backText}>ギルドに戻る</Text>
+          <AutoRubyText text="← 戻る" style={styles.backText} rubySize={5} noWrap />
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
           <PixelSeedlingIcon size={18} />
@@ -435,11 +435,11 @@ export default function InvestScreen({
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={styles.lockBackLink}
-                accessibilityLabel="ギルドに戻る"
+                accessibilityLabel="戻る"
                 accessibilityRole="button"
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
-                <Text style={styles.lockBackText}>ギルドに戻る</Text>
+                <AutoRubyText text="← 戻る" style={styles.lockBackText} rubySize={5} noWrap />
               </TouchableOpacity>
             </View>
           </View>
@@ -466,11 +466,11 @@ export default function InvestScreen({
                 }}
                 style={styles.backButton}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                accessibilityLabel="ギルドに戻る"
+                accessibilityLabel="戻る"
                 accessibilityRole="button"
               >
                 <PixelHouseIcon size={12} />
-                <Text style={styles.backText}>ギルドに戻る</Text>
+                <AutoRubyText text="← 戻る" style={styles.backText} rubySize={5} noWrap />
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center", marginTop: -4 }}>
                 <View style={{ marginTop: 12 }}><PixelSeedlingIcon size={18} /></View>
