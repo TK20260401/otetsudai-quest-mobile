@@ -128,7 +128,7 @@ export default function WalletDetailScreen({
       <View style={styles.center}>
         <PixelCoinIcon size={40} />
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={styles.loadingText}>おさいふを ひらいてるよ...</Text>
+        <AutoRubyText text="お財布を開いてるよ..." style={styles.loadingText} rubySize={5} />
       </View>
     );
   }
@@ -402,7 +402,7 @@ export default function WalletDetailScreen({
                   >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <PixelHourglassIcon size={16} />
-                      <Text style={styles.requestStatus}>しんせいちゅう</Text>
+                      <AutoRubyText text="申請中" style={styles.requestStatus} rubySize={5} noWrap />
                     </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
@@ -425,7 +425,7 @@ export default function WalletDetailScreen({
                   >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <PixelCheckIcon size={16} />
-                      <Text style={styles.requestStatus}>しょうにんずみ おかねをまってね</Text>
+                      <AutoRubyText text="承認済み お金を待ってね" style={styles.requestStatus} rubySize={5} noWrap />
                     </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
@@ -445,11 +445,11 @@ export default function WalletDetailScreen({
                   >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <PixelCrossIcon size={16} />
-                      <Text style={styles.requestStatus}>きょかされませんでした</Text>
+                      <AutoRubyText text="許可されませんでした" style={styles.requestStatus} rubySize={5} noWrap />
                     </View>
                     {req.reject_reason && (
                       <Text style={styles.requestReason}>
-                        りゆう: {req.reject_reason}
+                        理由: {req.reject_reason}
                       </Text>
                     )}
                     <Text style={styles.requestAmount}>

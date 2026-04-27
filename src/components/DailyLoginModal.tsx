@@ -154,7 +154,7 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
 
               <View style={{ marginTop: 12 }}>
                 <RpgButton tier="silver" size="md" onPress={onClose}>
-                  とじる
+                  閉じる
                 </RpgButton>
               </View>
             </>

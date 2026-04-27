@@ -118,7 +118,7 @@ export default function FamilyStampSendModal({
                 <TouchableOpacity
                   onPress={handleClose}
                   style={styles.closeBtn}
-                  accessibilityLabel="とじる"
+                  accessibilityLabel="閉じる"
                   accessibilityRole="button"
                 >
                   <Text style={styles.closeBtnText}>✕</Text>
@@ -143,7 +143,7 @@ export default function FamilyStampSendModal({
                           selectedRecipient === m.id && styles.recipientItemSelected,
                         ]}
                         onPress={() => setSelectedRecipient(m.id)}
-                        accessibilityLabel={`${m.name}に おくる`}
+                        accessibilityLabel={`${m.name}に送る`}
                         accessibilityRole="button"
                       >
                         <Text style={styles.recipientIcon}>{m.icon}</Text>
@@ -220,7 +220,7 @@ export default function FamilyStampSendModal({
                 accessibilityRole="button"
               >
                 {sending ? (
-                  <Text style={styles.sendText}>おくりちゅう...</Text>
+                  <Text style={styles.sendText}>送り中...</Text>
                 ) : (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                     <PixelLetterIcon size={20} />

@@ -130,7 +130,7 @@ export default function BadgeUnlockModal({
             <TouchableOpacity
               style={styles.closeButton}
               onPress={onClose}
-              accessibilityLabel="とじる"
+              accessibilityLabel="閉じる"
               accessibilityRole="button"
             >
               <Text style={styles.closeText}>やったー！</Text>
@@ -186,7 +186,7 @@ function PixelMedalFrame({ size = 140 }: { size?: number }) {
   );
 }
 
-/** 「そうび ゲット！」バナー */
+/** 「装備ゲット！」バナー */
 function UnlockBanner() {
   return (
     <View style={{ alignItems: "center", marginBottom: 8 }}>
@@ -213,7 +213,7 @@ function UnlockBanner() {
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 2,
       }}>
-        そうび ゲット！
+        装備ゲット！
       </Text>
     </View>
   );

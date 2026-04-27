@@ -72,11 +72,11 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
     setSending(false);
 
     if (error) {
-      alert("送信できませんでした", `もう一度 試してね\n(${error.message})`);
+      alert("送信できませんでした", `もう一度試してね\n(${error.message})`);
       return;
     }
     if (!data || data.length === 0) {
-      alert("送信できませんでした", "このメッセージには もう 返事しているかも");
+      alert("送信できませんでした", "このメッセージにはもう返事しているかも");
       return;
     }
 
@@ -119,7 +119,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
 
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
             <PixelLetterIcon size={22} />
-            <Text style={styles.header} adjustsFontSizeToFit numberOfLines={1}>おやからの メッセージ</Text>
+            <AutoRubyText text="親からのメッセージ" style={styles.header} rubySize={6} noWrap />
           </View>
 
           {/* 親メッセージ表示 */}
@@ -130,7 +130,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             </View>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCoinIcon size={16} />
-              <Text style={styles.rewardText}>{log.rewardAmount}えん</Text>
+              <Text style={styles.rewardText}>{log.rewardAmount}コロ</Text>
             </View>
 
             {parentStampDef && (
@@ -151,11 +151,11 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
 
           {/* 区切り */}
           <View style={styles.divider}>
-            <Text style={styles.dividerText}>↓ おへんじ しよう！ ↓</Text>
+            <AutoRubyText text="↓ 返事しよう！ ↓" style={styles.dividerText} rubySize={5} />
           </View>
 
           {/* スタンプ選択 */}
-          <Text style={styles.sectionLabel}>スタンプを えらんでね</Text>
+          <AutoRubyText text="スタンプを選んでね" style={styles.sectionLabel} rubySize={5} />
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -195,7 +195,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             style={styles.textInput}
             value={message}
             onChangeText={setMessage}
-            placeholder="おやに ひとこと！（にゅうりょく しなくても OK）"
+            placeholder="親に一言！（入力しなくてもOK）"
             placeholderTextColor={palette.textPlaceholder}
             multiline
             maxLength={100}
@@ -213,27 +213,27 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             accessibilityRole="button"
           >
             {sending ? (
-              <Text style={styles.sendText}>おくりちゅう...</Text>
+              <Text style={styles.sendText}>送り中...</Text>
             ) : (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelLetterIcon size={18} />
-                <Text style={styles.sendText}>おくる！</Text>
+                <Text style={styles.sendText}>送る！</Text>
               </View>
             )}
           </TouchableOpacity>
 
           <Text style={styles.hint}>
-            ※ スタンプ か メッセージの どちらかは かならず いれてね
+            ※ スタンプかメッセージのどちらかは必ず入れてね
           </Text>
 
           {onSkip && (
             <TouchableOpacity
               style={styles.skipButton}
               onPress={onSkip}
-              accessibilityLabel="あとで返事する"
+              accessibilityLabel="後で返事する"
               accessibilityRole="button"
             >
-              <Text style={styles.skipText}>あとで へんじする</Text>
+              <AutoRubyText text="後で返事する" style={styles.skipText} rubySize={5} />
             </TouchableOpacity>
           )}
         </ScrollView>

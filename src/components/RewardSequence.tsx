@@ -56,11 +56,11 @@ export default function RewardSequence({ show, level, rewardAmount = 0, badgeEar
 
             {badgeEarned && (
               <View style={styles.rewardRow}>
-                <Text style={styles.badgeText}>NEW そうび！</Text>
+                <Text style={styles.badgeText}>NEW 装備！</Text>
               </View>
             )}
 
-            <Text style={styles.tapHint}>タップして とじる</Text>
+            <Text style={styles.tapHint}>タップして閉じる</Text>
           </View>
         </TouchableOpacity>
       )}

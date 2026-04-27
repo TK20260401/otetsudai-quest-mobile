@@ -150,7 +150,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                           <TextInput
                             value={nameDraft}
                             onChangeText={setNameDraft}
-                            placeholder="なまえ"
+                            placeholder="名前"
                             placeholderTextColor={palette.textPlaceholder}
                             style={styles.nameInput}
                             maxLength={12}

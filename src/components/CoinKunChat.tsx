@@ -112,7 +112,7 @@ export default function CoinKunChat({ role }: { role: Role }) {
         {
           role: "assistant",
           content: isChild
-            ? "ごめんね、うまくいかなかったよ"
+            ? "ごめんね、上手くいかなかったよ"
             : "エラーが発生しました。",
         },
       ]);
@@ -176,10 +176,10 @@ export default function CoinKunChat({ role }: { role: Role }) {
                 <View style={styles.emptyState}>
                   <Text style={styles.emptyText}>
                     {role === "child"
-                      ? "コインくんになんでもきいてね！"
+                      ? "コインくんに何でも聞いてね！"
                       : role === "parent"
                         ? "クエスト教育についてご相談ください"
-                        : "ジョブサガについて何でもきいてね！"}
+                        : "ジョブサガについて何でも聞いてね！"}
                   </Text>
                 </View>
               )}
@@ -231,7 +231,7 @@ export default function CoinKunChat({ role }: { role: Role }) {
               <TextInput
                 value={input}
                 onChangeText={setInput}
-                placeholder={isChild ? "きいてみよう..." : "メッセージを入力..."}
+                placeholder={isChild ? "聞いてみよう..." : "メッセージを入力..."}
                 placeholderTextColor={palette.textPlaceholder}
                 style={styles.input}
                 editable={!loading}

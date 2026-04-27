@@ -41,7 +41,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
   async function handleSend() {
     const proposed = parseInt(amount);
     if (!proposed || proposed <= task.reward_amount) {
-      alert("⚠️", "いまの おだちんより おおきい きんがくを いれてね");
+      alert("⚠️", "今のお駄賃より大きい金額を入れてね");
       return;
     }
     setSending(true);
@@ -54,7 +54,7 @@ export default function PriceRequestModal({ visible, task, onClose, onSent }: Pr
       })
       .eq("id", task.id);
     setSending(false);
-    alert("📩 リクエストおくったよ！", "おやの へんじを まってね！");
+    alert("📩 リクエスト送ったよ！", "冒険団マスターの返事を待ってね！");
     onSent();
   }
 
