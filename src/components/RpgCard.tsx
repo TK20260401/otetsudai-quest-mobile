@@ -42,9 +42,8 @@ function createStyles(palette: Palette) {
     root: {
       borderRadius: 12,
       overflow: "hidden",
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: palette.border,
-      backgroundColor: palette.surface,
     },
     titleBar: {
       paddingHorizontal: 16,
