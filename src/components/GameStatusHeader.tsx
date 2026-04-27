@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import Svg, { Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import CharacterSvg from "./CharacterSvg";
 import WalletBalanceAnimation from "./WalletBalanceAnimation";
 import { useTheme, type Palette } from "../theme";
