@@ -1014,7 +1014,7 @@ export default function ChildDashboardScreen({
             {badges.length === 0 && (
               <AutoRubyText text="クエストをクリアしてスキルを解放しよう！" style={styles.emptyHint} rubySize={6} />
             )}
-            <Text style={styles.trophyHint}>タップで トロフィーケースを ひらく</Text>
+            <AutoRubyText text="タップでトロフィーケースを開く" style={styles.trophyHint} rubySize={4} />
           </RpgCard>
         </TouchableOpacity>
 

@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
+import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AppAlertProvider } from "./src/components/AppAlert";
@@ -9,6 +10,7 @@ import {
   loadSavedAccessibility,
   applyGlobalTextScaling,
 } from "./src/accessibility";
+import { touchActivity } from "./src/lib/auto-logout";
 
 applyGlobalTextScaling();
 
@@ -25,16 +27,25 @@ export default function App() {
 
   if (!loaded) return null;
 
+  // タッチイベントをキャプチャして自動ログアウトタイマーをリセット
+  // onStartShouldSetResponderCapture は false を返すので子要素の操作を妨げない
+  const handleTouch = useCallback(() => {
+    touchActivity();
+    return false;
+  }, []);
+
   return (
-    <SafeAreaProvider>
-      <AccessibilityProvider initial={initial}>
-        <ThemeProvider initial="dungeon">
-          <AppAlertProvider>
-            <StatusBar style="dark" />
-            <AppNavigator />
-          </AppAlertProvider>
-        </ThemeProvider>
-      </AccessibilityProvider>
-    </SafeAreaProvider>
+    <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleTouch}>
+      <SafeAreaProvider>
+        <AccessibilityProvider initial={initial}>
+          <ThemeProvider initial="dungeon">
+            <AppAlertProvider>
+              <StatusBar style="dark" />
+              <AppNavigator />
+            </AppAlertProvider>
+          </ThemeProvider>
+        </AccessibilityProvider>
+      </SafeAreaProvider>
+    </View>
   );
 }
