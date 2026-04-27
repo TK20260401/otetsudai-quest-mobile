@@ -14,7 +14,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default function RpgCard({ tier: _tier, variant = "full", style, contentStyle, title, children }: Props) {
+export default function RpgCard({ tier: _tier = "gold", variant = "full", style, contentStyle, title, children }: Props) {
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
 

@@ -287,7 +287,7 @@ export const dungeon: Palette = {
   backgroundLanding: "#150a24",
   surface: "#2a1a3e",
   surfaceMuted: "#36205d",
-  border: "#4a3a5e", // subtle. on bg: 1.8:1 (装飾的)
+  border: "#6a5a8e", // on bg #1a0f2e: 3.1:1 ✓ — カード枠が視認可能
   borderStrong: "#6b4cdb",
 
   switchTrackOff: "#36205d",

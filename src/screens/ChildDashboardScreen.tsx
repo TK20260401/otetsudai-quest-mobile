@@ -795,7 +795,7 @@ export default function ChildDashboardScreen({
         {/* キャラクター育成 */}
         <RpgCard
           tier="violet"
-          style={{ marginHorizontal: 12, marginTop: 12, overflow: "hidden" }}
+          style={{ marginHorizontal: 12, marginTop: 12, marginBottom: 12, overflow: "hidden" }}
           contentStyle={{ flexDirection: "row", alignItems: "flex-start" }}
         >
           <BackgroundAmbient preset="home" width={400} height={300} />
@@ -1732,10 +1732,9 @@ function createStyles(p: Palette) {
     flexDirection: "row",
     alignItems: "flex-start",
     margin: 12,
-    marginBottom: 0,
     padding: 16,
     borderRadius: 12,
-    borderWidth: 1,
+    borderWidth: 1.5,
   },
   levelCardActive: {
     borderColor: p.borderStrong,
@@ -1761,7 +1760,6 @@ function createStyles(p: Palette) {
   levelInfo: { flex: 1, overflow: "hidden" as const },
   levelTitle: { fontSize: rf(14), fontWeight: "bold" as const, color: p.textStrong },
   speechBubble: {
-    backgroundColor: `${p.surface}b3`,
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingTop: 10,
@@ -2297,10 +2295,10 @@ function createStyles(p: Palette) {
   },
   trophyHint: {
     textAlign: "center",
-    color: p.textMuted,
+    color: p.primary,
     fontSize: 10,
     marginTop: 8,
-    fontStyle: "italic",
+    textDecorationLine: "underline",
   },
   titleBadge: {
     paddingHorizontal: 6,
