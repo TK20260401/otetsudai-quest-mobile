@@ -409,10 +409,10 @@ function createStyles(p: Palette) {
     },
     actionBtnText: { fontSize: 11, fontWeight: "600", color: p.textStrong },
     actionBtnDanger: {
-      borderColor: "#E74C3C",
-      backgroundColor: "rgba(231,76,60,0.1)",
+      borderColor: p.red,
+      backgroundColor: p.redLight,
     },
-    actionBtnDangerText: { color: "#E74C3C" },
+    actionBtnDangerText: { color: p.red },
     emptyText: {
       fontSize: 13,
       color: p.textMuted,

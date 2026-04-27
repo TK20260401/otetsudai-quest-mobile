@@ -237,11 +237,11 @@ function createStyles(p: Palette) {
       color: p.white,
     },
     inputError: {
-      borderColor: "#dc2626",
+      borderColor: p.red,
       borderWidth: 2,
     },
     errorText: {
-      color: "#dc2626",
+      color: p.red,
       fontSize: 12,
       fontWeight: "bold",
       marginTop: -12,

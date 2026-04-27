@@ -2395,7 +2395,7 @@ function createStyles(p: Palette) {
     padding: 12,
     gap: 10,
     borderWidth: 2,
-    borderColor: "#FFD700",
+    borderColor: p.goldBorder,
   },
   questClearBubble: {
     flex: 1,
