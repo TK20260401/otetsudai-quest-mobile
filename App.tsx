@@ -38,7 +38,7 @@ export default function App() {
     <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleTouch}>
       <SafeAreaProvider>
         <AccessibilityProvider initial={initial}>
-          <ThemeProvider initial="dungeon">
+          <ThemeProvider initial="forest">
             <AppAlertProvider>
               <StatusBar style="dark" />
               <AppNavigator />

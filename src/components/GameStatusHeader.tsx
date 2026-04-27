@@ -137,8 +137,8 @@ function createStyles(palette: Palette) {
     root: {
       marginBottom: 12,
       borderRadius: 16,
-      borderWidth: 1.5,
-      borderColor: palette.border,
+      borderWidth: 2,
+      borderColor: `${palette.primary}99`,
       overflow: "hidden",
     },
     nameRow: {
@@ -172,7 +172,7 @@ function createStyles(palette: Palette) {
       paddingVertical: 10,
       borderRadius: 8,
       borderWidth: 1.5,
-      borderColor: palette.border,
+      borderColor: palette.primary,
     },
     backText: {
       fontSize: 8,
@@ -187,7 +187,7 @@ function createStyles(palette: Palette) {
       height: 48,
       borderRadius: 8,
       borderWidth: 1.5,
-      borderColor: palette.border,
+      borderColor: `${palette.primary}55`,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -199,13 +199,13 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 4,
       paddingVertical: 1,
       borderWidth: 1.5,
-      borderColor: palette.border,
+      borderColor: palette.primary,
       backgroundColor: palette.background,
     },
     lvText: {
       fontSize: 9,
       fontWeight: "800",
-      color: palette.textStrong,
+      color: palette.primary,
     },
     middle: {
       flex: 1,
@@ -241,7 +241,7 @@ function createStyles(palette: Palette) {
       alignItems: "center",
       gap: 4,
       borderWidth: 1.5,
-      borderColor: palette.border,
+      borderColor: `${palette.primary}80`,
       borderRadius: 999,
       paddingHorizontal: 8,
       paddingVertical: 2,
