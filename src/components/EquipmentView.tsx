@@ -63,12 +63,11 @@ function StatIcon({ type, color }: { type: string; color: string }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "rgba(26,26,46,0.9)",
     borderRadius: 8,
     padding: 8,
     marginTop: 6,
-    borderWidth: 1,
-    borderColor: "rgba(255,215,0,0.3)",
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.15)",
   },
   title: {
     fontSize: 9,

@@ -100,10 +100,11 @@ function GaugeIcon({ type }: { type: "heart" | "magic" | "sword" }) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#1A1A2E",
     borderRadius: 10,
     padding: 8,
     gap: 4,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.15)",
   },
   row: {
     flexDirection: "row",
