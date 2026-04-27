@@ -265,10 +265,9 @@ function createStyles(p: Palette) {
       marginBottom: 16,
     },
     parentCard: {
-      backgroundColor: p.accentLight,
       borderRadius: 16,
       padding: 20,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.accent,
       alignItems: "center",
     },
@@ -296,11 +295,12 @@ function createStyles(p: Palette) {
       color: p.textStrong,
     },
     parentMsgBubble: {
-      backgroundColor: p.surface,
       borderRadius: 12,
       padding: 12,
       width: "100%",
       marginTop: 8,
+      borderWidth: 1.5,
+      borderColor: p.border,
     },
     parentMsgText: {
       fontSize: 15,
@@ -328,16 +328,14 @@ function createStyles(p: Palette) {
     },
     stampItem: {
       alignItems: "center",
-      backgroundColor: p.surface,
       borderRadius: 12,
       padding: 10,
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.border,
       minWidth: 72,
     },
     stampItemSelected: {
       borderColor: p.primary,
-      backgroundColor: p.primaryLight,
     },
     stampEmoji: { fontSize: 28 },
     stampSvgWrap: {
@@ -357,7 +355,7 @@ function createStyles(p: Palette) {
       fontWeight: "bold",
     },
     textInput: {
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.border,
       borderRadius: 12,
       padding: 14,
@@ -365,7 +363,6 @@ function createStyles(p: Palette) {
       minHeight: 50,
       marginTop: 12,
       marginBottom: 12,
-      backgroundColor: p.surfaceMuted,
       color: p.textStrong,
     },
     sendButton: {
