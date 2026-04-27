@@ -296,7 +296,7 @@ export default function InvestScreen({
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
           <PixelSeedlingIcon size={18} />
-          <RubyText style={styles.headerTitle} parts={[["投資", "とうし"]]} rubySize={6} />
+          <RubyText style={styles.headerTitle} parts={["お", ["金", "かね"], "の", ["冒険", "ぼうけん"]]} rubySize={6} />
         </View>
       </View>
 
@@ -343,12 +343,12 @@ export default function InvestScreen({
         {/* Portfolio */}
         {portfolios.length === 0 ? (
           <View style={styles.emptyCard}>
-            <AutoRubyText text="まだ投資はありません。" style={styles.emptyText} rubySize={5} />
+            <AutoRubyText text="まだお金の冒険はありません。" style={styles.emptyText} rubySize={5} />
             <AutoRubyText text="「株を買いたい！」ボタンで始めよう！" style={styles.emptyText} rubySize={5} />
             <View style={styles.tipCard}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelSeedlingIcon size={16} />
-                <AutoRubyText text="投資の基本" style={styles.tipTitle} rubySize={6} />
+                <AutoRubyText text="お金の冒険の基本" style={styles.tipTitle} rubySize={6} />
               </View>
               <AutoRubyText text="株は「お店の一部を持つ」こと。" style={styles.tipText} rubySize={5} />
               <AutoRubyText text="お店が頑張ると、株の値段が上がる！" style={styles.tipText} rubySize={5} />

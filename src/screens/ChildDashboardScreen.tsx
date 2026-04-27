@@ -665,7 +665,7 @@ export default function ChildDashboardScreen({
   const levelInfo = getLevelProgress(totalEarned);
 
   return (
-    <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
+    <SafeAreaView style={styles.container} accessibilityLabel="子どもダッシュボード">
       <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
         <GameStatusHeader
           title={childName}
@@ -1068,27 +1068,33 @@ export default function ChildDashboardScreen({
             accessibilityState={{ selected: tab === "quests" }}
             accessibilityLabel="クエストタブ"
           >
-            <Text
-              style={[
-                styles.tabText,
-                tab === "quests" && styles.tabTextActive,
-              ]}
-            >
-              クエスト
-            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelSwordIcon size={14} />
+              <Text
+                style={[
+                  styles.tabText,
+                  tab === "quests" && styles.tabTextActive,
+                ]}
+              >
+                クエスト
+              </Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tabButton, tab === "history" && styles.tabActive]}
             onPress={() => setTab("history")}
             accessibilityRole="tab"
             accessibilityState={{ selected: tab === "history" }}
-            accessibilityLabel="ぼうけんログタブ"
+            accessibilityLabel="冒険ログタブ"
           >
-            <RubyText
-              style={tab === "history" ? styles.tabTextActive : styles.tabText}
-              parts={[["冒険", "ぼうけん"], "ログ"]}
-              rubySize={6}
-            />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <PixelBookIcon size={14} />
+              <RubyText
+                style={tab === "history" ? styles.tabTextActive : styles.tabText}
+                parts={[["冒険", "ぼうけん"], "ログ"]}
+                rubySize={6}
+              />
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -1155,7 +1161,7 @@ export default function ChildDashboardScreen({
                           style={styles.specialClearButton}
                           onPress={() => confirmAndComplete(task)}
                           disabled={submitting === task.id}
-                          accessibilityLabel={`とくべつクエスト${task.title}をクリア`}
+                          accessibilityLabel={`特別クエスト${task.title}をクリア`}
                         >
                           <Text style={styles.clearButtonText}>
                             {submitting === task.id ? "..." : "★ クリア！"}
@@ -1232,7 +1238,7 @@ export default function ChildDashboardScreen({
                           <AnimatedButton
                             style={styles.priceUpButton}
                             onPress={() => setPriceRequestTask(task)}
-                            accessibilityLabel={`${task.title}のねあげリクエスト`}
+                            accessibilityLabel={`${task.title}の値上げリクエスト`}
                           >
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 1 }}>
                               <PixelCoinIcon size={12} />
@@ -1522,11 +1528,11 @@ export default function ChildDashboardScreen({
             <TouchableOpacity
               onPress={() => setNudgeVisible(false)}
               style={styles.nudgeSkipLink}
-              accessibilityLabel="あとで"
+              accessibilityLabel="後で"
               accessibilityRole="button"
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <Text style={styles.nudgeSkipText}>あとで</Text>
+              <Text style={styles.nudgeSkipText}>後で</Text>
             </TouchableOpacity>
           </View>
         </View>
