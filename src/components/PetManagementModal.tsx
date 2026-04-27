@@ -272,7 +272,8 @@ function createStyles(p: Palette) {
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 18,
-      backgroundColor: p.surfaceMuted,
+      borderWidth: 1.5,
+      borderColor: p.border,
     },
     closeText: {
       fontSize: 16,
@@ -317,9 +318,8 @@ function createStyles(p: Palette) {
     },
     nameInput: {
       flex: 1,
-      backgroundColor: p.surfaceMuted,
       borderRadius: 8,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.border,
       paddingHorizontal: 10,
       paddingVertical: 6,
@@ -349,8 +349,9 @@ function createStyles(p: Palette) {
     },
     progressTrack: {
       height: 5,
-      backgroundColor: p.surfaceMuted,
       borderRadius: 3,
+      borderWidth: 0.5,
+      borderColor: p.border,
       overflow: "hidden",
       marginTop: 4,
     },
