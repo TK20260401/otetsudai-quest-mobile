@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import Svg, { Rect, Defs, LinearGradient, Stop } from "react-native-svg";
 import CharacterSvg from "./CharacterSvg";
 import WalletBalanceAnimation from "./WalletBalanceAnimation";
 import { useTheme, type Palette } from "../theme";
@@ -38,23 +37,6 @@ export default function GameStatusHeader({
 
   return (
     <View style={styles.root}>
-      {/* 上部ゴールド装飾バー */}
-      <Svg width="100%" height={6} viewBox="0 0 400 6" preserveAspectRatio="none">
-        <Defs>
-          <LinearGradient id="ghs-top" x1="0%" y1="0%" x2="100%" y2="0%">
-            <Stop offset="0%" stopColor="#8A5200" />
-            <Stop offset="30%" stopColor="#FFA623" />
-            <Stop offset="50%" stopColor="#FFE066" />
-            <Stop offset="70%" stopColor="#FFA623" />
-            <Stop offset="100%" stopColor="#8A5200" />
-          </LinearGradient>
-        </Defs>
-        <Rect x={0} y={0} width={400} height={4} fill="url(#ghs-top)" />
-        <Rect x={0} y={4} width={400} height={1} fill="#6B3E00" opacity={0.7} />
-        <Rect x={2} y={1} width={3} height={3} fill="#E74C3C" />
-        <Rect x={395} y={1} width={3} height={3} fill="#E74C3C" />
-      </Svg>
-
       {/* 名前行 */}
       <View style={styles.nameRow}>
         <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{title}</Text>
@@ -154,15 +136,9 @@ function createStyles(palette: Palette) {
     root: {
       marginBottom: 12,
       borderRadius: 16,
-      borderWidth: 2,
-      borderColor: `${palette.primary}99`,
-      backgroundColor: palette.surface,
+      borderWidth: 1.5,
+      borderColor: palette.border,
       overflow: "hidden",
-      shadowColor: palette.primary,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.35,
-      shadowRadius: 10,
-      elevation: 5,
     },
     nameRow: {
       flexDirection: "row",
@@ -194,9 +170,8 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 10,
       paddingVertical: 10,
       borderRadius: 8,
-      borderWidth: 2,
-      borderColor: palette.primary,
-      backgroundColor: palette.background,
+      borderWidth: 1.5,
+      borderColor: palette.border,
     },
     backText: {
       fontSize: 8,
@@ -210,9 +185,8 @@ function createStyles(palette: Palette) {
       width: 48,
       height: 48,
       borderRadius: 8,
-      backgroundColor: `${palette.surfaceMuted}B3`,
-      borderWidth: 1,
-      borderColor: `${palette.primary}55`,
+      borderWidth: 1.5,
+      borderColor: palette.border,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -220,17 +194,17 @@ function createStyles(palette: Palette) {
       position: "absolute",
       bottom: -4,
       right: -4,
-      backgroundColor: palette.primary,
       borderRadius: 6,
       paddingHorizontal: 4,
       paddingVertical: 1,
-      borderWidth: 1,
-      borderColor: palette.accent,
+      borderWidth: 1.5,
+      borderColor: palette.border,
+      backgroundColor: palette.background,
     },
     lvText: {
       fontSize: 9,
       fontWeight: "800",
-      color: palette.black,
+      color: palette.textStrong,
     },
     middle: {
       flex: 1,
@@ -239,7 +213,7 @@ function createStyles(palette: Palette) {
     title: {
       fontSize: 16,
       fontWeight: "bold",
-      color: palette.accent,
+      color: palette.textStrong,
       flexShrink: 1,
     },
     badge: {
@@ -265,9 +239,8 @@ function createStyles(palette: Palette) {
       flexDirection: "row",
       alignItems: "center",
       gap: 4,
-      backgroundColor: `${palette.primary}26`,
-      borderWidth: 1,
-      borderColor: `${palette.primary}80`,
+      borderWidth: 1.5,
+      borderColor: palette.border,
       borderRadius: 999,
       paddingHorizontal: 8,
       paddingVertical: 2,
@@ -275,7 +248,7 @@ function createStyles(palette: Palette) {
     goldText: {
       fontSize: 11,
       fontWeight: "700",
-      color: palette.accent,
+      color: palette.textStrong,
     },
     rightRow: {
       flexDirection: "row",
