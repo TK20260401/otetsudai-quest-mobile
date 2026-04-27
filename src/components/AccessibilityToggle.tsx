@@ -10,7 +10,7 @@ import { useTheme } from "../theme";
 
 /**
  * 全画面共通のアクセシビリティフローティングトグル
- * 画面右上に3ボタン（ルビ / 白黒 / 拡大）を横並びで常時表示
+ * 画面右上に3ボタン（ルビ / ハイコントラスト / 拡大）を横並びで常時表示
  *
  * 読み上げやスイッチ操作は OS 側 (VoiceOver/TalkBack/Switch Control) に委譲。
  * ここで扱うのは子供自身が切り替える一次アクセシビリティのみ。
@@ -53,9 +53,9 @@ export default function AccessibilityToggle() {
       />
       <PillButton
         active={monochrome}
-        label={`白黒 ${monochrome ? "ON" : "OFF"}`}
+        label={`ハイコントラスト ${monochrome ? "ON" : "OFF"}`}
         onPress={() => setMonochrome(!monochrome)}
-        a11yLabel={`白黒モード ${monochrome ? "オン" : "オフ"}`}
+        a11yLabel={`ハイコントラスト ${monochrome ? "オン" : "オフ"}`}
         palette={palette}
       />
       <PillButton
