@@ -109,17 +109,12 @@ export default function RpgCard({ tier = "gold", variant = "full", style, conten
   );
 }
 
-function createStyles(palette: Palette) {
+function createStyles(_palette: Palette) {
   return StyleSheet.create({
     root: {
-      backgroundColor: palette.surface,
       borderRadius: 12,
       overflow: "hidden",
       borderWidth: 1,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.4,
-      shadowRadius: 8,
-      elevation: 4,
     },
     titleBar: {
       paddingHorizontal: 16,

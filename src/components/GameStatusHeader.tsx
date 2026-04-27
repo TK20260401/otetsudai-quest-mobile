@@ -73,9 +73,9 @@ export default function GameStatusHeader({
 
       <View style={styles.row}>
         {onBack ? (
-          <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel="もどる">
+          <TouchableOpacity onPress={onBack} style={styles.backBtn} accessibilityLabel="戻る">
             <PixelHouseIcon size={12} />
-            <Text style={styles.backText}>もどる</Text>
+            <Text style={styles.backText}>戻る</Text>
           </TouchableOpacity>
         ) : null}
 

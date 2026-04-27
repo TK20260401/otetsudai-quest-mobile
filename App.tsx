@@ -18,6 +18,13 @@ export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [initial, setInitial] = useState<Parameters<typeof AccessibilityProvider>[0]["initial"]>({});
 
+  // タッチイベントをキャプチャして自動ログアウトタイマーをリセット
+  // onStartShouldSetResponderCapture は false を返すので子要素の操作を妨げない
+  const handleTouch = useCallback(() => {
+    touchActivity();
+    return false;
+  }, []);
+
   useEffect(() => {
     loadSavedAccessibility().then((saved) => {
       setInitial(saved);
@@ -26,13 +33,6 @@ export default function App() {
   }, []);
 
   if (!loaded) return null;
-
-  // タッチイベントをキャプチャして自動ログアウトタイマーをリセット
-  // onStartShouldSetResponderCapture は false を返すので子要素の操作を妨げない
-  const handleTouch = useCallback(() => {
-    touchActivity();
-    return false;
-  }, []);
 
   return (
     <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleTouch}>

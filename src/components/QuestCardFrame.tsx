@@ -72,17 +72,12 @@ export default function QuestCardFrame({ tier, children }: Props) {
   );
 }
 
-function createStyles(p: Palette) {
+function createStyles(_p: Palette) {
   return StyleSheet.create({
     container: {
       marginBottom: 8,
       borderRadius: 8,
       overflow: "hidden",
-      shadowColor: p.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      elevation: 3,
     },
     frameWrap: {
       height: 8,
@@ -93,7 +88,6 @@ function createStyles(p: Palette) {
     // ダンジョンテーマでは surface (dark purple) を使用。以前 "#FFFFFF"
     // ハードコードで白地となり、textStrong (near-white) の本文が沈んでいた。
     content: {
-      backgroundColor: p.surface,
       paddingHorizontal: 14,
       paddingVertical: 12,
     },

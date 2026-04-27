@@ -957,7 +957,7 @@ export default function ChildDashboardScreen({
         )}
 
         {/* ファミリースタンプリレー */}
-        <View>
+        <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
           <FamilyMessageCard messages={familyMessages} currentUserId={childId} />
           <AnimatedButton
             onPress={() => setStampSendVisible(true)}
@@ -976,9 +976,9 @@ export default function ChildDashboardScreen({
                 key={req.id}
                 style={[
                   styles.spendStatusCard,
-                  req.status === "pending" && { backgroundColor: palette.accentLight },
-                  req.status === "approved" && { backgroundColor: palette.greenLight },
-                  req.status === "rejected" && { backgroundColor: palette.redLight },
+                  req.status === "pending" && { borderColor: palette.accent },
+                  req.status === "approved" && { borderColor: palette.green },
+                  req.status === "rejected" && { borderColor: palette.red },
                 ]}
               >
                 <View style={styles.spendStatusIcon}>
@@ -1736,22 +1736,14 @@ function createStyles(p: Palette) {
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    shadowColor: p.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   levelCardActive: {
-    backgroundColor: p.primaryLight,
     borderColor: p.borderStrong,
   },
   levelCardNormal: {
-    backgroundColor: p.accentLight,
     borderColor: p.goldBorder,
   },
   levelCardLonely: {
-    backgroundColor: p.walletSaveBg,
     borderColor: p.walletSaveBorder,
   },
   characterColumn: {
@@ -1814,16 +1806,12 @@ function createStyles(p: Palette) {
 
   // Wallet
   walletCard: {
-    backgroundColor: p.surface,
     margin: 12,
     marginBottom: 0,
     padding: 16,
     borderRadius: 12,
-    shadowColor: p.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   walletTitleRow: {
     flexDirection: "row" as const,
@@ -1891,10 +1879,6 @@ function createStyles(p: Palette) {
     borderRadius: 12,
     borderWidth: 2,
     borderColor: "rgba(255,255,255,0.3)",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
-    elevation: 4,
     minHeight: 72,
   },
   quickNavLabel: {
@@ -1961,11 +1945,6 @@ function createStyles(p: Palette) {
     marginTop: 12,
     borderWidth: 2,
     borderColor: p.walletInvestBorder,
-    shadowColor: p.walletInvest,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
   },
   investMainCtaText: {
     color: p.white,
@@ -1982,11 +1961,6 @@ function createStyles(p: Palette) {
     marginTop: 12,
     borderWidth: 3,
     borderColor: p.walletInvestBorder,
-    shadowColor: p.walletInvest,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 8,
-    elevation: 8,
   },
   investTopCtaText: {
     color: p.white,
@@ -2011,6 +1985,8 @@ function createStyles(p: Palette) {
     borderRadius: 10,
     padding: 10,
     gap: 8,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   spendStatusIcon: { width: 24, alignItems: "center" as const, justifyContent: "center" as const },
   spendStatusText: {
@@ -2035,7 +2011,6 @@ function createStyles(p: Palette) {
   // Badges
   // Stamp notifications
   stampCard: {
-    backgroundColor: p.accentLight,
     margin: 12,
     marginBottom: 0,
     padding: 16,
@@ -2046,10 +2021,11 @@ function createStyles(p: Palette) {
   stampNotif: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: p.surface,
     borderRadius: 10,
     padding: 10,
     marginBottom: 6,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   stampNotifEmoji: { fontSize: 32, marginRight: 10 },
   stampNotifSvgWrap: {
@@ -2064,11 +2040,12 @@ function createStyles(p: Palette) {
   stampNotifMsg: { fontSize: 13, color: p.primaryDark, marginTop: 2 },
 
   badgeCard: {
-    backgroundColor: p.surface,
     margin: 12,
     marginBottom: 0,
     padding: 16,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   sectionTitleRow: {
     flexDirection: "row" as const,
@@ -2136,19 +2113,15 @@ function createStyles(p: Palette) {
   screenTitleBar: {
     marginHorizontal: 12,
     marginBottom: 4,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    backgroundColor: p.surface,
-    borderWidth: 1,
-    borderColor: `${p.primary}66`,
+    paddingVertical: 6,
+    paddingHorizontal: 4,
     flexDirection: "row" as const,
     alignItems: "center" as const,
-    gap: 8,
+    gap: 6,
   },
   screenTitleAccent: {
-    width: 4,
-    height: 20,
+    width: 3,
+    height: 16,
     backgroundColor: p.primary,
     borderRadius: 2,
   },
@@ -2174,17 +2147,11 @@ function createStyles(p: Palette) {
     marginBottom: 8,
   },
   specialQuestCard: {
-    backgroundColor: p.goldLight,
     borderWidth: 2,
     borderColor: p.goldBorder,
     padding: 14,
     borderRadius: 14,
     marginBottom: 10,
-    shadowColor: p.gold,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 3,
   },
   specialQuestHeader: {
     flexDirection: "row" as const,
@@ -2236,10 +2203,11 @@ function createStyles(p: Palette) {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: p.surface,
     padding: 14,
     borderRadius: 12,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   questInfo: { flexDirection: "row", alignItems: "center", flex: 1 },
   questIcon: { width: 32, marginRight: 10, alignItems: "center" as const, justifyContent: "center" as const },
@@ -2295,10 +2263,11 @@ function createStyles(p: Palette) {
   historyItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: p.surface,
     padding: 12,
     borderRadius: 10,
     marginBottom: 6,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   historyType: { marginRight: 10, width: 28, alignItems: "center" as const, justifyContent: "center" as const },
   historyInfo: { flex: 1 },
@@ -2314,10 +2283,11 @@ function createStyles(p: Palette) {
   },
   emptyCard: {
     alignItems: "center" as const,
-    backgroundColor: p.surface,
     borderRadius: 12,
     padding: 24,
     marginBottom: 8,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   emptyHint: {
     textAlign: "center",
@@ -2360,7 +2330,6 @@ function createStyles(p: Palette) {
     fontWeight: "bold",
   },
   emptySpecialCard: {
-    backgroundColor: p.accentLight,
     borderRadius: 12,
     padding: 24,
     alignItems: "center",
@@ -2384,12 +2353,13 @@ function createStyles(p: Palette) {
     marginBottom: 8,
   },
   repliedCard: {
-    backgroundColor: p.surface,
     borderRadius: 10,
     padding: 12,
     marginBottom: 6,
     borderLeftWidth: 3,
     borderLeftColor: p.primary,
+    borderWidth: 1,
+    borderColor: p.border,
   },
   repliedTaskName: {
     fontSize: 13,
@@ -2480,7 +2450,6 @@ function createStyles(p: Palette) {
     marginBottom: 0,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: p.accentLight,
     borderWidth: 1,
     borderColor: p.accent,
     alignItems: "center" as const,
@@ -2498,7 +2467,6 @@ function createStyles(p: Palette) {
     margin: 12,
     padding: 14,
     borderRadius: 12,
-    backgroundColor: p.primaryLight,
     borderWidth: 1,
     borderColor: p.primary,
     alignItems: "center" as const,
@@ -2554,7 +2522,6 @@ function createStyles(p: Palette) {
   },
   proposalSubmitText: { fontSize: 14, fontWeight: "bold" as const, color: p.white },
   stampRelayBtn: {
-    backgroundColor: p.primaryLight,
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: "center" as const,
