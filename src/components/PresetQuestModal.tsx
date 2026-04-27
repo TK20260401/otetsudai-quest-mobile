@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../theme";
-import { RubyText } from "./Ruby";
+import { RubyText, AutoRubyText } from "./Ruby";
 import { PixelPencilIcon } from "./PixelIcons";
 import { PRESET_QUESTS, type PresetQuest } from "../data/presetQuests";
 
@@ -93,9 +93,7 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
                     <Text style={styles.mainTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                       {q.mainTitle}
                     </Text>
-                    <Text style={styles.subLabel} numberOfLines={1}>
-                      {q.subLabel}
-                    </Text>
+                    <AutoRubyText text={q.subLabel} style={styles.subLabel} rubySize={5} noWrap />
                   </View>
                   <Text style={styles.reward}>¥{q.suggestedReward}</Text>
                 </TouchableOpacity>
@@ -106,7 +104,7 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
             <TouchableOpacity
               style={[styles.item, styles.customItem]}
               onPress={handleSelectCustom}
-              accessibilityLabel="その他。じぶんで かんがえて オリジナルクエストを つくる"
+              accessibilityLabel="その他。自分で考えてオリジナルクエストを作る"
               accessibilityRole="button"
             >
               <View style={styles.iconWrap}>
@@ -116,11 +114,9 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
                 <Text style={[styles.mainTitle, styles.customMainTitle]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                   その他
                 </Text>
-                <Text style={styles.subLabel} numberOfLines={1}>
-                  じぶんで かんがえる
-                </Text>
+                <AutoRubyText text="自分で考える" style={styles.subLabel} rubySize={5} noWrap />
               </View>
-              <Text style={[styles.reward, styles.customReward]}>つくる</Text>
+              <AutoRubyText text="作る" style={[styles.reward, styles.customReward]} rubySize={5} noWrap />
             </TouchableOpacity>
           </ScrollView>
         </View>

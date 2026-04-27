@@ -371,11 +371,11 @@ export default function ParentDashboardScreen({
   async function handleReject(logId: string) {
     const reasons = [
       "🔄 やり直し",
-      "もう少し 丁寧に",
-      "最後まで やろう",
-      "時間を かけてね",
+      "もう少し丁寧に",
+      "最後までやろう",
+      "時間をかけてね",
     ];
-    alert("やり直し", "理由を 選んでね", [
+    alert("やり直し", "理由を選んでね", [
       ...reasons.map((r) => ({
         text: r,
         onPress: async () => {
@@ -394,7 +394,7 @@ export default function ParentDashboardScreen({
   async function handleApproveSpend(req: SpendRequest) {
     const childWallet = wallets[req.child_id];
     if (!childWallet || childWallet.spending_balance < req.amount) {
-      alert("エラー", "残高が たりません");
+      alert("エラー", "残高が足りません");
       return;
     }
 
@@ -428,9 +428,9 @@ export default function ParentDashboardScreen({
   async function handleRejectSpend(reqId: string) {
     await supabase
       .from("otetsudai_spend_requests")
-      .update({ status: "rejected", reject_reason: "きょかされませんでした" })
+      .update({ status: "rejected", reject_reason: "許可されませんでした" })
       .eq("id", reqId);
-    alert("❌", "リクエストを きょかしませんでした");
+    alert("❌", "リクエストを許可しませんでした");
     await loadData();
   }
 
@@ -537,7 +537,7 @@ export default function ParentDashboardScreen({
   }
 
   async function handleDeleteTask(taskId: string) {
-    alert("削除", "この クエストを 削除しますか？", [
+    alert("削除", "このクエストを削除しますか？", [
       { text: "キャンセル", style: "cancel" },
       {
         text: "削除する",
@@ -567,12 +567,12 @@ export default function ParentDashboardScreen({
         price_change_comment: `報酬 ${task.reward_amount}→${task.proposed_reward}コロにアップ！`,
       })
       .eq("id", task.id);
-    alert("✅ 承認", `${task.title}の 報酬を ${task.proposed_reward}コロに しました`);
+    alert("✅ 承認", `${task.title}の報酬を${task.proposed_reward}コロにしました`);
     await loadData();
   }
 
   async function handleRejectPriceRequest(task: Task) {
-    alert("❌ 却下", `${task.title}の ねあげリクエストを 却下しますか？`, [
+    alert("❌ 却下", `${task.title}の値上げリクエストを却下しますか？`, [
       { text: "キャンセル", style: "cancel" },
       {
         text: "却下する",
@@ -583,7 +583,7 @@ export default function ParentDashboardScreen({
             .update({
               proposal_status: "rejected",
               proposed_reward: null,
-              price_change_comment: "いまの きんがくで がんばろう！",
+              price_change_comment: "今の金額で頑張ろう！",
             })
             .eq("id", task.id);
           await loadData();
@@ -633,7 +633,7 @@ export default function ParentDashboardScreen({
   const pendingCount = pendingLogs.length + pendingSpends.length + questProposals.length;
 
   return (
-    <SafeAreaView style={styles.container} accessibilityLabel="おやダッシュボード">
+    <SafeAreaView style={styles.container} accessibilityLabel="親ダッシュボード">
       <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
         <GameStatusHeader
           title="クエストマスター"
@@ -672,7 +672,7 @@ export default function ParentDashboardScreen({
           onPress={() => setTab("approve")}
           accessibilityRole="tab"
           accessibilityState={{ selected: tab === "approve" }}
-          accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
+          accessibilityLabel={`承認タブ${pendingCount > 0 ? ` 未承認${pendingCount}件` : ""}`}
         >
           <View style={styles.headerBadgeRow}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><Text style={tab === "approve" ? styles.tabTextActive : styles.tabText}>承認</Text></View>
@@ -697,7 +697,7 @@ export default function ParentDashboardScreen({
           onPress={() => setTab("children")}
           accessibilityRole="tab"
           accessibilityState={{ selected: tab === "children" }}
-          accessibilityLabel="こどもタブ"
+          accessibilityLabel="子どもタブ"
         >
           <Text style={[styles.tabText, tab === "children" && styles.tabTextActive]}>子ども</Text>
         </TouchableOpacity>
@@ -1424,7 +1424,7 @@ export default function ParentDashboardScreen({
                 style={styles.formInput}
                 value={taskForm.title}
                 onChangeText={(t) => setTaskForm({ ...taskForm, title: t })}
-                placeholder="おふろそうじ、しゅくだい など"
+                placeholder="お風呂掃除、宿題 など"
                 placeholderTextColor={palette.textPlaceholder}
               />
 
@@ -1435,7 +1435,7 @@ export default function ParentDashboardScreen({
                 onChangeText={(t) =>
                   setTaskForm({ ...taskForm, description: t })
                 }
-                placeholder="くわしいやりかた"
+                placeholder="詳しいやり方"
                 placeholderTextColor={palette.textPlaceholder}
               />
 
