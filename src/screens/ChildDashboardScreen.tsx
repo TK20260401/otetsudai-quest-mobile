@@ -16,7 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
-import { useTheme, type Palette } from "../theme";
+import { useTheme, type Palette, linkStyles } from "../theme";
 import { palettes, type PaletteName } from "../theme/palettes";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
@@ -2478,11 +2478,10 @@ function createStyles(p: Palette) {
     marginTop: 8,
   },
   trophyHint: {
+    ...linkStyles(p).linkText,
     textAlign: "center",
-    color: p.primary,
     fontSize: 10,
     marginTop: 8,
-    textDecorationLine: "underline",
   },
   titleBadge: {
     paddingHorizontal: 6,
@@ -2767,9 +2766,8 @@ function createStyles(p: Palette) {
     justifyContent: "center" as const,
   },
   nudgeSkipText: {
+    ...linkStyles(p).linkTextMuted,
     fontSize: rf(13),
-    color: p.textMuted,
-    textDecorationLine: "underline" as const,
   },
   });
 }

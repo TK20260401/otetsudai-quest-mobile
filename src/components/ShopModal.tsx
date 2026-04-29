@@ -21,7 +21,7 @@ import {
 import RpgButton from "./RpgButton";
 import { PixelShopIcon } from "./PixelIcons";
 import { AutoRubyText } from "./Ruby";
-import { useTheme, type Palette } from "../theme";
+import { useTheme, type Palette, linkStyles } from "../theme";
 
 type Props = {
   visible: boolean;
@@ -308,9 +308,8 @@ function createStyles(p: Palette) {
       marginBottom: 4,
     },
     unequipText: {
+      ...linkStyles(p).linkTextMuted,
       fontSize: 11,
-      color: p.textMuted,
-      textDecorationLine: "underline",
     },
     itemRow: {
       flexDirection: "row",

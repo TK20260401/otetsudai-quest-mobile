@@ -15,7 +15,7 @@ import { supabase } from "../lib/supabase";
 import type { Family, User } from "../lib/types";
 import { verifyPin, loginAsUser, signIn, signUp } from "../services/auth";
 import { setSession } from "../lib/session";
-import { useTheme, type Palette } from "../theme";
+import { useTheme, type Palette, linkStyles } from "../theme";
 import { rf } from "../lib/responsive";
 import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
@@ -1290,9 +1290,8 @@ function createStyles(p: Palette) {
       paddingVertical: 8,
     },
     switchAuthText: {
+      ...linkStyles(p).linkText,
       fontSize: 13,
-      color: p.primary,
-      textDecorationLine: "underline",
     },
     adminLink: {
       marginTop: 20,
@@ -1332,9 +1331,8 @@ function createStyles(p: Palette) {
       paddingVertical: 8,
     },
     recoverText: {
+      ...linkStyles(p).linkText,
       fontSize: 13,
-      color: p.primary,
-      textDecorationLine: "underline",
     },
     legalRow: {
       flexDirection: "row",

@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, type LayoutChangeEvent } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme, type Palette } from "../../theme";
+import { useTheme, type Palette, linkStyles } from "../../theme";
 import { rf } from "../../lib/responsive";
 import { RubyText } from "../../components/Ruby";
 import PixelHeroSvg from "../../components/PixelHeroSvg";
@@ -136,9 +136,8 @@ function createStyles(p: Palette) {
       paddingHorizontal: 16,
     },
     recoverText: {
+      ...linkStyles(p).linkTextMuted,
       fontSize: rf(12),
-      color: p.textMuted,
-      textDecorationLine: "underline",
     },
   });
 }

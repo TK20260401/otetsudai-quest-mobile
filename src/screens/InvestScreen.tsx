@@ -16,7 +16,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 import { supabase } from "../lib/supabase";
-import { useTheme, type Palette } from "../theme";
+import { useTheme, type Palette, linkStyles } from "../theme";
 import { rf } from "../lib/responsive";
 import { RubyText, AutoRubyText } from "../components/Ruby";
 import type { StockPrice } from "../lib/types";
@@ -922,9 +922,8 @@ function createStyles(p: Palette) {
       justifyContent: "center",
     },
     lockBackText: {
+      ...linkStyles(p).linkTextMuted,
       fontSize: rf(13),
-      color: p.textMuted,
-      textDecorationLine: "underline",
     },
   });
 }

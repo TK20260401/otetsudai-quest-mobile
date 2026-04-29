@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { useAppAlert } from "./AppAlert";
-import { useTheme, type Palette } from "../theme";
+import { useTheme, type Palette, linkStyles } from "../theme";
 import { rf } from "../lib/responsive";
 import { CHILD_STAMPS } from "../lib/child-stamps";
 import { getStampById } from "../lib/stamps";
@@ -391,9 +391,8 @@ function createStyles(p: Palette) {
       alignItems: "center",
     },
     skipText: {
+      ...linkStyles(p).linkTextMuted,
       fontSize: 13,
-      color: p.textMuted,
-      textDecorationLine: "underline",
     },
   });
 }

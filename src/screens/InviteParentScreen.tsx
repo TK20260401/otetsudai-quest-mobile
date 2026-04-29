@@ -16,7 +16,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import QRCode from "react-native-qrcode-svg";
-import { useTheme, type Palette } from "../theme";
+import { useTheme, type Palette, linkStyles } from "../theme";
 import { rf } from "../lib/responsive";
 import RpgButton from "../components/RpgButton";
 import { RubyText } from "../components/Ruby";
@@ -493,10 +493,8 @@ function createStyles(p: Palette) {
       justifyContent: "center",
     },
     copyButtonText: {
+      ...linkStyles(p).linkText,
       fontSize: rf(13),
-      color: p.primary,
-      fontWeight: "600",
-      textDecorationLine: "underline",
     },
     // QR
     qrCard: {
@@ -604,9 +602,8 @@ function createStyles(p: Palette) {
       justifyContent: "center",
     },
     skipText: {
+      ...linkStyles(p).linkTextMuted,
       fontSize: rf(13),
-      color: p.textMuted,
-      textDecorationLine: "underline",
     },
   });
 }
