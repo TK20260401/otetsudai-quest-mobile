@@ -247,7 +247,7 @@ function createStyles(p: Palette) {
       borderRadius: 16,
       padding: 16,
       marginBottom: 12,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.border,
       shadowColor: p.black,
       shadowOffset: { width: 0, height: 1 },

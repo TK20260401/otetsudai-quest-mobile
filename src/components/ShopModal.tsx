@@ -288,7 +288,7 @@ function createStyles(p: Palette) {
       paddingVertical: 8,
       paddingHorizontal: 12,
       borderRadius: 8,
-      borderWidth: 1,
+      borderWidth: 1.5,
     },
     toastOk: {
       backgroundColor: p.greenLight,

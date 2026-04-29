@@ -176,7 +176,7 @@ function createStyles(p: ReturnType<typeof useTheme>["palette"]) {
       padding: 12,
       gap: 12,
       borderRadius: 12,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.border,
       backgroundColor: p.surfaceMuted,
       marginBottom: 8,

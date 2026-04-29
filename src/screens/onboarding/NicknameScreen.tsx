@@ -138,7 +138,7 @@ function createStyles(p: Palette) {
       marginBottom: 24,
     },
     input: {
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.borderStrong,
       borderRadius: 12,
       paddingVertical: 14,

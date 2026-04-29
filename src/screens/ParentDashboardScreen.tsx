@@ -1365,7 +1365,7 @@ export default function ParentDashboardScreen({
             paddingHorizontal: 14,
             paddingVertical: 8,
             borderRadius: 8,
-            borderWidth: 1,
+            borderWidth: 1.5,
             borderColor: palette.border,
             marginTop: 16,
           }}
@@ -1963,7 +1963,7 @@ function createStyles(p: Palette) {
   specialToggle: {
     padding: 12,
     borderRadius: 10,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: p.border,
     borderStyle: "dashed" as const,
     alignItems: "center" as const,
@@ -2050,7 +2050,7 @@ function createStyles(p: Palette) {
   walletRow: { flexDirection: "row", gap: 8 },
   walletItem: {
     flex: 1,
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderRadius: 10,
     padding: 10,
     alignItems: "center",
@@ -2281,7 +2281,7 @@ function createStyles(p: Palette) {
     paddingVertical: 14,
     alignItems: "center" as const,
     marginTop: 10,
-    borderWidth: 2,
+    borderWidth: 1.5,
     minHeight: 52,
     justifyContent: "center" as const,
   },

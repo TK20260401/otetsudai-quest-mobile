@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     minHeight: 52,
     justifyContent: "center",
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: "#FFD700",
   },
   closeText: {

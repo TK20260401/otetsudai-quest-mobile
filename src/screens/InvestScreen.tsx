@@ -678,7 +678,7 @@ function createStyles(p: Palette) {
       paddingVertical: 8,
       borderRadius: 8,
       backgroundColor: p.background,
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.primary,
     },
     backText: { fontSize: 14, fontWeight: "bold", color: p.textMuted },
@@ -891,7 +891,7 @@ function createStyles(p: Palette) {
       alignItems: "center",
       width: "100%",
       maxWidth: 340,
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.borderStrong,
     },
     lockTitle: {

@@ -137,7 +137,7 @@ function createStyles(palette: Palette) {
     root: {
       marginBottom: 12,
       borderRadius: 16,
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: `${palette.primary}99`,
       overflow: "hidden",
     },

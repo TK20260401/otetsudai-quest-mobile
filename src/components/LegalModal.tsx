@@ -153,7 +153,7 @@ function createStyles(p: Palette) {
       marginBottom: 20,
     },
     callout: {
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.primary,
       backgroundColor: p.surface,
       padding: 14,
@@ -203,7 +203,7 @@ function createStyles(p: Palette) {
       paddingVertical: 14,
       paddingHorizontal: 20,
       borderRadius: 12,
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.primary,
       backgroundColor: p.surface,
       alignItems: "center",

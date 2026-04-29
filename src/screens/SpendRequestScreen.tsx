@@ -314,7 +314,7 @@ function createStyles(p: Palette) {
       paddingHorizontal: 10,
       paddingVertical: 10,
       borderRadius: 8,
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.primary,
       backgroundColor: p.background,
     },
@@ -331,7 +331,7 @@ function createStyles(p: Palette) {
       padding: 14,
       alignItems: "center",
       marginBottom: 20,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.walletSpendBorder,
     },
     balanceText: {
@@ -408,7 +408,7 @@ function createStyles(p: Palette) {
       padding: 14,
       fontSize: rf(16),
       color: p.textBase,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.border,
     },
 
@@ -479,7 +479,7 @@ function createStyles(p: Palette) {
       alignItems: "center",
       justifyContent: "center",
       minHeight: 52,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.border,
     },
     confirmBackBtnText: {

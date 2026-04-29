@@ -277,7 +277,7 @@ function createStyles(palette: Palette) {
       paddingHorizontal: 10,
       paddingVertical: 4,
       borderRadius: 12,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: palette.primary,
       backgroundColor: palette.primaryLight,
     },

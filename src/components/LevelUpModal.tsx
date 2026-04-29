@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     padding: 24,
     marginHorizontal: 24,
     alignItems: "center",
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: "#FFD700",
   },
   sparkle: {
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     marginBottom: 16,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: "rgba(255,215,0,0.3)",
   },
   newTitle: {

@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   expCard: {
     backgroundColor: "#1A1A2E",
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: "#DAA520",
     borderRadius: 20,
     padding: 32,

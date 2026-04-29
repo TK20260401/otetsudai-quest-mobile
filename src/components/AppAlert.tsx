@@ -187,12 +187,12 @@ function createStyles(p: Palette, width: number) {
     },
     buttonCancel: {
       backgroundColor: p.surfaceMuted,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.border,
     },
     buttonDestructive: {
       backgroundColor: p.redLight,
-      borderWidth: 1,
+      borderWidth: 1.5,
       borderColor: p.walletSpendBorder,
     },
     buttonText: {

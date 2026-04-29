@@ -224,7 +224,7 @@ function createStyles(p: Palette) {
       elevation: 4,
     },
     buttonOutline: {
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.borderStrong,
       backgroundColor: p.white,
     },
@@ -249,7 +249,7 @@ function createStyles(p: Palette) {
     featureCard: {
       flex: 1,
       borderRadius: 12,
-      borderWidth: 2,
+      borderWidth: 1.5,
       padding: 8,
       alignItems: "flex-start",
     },

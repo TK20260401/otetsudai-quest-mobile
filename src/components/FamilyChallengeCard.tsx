@@ -287,7 +287,7 @@ function createStyles(p: Palette) {
       padding: 14,
       marginHorizontal: 12,
       marginBottom: 12,
-      borderWidth: 2,
+      borderWidth: 1.5,
       borderColor: p.accent,
     },
     containerComplete: {
