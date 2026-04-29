@@ -6,7 +6,7 @@
 お手伝い＝クエストを通じて「クエスト・ストック・冒険・ショップ」を体験できる子供向け教育フィンテックアプリ。
 Web版（Next.js）と同じ Supabase バックエンドを共用し、iOS / Android の両プラットフォームで動作する。
 
-> **ブランドガイドライン**: 表記ルール・ロゴ・タグラインの統一方針は [BRAND.md](./BRAND.md) を参照（両版共通の公式ガイドライン）。
+> **ブランドガイドライン**: 表記ルール・ロゴ・タグラインの統一方針は [BRAND.md](./BRAND.md) を参照(両版共通の公式ガイドライン)。
 
 ## 技術スタック
 
@@ -104,9 +104,10 @@ npx expo start --tunnel
 
 スマホの「Expo Go」アプリでQRコードを読み取ると実機で確認可能。
 
-## 実装済み機能（Phase 1〜3）
+## 実装済み機能（Phase 1〜8）
 
 ### Phase 1: プロジェクト初期設定 + ログイン
+
 - Expo + TypeScript プロジェクト作成
 - Supabase 接続（Web版と同じDB共用）
 - セッション管理（AsyncStorage）
@@ -117,6 +118,7 @@ npx expo start --tunnel
 - 常にログイン画面から開始する設定
 
 ### Phase 2: 子どもダッシュボード + クエスト完了
+
 - レベル表示（ランク名 + 進捗バー + 次レベルまでの残額）
 - おやからのメッセージ（承認スタンプ + メッセージ 直近5件）
 - 宝箱（ショップ/ストック/冒険 3分割表示、色分け）
@@ -127,6 +129,7 @@ npx expo start --tunnel
 - バッジ自動判定（クエスト完了時）
 
 ### Phase 3: 親ダッシュボード + クエスト承認・管理
+
 - 3タブ構成（承認 / クエスト / 子ども）
 - 承認キュー
   - クエスト完了の承認/却下（スタンプ8種 + メッセージ入力）
@@ -142,6 +145,7 @@ npx expo start --tunnel
 - キーボード回避対応（KeyboardAvoidingView）
 
 ### Phase 3.5: ★特別クエストシステム（モンハン風イベントクエスト）
+
 - 通常クエストとは別枠の期間限定・高報酬クエスト
 - 子ども画面
   - 金枠 + ★マーク + 残り日数カウントダウン表示
@@ -170,12 +174,45 @@ npx expo start --tunnel
 | 難易度 | なし | ★〜★★★ |
 | 例 | おさらあらい、ゴミだし | 年末大掃除、お庭の草むしり |
 
+### Phase 4: 宝箱詳細 + ショップリクエスト（v0.12.0）
+
+- WalletDetailScreen（宝箱詳細: 全部のコイン + ポケットカード表示）
+- SpendRequestScreen（オーダー画面: 確認 → 親に送信）
+- 3ポケットカードタップ遷移（買い物に使う→SpendRequest / 目標まで貯める→お宝マップ / 株でお金を増やす→冒険ショップ）
+
+### Phase 5: お宝マップ + バッジ・レベル詳細（v0.19.0 / v0.21.0 / v0.26.0）
+
+- TrophyCaseModal（バッジ一覧・シルエット・獲得日時）
+- SkillTreeUI（5バッジSVG化、獲得済みのみアニメーション）
+- お宝マップモーダル（旧 貯金目標）: 目標額設定 → 達成時マイルストーン演出
+- SavingGoalMilestone（fill→burst→banner 3フェーズ、紙吹雪+spring文字）
+
+### Phase 6: 冒険ショップ（v0.20.0 / v0.26.0 / v0.27.0）
+
+- InvestScreen → 「冒険ショップ」リネーム、お宝の売買体験
+- 22銘柄（ソニー/ユニクロ/サンリオ/オリエンタルランド/MSFT/GOOGL/AMZN/MCD 等）
+- 用語子供語化: 「投資」→「お金の冒険」、「投資する」→「冒険する」、「投資家」→「冒険者」
+- 100コロから冒険可能、冒険したいお宝のラインナップ表示
+
+### Phase 7: AIチャット（コインくん）（v0.27.0）
+
+- CoinKunChat（金融教育向けAIキャラクター対話UI）
+
+### Phase 8: 管理者画面 + ストア公開準備（v0.14.0 / v0.25.0）
+
+- AdminScreen（全家族/ユーザー一覧、なりすましテストログイン、ウォレットリセット、ユーザー/家族削除）
+- admin用RLSポリシー7テーブル追加、otetsudai_is_admin() SECURITY DEFINER化
+- TestFlight配布（Bundle ID: `com.tk20260401.otetsudaiquest`）
+- App Store Connect登録（「Job Saga - マネー冒険」、外部テスト Beta App Review 審査済み）
+
 ### デザインリニューアル（Phase 1-3完了）
+
 - **Phase 1**: 全画面ルビ（振り仮名）対応。Alert.alertをカスタムモーダル+AutoRubyTextに置換
 - **Phase 2**: CUD（カラーユニバーサルデザイン）準拠パレット3案設計。朱赤/青/青緑ウォレット色統一
 - **Phase 3**: テーマシステム（ThemeProvider+useTheme）。3パレット（そよかぜ/やさしい森/わくわく冒険）切替対応
 
 ### UI/UX/CXブラッシュアップ
+
 - タッチターゲット48pt+、AnimatedButton（スケール+haptics）
 - アクセシビリティ（accessibilityLabel/Role全画面付与）
 - useReducedMotion（OS設定連動アニメーション制御）
@@ -196,29 +233,18 @@ npx expo start --tunnel
 - EAS Build → Transporter → TestFlightの手動フロー
 - 内部テスト即利用可、外部テストBeta App Review審査済み
 
-## 未実装（Phase 4〜8 予定）
-
-| Phase | 内容 |
-|-------|------|
-| Phase 4 | 宝箱詳細 + ショップリクエスト |
-| Phase 5 | お宝マップ + バッジ・レベル詳細 |
-| Phase 6 | 冒険ショップ |
-| Phase 7 | AIチャット（コインくん） |
-| Phase 8 | 管理者画面 + ストア公開準備 |
-
 ## 変更履歴
 
 | バージョン | 日付 | 内容 |
 |-----------|------|------|
-| v1.0.0 (1) | 2026-04-15 | 初回EASビルド |
-| v1.0.0 (3) | 2026-04-15 | ルビ配置修正、ランディング画面レスポンシブ |
-| v1.0.0 (4) | 2026-04-15 | 環境変数修正（ホワイト画面解消）、ルビ間隔密着化 |
-| v0.14.0 (5) | 2026-04-17 | TestFlight v2配信。Sprint 3-4全機能＋ログイン改善＋家族管理＋未使用コード削除 |
 | v0.9.8 | 2026-04-15 | Web版ルビ修正、親画面ルビ除去、ヘッダー1行化 |
 | v0.9.9 | 2026-04-15 | ウェルカムボーナス100円、週次サマリー、ルビ間隔修正 |
 | v0.10.0 | 2026-04-15 | テーマ切替UI（3パレット: そよかぜ/やさしい森/わくわく冒険） |
 | v0.10.1 | 2026-04-15 | ストリーク🔥、親サマリー、ログインエラー改善 |
 | v0.10.2 | 2026-04-15 | Web版親サマリー、励ましメッセージ拡充、ランディング訴求追加、フッター追加、日付表示 |
+| v1.0.0 (1) | 2026-04-15 | 初回EASビルド |
+| v1.0.0 (3) | 2026-04-15 | ルビ配置修正、ランディング画面レスポンシブ |
+| v1.0.0 (4) | 2026-04-15 | 環境変数修正（ホワイト画面解消）、ルビ間隔密着化 |
 | v0.10.3 | 2026-04-16 | デザイン一貫性改善: dead code削除、テーマボタンをパレット参照+タッチターゲット拡大、オーバーレイ/入力フィールド/ボタン/fontWeight統一、親カードシャドウ追加、インラインスタイルStyleSheet移行 |
 | v0.10.4 | 2026-04-16 | ルビ根本修正（tightStyle密着）、親画面ルビ全解除、ヘッダー重なり修正、セリフ改行修正、ランディングアイコン変更（💴/🧑）、親画面テキスト漢字化 |
 | v0.11.0 | 2026-04-16 | reducedMotion対応（LevelUpModal/BadgeUnlockModal）、スキルツリーUI、じぶんクエスト提案機能（子→親） |
@@ -228,6 +254,7 @@ npx expo start --tunnel
 | v0.12.3 | 2026-04-17 | 家族管理: 削除機能追加、RLSポリシー追加(admin SELECT/DELETE)、辞書「下→した」削除(誤変換防止)、バッジラベル漢字化(初めて/3日連続/1000円達成/貯金マスター) |
 | v0.13.0 | 2026-04-17 | Sprint 3完了。ファミリースタンプリレー（親⇔子・兄弟間エール送信、パーティチャット風UI、DB: otetsudai_family_messages）、ふやすの木（invest_balanceに応じたSVG木成長メタファー: たね→ふたば→わかぎ→たいぼく）。Web版同時対応。RLSセキュリティ修正（4テーブル有効化） |
 | v0.14.0 | 2026-04-17 | Sprint 4完了。保護者向け月次レポート（クエスト数/稼ぎ/ストリーク/レベル変化/貯金達成/自動コメント）、ファミリーダッシュボード（冒険の地図: メンバーLv表示+家族統計）、家族チャレンジウィーク（協力型週間目標: メンバー進捗バー+達成ボーナス、DB: otetsudai_family_challenges）。Web版同時対応 |
+| v0.14.0 (5) | 2026-04-17 | TestFlight v2配信。Sprint 3-4全機能＋ログイン改善＋家族管理＋未使用コード削除 |
 | v0.14.1 | 2026-04-17 | ログイン/家族管理大幅改善。ログイン後→家族管理画面（ダッシュボード/メンバー管理選択）、セッション記憶（次回自動ログイン）、PIN bcryptハッシュ保存、パスワード表示トグル+リセット機能、家族owner_auth_id紐付け（なりすまし防止）、子供の名前/PIN/アイコン編集・削除UI、親画面ひらがな→漢字統一、キーボード対応改善、独立リポジトリ作成 |
 | v0.15.0 | 2026-04-17 | Habitica風ピクセルアートSVG導入。PixelHeroSvg（戦士・魔法使い）＋PixelIcons（38種）で全画面の絵文字アイコンをドット絵SVGに置換。ランディング/ログイン/子ダッシュ/親ダッシュ/ウォレット/投資/月次レポート/冒険の地図/家族チャレンジ/スタンプ送信/返信モーダル/貯金目標。Web版同時対応 |
 | v0.16.0 | 2026-04-18 | RPG演出強化。LevelUpModal/BadgeUnlockModalのSVG化（ピクセルスパークル・メダルフレーム・RPGバナー）、FamilyChallengeCardにボスモンスターSVG、FamilyAdventureMapにワールドマップ背景、クエストクリアバナーRPG化 |
@@ -235,20 +262,19 @@ npx expo start --tunnel
 | v0.18.0 | 2026-04-18 | Habitica風ペットシステム。クエスト20%で卵ドロップ→3クエストで孵化→餌やり成長(baby→child→adult)。6種×4段階ピクセルアート。幸福度3日減衰、アクティブ切替、卵ドロップ演出。DB: otetsudai_pets |
 | v0.19.0 | 2026-04-18 | **ダンジョンテーマ全面移行**: ダークパープル(#1f0f31)+ゴールド(#ffa623)、RpgCard/RpgButton/GameStatusHeader新設、全画面p.whiteをp.surface化。**優先度C全実装**: PetManagementModal(名前・アクティブ切替)、TrophyCaseModal(バッジ一覧・シルエット・獲得日時)、DailyLoginModal(7日サイクル5〜50円・自動起動)、ShopModal(称号8種・装備表示・キャラ横バッジ)。**親画面SVG枠化**: クエスト/承認/値上げ/提案/最近承認の全カードをQuestCardFrameで統一。**絵文字→SVG大規模置換**: PixelIcons 22種新規追加(犬/猫/風呂/皿/ほうき/ベッド/車/シャツ/靴/花/鍋/ランドセル/歯ブラシ/トロフィー/ショップ/肉球/洗濯/スポンジ/窓/トイレ/家族/リサイクル)、TaskIconSvg新設(タスク名→SVG自動マッピング)、Parent/Child Dashboardの🪙/🧒/✏️/⏳/📝を全PixelIcon化、モーダルヘッダー🎁🏆🏪🐾もSVG化。**ChildCharacterSvg 3択刷新**: 8種emoji picker→男の子/女の子/どちらでもない(6x8ピクセルアート、Habitica方針準拠)、DBキー保存(boy/girl/other)+legacy resolver。**認証・ナビ改善**: こどもモード「だれかな？」で親口座非表示(role=child filter・PIN試行事故防止)、起動時セッション自動ログイン廃止(QR起動時も必ずLanding)、GameStatusHeaderに「🏠TOP」戻るボタン追加(枠線付き視認性UP)。**インフラ**: DB migration 3本実行済(otetsudai_pets/daily_logins/shop_purchases)、app.json version未更新のためTestFlight配信は次セッション |
 | v0.19.1 | 2026-04-19 | **ダークモード視認性改善（WCAG AA準拠）**: dungeonパレットのbg #1a0f2e / surface #2a1a3e / border #4a3a5eへ校正、text階層をtextStrong #f5f0ff(15.2:1)・textBase #c8b8e0(7.8:1)・textMuted #9a88b8(4.8:1)で3階層化、プレースホルダー専用 `textPlaceholder` #8a7aa8（surface比3.6:1の透かしレンジ）をPalette型に新設。全TextInput 25箇所（LoginScreenの8・ChildDashboardの3・ParentDashboardの5・他12）に `placeholderTextColor={palette.textPlaceholder}` を統一適用、`styles.input`/`pinInput`に `color: p.textStrong` を補完し入力済みテキストが黒背景で不可視化する事故を予防。UX監査ドキュメント otetsudai-bank/docs/ux-audit-01.md を新規作成（情報デザイン4原則/画面設計/UX 5段階/コード設計 の4軸で計30件をfile:line付きで列挙） |
-| v0.22.0 (9) | 2026-04-20 | **ビジュアライゼーション強化＋家族管理改善＋UI/UX品質向上**。**家族管理画面改善**: 全ひらがな→漢字化（名前/暗証番号/保存/例/子供/親/家族名）、戻るボタン金色枠線+ダーク背景デザイン統一、親メンバー非表示（子供のみ表示）、SVG+テキスト横並びレイアウト（家族管理/ログイン）、ダッシュボード/メンバー管理ボタン1行表示（fontSize:12+numberOfLines:1）。**ChildCharacterSvg直接Animated実装**: IdleAnimationWrapper依存を排除しAnimated.View+Animated.timingで直接アニメーション（男の子=上下10pxバウンス0.6秒/女の子=左右±6度スイング0.8秒/どちらでもない=上下10pxバウンス0.7秒）。**SkillTreeバッジSVG化**: 5バッジの絵文字をPixelIcons SVGに置換（⚔️→PixelCrossedSwordsIcon sway/🔥→PixelFlameIcon flicker/💰→PixelCoinIcon spin/🐷→PixelPiggyIcon bounce/🏆→PixelTrophyIcon pulse）、獲得済みのみアニメーション。**DailyLoginModal全漢字+ルビ化**: 連続/毎日/今日/続ける/益々/多く/使う/追加/明日/来て/日/閉じる/受取る。**SavingGoalModal改善**: 漢字+ルビ化（貯金目標を作る/何を買いたい/いくら貯める/名前を入れてね/金額を入れてね）、placeholderにふりがな付き（例（れい）：自転車（じてんしゃ）、本（ほん））、やめるボタンfontSize:13で1行表示。**WalletDetail 3カードタップ遷移**: 使う→SpendRequest/貯める→貯金目標モーダル/増やす→InvestScreenに遷移。**ピンチズーム全画面対応**: 全主要画面のScrollViewにminimumZoomScale=1/maximumZoomScale=3/bouncesZoom追加。**PIN入力改善**: 4桁入力時自動ログイン（pinOverride引数対応）、キーボード閉じるボタン追加、PIN入力中ヘッダー非表示でキーボードスペース確保。**ParentDashboard戻る/ログアウト分離**: もどる→navigation.navigate("Login")（前画面に戻る）、ログアウト→画面下部に独立配置。**スタンプSVG化追加**: 親とのやりとり（repliedMessages）の親スタンプ/子スタンプ絵文字→StampSvg置換。**AppAlertボタン1行化**: numberOfLines={1}+adjustsFontSizeToFit。**RpgButtonはみ出し防止**: content flexShrink+paddingHorizontal+テキストadjustsFontSizeToFit。**bounce振幅強化**: IdleAnimationWrapper bounceのtranslateY -6→-12px。**ルビ距離調整**: rubyGap関数導入（marginTop:-2統一）、paddingVertical→marginVerticalに修正（paddingVerticalがルビ距離を広げる問題を解消）、emptyHintのlineHeight削除。**データリセットボタン削除**: ChildDashboardの開発用リセットUI撤去。Web版同時対応（stamp-svg/task-icon-svg/child-character-svg新設、character-svg armOffset、PixelIcons 23種追加） |
-| v0.22.0 | 2026-04-20 | **ビジュアライゼーション強化＋UI/UXアクセシビリティ改善**。**歩行アニメ**: WalkAnimationWrapper新設（2フレームパカパカ+translateY bounce）、CharacterSvg/PixelHeroSvg/ChildCharacterSvgにmode="walk"追加（legOffset脚分離）、BattleScene enter時/LandingScreen/FamilyAdventureMapに適用。**マイクロインタラクション**: TapFeedback新設（press 0.95→release 1.0 spring bounce）、RpgButtonに統合。**背景アンビエント**: BackgroundAmbient新設（dungeon=トーチflicker+星pulse/outdoor=雲sway+木breathe/home=蝶flutter横切り）、ChildDashboard・BattleSceneに適用。**達成フィードバック三段階**: クエスト完了時キャラジャンプ（IdleAnimationWrapper jump type追加）、CelebrationBurst新設（紙吹雪12粒+全画面フラッシュ+visual punch）バッジ獲得時に統合。**新規演出コンポーネント**: CoinSplitAnimation（3方向コイン分岐）、EggShake（卵sin wave揺れ subtle/strong）、ShakeView（入力エラー赤枠shake）。**数値カウントアップ統一**: RpgStatusBarのHP/MP/EXP suffixをWalletBalanceAnimationに置換。**ルビ・アクセシビリティ**: palette.rubyColorトークン追加（4パレット全対応WCAG AA 4.5:1以上）、Ruby.tsxデフォルトルビ色をrubyColorに変更、辞書に成長追加。**UI統一**: 全画面戻るボタンデザイン統一（金色枠線+ダーク背景）、SpendRequest ×→もどるボタン化、漢字化（お財布/全部のお金/貯金目標/履歴等）、フィルタータブルビ追加、MP表示wk→%修正、placeholder漢字+ルビラベル化。**SVG品質**: PixelItemIcons MIN_SIZE=20+crispEdges適用。Web版同時対応 |
-| v0.21.0 | 2026-04-20 | **SVGアニメーション全面導入＋残アニメ4点完了**。**共通基盤**: IdleAnimationWrapper(RN Animated.loop 8種: bob/breathe/sway/bounce/flutter/pulse/spin/flicker)＋WalletBalanceAnimation(数値カウントアップ+ゴールドシマー)を新設、useReducedMotion完全対応。**W1 ウォレット残高アニメ**: GameStatusHeaderのゴールド表示をWalletBalanceAnimationに置換、残高変動時にカウントアップ＋シマー。**P1 ペットアイドルアニメ**: PetSvgにstage別アニメ(egg=pulse/baby=bounce/child=bob/adult=breathe)、happiness<30で速度半減。**E1 卵孵化演出強化**: EggDropAnimationにcrackフェーズ追加(振動→6破片バースト→ペットSVG spring reveal)、テキストを「{ペット名}が うまれた！」に変更。**W2 貯金目標達成アニメ**: SavingGoalMilestone新設(fill→burst→banner 3フェーズ、紙吹雪＋spring文字)。**SVGアイドルアニメ全適用**: PixelMonsterSvg(slime=bob/bat=flutter/goblin=sway/mushroom=breathe)、CharacterSvg/ChildCharacterSvg(sway)、PixelIcons 5種(coin=spin/flame=flicker/star=pulse/hourglass=spin/confetti=flutter)、PixelItemIcons 6種(コイン=spin/宝石=pulse)、MoneyTree(breathe)。全9モバイルSVGコンポーネントにanimated propを追加。Web版同時対応 |
 | v0.20.0 | 2026-04-19 | **大規模 UX/a11y 改善バッチ**。**漢字+ルビ全面展開**: 子画面・値上げリクエスト・自分クエスト提案モーダル等で hiragana→漢字+ルビ 変換、`RubyText noWrap` prop で 1行強制＋adjustsFontSizeToFit 自動縮小、`RubyPlaceholderInput` 新設で TextInput placeholder にも漢字+ルビをオーバーレイ表示可能化。**スタンプ SVG 化**: `StampSvg.tsx` 新設、親エール/承認/子返信 計22 IDを既存 PixelIcon にマッピング、4表示箇所を emoji→SVG 置換。**漢字視認性根本修正**: `QuestCardFrame.content` 白ハードコードを `palette.surface` に、`ChildDashboard` 他 9 箇所の `p.white`→`p.surface` 一括置換。**固定 Quick Nav 3ボタン**: 子ダッシュ最上部に大サイズ（88px min-height）の 🛒買いもの/🐷貯金/📈株 CTA を配置、飽和色＋白ボーダー＋影で即認知。**投資画面強化**: InvestScreen 初回自動オープン、戻るボタンをゴールド primaryLight 太枠化、「株を買いたい！」ボタンを白→黒文字（緑地 3:1→7:1）＋accent太枠＋強い影で視認性改善、SafeAreaView edges 明示。**銘柄拡充**: `20260419_stock_prices_v3.sql` 新規作成で +8 銘柄（ソニー/ユニクロ/サンリオ/オリエンタルランド/MSFT/GOOGL/AMZN/MCD）、14→22 銘柄に。**SVG a11y**: `PixelGrid` に `label` prop 追加、PixelIcons 64 種に個別日本語 alt（コイン/犬/花/本等）付与、VoiceOver/TalkBack 対応。**アニメ基盤**: `src/components/animations/` 新設、Q1 `CoinBurstAnimation`（クエスト完了時 12枚コイン放射状burst）と L1 `LevelUpBurst`（3層 radial ring + LEVEL UP! spring bounce + 白フラッシュ）を実装、RN 標準 Animated API + `AccessibilityInfo.isReduceMotionEnabled()` 尊重。**その他**: GameStatusHeader「TOP」→「もどる」統一、家族チャレンジランダムタイトル漢字化、Ruby.tsx に baseColor fallback（漢字色沈み予防）、ローディング「よみこみちゅう」等を漢字+ルビ化、`shapeRendering` prop（react-native-svg 非対応）削除で render error 修正。**監査**: UX監査・株カテゴリ監査ドキュメント計2本を `otetsudai-bank/docs/` に配置。備考: 銘柄拡充 SQL は Supabase ダッシュボード経由で別途反映必要、残アニメ4点（W1/P1/E1/W2）は remaining_tasks.md に記載、明日着手予定 |
-
-| v0.27.2 | 2026-04-27 | **dungeon→forest テーマ切替（ダーク→ライトをデフォルト化）**: ThemeContext/App.tsx/palettes.ts のデフォルト初期値を `dungeon`（深紫+ゴールド）→ `forest`（cream+green）に変更。**意図**: (1) **WCAGコントラスト**: dungeon の border #4a3a5e は surface #2a1a3e 比 1.8:1 で AA 基準（3:1）未達、枠が事実上不可視で「カード」の概念が機能していなかった。(2) **子供向けの認知負荷**: 暗い紫背景は不安/疲労を誘発しやすく、明るい cream+green の方が安全感・集中持続に有利（金融教育で長時間使うアプリのため）。(3) **金融教育メタファーとの整合**: 通帳・銀行・紙幣など金融の文化的アンカーは紙白イメージが強く、ダーク UI は乖離していた。(4) **ハイコントラスト機能との役割分離**: `monochrome` トグルで既に grayscale 強化が任意で可能なため、ダークをデフォルトにする必然性はなく、コントラスト強化は明示的なオプション機能とする方が UI の意図がクリアになる。**併せてラベル変更**: TOP アクセシビリティトグル「白黒 ON/OFF」→「ハイコントラスト ON/OFF」（機能不変、視覚障害ユーザー向けの正式用語に統一）。**ボーダー第A段**: ハードコード HEX → palette トークン置換 3 件（ChildDashboardScreen `#FFD700` → `p.goldBorder` / AdminScreen `#E74C3C` → `p.red`+`p.redLight` / SavingGoalModal `#dc2626` → `p.red`） |
-| v0.27.1 | 2026-04-27 | **視覚的ノイズ排除・ボーダー統一**: 全画面のカード/行/モーダルからbackgroundColor(surface/surfaceMuted/accentLight/goldLight/primaryLight等)・shadow・elevation一括削除、borderWidth:1.5・borderColor:palette.borderに統一。対象: ChildDashboardScreen/ParentDashboardScreen/WalletDetailScreen/InvestScreen/ShopModal/PetManagementModal/PriceRequestModal/ChildReactionModal/RpgCard/QuestCardFrame/FamilyChallengeCard/GameStatusHeader。FamilyChallengeCardメンバーアイコン絵文字→CharacterSvg化 |
-| v0.27.0 | 2026-04-27 | **子供向け直感UI改善＋自動ログアウト復活＋漢字+ルビ全面化**。**旧用語「ギルド」全排除**: InvestScreen/SpendRequestScreen/WalletDetailScreen の戻るボタン文言を「ギルドに戻る」→「← 戻る」+PixelHouseIcon に統一、AutoRubyText化。**漢字+ルビ全面化（10画面以上）**: ShopModal（買う/装備/コロ不足/購入したよ/称号を外す/閉じる）、SpendRequestScreen（確認/使う金額/何に/残り/次へ/送っているよ）、PetManagementModal（ペット図鑑/卵/赤ちゃん/子ども/大人/名前を付けよう/孵る/幸せ/1匹だけ）、ParentDashboardScreen（12箇所ひらがな→漢字化）、PresetQuestModal（16件subLabel漢字化: お風呂掃除/食器洗い/洗濯物畳み等）、CATEGORY_LABELS漢字化、ChildReactionModal/PriceRequestModal/FamilyStampSendModal/LevelUpModal/BadgeUnlockModal/CoinKunChat/DailyLoginModal/TrophyCaseModal/RewardSequence の残ルビ漏れ一掃。**Ruby辞書19語追加**: 購入/称号/図鑑/卵/孵/幸/匹/赤/残/許可/台所/磨/覚/保/詳/進化/上手/閉 等。**InvestScreen子供語化**: 「投資」→「お金の冒険」、「投資する」→「冒険する」、「投資家」→「冒険者」。**ChildDashboardアイコン補強**: クエスト/冒険ログタブにPixelアイコン追加、accessibilityLabel漢字化5箇所、「保有銘柄」セクションヘッダーにPixelBarChartIcon。**ボタン補助テキスト追加**: PetModal「アクティブにする」→「ホーム画面で一緒に冒険するよ」、ShopModal「買って装備すると、名前の横に称号がつくよ」、WalletDetail 3ポケット（買い物に使う/目標まで貯める/株でお金を増やす）。**自動ログアウト全画面リセット**: App.tsxのonStartShouldSetResponderCaptureでタッチ検知→touchActivity()呼出、30分無操作タイマーが全画面のタッチで正しくリセットされるように修正（従来はAppState変化のみで不完全）。**辞書追加**: 残・購入・称号・図鑑・卵・孵・幸・匹・赤・許可・台所・磨・覚・保・詳・進化・上手・閉 |
-| v0.26.1 | 2026-04-24 | **宝箱画面UI調整**: 「買いたい！」→「オーダー！」に統一、SpendRequestタイトル「使いたい！」→「オーダー！」、冒険ログフィルタータブ「全部・クエスト・ショップ・ストック・冒険」表記統一（・区切り＋fontSize 8＋adjustsFontSizeToFit＋コンテンツ幅タブ） |
-| v0.26.0 | 2026-04-24 | **冒険世界観全面統一＋UI品質向上**。**通貨**: 円→コロに全面置換（金融教育の単位として維持しつつ世界観に統合）。**宝箱画面（旧お財布）**: ヘッダー「お財布→宝箱」、「全部のお金→全部のコイン」、ポケットカード「稼ぐ/使う/貯める/増やす→クエスト/ショップ/ストック/冒険」、「増やすの木→冒険の木」、「貯金目標→お宝マップ」、「履歴→冒険ログ」、「使いたい！→オーダー！」「増やす！→冒険！」、履歴フィルタータブから各画面へ遷移可能に。**冒険ショップ（旧投資）**: 「いくら投資する→いくら冒険する」「100円から投資できるよ→100コロから冒険できるよ」「買いたい株がない→冒険したいお宝がない」。**お宝マップモーダル（旧貯金目標）**: 「貯金目標を作る→お宝マップを作る」「何を買いたい→何を手に入れたい」「いくら貯める→いくら集める」「金額→コイン」「やめる→撤退」。**戻るボタン統一**: 全画面「ギルドに戻る」fontSize 8pt＋PixelHouseIcon 12px＋padding調整、タイトルとのベースライン揃え（SVG marginTop:12＋親View marginTop:-4）。**クエストカード1行表示**: questTitle/specialQuestTitle fontSize 13＋noWrap、PresetQuestModal adjustsFontSizeToFit（最小70%縮小）。**クエストデプロイモーダル**: ScrollView maxHeight:85%でボタン枠内収め。**DB**: 山田家サンプルクエスト名をカイロソフト風に更新（お風呂掃除→泡モンスター討伐作戦、食器洗い→油汚れドラゴン討伐作戦） |
-| v0.25.1 | 2026-04-24 | **UI一貫性改善＋親画面ルビ除去**。Lv.1 greeting「冒険、始めるよ！」→「冒険者の強さ」にステータス見出し化、セリフ括弧「」→【】に変更。ParentDashboardScreenの全RubyText/AutoRubyTextをプレーンTextに置換（読み込み中/画面タイトル/サブタイトル/タブ6箇所）、未使用Ruby import削除 |
-| v0.25.0 | 2026-04-22 | **Edge Function SHA-256移行＋Admin画面＋復旧画面＋漢字ルビ全面化**。**Edge Function**: create-child-account/verify-pin/recover-account 3本をbcrypt→SHA-256（Worker is not defined対策）＋verify_jwt=false再デプロイ。**AdminScreen新規**: 全家族/ユーザー一覧、なりすましテストログイン、ウォレットリセット、ユーザー/家族削除。admin用RLSポリシー7テーブル追加、otetsudai_is_admin() SECURITY DEFINER化。**RecoverAccountScreen新規**: バックアップ合言葉3語入力＋新PIN設定→ダッシュボード復旧。**InviteParentScreen改善**: 共有ボタン5種（LINE/メール/SMS/コピー/他）、テンプレ3トーン（やさしい/ていねい/シンプル）、編集可能プレビュー、合言葉カード表示専用化。**LoginScreen改善**: 子供モード家族選択スキップ（家族1つなら自動）、親ログイン→直接ダッシュボード（家族管理スキップ）、PIN説明文修正。**漢字＋ルビ全面化**: オンボーディング全画面（Nickname/PinSetup/BackupWords/Welcome）、LoginScreen、DailyLoginModal。「とじる」ひらがな統一。NicknameScreen入力文字色修正（白背景対策）。LandingScreenタグライン「金貨」＋onLayoutレスポンシブ改行 |
-| v0.24.0 | 2026-04-22 | **ジョブサガ（Job Saga）リブランド＋章立てシステム＋親招待画面**。**リブランド**: 全画面「おこづかいクエスト」→「ジョブサガ」統一、TOP画面は英語「Job Saga」表記、コピーライト「© 2026 Snafty inc.」。**LandingScreen B案**: 金ボタン「はじめてのひと」（新規→Welcome）＋銀ボタン「つづきから」（ChildLogin）の2分離、親モードはテキストリンク維持。**InviteParentScreen新規**: あいことば表示＋QRコード（react-native-qrcode-svg）＋テンプレメッセージ3トーン（カジュアル/ていねい/おもしろ）＋OSシェアシート連携、BackupWords→InviteParent→ChildDashboardフロー。**「ふやす」ロック画面**: has_parent=false時に半透明モーダル表示（PixelShieldIcon＋但し書き＋招待画面誘導）。**7日後ナッジ**: otetsudai_nudge_log連携、作成7日後・親未参加・未表示時のみポップアップ。**DB**: otetsudai_chapters（4章マスタ）＋otetsudai_chapter_unlocks（解放ログ）新規、otetsudai_invite_tokensにtoken_type追加、adminユーザー作成。**Web版同期**: 全ファイルリブランド（layout/login/signup/terms/privacy/chat/manifest/promo/OG） |
+| v0.21.0 | 2026-04-20 | **SVGアニメーション全面導入＋残アニメ4点完了**。**共通基盤**: IdleAnimationWrapper(RN Animated.loop 8種: bob/breathe/sway/bounce/flutter/pulse/spin/flicker)＋WalletBalanceAnimation(数値カウントアップ+ゴールドシマー)を新設、useReducedMotion完全対応。**W1 ウォレット残高アニメ**: GameStatusHeaderのゴールド表示をWalletBalanceAnimationに置換、残高変動時にカウントアップ＋シマー。**P1 ペットアイドルアニメ**: PetSvgにstage別アニメ(egg=pulse/baby=bounce/child=bob/adult=breathe)、happiness<30で速度半減。**E1 卵孵化演出強化**: EggDropAnimationにcrackフェーズ追加(振動→6破片バースト→ペットSVG spring reveal)、テキストを「{ペット名}が うまれた！」に変更。**W2 貯金目標達成アニメ**: SavingGoalMilestone新設(fill→burst→banner 3フェーズ、紙吹雪＋spring文字)。**SVGアイドルアニメ全適用**: PixelMonsterSvg(slime=bob/bat=flutter/goblin=sway/mushroom=breathe)、CharacterSvg/ChildCharacterSvg(sway)、PixelIcons 5種(coin=spin/flame=flicker/star=pulse/hourglass=spin/confetti=flutter)、PixelItemIcons 6種(コイン=spin/宝石=pulse)、MoneyTree(breathe)。全9モバイルSVGコンポーネントにanimated propを追加。Web版同時対応 |
+| v0.22.0 | 2026-04-20 | **ビジュアライゼーション強化＋UI/UXアクセシビリティ改善**。**歩行アニメ**: WalkAnimationWrapper新設（2フレームパカパカ+translateY bounce）、CharacterSvg/PixelHeroSvg/ChildCharacterSvgにmode="walk"追加（legOffset脚分離）、BattleScene enter時/LandingScreen/FamilyAdventureMapに適用。**マイクロインタラクション**: TapFeedback新設（press 0.95→release 1.0 spring bounce）、RpgButtonに統合。**背景アンビエント**: BackgroundAmbient新設（dungeon=トーチflicker+星pulse/outdoor=雲sway+木breathe/home=蝶flutter横切り）、ChildDashboard・BattleSceneに適用。**達成フィードバック三段階**: クエスト完了時キャラジャンプ（IdleAnimationWrapper jump type追加）、CelebrationBurst新設（紙吹雪12粒+全画面フラッシュ+visual punch）バッジ獲得時に統合。**新規演出コンポーネント**: CoinSplitAnimation（3方向コイン分岐）、EggShake（卵sin wave揺れ subtle/strong）、ShakeView（入力エラー赤枠shake）。**数値カウントアップ統一**: RpgStatusBarのHP/MP/EXP suffixをWalletBalanceAnimationに置換。**ルビ・アクセシビリティ**: palette.rubyColorトークン追加（4パレット全対応WCAG AA 4.5:1以上）、Ruby.tsxデフォルトルビ色をrubyColorに変更、辞書に成長追加。**UI統一**: 全画面戻るボタンデザイン統一（金色枠線+ダーク背景）、SpendRequest ×→もどるボタン化、漢字化（お財布/全部のお金/貯金目標/履歴等）、フィルタータブルビ追加、MP表示wk→%修正、placeholder漢字+ルビラベル化。**SVG品質**: PixelItemIcons MIN_SIZE=20+crispEdges適用。Web版同時対応 |
+| v0.22.0 (9) | 2026-04-20 | **ビジュアライゼーション強化＋家族管理改善＋UI/UX品質向上**。**家族管理画面改善**: 全ひらがな→漢字化（名前/暗証番号/保存/例/子供/親/家族名）、戻るボタン金色枠線+ダーク背景デザイン統一、親メンバー非表示（子供のみ表示）、SVG+テキスト横並びレイアウト（家族管理/ログイン）、ダッシュボード/メンバー管理ボタン1行表示（fontSize:12+numberOfLines:1）。**ChildCharacterSvg直接Animated実装**: IdleAnimationWrapper依存を排除しAnimated.View+Animated.timingで直接アニメーション（男の子=上下10pxバウンス0.6秒/女の子=左右±6度スイング0.8秒/どちらでもない=上下10pxバウンス0.7秒）。**SkillTreeバッジSVG化**: 5バッジの絵文字をPixelIcons SVGに置換（⚔️→PixelCrossedSwordsIcon sway/🔥→PixelFlameIcon flicker/💰→PixelCoinIcon spin/🐷→PixelPiggyIcon bounce/🏆→PixelTrophyIcon pulse）、獲得済みのみアニメーション。**DailyLoginModal全漢字+ルビ化**: 連続/毎日/今日/続ける/益々/多く/使う/追加/明日/来て/日/閉じる/受取る。**SavingGoalModal改善**: 漢字+ルビ化（貯金目標を作る/何を買いたい/いくら貯める/名前を入れてね/金額を入れてね）、placeholderにふりがな付き（例（れい）：自転車（じてんしゃ）、本（ほん））、やめるボタンfontSize:13で1行表示。**WalletDetail 3カードタップ遷移**: 使う→SpendRequest/貯める→貯金目標モーダル/増やす→InvestScreenに遷移。**ピンチズーム全画面対応**: 全主要画面のScrollViewにminimumZoomScale=1/maximumZoomScale=3/bouncesZoom追加。**PIN入力改善**: 4桁入力時自動ログイン（pinOverride引数対応）、キーボード閉じるボタン追加、PIN入力中ヘッダー非表示でキーボードスペース確保。**ParentDashboard戻る/ログアウト分離**: もどる→navigation.navigate("Login")（前画面に戻る）、ログアウト→画面下部に独立配置。**スタンプSVG化追加**: 親とのやりとり（repliedMessages）の親スタンプ/子スタンプ絵文字→StampSvg置換。**AppAlertボタン1行化**: numberOfLines={1}+adjustsFontSizeToFit。**RpgButtonはみ出し防止**: content flexShrink+paddingHorizontal+テキストadjustsFontSizeToFit。**bounce振幅強化**: IdleAnimationWrapper bounceのtranslateY -6→-12px。**ルビ距離調整**: rubyGap関数導入（marginTop:-2統一）、paddingVertical→marginVerticalに修正（paddingVerticalがルビ距離を広げる問題を解消）、emptyHintのlineHeight削除。**データリセットボタン削除**: ChildDashboardの開発用リセットUI撤去。Web版同時対応（stamp-svg/task-icon-svg/child-character-svg新設、character-svg armOffset、PixelIcons 23種追加） |
 | v0.23.0 | 2026-04-22 | **子供主体オンボーディング＋RLSセキュリティ強化＋Edge Function導入**。**DBスキーマ移行**: otetsudai_usersにauth_id/backup_words/is_anonymous/registered_at追加、otetsudai_familiesにinvite_words/created_by_auth/has_parent追加、otetsudai_invite_tokens/otetsudai_nudge_log新規テーブル作成。**RLS完全刷新**: 全テーブルの旧USING(true)ポリシーを完全排除、auth.uid()ベースのfamily_idフィルタに移行（otetsudai_my_family_id()等ヘルパー関数3本）、adminロール対応（otetsudai_is_admin()）、クロスファミリーアクセス不可をSQLテストで実証。**Edge Function 5本デプロイ**: create-child-account（Anonymous Auth+家族+ウォレット+あいことば一括生成）、join-family（トークン招待）、join-family-by-words（あいことば招待）、recover-account（バックアップあいことば復旧）、verify-pin（bcrypt照合+平文→ハッシュ自動移行）。**オンボーディング画面**: WelcomeScreen/NicknameScreen/PinSetupScreen（2段階確認+shake演出）/BackupWordsScreen（あいことば表示+紙に書いた確認）。**auth.ts全面書き換え**: Edge Function呼び出し対応、signInAnonymously/createChildAccount/joinFamilyByToken/joinFamilyByWords/recoverAccount追加。**Phase 3残件**: 投資画面orderButtonTextの視認性修正（白→黒文字+太字+シャドウ）、「親にお願いしたよ！」→「注文クエスト発動！」リネーム。**Web版同期**: auth.ts/types.ts更新、APIルート5ファイルのSERVICE_ROLE_KEYフォールバック削除（ANON_KEY落ちによるRLSバイパス防止）、遅延初期化getSupabaseAdmin()パターン導入。**テストデータ+auth.usersクリーンアップ実施** |
+| v0.24.0 | 2026-04-22 | **ジョブサガ（Job Saga）リブランド＋章立てシステム＋親招待画面**。**リブランド**: 全画面「おこづかいクエスト」→「ジョブサガ」統一、TOP画面は英語「Job Saga」表記、コピーライト「© 2026 Snafty inc.」。**LandingScreen B案**: 金ボタン「はじめてのひと」（新規→Welcome）＋銀ボタン「つづきから」（ChildLogin）の2分離、親モードはテキストリンク維持。**InviteParentScreen新規**: あいことば表示＋QRコード（react-native-qrcode-svg）＋テンプレメッセージ3トーン（カジュアル/ていねい/おもしろ）＋OSシェアシート連携、BackupWords→InviteParent→ChildDashboardフロー。**「ふやす」ロック画面**: has_parent=false時に半透明モーダル表示（PixelShieldIcon＋但し書き＋招待画面誘導）。**7日後ナッジ**: otetsudai_nudge_log連携、作成7日後・親未参加・未表示時のみポップアップ。**DB**: otetsudai_chapters（4章マスタ）＋otetsudai_chapter_unlocks（解放ログ）新規、otetsudai_invite_tokensにtoken_type追加、adminユーザー作成。**Web版同期**: 全ファイルリブランド（layout/login/signup/terms/privacy/chat/manifest/promo/OG） |
+| v0.25.0 | 2026-04-22 | **Edge Function SHA-256移行＋Admin画面＋復旧画面＋漢字ルビ全面化**。**Edge Function**: create-child-account/verify-pin/recover-account 3本をbcrypt→SHA-256（Worker is not defined対策）＋verify_jwt=false再デプロイ。**AdminScreen新規**: 全家族/ユーザー一覧、なりすましテストログイン、ウォレットリセット、ユーザー/家族削除。admin用RLSポリシー7テーブル追加、otetsudai_is_admin() SECURITY DEFINER化。**RecoverAccountScreen新規**: バックアップ合言葉3語入力＋新PIN設定→ダッシュボード復旧。**InviteParentScreen改善**: 共有ボタン5種（LINE/メール/SMS/コピー/他）、テンプレ3トーン（やさしい/ていねい/シンプル）、編集可能プレビュー、合言葉カード表示専用化。**LoginScreen改善**: 子供モード家族選択スキップ（家族1つなら自動）、親ログイン→直接ダッシュボード（家族管理スキップ）、PIN説明文修正。**漢字＋ルビ全面化**: オンボーディング全画面（Nickname/PinSetup/BackupWords/Welcome）、LoginScreen、DailyLoginModal。「とじる」ひらがな統一。NicknameScreen入力文字色修正（白背景対策）。LandingScreenタグライン「金貨」＋onLayoutレスポンシブ改行 |
+| v0.25.1 | 2026-04-24 | **UI一貫性改善＋親画面ルビ除去**。Lv.1 greeting「冒険、始めるよ！」→「冒険者の強さ」にステータス見出し化、セリフ括弧「」→【】に変更。ParentDashboardScreenの全RubyText/AutoRubyTextをプレーンTextに置換（読み込み中/画面タイトル/サブタイトル/タブ6箇所）、未使用Ruby import削除 |
+| v0.26.0 | 2026-04-24 | **冒険世界観全面統一＋UI品質向上**。**通貨**: 円→コロに全面置換（金融教育の単位として維持しつつ世界観に統合）。**宝箱画面（旧お財布）**: ヘッダー「お財布→宝箱」、「全部のお金→全部のコイン」、ポケットカード「稼ぐ/使う/貯める/増やす→クエスト/ショップ/ストック/冒険」、「増やすの木→冒険の木」、「貯金目標→お宝マップ」、「履歴→冒険ログ」、「使いたい！→オーダー！」「増やす！→冒険！」、履歴フィルタータブから各画面へ遷移可能に。**冒険ショップ（旧投資）**: 「いくら投資する→いくら冒険する」「100円から投資できるよ→100コロから冒険できるよ」「買いたい株がない→冒険したいお宝がない」。**お宝マップモーダル（旧貯金目標）**: 「貯金目標を作る→お宝マップを作る」「何を買いたい→何を手に入れたい」「いくら貯める→いくら集める」「金額→コイン」「やめる→撤退」。**戻るボタン統一**: 全画面「ギルドに戻る」fontSize 8pt＋PixelHouseIcon 12px＋padding調整、タイトルとのベースライン揃え（SVG marginTop:12＋親View marginTop:-4）。**クエストカード1行表示**: questTitle/specialQuestTitle fontSize 13＋noWrap、PresetQuestModal adjustsFontSizeToFit（最小70%縮小）。**クエストデプロイモーダル**: ScrollView maxHeight:85%でボタン枠内収め。**DB**: 山田家サンプルクエスト名をカイロソフト風に更新（お風呂掃除→泡モンスター討伐作戦、食器洗い→油汚れドラゴン討伐作戦） |
+| v0.26.1 | 2026-04-24 | **宝箱画面UI調整**: 「買いたい！」→「オーダー！」に統一、SpendRequestタイトル「使いたい！」→「オーダー！」、冒険ログフィルタータブ「全部・クエスト・ショップ・ストック・冒険」表記統一（・区切り＋fontSize 8＋adjustsFontSizeToFit＋コンテンツ幅タブ） |
+| v0.27.0 | 2026-04-27 | **子供向け直感UI改善＋自動ログアウト復活＋漢字+ルビ全面化**。**旧用語「ギルド」全排除**: InvestScreen/SpendRequestScreen/WalletDetailScreen の戻るボタン文言を「ギルドに戻る」→「← 戻る」+PixelHouseIcon に統一、AutoRubyText化。**漢字+ルビ全面化（10画面以上）**: ShopModal（買う/装備/コロ不足/購入したよ/称号を外す/閉じる）、SpendRequestScreen（確認/使う金額/何に/残り/次へ/送っているよ）、PetManagementModal（ペット図鑑/卵/赤ちゃん/子ども/大人/名前を付けよう/孵る/幸せ/1匹だけ）、ParentDashboardScreen（12箇所ひらがな→漢字化）、PresetQuestModal（16件subLabel漢字化: お風呂掃除/食器洗い/洗濯物畳み等）、CATEGORY_LABELS漢字化、ChildReactionModal/PriceRequestModal/FamilyStampSendModal/LevelUpModal/BadgeUnlockModal/CoinKunChat/DailyLoginModal/TrophyCaseModal/RewardSequence の残ルビ漏れ一掃。**Ruby辞書19語追加**: 購入/称号/図鑑/卵/孵/幸/匹/赤/残/許可/台所/磨/覚/保/詳/進化/上手/閉 等。**InvestScreen子供語化**: 「投資」→「お金の冒険」、「投資する」→「冒険する」、「投資家」→「冒険者」。**ChildDashboardアイコン補強**: クエスト/冒険ログタブにPixelアイコン追加、accessibilityLabel漢字化5箇所、「保有銘柄」セクションヘッダーにPixelBarChartIcon。**ボタン補助テキスト追加**: PetModal「アクティブにする」→「ホーム画面で一緒に冒険するよ」、ShopModal「買って装備すると、名前の横に称号がつくよ」、WalletDetail 3ポケット（買い物に使う/目標まで貯める/株でお金を増やす）。**自動ログアウト全画面リセット**: App.tsxのonStartShouldSetResponderCaptureでタッチ検知→touchActivity()呼出、30分無操作タイマーが全画面のタッチで正しくリセットされるように修正（従来はAppState変化のみで不完全）。**辞書追加**: 残・購入・称号・図鑑・卵・孵・幸・匹・赤・許可・台所・磨・覚・保・詳・進化・上手・閉 |
+| v0.27.1 | 2026-04-27 | **視覚的ノイズ排除・ボーダー統一**: 全画面のカード/行/モーダルからbackgroundColor(surface/surfaceMuted/accentLight/goldLight/primaryLight等)・shadow・elevation一括削除、borderWidth:1.5・borderColor:palette.borderに統一。対象: ChildDashboardScreen/ParentDashboardScreen/WalletDetailScreen/InvestScreen/ShopModal/PetManagementModal/PriceRequestModal/ChildReactionModal/RpgCard/QuestCardFrame/FamilyChallengeCard/GameStatusHeader。FamilyChallengeCardメンバーアイコン絵文字→CharacterSvg化 |
+| v0.27.2 | 2026-04-27 | **dungeon→forest テーマ切替（ダーク→ライトをデフォルト化）**: ThemeContext/App.tsx/palettes.ts のデフォルト初期値を `dungeon`（深紫+ゴールド）→ `forest`（cream+green）に変更。**意図**: (1) **WCAGコントラスト**: dungeon の border #4a3a5e は surface #2a1a3e 比 1.8:1 で AA 基準（3:1）未達、枠が事実上不可視で「カード」の概念が機能していなかった。(2) **子供向けの認知負荷**: 暗い紫背景は不安/疲労を誘発しやすく、明るい cream+green の方が安全感・集中持続に有利（金融教育で長時間使うアプリのため）。(3) **金融教育メタファーとの整合**: 通帳・銀行・紙幣など金融の文化的アンカーは紙白イメージが強く、ダーク UI は乖離していた。(4) **ハイコントラスト機能との役割分離**: `monochrome` トグルで既に grayscale 強化が任意で可能なため、ダークをデフォルトにする必然性はなく、コントラスト強化は明示的なオプション機能とする方が UI の意図がクリアになる。**併せてラベル変更**: TOP アクセシビリティトグル「白黒 ON/OFF」→「ハイコントラスト ON/OFF」（機能不変、視覚障害ユーザー向けの正式用語に統一）。**ボーダー第A段**: ハードコード HEX → palette トークン置換 3 件（ChildDashboardScreen `#FFD700` → `p.goldBorder` / AdminScreen `#E74C3C` → `p.red`+`p.redLight` / SavingGoalModal `#dc2626` → `p.red`） |
 
 ## Web版との関係
 
