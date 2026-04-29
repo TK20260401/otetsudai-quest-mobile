@@ -11,13 +11,11 @@ import {
   Modal,
   Platform,
   Switch,
-  KeyboardAvoidingView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
-import { resetSampleFamily } from "../lib/sample-reset";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
@@ -27,6 +25,7 @@ import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import type { Task, TaskLog, User, Wallet, SpendRequest, FamilySettings, FamilyMessage, FamilyChallenge } from "../lib/types";
 import { useAppAlert } from "../components/AppAlert";
 import FamilyStampSendModal from "../components/FamilyStampSendModal";
+import { RubyText } from "../components/Ruby";
 import FamilyMessageCard from "../components/FamilyMessageCard";
 import MonthlyReport from "../components/MonthlyReport";
 import FamilyAdventureMap from "../components/FamilyAdventureMap";
@@ -38,6 +37,7 @@ import RpgButton from "../components/RpgButton";
 import QuestCardFrame from "../components/QuestCardFrame";
 import TaskIconSvg from "../components/TaskIconSvg";
 import CoinKunChat from "../components/CoinKunChat";
+import ApprovalSuccessBurst from "../components/animations/ApprovalSuccessBurst";
 import { getQuestCardTier } from "../lib/rpg-stats";
 
 type PendingLog = TaskLog & { task: Task; child: User };
@@ -67,6 +67,7 @@ export default function ParentDashboardScreen({
 
   // Approval dialog
   const [approvalTarget, setApprovalTarget] = useState<PendingLog | null>(null);
+  const [showApprovalBurst, setShowApprovalBurst] = useState(false);
   const [selectedStamp, setSelectedStamp] = useState<string | null>(null);
   const [approvalMessage, setApprovalMessage] = useState("");
 
@@ -102,9 +103,9 @@ export default function ParentDashboardScreen({
   const [familyMessages, setFamilyMessages] = useState<FamilyMessage[]>([]);
   const [allMembers, setAllMembers] = useState<User[]>([]);
   const [stampSendVisible, setStampSendVisible] = useState(false);
-  // 冒険団名
+  // 家族名
   const [familyName, setFamilyName] = useState("");
-  // 冒険団チャレンジ
+  // 家族チャレンジ
   const [activeChallenge, setActiveChallenge] = useState<FamilyChallenge | null>(null);
   const [challengeCreating, setChallengeCreating] = useState(false);
 
@@ -319,21 +320,49 @@ export default function ParentDashboardScreen({
     setRefreshing(false);
   }
 
+  // session.userId が auth.users.id を保持しているケース（親ログインの既知の不整合）への対処
+  // otetsudai_task_logs.approved_by は otetsudai_users.id を要求するため、auth_id 経由で解決する
+  async function resolveDbUserId(): Promise<string | null> {
+    const session = await getSession();
+    if (!session?.authId) return userId || null;
+    const { data } = await supabase
+      .from("otetsudai_users")
+      .select("id")
+      .eq("auth_id", session.authId)
+      .maybeSingle();
+    return data?.id ?? null;
+  }
+
   // --- Approval ---
   async function handleApprove() {
     if (!approvalTarget) return;
     const log = approvalTarget;
 
-    await supabase
+    const dbUserId = await resolveDbUserId();
+    if (!dbUserId) {
+      alert("エラー", "ユーザー情報が見つかりません。ログインし直してください。", [{ text: "OK" }]);
+      return;
+    }
+
+    const { error: updateErr } = await supabase
       .from("otetsudai_task_logs")
       .update({
         status: "approved",
         approved_at: new Date().toISOString(),
-        approved_by: userId,
+        approved_by: dbUserId,
         approval_stamp: selectedStamp,
         approval_message: approvalMessage || null,
       })
       .eq("id", log.id);
+
+    if (updateErr) {
+      console.error("[handleApprove] task_logs update failed:", updateErr);
+      alert("エラー", `承認に失敗しました: ${updateErr.message}`, [{ text: "OK" }]);
+      return;
+    }
+
+    // 楽観的UI: pendingLogs から即削除（loadData の再取得を待たない）
+    setPendingLogs((prev) => prev.filter((l) => l.id !== log.id));
 
     const childWallet = wallets[log.child_id];
     if (childWallet && log.task) {
@@ -365,24 +394,32 @@ export default function ParentDashboardScreen({
     setApprovalTarget(null);
     setSelectedStamp(null);
     setApprovalMessage("");
+    setShowApprovalBurst(true);
     await loadData();
   }
 
   async function handleReject(logId: string) {
     const reasons = [
       "🔄 やり直し",
-      "もう少し丁寧に",
-      "最後までやろう",
-      "時間をかけてね",
+      "もう少し 丁寧に",
+      "最後まで やろう",
+      "時間を かけてね",
     ];
-    alert("やり直し", "理由を選んでね", [
+    alert("やり直し", "理由を 選んでね", [
       ...reasons.map((r) => ({
         text: r,
         onPress: async () => {
-          await supabase
+          const { error } = await supabase
             .from("otetsudai_task_logs")
             .update({ status: "rejected", reject_reason: r })
             .eq("id", logId);
+          if (error) {
+            console.error("[handleReject] update failed:", error);
+            alert("エラー", `却下に失敗しました: ${error.message}`, [{ text: "OK" }]);
+            return;
+          }
+          // 楽観的UI: pendingLogs から即削除
+          setPendingLogs((prev) => prev.filter((l) => l.id !== logId));
           await loadData();
         },
       })),
@@ -394,19 +431,32 @@ export default function ParentDashboardScreen({
   async function handleApproveSpend(req: SpendRequest) {
     const childWallet = wallets[req.child_id];
     if (!childWallet || childWallet.spending_balance < req.amount) {
-      alert("エラー", "残高が足りません");
+      alert("エラー", "残高が たりません");
       return;
     }
 
-    await supabase
+    const dbUserId = await resolveDbUserId();
+    if (!dbUserId) {
+      alert("エラー", "ユーザー情報が見つかりません。ログインし直してください。", [{ text: "OK" }]);
+      return;
+    }
+
+    const { error: updateErr } = await supabase
       .from("otetsudai_spend_requests")
       .update({
         status: "approved",
         approved_at: new Date().toISOString(),
-        approved_by: userId,
+        approved_by: dbUserId,
         payment_status: "pending_payment",
       })
       .eq("id", req.id);
+
+    if (updateErr) {
+      console.error("[handleApproveSpend] update failed:", updateErr);
+      alert("エラー", `承認に失敗しました: ${updateErr.message}`, [{ text: "OK" }]);
+      return;
+    }
+    setPendingSpends((prev) => prev.filter((s) => s.id !== req.id));
 
     await supabase
       .from("otetsudai_wallets")
@@ -428,9 +478,9 @@ export default function ParentDashboardScreen({
   async function handleRejectSpend(reqId: string) {
     await supabase
       .from("otetsudai_spend_requests")
-      .update({ status: "rejected", reject_reason: "許可されませんでした" })
+      .update({ status: "rejected", reject_reason: "きょかされませんでした" })
       .eq("id", reqId);
-    alert("❌", "リクエストを許可しませんでした");
+    alert("❌", "リクエストを きょかしませんでした");
     await loadData();
   }
 
@@ -487,7 +537,7 @@ export default function ParentDashboardScreen({
     }
     const newAmount = parseInt(taskForm.reward_amount) || 10;
     if (taskForm.is_special && newAmount < 50) {
-      alert("エラー", "★特別クエストの 報酬は 50コロ以上に してください");
+      alert("エラー", "★特別クエストの 報酬は 50円以上に してください");
       return;
     }
 
@@ -564,15 +614,15 @@ export default function ParentDashboardScreen({
       .update({
         reward_amount: task.proposed_reward,
         proposal_status: "approved",
-        price_change_comment: `報酬 ${task.reward_amount}→${task.proposed_reward}コロにアップ！`,
+        price_change_comment: `報酬 ${task.reward_amount}→${task.proposed_reward}円にアップ！`,
       })
       .eq("id", task.id);
-    alert("✅ 承認", `${task.title}の報酬を${task.proposed_reward}コロにしました`);
+    alert("✅ 承認", `${task.title}の 報酬を ${task.proposed_reward}円に しました`);
     await loadData();
   }
 
   async function handleRejectPriceRequest(task: Task) {
-    alert("❌ 却下", `${task.title}の値上げリクエストを却下しますか？`, [
+    alert("❌ 却下", `${task.title}の ねあげリクエストを 却下しますか？`, [
       { text: "キャンセル", style: "cancel" },
       {
         text: "却下する",
@@ -583,7 +633,7 @@ export default function ParentDashboardScreen({
             .update({
               proposal_status: "rejected",
               proposed_reward: null,
-              price_change_comment: "今の金額で頑張ろう！",
+              price_change_comment: "いまの きんがくで がんばろう！",
             })
             .eq("id", task.id);
           await loadData();
@@ -614,7 +664,6 @@ export default function ParentDashboardScreen({
   }
 
   function handleLogout() {
-    resetSampleFamily().catch(() => {});
     clearSession().then(() => {
       navigation.reset({ index: 0, routes: [{ name: "Landing" }] });
     });
@@ -625,7 +674,12 @@ export default function ParentDashboardScreen({
       <View style={styles.center}>
         <PixelFamilyIcon size={48} />
         <ActivityIndicator size="large" color={palette.primary} />
-        <Text style={styles.loadingText}>読み込み中...</Text>
+        <RubyText
+          style={styles.loadingText}
+          parts={[["読", "よ"], "み", ["込", "こ"], "み", ["中", "ちゅう"], "..."]}
+          rubySize={5}
+          noWrap
+        />
       </View>
     );
   }
@@ -651,12 +705,16 @@ export default function ParentDashboardScreen({
       <View style={styles.screenTitleBar} accessibilityRole="header">
         <View style={styles.screenTitleAccent} />
         <View style={{ flex: 1 }}>
-          <Text style={styles.screenTitleText}>{tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "冒険団メンバー"}</Text>
-          <Text style={styles.screenTitleSub}>{tab === "approve"
+          <Text style={styles.screenTitleText} numberOfLines={1}>
+            {tab === "approve" ? "承認一覧" : tab === "tasks" ? "クエスト管理" : "家族メンバー"}
+          </Text>
+          <Text style={styles.screenTitleSub} numberOfLines={1}>
+            {tab === "approve"
               ? "子どものクエストを確認・承認する"
               : tab === "tasks"
               ? "クエストの追加・編集・割当"
-              : "子どもと冒険団メンバーの管理"}</Text>
+              : "子どもと家族メンバーの管理"}
+          </Text>
         </View>
         {tab === "approve" && pendingCount > 0 ? (
           <View style={styles.screenTitleBadge}>
@@ -672,10 +730,10 @@ export default function ParentDashboardScreen({
           onPress={() => setTab("approve")}
           accessibilityRole="tab"
           accessibilityState={{ selected: tab === "approve" }}
-          accessibilityLabel={`承認タブ${pendingCount > 0 ? ` 未承認${pendingCount}件` : ""}`}
+          accessibilityLabel={`しょうにんタブ${pendingCount > 0 ? ` みしょうにん${pendingCount}けん` : ""}`}
         >
           <View style={styles.headerBadgeRow}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><Text style={tab === "approve" ? styles.tabTextActive : styles.tabText}>承認</Text></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}><PixelCheckIcon size={14} /><Text style={tab === "approve" ? styles.tabTextActive : styles.tabText} numberOfLines={1}>承認</Text></View>
             {pendingCount > 0 && (
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>{pendingCount}</Text>
@@ -690,16 +748,29 @@ export default function ParentDashboardScreen({
           accessibilityState={{ selected: tab === "tasks" }}
           accessibilityLabel="クエストタブ"
         >
-          <Text style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}>クエスト</Text>
+          <Text
+            style={[styles.tabText, tab === "tasks" && styles.tabTextActive]}
+            numberOfLines={1}
+          >
+            クエスト
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tabButton, tab === "children" && styles.tabActive]}
           onPress={() => setTab("children")}
           accessibilityRole="tab"
           accessibilityState={{ selected: tab === "children" }}
-          accessibilityLabel="子どもタブ"
+          accessibilityLabel="こどもタブ"
         >
-          <Text style={[styles.tabText, tab === "children" && styles.tabTextActive]}>子ども</Text>
+          <Text
+            style={[
+              styles.tabText,
+              tab === "children" && styles.tabTextActive,
+            ]}
+            numberOfLines={1}
+          >
+            子ども
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -715,7 +786,7 @@ export default function ParentDashboardScreen({
         {/* 週次サマリー */}
         {tab === "approve" && weeklySummary.quests > 0 && (
           <RpgCard tier="silver" style={{ marginHorizontal: 12, marginTop: 12 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={16} /><Text style={styles.weeklySummaryTitle}>今週の冒険団記録</Text></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelBarChartIcon size={16} /><Text style={styles.weeklySummaryTitle}>今週の家族記録</Text></View>
             <View style={styles.rowAround}>
               <View style={styles.colCenter}>
                 <Text style={styles.weeklyStatValue}>{weeklySummary.quests}</Text>
@@ -729,7 +800,7 @@ export default function ParentDashboardScreen({
           </RpgCard>
         )}
 
-        {/* 冒険団チャレンジ（承認タブ内） */}
+        {/* 家族チャレンジ（承認タブ内） */}
         {tab === "approve" && (
           <View style={styles.section}>
             {activeChallenge ? (
@@ -743,7 +814,7 @@ export default function ParentDashboardScreen({
                 style={[styles.stampRelayBtn, { backgroundColor: palette.accentLight, borderColor: palette.accent }]}
                 onPress={handleCreateChallenge}
                 disabled={challengeCreating}
-                accessibilityLabel="今週の冒険団チャレンジを作る"
+                accessibilityLabel="今週の家族チャレンジを作る"
                 accessibilityRole="button"
               >
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
@@ -764,13 +835,13 @@ export default function ParentDashboardScreen({
             <TouchableOpacity
               style={[styles.stampRelayBtn, { backgroundColor: palette.primaryLight, borderColor: palette.primary }]}
               onPress={() => setStampSendVisible(true)}
-              accessibilityLabel="団員メッセージを送る"
+              accessibilityLabel="家族にエールを送る"
               accessibilityRole="button"
             >
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelLetterIcon size={16} />
                 <Text style={[styles.stampRelayBtnText, { color: palette.primaryDark }]}>
-                  団員メッセージを送る
+                  エールを送る
                 </Text>
               </View>
             </TouchableOpacity>
@@ -798,7 +869,7 @@ export default function ParentDashboardScreen({
                           <PixelPersonIcon size={12} />
                           <Text style={styles.approvalSub}>{(log.child as any)?.name} ・</Text>
                           <PixelCoinIcon size={12} />
-                          <Text style={styles.approvalSub}>{log.task?.reward_amount}コロ</Text>
+                          <Text style={styles.approvalSub}>{log.task?.reward_amount}円</Text>
                         </View>
                       </View>
                     </View>
@@ -833,7 +904,7 @@ export default function ParentDashboardScreen({
                         <Text style={styles.approvalTitle}>{req.purpose}</Text>
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                           <PixelPersonIcon size={12} />
-                          <Text style={styles.approvalSub}>{(req.child as any)?.name} ・ {req.amount}コロ</Text>
+                          <Text style={styles.approvalSub}>{(req.child as any)?.name} ・ {req.amount}円</Text>
                         </View>
                       </View>
                     </View>
@@ -869,7 +940,7 @@ export default function ParentDashboardScreen({
                       <View style={styles.flex1}>
                         <Text style={styles.approvalTitle}>{task.title}</Text>
                         <Text style={styles.approvalSub}>
-                          {task.reward_amount}コロ → {task.proposed_reward}コロ
+                          {task.reward_amount}円 → {task.proposed_reward}円
                         </Text>
                         {task.proposal_message && (
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{task.proposal_message}」</Text></View>
@@ -898,7 +969,7 @@ export default function ParentDashboardScreen({
             {/* MYクエスト提案 */}
             {questProposals.length > 0 && (
               <>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelScrollIcon size={18} /><Text style={styles.sectionTitle}>{`MYクエスト提案 (${questProposals.length})`}</Text></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 16 }}><PixelScrollIcon size={18} /><Text style={styles.sectionTitle}>{`じぶんクエスト提案 (${questProposals.length})`}</Text></View>
                 {questProposals.map((task) => {
                   const child = children.find((c) => c.id === task.assigned_child_id);
                   return (
@@ -909,7 +980,7 @@ export default function ParentDashboardScreen({
                           <Text style={styles.approvalTitle}>{task.title}</Text>
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                             <PixelPersonIcon size={12} />
-                            <Text style={styles.approvalSub}>{child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}コロ</Text>
+                            <Text style={styles.approvalSub}>{child?.name || "?"} ・ 希望 {task.proposed_reward || "?"}円</Text>
                           </View>
                           {task.proposal_message && (
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={14} /><Text style={styles.subText}>「{task.proposal_message}」</Text></View>
@@ -965,7 +1036,7 @@ export default function ParentDashboardScreen({
                             <PixelPersonIcon size={12} />
                             <Text style={styles.approvalSub}>{log.child?.name} ・</Text>
                             <PixelCoinIcon size={12} />
-                            <Text style={styles.approvalSub}>{log.task?.reward_amount}コロ</Text>
+                            <Text style={styles.approvalSub}>{log.task?.reward_amount}円</Text>
                           </View>
                           {childStamp && (
                             <Text style={styles.recentAmount}>
@@ -1099,7 +1170,7 @@ export default function ParentDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
                               <PixelCoinIcon size={12} />
                               <Text style={styles.taskSub}>
-                                {task.reward_amount}コロ
+                                {task.reward_amount}円
                                 {task.end_date ? ` ・ 〜${new Date(task.end_date).toLocaleDateString("ja-JP")}` : ""}
                               </Text>
                             </View>
@@ -1152,7 +1223,7 @@ export default function ParentDashboardScreen({
                           style={{ flexDirection: "row", alignItems: "center", gap: 3 }}
                         >
                           <PixelCoinIcon size={12} />
-                          <Text style={styles.taskRewardTap}>{task.reward_amount}コロ</Text>
+                          <Text style={styles.taskRewardTap}>{task.reward_amount}円</Text>
                           <PixelPencilIcon size={11} />
                         </TouchableOpacity>
                         <Text style={styles.taskSub}>
@@ -1197,7 +1268,7 @@ export default function ParentDashboardScreen({
             {/* 冒険の地図 */}
             {children.length > 0 && (
               <FamilyAdventureMap
-                familyName={familyName || "冒険団"}
+                familyName={familyName || "かぞく"}
                 children={children}
                 wallets={wallets}
               />
@@ -1214,7 +1285,7 @@ export default function ParentDashboardScreen({
                     <Text style={styles.childName}>{child.name}</Text>
                   </View>
                   <Text style={styles.childTotal}>
-                    {total.toLocaleString()}コロ
+                    {total.toLocaleString()}円
                   </Text>
                   {w && (
                     <View style={styles.walletRow}>
@@ -1314,10 +1385,7 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setApprovalTarget(null)}
       >
-        <KeyboardAvoidingView
-          style={styles.flex1}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <View style={styles.flex1}>
           <ScrollView
             ref={approvalScrollRef}
             contentContainerStyle={[
@@ -1335,7 +1403,7 @@ export default function ParentDashboardScreen({
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
                 <PixelCoinIcon size={18} />
-                <Text style={styles.modalReward}>{approvalTarget?.task?.reward_amount}コロ</Text>
+                <Text style={styles.modalReward}>{approvalTarget?.task?.reward_amount}円</Text>
               </View>
 
               {/* Stamps */}
@@ -1391,7 +1459,7 @@ export default function ParentDashboardScreen({
               </View>
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
 
       {/* === Task Form Modal === */}
@@ -1401,10 +1469,7 @@ export default function ParentDashboardScreen({
         transparent
         onRequestClose={() => setTaskFormVisible(false)}
       >
-        <KeyboardAvoidingView
-          style={{ flex: 1, backgroundColor: palette.overlay }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <View style={{ flex: 1, backgroundColor: palette.overlay }}>
           <ScrollView
             ref={taskFormScrollRef}
             contentContainerStyle={[
@@ -1424,7 +1489,7 @@ export default function ParentDashboardScreen({
                 style={styles.formInput}
                 value={taskForm.title}
                 onChangeText={(t) => setTaskForm({ ...taskForm, title: t })}
-                placeholder="お風呂掃除、宿題 など"
+                placeholder="おふろそうじ、しゅくだい など"
                 placeholderTextColor={palette.textPlaceholder}
               />
 
@@ -1435,7 +1500,7 @@ export default function ParentDashboardScreen({
                 onChangeText={(t) =>
                   setTaskForm({ ...taskForm, description: t })
                 }
-                placeholder="詳しいやり方"
+                placeholder="くわしいやりかた"
                 placeholderTextColor={palette.textPlaceholder}
               />
 
@@ -1570,7 +1635,7 @@ export default function ParentDashboardScreen({
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelCoinIcon size={14} />
                 <Text style={styles.formLabel} adjustsFontSizeToFit numberOfLines={1}>
-                  報酬（コロ）{taskForm.is_special ? " ※50コロ〜" : ""}
+                  報酬（円）{taskForm.is_special ? " ※50円〜" : ""}
                 </Text>
               </View>
               <TextInput
@@ -1682,7 +1747,7 @@ export default function ParentDashboardScreen({
               </View>
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
       {/* ファミリースタンプ送信モーダル */}
       {familyId && (
@@ -1701,6 +1766,12 @@ export default function ParentDashboardScreen({
 
       {/* コインくん AIチャット（親アドバイザーモード） */}
       <CoinKunChat role="parent" />
+
+      {/* S4: 承認成功時の✓ + 星バースト + バナー */}
+      <ApprovalSuccessBurst
+        visible={showApprovalBurst}
+        onComplete={() => setShowApprovalBurst(false)}
+      />
     </SafeAreaView>
   );
 }

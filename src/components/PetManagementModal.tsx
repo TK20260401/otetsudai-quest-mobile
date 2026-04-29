@@ -23,9 +23,10 @@ import {
 } from "../lib/pets";
 import PetSvg from "./PetSvg";
 import RpgButton from "./RpgButton";
-import { PixelPawIcon } from "./PixelIcons";
+import { PixelPawIcon, PixelStarIcon } from "./PixelIcons";
 import RpgCard from "./RpgCard";
 import { AutoRubyText } from "./Ruby";
+import PetEncyclopediaModal from "./PetEncyclopediaModal";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -44,6 +45,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [nameDraft, setNameDraft] = useState("");
+  const [encyclopediaOpen, setEncyclopediaOpen] = useState(false);
 
   useEffect(() => {
     if (!visible) return;
@@ -102,6 +104,20 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           rubySize={6}
           noWrap
         />
+
+        <TouchableOpacity
+          onPress={() => setEncyclopediaOpen(true)}
+          style={styles.encyclopediaBtn}
+          accessibilityLabel="ペット図鑑を ひらく"
+          accessibilityRole="button"
+        >
+          <PixelStarIcon size={16} />
+          <AutoRubyText
+            text="ペット図鑑を見る"
+            style={styles.encyclopediaBtnText}
+            rubySize={5}
+          />
+        </TouchableOpacity>
 
         <ScrollView
           contentContainerStyle={{ padding: 12, paddingBottom: insets.bottom + 20 }}
@@ -242,6 +258,11 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <PetEncyclopediaModal
+        visible={encyclopediaOpen}
+        onClose={() => setEncyclopediaOpen(false)}
+        childId={childId}
+      />
     </Modal>
   );
 }
@@ -285,6 +306,24 @@ function createStyles(p: Palette) {
       textAlign: "center",
       paddingHorizontal: 16,
       paddingVertical: 8,
+    },
+    encyclopediaBtn: {
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      gap: 6,
+      marginHorizontal: 12,
+      marginBottom: 8,
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      borderRadius: 12,
+      borderWidth: 1.5,
+      borderColor: p.accent,
+    },
+    encyclopediaBtnText: {
+      fontSize: 13,
+      color: p.accent,
+      fontWeight: "800" as const,
     },
     emptyWrap: {
       alignItems: "center",

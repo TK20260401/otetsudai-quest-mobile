@@ -10,7 +10,6 @@ import {
   Platform,
   ScrollView,
   Animated,
-  Keyboard,
 } from "react-native";
 import KeyboardAwareScreen from "../../components/KeyboardAwareScreen";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

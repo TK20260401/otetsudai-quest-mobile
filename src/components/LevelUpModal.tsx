@@ -141,13 +141,13 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
 
           {/* ピクセルバナー「しんかした！」 */}
           <Animated.View style={{ opacity: textFade, alignItems: "center" }}>
-            <PixelBanner text="進化した！" />
+            <PixelBanner text="しんかした！" />
           </Animated.View>
 
           {/* Before → After */}
           <View style={styles.compareRow}>
             <View style={styles.compareItem}>
-              <Text style={styles.compareLabel}>前</Text>
+              <Text style={styles.compareLabel}>まえ</Text>
               <View style={styles.prevCharacter}>
                 <CharacterSvg level={prevLevel.level} mood="normal" size={60} />
               </View>
@@ -162,7 +162,7 @@ export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: 
 
             {/* 新キャラ（アニメーション付き） */}
             <Animated.View style={[styles.compareItem, { transform: [{ scale }] }]}>
-              <Text style={styles.compareLabel}>今</Text>
+              <Text style={styles.compareLabel}>いま</Text>
               <View style={styles.newCharacter}>
                 <CharacterSvg level={newLevel.level} mood="active" size={80} />
               </View>

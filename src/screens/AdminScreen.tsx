@@ -7,7 +7,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
-
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase, supabaseAnonKey } from "../lib/supabase";
@@ -200,7 +200,7 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onLogout} style={styles.backBtn}>
           <PixelDoorIcon size={14} />
@@ -210,6 +210,9 @@ export default function AdminScreen({ onLoginAs, onLogout }: Props) {
           <PixelShieldIcon size={18} />
           <Text style={styles.headerTitle}>Admin</Text>
         </View>
+        <TouchableOpacity onPress={loadData} style={styles.refreshBtn}>
+          <Text style={styles.refreshText}>更新</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -327,23 +330,28 @@ function createStyles(p: Palette) {
     backBtn: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
-      paddingHorizontal: 8,
-      paddingVertical: 6,
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
       borderRadius: 8,
       borderWidth: 2,
       borderColor: p.primary,
-      flexShrink: 1,
     },
-    backText: { fontSize: 8, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 14, fontWeight: "bold", color: p.textMuted },
     headerCenter: {
-      flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      justifyContent: "center",
-      gap: 4,
+      gap: 6,
     },
-    headerTitle: { fontSize: rf(20), fontWeight: "bold", color: p.primaryDark },
+    headerTitle: { fontSize: rf(18), fontWeight: "bold", color: p.primaryDark },
+    refreshBtn: {
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: p.border,
+    },
+    refreshText: { fontSize: 12, color: p.textMuted, fontWeight: "600" },
     scrollContent: { padding: 16, paddingBottom: 40 },
     sectionTitle: {
       fontSize: rf(14),

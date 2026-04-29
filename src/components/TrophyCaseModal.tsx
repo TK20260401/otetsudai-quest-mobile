@@ -123,7 +123,7 @@ export default function TrophyCaseModal({ visible, onClose, childId }: Props) {
           )}
           <View style={{ marginTop: 12 }}>
             <RpgButton tier="silver" size="md" onPress={onClose}>
-              閉じる
+              とじる
             </RpgButton>
           </View>
         </ScrollView>

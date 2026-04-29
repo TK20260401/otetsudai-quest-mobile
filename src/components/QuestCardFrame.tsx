@@ -72,12 +72,17 @@ export default function QuestCardFrame({ tier, children }: Props) {
   );
 }
 
-function createStyles(_p: Palette) {
+function createStyles(p: Palette) {
   return StyleSheet.create({
     container: {
       marginBottom: 8,
       borderRadius: 8,
       overflow: "hidden",
+      shadowColor: p.black,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
     },
     frameWrap: {
       height: 8,

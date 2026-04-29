@@ -170,7 +170,7 @@ export default function SpendRequestScreen({
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("ChildDashboard", { childId })}
             accessibilityRole="button"
             accessibilityLabel="戻る"
           >

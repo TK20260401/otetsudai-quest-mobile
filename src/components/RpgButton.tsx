@@ -15,6 +15,8 @@ type Props = {
   onPress?: () => void;
   children: React.ReactNode;
   accessibilityLabel?: string;
+  /** アイコン+テキストを左寄せ（デフォルトは中央寄せ）。複数ボタンで行頭/アイコン位置を揃えたい時に使う */
+  contentAlign?: "center" | "start";
 };
 
 const TIER_COLORS: Record<Tier, { light: string; mid: string; dark: string; stroke: string; text: string; glow: string }> = {
@@ -41,6 +43,7 @@ export default function RpgButton({
   onPress,
   children,
   accessibilityLabel,
+  contentAlign = "center",
 }: Props) {
   const c = TIER_COLORS[tier];
   const s = SIZE_PRESETS[size];
@@ -96,7 +99,7 @@ export default function RpgButton({
         </View>
 
         {/* コンテンツ */}
-        <View style={styles.content}>
+        <View style={[styles.content, contentAlign === "start" && styles.contentStart]}>
           {typeof children === "string" ? (
             <Text style={[styles.text, { color: c.text, fontSize: s.fontSize }]} numberOfLines={1} adjustsFontSizeToFit>{children}</Text>
           ) : (
@@ -134,6 +137,12 @@ const styles = StyleSheet.create({
     zIndex: 1,
     flexShrink: 1,
     paddingHorizontal: 4,
+  },
+  contentStart: {
+    alignSelf: "stretch",
+    justifyContent: "flex-start",
+    gap: 12,
+    paddingHorizontal: 0,
   },
   text: {
     fontWeight: "bold",
