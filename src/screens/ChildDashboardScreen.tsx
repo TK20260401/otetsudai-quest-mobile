@@ -16,8 +16,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../lib/supabase";
 import { getSession, clearSession } from "../lib/session";
-import { resetSampleFamily } from "../lib/sample-reset";
 import { useTheme, type Palette } from "../theme";
+import { palettes, type PaletteName } from "../theme/palettes";
 import { rf } from "../lib/responsive";
 import { getTaskIcon } from "../lib/task-icons";
 import { getLevelProgress, getCurrentLevel } from "../lib/levels";
@@ -28,6 +28,7 @@ import type { Task, Wallet, Transaction, Badge, FamilySettings, SpendRequest, Us
 import { getActivePet, processQuestCompletionForPets, hatchEgg, type PetType, type PetQuestResult } from "../lib/pets";
 import PetDisplay from "../components/PetDisplay";
 import PetManagementModal from "../components/PetManagementModal";
+import PetEncyclopediaModal from "../components/PetEncyclopediaModal";
 import TrophyCaseModal from "../components/TrophyCaseModal";
 import DailyLoginModal from "../components/DailyLoginModal";
 import { getDailyLoginStatus } from "../lib/daily-login";
@@ -43,8 +44,6 @@ import RpgCard from "../components/RpgCard";
 import RpgButton from "../components/RpgButton";
 import CharacterSvg from "../components/CharacterSvg";
 import { RubyText, RubyStr, AutoRubyText } from "../components/Ruby";
-import PresetQuestModal from "../components/PresetQuestModal";
-import type { PresetQuest } from "../data/presetQuests";
 import RubyPlaceholderInput from "../components/RubyPlaceholderInput";
 import LevelUpModal from "../components/LevelUpModal";
 import PriceRequestModal from "../components/PriceRequestModal";
@@ -62,6 +61,7 @@ import * as Haptics from "expo-haptics";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import { PixelSwordIcon, PixelScrollIcon, PixelChestOpenIcon, PixelShieldIcon, PixelStarIcon, PixelCrossedSwordsIcon, PixelPotionIcon, PixelFlameIcon, PixelLetterIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelDoorIcon, PixelBarChartIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelMapIcon, PixelLightbulbIcon, PixelBookIcon, PixelTargetIcon, PixelChatIcon, PixelRefreshIcon, PixelConfettiIcon, PixelShopIcon, PixelPencilIcon } from "../components/PixelIcons";
 import StampSvg from "../components/StampSvg";
+import WalletTransferModal, { type PotType } from "../components/WalletTransferModal";
 import QuestCardFrame from "../components/QuestCardFrame";
 import TaskIconSvg from "../components/TaskIconSvg";
 import RpgStatusBar from "../components/RpgStatusBar";
@@ -80,7 +80,7 @@ export default function ChildDashboardScreen({
 }) {
   const { childId } = route.params;
   const { alert } = useAppAlert();
-  const { palette } = useTheme();
+  const { palette, paletteName, setPalette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
   const { width: screenW, height: screenH } = useWindowDimensions();
@@ -96,7 +96,11 @@ export default function ChildDashboardScreen({
   const [weeklySummary, setWeeklySummary] = useState({ quests: 0, earned: 0, streak: 0 });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshDoneAt, setRefreshDoneAt] = useState<number | null>(null);
+  const [transferVisible, setTransferVisible] = useState(false);
   const [submitting, setSubmitting] = useState<string | null>(null);
+  // 今日すでに提出済み（pending/approved）のタスクID — 一覧から非表示にする
+  const [submittedTodayIds, setSubmittedTodayIds] = useState<string[]>([]);
   const [tab, setTab] = useState<"quests" | "history">("quests");
   const [mood, setMood] = useState<"active" | "normal" | "lonely">("normal");
   // レベルアップ演出
@@ -124,9 +128,8 @@ export default function ChildDashboardScreen({
   const [recentSpendRequests, setRecentSpendRequests] = useState<SpendRequest[]>([]);
   // バッジ獲得演出
   const [unlockedBadge, setUnlockedBadge] = useState<{ emoji: string; label: string; description: string } | null>(null);
-  // MYクエスト提案
+  // じぶんクエスト提案
   const [proposalVisible, setProposalVisible] = useState(false);
-  const [presetPickerVisible, setPresetPickerVisible] = useState(false);
   const [proposalTitle, setProposalTitle] = useState("");
   const [proposalReason, setProposalReason] = useState("");
   const [proposalReward, setProposalReward] = useState("");
@@ -137,6 +140,7 @@ export default function ChildDashboardScreen({
   // ペット
   const [activePet, setActivePet] = useState<Pet | null>(null);
   const [petManageVisible, setPetManageVisible] = useState(false);
+  const [petEncyclopediaVisible, setPetEncyclopediaVisible] = useState(false);
   const [trophyVisible, setTrophyVisible] = useState(false);
   const [dailyLoginVisible, setDailyLoginVisible] = useState(false);
   const [dailyLoginChecked, setDailyLoginChecked] = useState(false);
@@ -145,12 +149,12 @@ export default function ChildDashboardScreen({
   const [eggDrop, setEggDrop] = useState<PetType | null>(null);
   const [stampSendVisible, setStampSendVisible] = useState(false);
   const [sessionFamilyId, setSessionFamilyId] = useState<string | null>(null);
-  // 冒険団チャレンジ
+  // 家族チャレンジ
   const [activeChallenge, setActiveChallenge] = useState<FamilyChallenge | null>(null);
   // ScrollView ref（「かせぐ」タップでクエスト一覧へスクロール）
   const scrollRef = useRef<ScrollView>(null);
   const questSectionY = useRef(0);
-  // MYクエスト提案中の数
+  // 提案中のクエスト数
   const pendingProposals = useMemo(() => tasks.filter((t) => t.created_by === childId && t.proposal_status === "pending").length, [tasks, childId]);
 
   const handleProposalSubmit = useCallback(async () => {
@@ -164,7 +168,7 @@ export default function ChildDashboardScreen({
         title: proposalTitle.trim(),
         description: proposalReason.trim() || null,
         reward_amount: 0,
-        proposed_reward: proposalReward ? (parseInt(proposalReward.replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[^0-9]/g, ""), 10) || null) : null,
+        proposed_reward: proposalReward ? parseInt(proposalReward, 10) : null,
         proposal_status: "pending",
         proposal_message: proposalReason.trim() || null,
         recurrence: "once",
@@ -177,7 +181,7 @@ export default function ChildDashboardScreen({
       setProposalTitle("");
       setProposalReason("");
       setProposalReward("");
-      alert("送信しました！", "冒険団マスターがクエストを確認するよ！");
+      alert("送信しました！", "親がクエストを確認するよ！");
       loadData();
     } catch {
       alert("エラー", "送信に失敗しました");
@@ -236,6 +240,18 @@ export default function ChildDashboardScreen({
     ]);
 
     setTasks(taskRes.data || []);
+    // 今日すでに提出済み（pending/approved）のタスクIDを取得し、一覧から非表示にする
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const { data: todayLogs } = await supabase
+      .from("otetsudai_task_logs")
+      .select("task_id")
+      .eq("child_id", childId)
+      .in("status", ["pending", "approved"])
+      .gte("created_at", todayStart.toISOString());
+    // DB の結果と optimistic state をマージ（insert 直後の読み取り遅延でも非表示が消えないように）
+    const dbIds = (todayLogs || []).map((l: any) => l.task_id);
+    setSubmittedTodayIds((prev) => Array.from(new Set([...prev, ...dbIds])));
     // ウォレットが未作成の場合、自動作成する（ガード）
     let walletData = walletRes.data;
     if (!walletData) {
@@ -401,7 +417,7 @@ export default function ChildDashboardScreen({
     setFamilyMembers(membersRes.data || []);
     setFamilyMessages(fmsgRes.data || []);
 
-    // アクティブな冒険団チャレンジ
+    // アクティブな家族チャレンジ
     const today = new Date().toISOString().slice(0, 10);
     const { data: challengeData } = await supabase
       .from("otetsudai_family_challenges")
@@ -487,6 +503,44 @@ export default function ChildDashboardScreen({
     setRefreshing(true);
     await loadData();
     setRefreshing(false);
+    setRefreshDoneAt(Date.now());
+    setTimeout(() => setRefreshDoneAt(null), 1500);
+  }
+
+  // 3pot 間の振替（銀行/証券の入出金モデル）
+  async function handleTransfer(from: PotType, to: PotType, amount: number) {
+    if (!wallet) throw new Error("ウォレットが ありません");
+    if (from === to) throw new Error("おなじ ところには ふりかえできません");
+    if (amount <= 0) throw new Error("0円より おおきく");
+
+    const balanceMap = {
+      spending: wallet.spending_balance,
+      saving: wallet.saving_balance,
+      invest: wallet.invest_balance,
+    };
+    if (amount > balanceMap[from]) throw new Error(`${balanceMap[from].toLocaleString()}円までだよ`);
+
+    const next = { ...balanceMap, [from]: balanceMap[from] - amount, [to]: balanceMap[to] + amount };
+    const { error: walletErr } = await supabase
+      .from("otetsudai_wallets")
+      .update({
+        spending_balance: next.spending,
+        saving_balance: next.saving,
+        invest_balance: next.invest,
+      })
+      .eq("id", wallet.id);
+    if (walletErr) throw walletErr;
+
+    const labelMap = { spending: "つかう", saving: "ためる", invest: "ふやす" } as const;
+    const txTypeMap = { spending: "spend", saving: "save", invest: "invest" } as const;
+    await supabase.from("otetsudai_transactions").insert({
+      wallet_id: wallet.id,
+      type: txTypeMap[to],
+      amount,
+      description: `${labelMap[from]} → ${labelMap[to]} ふりかえ`,
+    });
+
+    await loadData();
   }
 
   function confirmAndComplete(task: Task) {
@@ -502,6 +556,8 @@ export default function ChildDashboardScreen({
 
   async function handleComplete(task: Task) {
     setSubmitting(task.id);
+    // 楽観的UI: 即座に一覧から消す（DB書き込みを待たない）
+    setSubmittedTodayIds((prev) => (prev.includes(task.id) ? prev : [...prev, task.id]));
 
     // クリア前のレベルを記録
     const beforeLevel = getCurrentLevel(totalEarned);
@@ -562,7 +618,6 @@ export default function ChildDashboardScreen({
   }
 
   function handleLogout() {
-    resetSampleFamily().catch(() => {});
     clearSession().then(() => {
       navigation.reset({ index: 0, routes: [{ name: "Landing" }] });
     });
@@ -665,7 +720,7 @@ export default function ChildDashboardScreen({
   const levelInfo = getLevelProgress(totalEarned);
 
   return (
-    <SafeAreaView style={styles.container} accessibilityLabel="子どもダッシュボード">
+    <SafeAreaView style={styles.container} accessibilityLabel="こどもダッシュボード">
       <View style={{ paddingHorizontal: 12, paddingTop: 8 }}>
         <GameStatusHeader
           title={childName}
@@ -675,38 +730,59 @@ export default function ChildDashboardScreen({
           exp={levelInfo.progress}
           gold={totalEarned}
           onBack={handleLogout}
+          rightSlot={
+            <View style={{ flexDirection: "row", gap: 6, marginRight: 4 }}>
+              {(Object.keys(palettes) as PaletteName[]).map((name) => (
+                <TouchableOpacity
+                  key={name}
+                  onPress={() => setPalette(name)}
+                  accessibilityLabel={`テーマ: ${palettes[name].name}`}
+                  accessibilityRole="button"
+                  hitSlop={{ top: 8, bottom: 8, left: 2, right: 2 }}
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: 8,
+                    backgroundColor: palettes[name].primary,
+                    borderWidth: paletteName === name ? 2 : 0,
+                    borderColor: palette.textStrong,
+                    opacity: paletteName === name ? 1 : 0.5,
+                  }}
+                />
+              ))}
+            </View>
+          }
         />
       </View>
-      <View style={{ paddingHorizontal: 16, paddingTop: 4, paddingBottom: 2 }}>
-        <Text style={[styles.headerDate, { paddingHorizontal: 0, paddingTop: 0, paddingBottom: 0 }]}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
-      </View>
+      <Text style={styles.headerDate}>{new Date().toLocaleDateString("ja-JP", { month: "long", day: "numeric", weekday: "long" })}</Text>
 
-      {/* ★固定 Quick Nav — 「クエスト・ショップ・ストック・冒険」4並列カードグリッド。
-          コインのサイクル全体が一目でわかる設計。
-          「クエスト」はクエスト一覧へスクロール、他3つは各専用画面へナビゲート。 */}
+      {/* ★固定 Quick Nav — 「かせぐ・つかう・ためる・ふやす」4並列カードグリッド。
+          お金のサイクル全体が一目でわかる設計。
+          「かせぐ」はクエスト一覧へスクロール、他3つは各専用画面へナビゲート。 */}
       <View style={styles.quickNav}>
-        {/* クエスト */}
+        {/* かせぐ（クエスト） */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.primary, shadowColor: palette.primary }]}
           activeOpacity={0.7}
           onPress={() => {
             scrollRef.current?.scrollTo({ y: questSectionY.current, animated: true });
           }}
-          accessibilityLabel="クエスト一覧へスクロール"
+          accessibilityLabel="ぼうけんへ クエスト一覧へスクロール"
           accessibilityRole="button"
         >
-          <PixelSwordIcon size={24} />
+          <View style={styles.quickNavIconBox}><PixelSwordIcon size={24} /></View>
           <RubyText
             style={styles.quickNavLabel}
-            parts={[["稼", "かせ"], "ぐ"]}
+            parts={[["冒", "ぼう"], ["険", "けん"]]}
             rubySize={7}
             noWrap
             rubyColor="rgba(255,255,200,0.7)"
           />
-          <Text style={styles.quickNavSub}>クエスト</Text>
+          <Text style={styles.quickNavSub} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>クエストへ</Text>
+          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>クエストに ちょうせん</Text>
         </TouchableOpacity>
 
-        {/* ショップ */}
+        {/* つかう */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.walletSpend, shadowColor: palette.walletSpend }, !wallet && { opacity: 0.5 }]}
           activeOpacity={0.7}
@@ -715,23 +791,24 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
           }}
-          accessibilityLabel="ショップ画面へ"
+          accessibilityLabel="つかう画面へ"
           accessibilityRole="button"
         >
-          <PixelCartIcon size={24} />
+          <View style={styles.quickNavIconBox}><PixelCartIcon size={24} /></View>
           <RubyText
             style={styles.quickNavLabel}
-            parts={[["使", "つか"], "う"]}
+            parts={[["取", "とり"], ["引", "ひき"]]}
             rubySize={7}
             noWrap
             rubyColor="rgba(255,255,200,0.7)"
           />
-          <Text style={styles.quickNavAmount}>
-            {(wallet?.spending_balance ?? 0).toLocaleString()}
+          <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {(wallet?.spending_balance ?? 0).toLocaleString()}円
           </Text>
+          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>しょうにんと とりひき</Text>
         </TouchableOpacity>
 
-        {/* ストック */}
+        {/* 金庫 */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.walletSave, shadowColor: palette.walletSave }, !wallet && { opacity: 0.5 }]}
           activeOpacity={0.7}
@@ -740,23 +817,24 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("WalletDetail", { childId, walletId: wallet.id });
           }}
-          accessibilityLabel="ストック画面へ"
+          accessibilityLabel="ためる画面へ"
           accessibilityRole="button"
         >
-          <PixelPiggyIcon size={24} />
+          <View style={styles.quickNavIconBox}><PixelPiggyIcon size={24} /></View>
           <RubyText
             style={styles.quickNavLabel}
-            parts={[["貯", "た"], "める"]}
+            parts={[["金", "きん"], ["庫", "こ"]]}
             rubySize={7}
             noWrap
             rubyColor="rgba(255,255,200,0.7)"
           />
-          <Text style={styles.quickNavAmount}>
-            {(wallet?.saving_balance ?? 0).toLocaleString()}
+          <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {(wallet?.saving_balance ?? 0).toLocaleString()}円
           </Text>
+          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>たからを しまう</Text>
         </TouchableOpacity>
 
-        {/* 冒険 */}
+        {/* 錬成 */}
         <TouchableOpacity
           style={[styles.quickNavBtn, { backgroundColor: palette.walletInvest, shadowColor: palette.walletInvest }, !wallet && { opacity: 0.5 }]}
           activeOpacity={0.7}
@@ -765,20 +843,78 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
           }}
-          accessibilityLabel="冒険ショップ画面へ"
+          accessibilityLabel="ふやす画面へ"
           accessibilityRole="button"
         >
-          <PixelChartIcon size={24} />
+          <View style={styles.quickNavIconBox}><PixelChartIcon size={24} /></View>
           <RubyText
             style={styles.quickNavLabel}
-            parts={[["増", "ふ"], "やす"]}
+            parts={[["錬", "れん"], ["成", "せい"]]}
             rubySize={7}
             noWrap
             rubyColor="rgba(255,255,200,0.7)"
           />
-          <Text style={styles.quickNavAmount}>
-            {(wallet?.invest_balance ?? 0).toLocaleString()}
+          <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {(wallet?.invest_balance ?? 0).toLocaleString()}円
           </Text>
+          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>お金を そだてる</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* おさいふ 点検＋ふりかえ — 銀行/証券の入出金モデル */}
+      <View style={styles.walletActionsRow}>
+        <TouchableOpacity
+          style={styles.refreshBtn}
+          onPress={onRefresh}
+          disabled={refreshing}
+          activeOpacity={0.7}
+          accessibilityLabel="おさいふを てんけんする"
+          accessibilityRole="button"
+          accessibilityHint="さいしんの もちものに します"
+        >
+          {refreshing ? (
+            <ActivityIndicator size="small" color={palette.accent} />
+          ) : refreshDoneAt ? (
+            <PixelCheckIcon size={18} />
+          ) : (
+            <PixelRefreshIcon size={18} />
+          )}
+          <View style={{ flex: 1 }}>
+            <RubyText
+              style={styles.refreshBtnLabel}
+              parts={refreshing
+                ? [["点検", "てんけん"], "ちゅう..."]
+                : refreshDoneAt
+                ? [["点検", "てんけん"], "しました ✨"]
+                : [["点検", "てんけん"]]}
+              rubySize={6}
+              noWrap
+            />
+            {!refreshing && !refreshDoneAt && (
+              <RubyText
+                style={styles.refreshBtnHint}
+                parts={["（", ["最新", "さいしん"], "の", ["持", "も"], "ちものに する）"]}
+                rubySize={5}
+                noWrap
+              />
+            )}
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.transferBtn}
+          onPress={() => setTransferVisible(true)}
+          disabled={!wallet}
+          activeOpacity={0.7}
+          accessibilityLabel="おかねを うつす"
+          accessibilityRole="button"
+          accessibilityHint="つかう・ためる・ふやすの あいだで おかねを うつします"
+        >
+          <PixelCoinIcon size={18} />
+          <View style={{ flex: 1 }}>
+            <RubyText style={styles.refreshBtnLabel} parts={[["移", "うつ"], "す"]} rubySize={6} noWrap />
+            <RubyText style={styles.refreshBtnHint} parts={["（おかねを ", ["移動", "いどう"], "する）"]} rubySize={5} noWrap />
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -833,12 +969,20 @@ export default function ChildDashboardScreen({
               }}
               onManage={() => setPetManageVisible(true)}
             />
-            <TouchableOpacity onPress={() => setShopVisible(true)} style={styles.shopBtn}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelShopIcon size={14} />
-                <Text style={styles.shopBtnText}>ショップ</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={{ flexDirection: "row", gap: 6, marginTop: 4 }}>
+              <TouchableOpacity onPress={() => setShopVisible(true)} style={styles.shopBtn}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <PixelShopIcon size={14} />
+                  <Text style={styles.shopBtnText}>ショップ</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setPetEncyclopediaVisible(true)} style={styles.shopBtn}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <PixelStarIcon size={14} />
+                  <RubyText style={styles.shopBtnText} parts={[["図鑑", "ずかん"]]} rubySize={4} noWrap />
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.levelInfo}>
             <View style={styles.rowWrap}>
@@ -848,11 +992,11 @@ export default function ChildDashboardScreen({
             {/* セリフ吹き出し */}
             <View style={styles.speechBubble}>
               <RubyStr
-                text={`【${mood === "active"
+                text={`「${mood === "active"
                   ? levelInfo.current.greetingActive
                   : mood === "lonely"
                     ? levelInfo.current.greetingLonely
-                    : levelInfo.current.greeting}】`}
+                    : levelInfo.current.greeting}」`}
                 style={styles.speechText}
                 rubySize={6}
               />
@@ -878,7 +1022,7 @@ export default function ChildDashboardScreen({
             />
             {levelInfo.next ? (
               <View style={{ marginTop: 4 }}>
-                <AutoRubyText text={`次のレベルまであと${levelInfo.remaining.toLocaleString()}コロ`} style={styles.levelNext} rubySize={5} noWrap />
+                <AutoRubyText text={`次のレベルまであと${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} noWrap />
               </View>
             ) : (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
@@ -889,7 +1033,7 @@ export default function ChildDashboardScreen({
         {/* Stamp Notifications */}
         {stampNotifs.length > 0 && (
           <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
-            <RubyText style={styles.sectionTitle} parts={[["冒険団", "ぼうけんだん"], "マスターからのメッセージ"]} />
+            <RubyText style={styles.sectionTitle} parts={[["親", "おや"], "からのメッセージ"]} />
             {stampNotifs.map((s) => {
               const stampDef = s.stamp ? getStampById(s.stamp) : null;
               return (
@@ -962,9 +1106,9 @@ export default function ChildDashboardScreen({
           <AnimatedButton
             onPress={() => setStampSendVisible(true)}
             style={styles.stampRelayBtn}
-            accessibilityLabel="団員メッセージを送る"
+            accessibilityLabel="エールを送る"
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={[["団員", "だんいん"], "メッセージを", ["送", "おく"], "る"]} rubySize={5} /></View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLetterIcon size={16} /><RubyText style={styles.stampRelayBtnText} parts={["エールを", ["送", "おく"], "る"]} rubySize={5} /></View>
           </AnimatedButton>
         </View>
 
@@ -986,16 +1130,16 @@ export default function ChildDashboardScreen({
                 </View>
                 <View style={styles.flex1}>
                   <Text style={styles.spendStatusText} numberOfLines={1}>
-                    {req.purpose} — {req.amount}コロ
+                    {req.purpose} — {req.amount}円
                   </Text>
                   <Text style={styles.spendStatusLabel}>
                     {req.status === "pending"
-                      ? "申請中"
+                      ? "しんせいちゅう"
                       : req.status === "approved" && req.payment_status === "pending_payment"
-                      ? "承認済み お金をまってね"
+                      ? "しょうにんずみ おかねをまってね"
                       : req.status === "approved" && req.payment_status === "paid"
-                      ? "お金 もらったよ！"
-                      : "許可されませんでした"}
+                      ? "おかね もらったよ！"
+                      : "きょかされませんでした"}
                   </Text>
                 </View>
               </View>
@@ -1135,7 +1279,7 @@ export default function ChildDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
                               <AutoRubyText
-                                text={`${task.reward_amount}コロ`}
+                                text={`${task.reward_amount}円`}
                                 style={styles.specialQuestReward}
                                 rubySize={6}
                               />
@@ -1180,13 +1324,13 @@ export default function ChildDashboardScreen({
             )}
 
             {/* 通常クエスト */}
-            {tasks.filter((t) => !t.is_special).length > 0 && (
+            {tasks.filter((t) => !t.is_special && !submittedTodayIds.includes(t.id)).length > 0 && (
               <>
                 {tasks.filter((t) => t.is_special && isSpecialActive(t)).length > 0 && (
                   <AutoRubyText text="クエスト" style={[styles.sectionTitle, { marginTop: 16 }]} rubySize={7} />
                 )}
                 {tasks
-                  .filter((t) => !t.is_special)
+                  .filter((t) => !t.is_special && !submittedTodayIds.includes(t.id))
                   .map((task) => (
                     <QuestCardFrame key={task.id} tier={getQuestCardTier(task)}>
                       <View style={styles.questInfo}>
@@ -1199,7 +1343,7 @@ export default function ChildDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
                               <AutoRubyText
-                                text={`${task.reward_amount}コロ`}
+                                text={`${task.reward_amount}円`}
                                 style={styles.questReward}
                                 rubySize={6}
                               />
@@ -1256,45 +1400,22 @@ export default function ChildDashboardScreen({
               <View style={styles.emptyCard}>
                 <PixelMapIcon size={40} />
                 <AutoRubyText text="クエストが まだないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={7} />
-                <AutoRubyText text="冒険団マスターに クエストを つくってもらおう！" style={styles.emptyHint} rubySize={6} />
+                <AutoRubyText text="親に たのんで クエストを つくってもらおう！" style={styles.emptyHint} rubySize={6} />
               </View>
             )}
 
-            {/* クエストを えらぶ（プリセットから選択） */}
-            <AnimatedButton
-              style={styles.presetPickerButton}
-              onPress={() => setPresetPickerVisible(true)}
-              accessibilityLabel="クエストを選ぶ。自分でできるクエストを選ぶ"
-            >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelTargetIcon size={18} />
-                <RubyText style={styles.proposalButtonText} parts={["クエストを ", ["選", "えら"], "ぶ"]} rubySize={5} />
-              </View>
-              <RubyText
-                style={styles.presetPickerSub}
-                parts={[["自分", "じぶん"], "にできるクエストから ", ["選", "えら"], "ぼう"]}
-                rubySize={3}
-              />
-            </AnimatedButton>
-
-            {/* MYクエスト提案（カスタム作成） */}
+            {/* じぶんクエスト提案 */}
             <AnimatedButton
               style={styles.proposalButton}
               onPress={() => {
-                // プリセット選択後にこちらを押した場合の取り残し対策で明示クリア
                 setProposalTitle("");
                 setProposalReason("");
                 setProposalReward("");
                 setProposalVisible(true);
               }}
-              accessibilityLabel="クエストデプロイ。オリジナルクエストを作る"
+              accessibilityLabel="じぶんクエスト提案。オリジナルクエストを作る"
             >
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={["クエストデプロイ"]} rubySize={5} /></View>
-              <RubyText
-                style={styles.presetPickerSub}
-                parts={["オリジナルクエストを ", ["作", "つく"], "る"]}
-                rubySize={3}
-              />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={18} /><RubyText style={styles.proposalButtonText} parts={[["自分", "じぶん"], "でクエストを ", ["作", "つく"], "る"]} rubySize={5} /></View>
               {pendingProposals > 0 && (
                 <Text style={styles.proposalPending}>（{pendingProposals}件 返事待ち）</Text>
               )}
@@ -1308,7 +1429,7 @@ export default function ChildDashboardScreen({
             {/* 返信済みメッセージ履歴 */}
             {repliedMessages.length > 0 && (
               <View style={styles.repliedSection}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={18} /><RubyText style={styles.repliedTitle} parts={[["冒険団", "ぼうけんだん"], "マスターとの やりとり"]} /></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={18} /><RubyText style={styles.repliedTitle} parts={[["親", "おや"], "との やりとり"]} /></View>
                 {repliedMessages.map((log: any) => {
                   const cStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)
@@ -1346,7 +1467,7 @@ export default function ChildDashboardScreen({
             {transactions.length === 0 && repliedMessages.length === 0 ? (
               <View style={styles.emptyCard}>
                 <PixelBookIcon size={40} />
-                <AutoRubyText text="まだ冒険ログがないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={6} />
+                <AutoRubyText text="まだ履歴がないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={6} />
                 <AutoRubyText text="クエストをクリアすると ここに きろくされるよ！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
             ) : transactions.length === 0 ? null : (
@@ -1486,12 +1607,27 @@ export default function ChildDashboardScreen({
         />
       )}
 
+      {/* ふりかえ（ポット間移動） */}
+      <WalletTransferModal
+        visible={transferVisible}
+        onClose={() => setTransferVisible(false)}
+        wallet={wallet}
+        onConfirm={handleTransfer}
+      />
+
       {/* ペットずかん */}
       <PetManagementModal
         visible={petManageVisible}
         onClose={() => setPetManageVisible(false)}
         childId={childId}
         onChanged={loadData}
+      />
+
+      {/* ペット図鑑 */}
+      <PetEncyclopediaModal
+        visible={petEncyclopediaVisible}
+        onClose={() => setPetEncyclopediaVisible(false)}
+        childId={childId}
       />
 
       {/* トロフィーケース */}
@@ -1511,8 +1647,13 @@ export default function ChildDashboardScreen({
         <View style={styles.nudgeOverlay}>
           <View style={styles.nudgeCard}>
             <Text style={styles.nudgeEmoji}>{"\u{1F31F}"}</Text>
-            <AutoRubyText text="冒険団マスターを呼んでみない？" style={styles.nudgeTitle} rubySize={6} />
-            <AutoRubyText text="冒険団マスターが参加すると「増やす」が使えるようになるよ！" style={styles.nudgeDesc} rubySize={5} />
+            <Text style={styles.nudgeTitle}>
+              おうちの ひとを よんでみない？
+            </Text>
+            <Text style={styles.nudgeDesc}>
+              おうちの ひとが さんかすると{"\n"}
+              「ふやす」が つかえるようになるよ！
+            </Text>
             <RpgButton
               tier="gold"
               size="md"
@@ -1521,9 +1662,11 @@ export default function ChildDashboardScreen({
                 setNudgeVisible(false);
                 navigation.navigate("InviteParent");
               }}
-              accessibilityLabel="冒険団マスターを呼ぶ"
+              accessibilityLabel="おうちのひとをよぶ"
             >
-              <AutoRubyText text="冒険団マスターを呼ぶ" style={styles.nudgeButtonText} rubySize={5} noWrap />
+              <Text style={styles.nudgeButtonText}>
+                おうちの ひとを よぶ
+              </Text>
             </RpgButton>
             <TouchableOpacity
               onPress={() => setNudgeVisible(false)}
@@ -1560,25 +1703,7 @@ export default function ChildDashboardScreen({
       {/* コインくん AIチャット */}
       <CoinKunChat role="child" />
 
-      {/* プリセットクエスト選択モーダル */}
-      <PresetQuestModal
-        visible={presetPickerVisible}
-        onClose={() => setPresetPickerVisible(false)}
-        onSelect={(q: PresetQuest) => {
-          setProposalTitle(q.mainTitle);
-          setProposalReason(q.defaultReason);
-          setProposalReward(String(q.suggestedReward));
-          setProposalVisible(true);
-        }}
-        onSelectCustom={() => {
-          setProposalTitle("");
-          setProposalReason("");
-          setProposalReward("");
-          setProposalVisible(true);
-        }}
-      />
-
-      {/* MYクエスト提案モーダル */}
+      {/* じぶんクエスト提案モーダル */}
       <Modal visible={proposalVisible} transparent animationType="slide" onRequestClose={() => {
         setProposalVisible(false);
         setProposalTitle("");
@@ -1593,8 +1718,8 @@ export default function ChildDashboardScreen({
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator
           >
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={["クエストデプロイ"]} rubySize={6} /></View>
-            <RubyText style={[styles.proposalModalSub, { marginBottom: 0 }]} parts={["冒険団マスターに"]} rubySize={5} />
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={[["自分", "じぶん"], "でクエストを ", ["作", "つく"], "る"]} rubySize={6} /></View>
+            <RubyText style={[styles.proposalModalSub, { marginBottom: 0 }]} parts={[["親", "おや"], "に"]} rubySize={5} />
             <RubyText style={styles.proposalModalSub} parts={[["新", "あたら"], "しいクエストを", ["出", "だ"], "そう！"]} rubySize={5} />
 
             <RubyText
@@ -1632,7 +1757,7 @@ export default function ChildDashboardScreen({
 
             <RubyText
               style={styles.proposalLabel}
-              parts={[["報酬", "ほうしゅう"], "リクエスト（", "コロ", "）"]}
+              parts={[["報酬", "ほうしゅう"], "リクエスト（", "円", "）"]}
               rubySize={5}
               noWrap
             />
@@ -1867,17 +1992,65 @@ function createStyles(p: Palette) {
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
+  // おさいふ こうしん＋振替ボタン — Quick Nav 直下、ScrollView 外で常時可視
+  walletActionsRow: {
+    flexDirection: "row" as const,
+    gap: 6,
+    marginHorizontal: 10,
+    marginBottom: 8,
+  },
+  refreshBtn: {
+    flex: 1,
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: p.border,
+  },
+  transferBtn: {
+    flex: 1,
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
+    gap: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: p.accent,
+  },
+  refreshBtnLabel: {
+    fontSize: 10,
+    fontWeight: "700" as const,
+    color: p.textBase,
+  },
+  refreshBtnHint: {
+    fontSize: 6,
+    color: p.textMuted,
+    marginTop: 2,
+    lineHeight: 9,
+  },
   quickNavBtn: {
     flexBasis: "23%" as any,
     flexGrow: 1,
     alignItems: "center" as const,
-    justifyContent: "center" as const,
+    justifyContent: "flex-start" as const,
     paddingVertical: 10,
     paddingHorizontal: 4,
     borderRadius: 12,
     borderWidth: 2,
     borderColor: "rgba(255,255,255,0.3)",
-    minHeight: 72,
+    minHeight: 100,
+  },
+  // 4種SVG（gridW×gridH が 4×6/5×5/6×6/5×6 とバラバラ）でも
+  // ボックス外形を 24×24 に固定し、下のテキスト位置を完全に揃える
+  quickNavIconBox: {
+    width: 24,
+    height: 24,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   quickNavLabel: {
     color: "#ffffff",
@@ -1890,17 +2063,28 @@ function createStyles(p: Palette) {
     textShadowRadius: 2,
   },
   quickNavSub: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 9,
+    color: "#ffffff",
+    fontSize: 11,
     fontWeight: "700" as const,
-    marginTop: 1,
+    marginTop: 2,
+    lineHeight: 14,
+    opacity: 0.95,
   },
   quickNavAmount: {
     color: "#ffffff",
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: "700" as const,
-    marginTop: 1,
+    marginTop: 2,
+    lineHeight: 14,
     opacity: 0.95,
+  },
+  // 補強サブテキスト（取引/金庫/錬成 の下）— ラベルの意味を補う説明文
+  quickNavHint: {
+    color: "rgba(255,255,255,0.85)",
+    fontSize: 9,
+    fontWeight: "600" as const,
+    marginTop: 1,
+    lineHeight: 12,
   },
   walletFooter: {
     flexDirection: "row" as const,
