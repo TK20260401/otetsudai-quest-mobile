@@ -172,7 +172,7 @@ export default function SavingGoalMilestone({ show, goalTitle, onComplete }: Pro
             styles.barFill,
             {
               width: fillPercent,
-              shadowColor: "#FFD700",
+              shadowColor: palette.gold,
               shadowOpacity: 0.8,
               shadowRadius: 8,
             },
@@ -241,7 +241,7 @@ function createStyles(palette: Palette) {
     },
     barFill: {
       height: "100%",
-      backgroundColor: "#FFD700",
+      backgroundColor: palette.gold,
       borderRadius: 6,
     },
     banner: {

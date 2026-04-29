@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Svg, { Path, Rect, Circle, G, Defs, LinearGradient, Stop, Ellipse } from "react-native-svg";
 import { rf } from "../lib/responsive";
+import { useTheme, type Palette } from "../theme";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import * as Haptics from "expo-haptics";
 
@@ -27,6 +28,8 @@ export default function BadgeUnlockModal({
   description,
   onClose,
 }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
   const scale = useRef(new Animated.Value(0.3)).current;
   const textFade = useRef(new Animated.Value(0)).current;
   const sparkle = useRef(new Animated.Value(0)).current;
@@ -219,70 +222,72 @@ function UnlockBanner() {
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.75)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 32,
-  },
-  content: {
-    alignItems: "center",
-    width: "100%",
-  },
-  sparkleRing: {
-    position: "absolute",
-    width: 200,
-    height: 200,
-    top: -20,
-  },
-  badgeOuter: {
-    width: 140,
-    height: 140,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 24,
-  },
-  badgeInner: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: -10,
-  },
-  badgeEmoji: {
-    fontSize: 50,
-  },
-  badgeLabel: {
-    fontSize: rf(24),
-    color: "#ffffff",
-    fontWeight: "800",
-    textAlign: "center",
-    marginBottom: 8,
-  },
-  badgeDesc: {
-    fontSize: rf(14),
-    color: "#cccccc",
-    textAlign: "center",
-    marginBottom: 32,
-    lineHeight: rf(22),
-  },
-  closeButton: {
-    backgroundColor: "#e0a030",
-    paddingHorizontal: 40,
-    paddingVertical: 16,
-    borderRadius: 16,
-    minHeight: 52,
-    justifyContent: "center",
-    borderWidth: 1.5,
-    borderColor: "#FFD700",
-  },
-  closeText: {
-    fontSize: rf(18),
-    fontWeight: "bold",
-    color: "#ffffff",
-    textAlign: "center",
-  },
-});
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: p.overlay,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: 32,
+    },
+    content: {
+      alignItems: "center",
+      width: "100%",
+    },
+    sparkleRing: {
+      position: "absolute",
+      width: 200,
+      height: 200,
+      top: -20,
+    },
+    badgeOuter: {
+      width: 140,
+      height: 140,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 24,
+    },
+    badgeInner: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: -10,
+    },
+    badgeEmoji: {
+      fontSize: 50,
+    },
+    badgeLabel: {
+      fontSize: rf(24),
+      color: p.textStrong,
+      fontWeight: "800",
+      textAlign: "center",
+      marginBottom: 8,
+    },
+    badgeDesc: {
+      fontSize: rf(14),
+      color: p.textMuted,
+      textAlign: "center",
+      marginBottom: 32,
+      lineHeight: rf(22),
+    },
+    closeButton: {
+      backgroundColor: p.goldBorder,
+      paddingHorizontal: 40,
+      paddingVertical: 16,
+      borderRadius: 16,
+      minHeight: 52,
+      justifyContent: "center",
+      borderWidth: 1.5,
+      borderColor: p.gold,
+    },
+    closeText: {
+      fontSize: rf(18),
+      fontWeight: "bold",
+      color: p.white,
+      textAlign: "center",
+    },
+  });
+}

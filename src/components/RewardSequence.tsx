@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import { useTheme, type Palette } from "../theme";
 import BattleScene from "./BattleScene";
 import TreasureChestAnimation from "./TreasureChestAnimation";
 
@@ -18,6 +19,8 @@ type Step = "battle" | "chest" | "exp" | "done";
  * バトル → 宝箱 → EXP/ゴールド獲得表示
  */
 export default function RewardSequence({ show, level, rewardAmount = 0, badgeEarned, onComplete }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
   const [step, setStep] = useState<Step>("battle");
 
   const reset = useCallback(() => setStep("battle"), []);
@@ -68,52 +71,51 @@ export default function RewardSequence({ show, level, rewardAmount = 0, badgeEar
   );
 }
 
-const styles = StyleSheet.create({
-  expOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  expCard: {
-    backgroundColor: "#1A1A2E",
-    borderWidth: 1.5,
-    borderColor: "#DAA520",
-    borderRadius: 20,
-    padding: 32,
-    alignItems: "center",
-    minWidth: 260,
-  },
-  completeText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#FFD700",
-    marginBottom: 20,
-    textShadowColor: "#FF8C00",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 8,
-  },
-  rewardRow: {
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  rewardLabel: {
-    fontSize: 12,
-    color: "#888",
-  },
-  rewardValue: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FFD700",
-  },
-  badgeText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#9B59B6",
-  },
-  tapHint: {
-    fontSize: 11,
-    color: "#555",
-    marginTop: 16,
-  },
-});
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    expOverlay: {
+      flex: 1,
+      backgroundColor: p.overlay,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    expCard: {
+      backgroundColor: p.surface,
+      borderWidth: 1.5,
+      borderColor: p.goldBorder,
+      borderRadius: 20,
+      padding: 32,
+      alignItems: "center",
+      minWidth: 260,
+    },
+    completeText: {
+      fontSize: 20,
+      fontWeight: "bold",
+      color: p.gold,
+      marginBottom: 20,
+    },
+    rewardRow: {
+      marginBottom: 12,
+      alignItems: "center",
+    },
+    rewardLabel: {
+      fontSize: 12,
+      color: p.textMuted,
+    },
+    rewardValue: {
+      fontSize: 28,
+      fontWeight: "bold",
+      color: p.gold,
+    },
+    badgeText: {
+      fontSize: 14,
+      fontWeight: "bold",
+      color: p.accent,
+    },
+    tapHint: {
+      fontSize: 11,
+      color: p.textMuted,
+      marginTop: 16,
+    },
+  });
+}

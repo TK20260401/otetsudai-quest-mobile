@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Animated, Easing, ViewStyle, StyleSheet } from "react-native";
+import { useTheme, type Palette } from "../theme";
 import { useReducedMotion } from "../lib/useReducedMotion";
 
 type Props = {
@@ -15,6 +16,8 @@ type Props = {
  * 振動完了後500msで赤枠フェード→onShakeEnd
  */
 export default function ShakeView({ children, shake, onShakeEnd, style }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
   const translateX = useRef(new Animated.Value(0)).current;
   const [showBorder, setShowBorder] = useState(false);
@@ -114,10 +117,12 @@ export default function ShakeView({ children, shake, onShakeEnd, style }: Props)
   );
 }
 
-const styles = StyleSheet.create({
-  errorBorder: {
-    borderColor: "#E74C3C",
-    borderWidth: 2,
-    borderRadius: 8,
-  },
-});
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    errorBorder: {
+      borderColor: p.red,
+      borderWidth: 2,
+      borderRadius: 8,
+    },
+  });
+}

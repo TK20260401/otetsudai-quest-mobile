@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Rect, Path, G, Defs, LinearGradient, Stop } from "react-native-svg";
+import { useTheme, type Palette } from "../theme";
 import WalletBalanceAnimation from "./WalletBalanceAnimation";
 
 type Props = {
@@ -17,6 +18,8 @@ type Props = {
  * EXP(金) = レベル進捗
  */
 export default function RpgStatusBar({ hp, mp, exp, maxMp = 10 }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
   const mpPercent = Math.min(100, Math.round((mp / maxMp) * 100));
 
   return (
@@ -41,12 +44,12 @@ type GaugeProps = {
 function GaugeRow({ label, value, max, color1, color2, icon, numValue }: GaugeProps) {
   const pct = Math.min(100, Math.max(0, (value / max) * 100));
   return (
-    <View style={styles.row}>
-      <View style={styles.iconWrap}>
+    <View style={gaugeStyles.row}>
+      <View style={gaugeStyles.iconWrap}>
         <GaugeIcon type={icon} />
       </View>
-      <Text style={[styles.label, { color: color1 }]}>{label}</Text>
-      <View style={styles.barOuter}>
+      <Text style={[gaugeStyles.label, { color: color1 }]}>{label}</Text>
+      <View style={gaugeStyles.barOuter}>
         <Svg width="100%" height={12} viewBox="0 0 200 12">
           <Defs>
             <LinearGradient id={`gauge-${label}`} x1="0%" y1="0%" x2="100%" y2="0%">
@@ -70,7 +73,7 @@ function GaugeRow({ label, value, max, color1, color2, icon, numValue }: GaugePr
         value={numValue}
         duration={600}
         formatFn={(n) => `${n}%`}
-        textStyle={styles.suffix}
+        textStyle={gaugeStyles.suffix}
       />
     </View>
   );
@@ -98,14 +101,8 @@ function GaugeIcon({ type }: { type: "heart" | "magic" | "sword" }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 10,
-    padding: 8,
-    gap: 4,
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.15)",
-  },
+// ゲージ内部スタイルはpalette非依存（RPG固有色）
+const gaugeStyles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -131,3 +128,15 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
 });
+
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    container: {
+      borderRadius: 10,
+      padding: 8,
+      gap: 4,
+      borderWidth: 1.5,
+      borderColor: p.border,
+    },
+  });
+}

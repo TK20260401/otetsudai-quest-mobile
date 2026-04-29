@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { View, Text, StyleSheet, Animated, Dimensions } from "react-native";
 import Svg, { Rect, Line, Defs, LinearGradient, Stop } from "react-native-svg";
+import { useTheme, type Palette } from "../theme";
 import CharacterSvg from "./CharacterSvg";
 import PixelMonsterSvg, { MONSTER_TYPES } from "./PixelMonsterSvg";
 import { GoldCoinIcon } from "./PixelItemIcons";
@@ -15,6 +16,8 @@ type Props = {
 const { width } = Dimensions.get("window");
 
 export default function BattleScene({ show, level, onComplete }: Props) {
+  const { palette } = useTheme();
+  const dynStyles = useMemo(() => createDynStyles(palette), [palette]);
   const reducedMotion = useReducedMotion();
   const [monsterType] = useState(() => MONSTER_TYPES[Math.floor(Math.random() * MONSTER_TYPES.length)]);
   const [phase, setPhase] = useState<"enter" | "attack" | "hit" | "defeat" | "coins" | "done">("enter");
@@ -78,7 +81,7 @@ export default function BattleScene({ show, level, onComplete }: Props) {
   if (!show) return null;
 
   return (
-    <View style={styles.overlay}>
+    <View style={dynStyles.overlay}>
       <View style={styles.arena}>
         {/* Background */}
         <Svg style={StyleSheet.absoluteFill} viewBox="0 0 300 200">
@@ -114,7 +117,7 @@ export default function BattleScene({ show, level, onComplete }: Props) {
 
         {/* Victory */}
         <Animated.View style={[styles.victoryWrap, { opacity: victoryOpacity }]}>
-          <Text style={styles.victoryText}>VICTORY!</Text>
+          <Text style={dynStyles.victoryText}>VICTORY!</Text>
         </Animated.View>
 
         {/* Coins */}
@@ -132,14 +135,27 @@ export default function BattleScene({ show, level, onComplete }: Props) {
   );
 }
 
+function createDynStyles(p: Palette) {
+  return StyleSheet.create({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: p.overlay,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 100,
+    },
+    victoryText: {
+      fontSize: 22,
+      fontWeight: "bold",
+      color: p.gold,
+      textShadowColor: p.goldBorder,
+      textShadowOffset: { width: 0, height: 0 },
+      textShadowRadius: 10,
+    },
+  });
+}
+
 const styles = StyleSheet.create({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 100,
-  },
   arena: {
     width: 280,
     height: 190,
@@ -167,14 +183,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: "center",
-  },
-  victoryText: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#FFD700",
-    textShadowColor: "#FF8C00",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
   },
   coinRow: {
     position: "absolute",

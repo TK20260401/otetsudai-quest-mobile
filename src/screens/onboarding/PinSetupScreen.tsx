@@ -227,7 +227,7 @@ function createStyles(p: Palette) {
     },
     errorText: {
       fontSize: rf(13),
-      color: "#E74C3C",
+      color: p.red,
       fontWeight: "bold",
       marginBottom: 12,
       textAlign: "center",

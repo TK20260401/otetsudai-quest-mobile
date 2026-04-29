@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Svg, { Rect, Path, G } from "react-native-svg";
 import type { RpgStats } from "../lib/rpg-stats";
+import { useTheme, type Palette } from "../theme";
 import { RubyStr } from "./Ruby";
 
 type Props = {
@@ -14,6 +15,9 @@ type Props = {
  * ATK/DEF/LCKをピクセルアイコン付きで表示
  */
 export default function EquipmentView({ stats, appearance }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
+
   return (
     <View style={styles.container}>
       <RubyStr text={appearance} style={styles.title} rubySize={6} noWrap />
@@ -28,10 +32,10 @@ export default function EquipmentView({ stats, appearance }: Props) {
 
 function StatItem({ icon, label, value, color }: { icon: string; label: string; value: number; color: string }) {
   return (
-    <View style={styles.statItem}>
+    <View style={statStyles.statItem}>
       <StatIcon type={icon} color={color} />
-      <Text style={[styles.statLabel, { color }]}>{label}</Text>
-      <Text style={styles.statValue}>{value}</Text>
+      <Text style={[statStyles.statLabel, { color }]}>{label}</Text>
+      <Text style={statStyles.statValue}>{value}</Text>
     </View>
   );
 }
@@ -61,25 +65,8 @@ function StatIcon({ type, color }: { type: string; color: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 8,
-    padding: 8,
-    marginTop: 6,
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.15)",
-  },
-  title: {
-    fontSize: 9,
-    color: "#DAA520",
-    textAlign: "center",
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
+// StatItem内のスタイルはpalette非依存なので静的
+const statStyles = StyleSheet.create({
   statItem: {
     alignItems: "center",
     gap: 2,
@@ -94,3 +81,26 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 });
+
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    container: {
+      borderRadius: 8,
+      padding: 8,
+      marginTop: 6,
+      borderWidth: 1.5,
+      borderColor: p.border,
+    },
+    title: {
+      fontSize: 9,
+      color: p.goldBorder,
+      textAlign: "center",
+      fontWeight: "bold",
+      marginBottom: 4,
+    },
+    statsRow: {
+      flexDirection: "row",
+      justifyContent: "space-around",
+    },
+  });
+}

@@ -2583,16 +2583,16 @@ function createStyles(p: Palette) {
   },
   questClearBubble: {
     flex: 1,
-    backgroundColor: "rgba(255,215,0,0.15)",
+    backgroundColor: p.goldLight,
     borderRadius: 10,
     padding: 8,
     borderWidth: 1.5,
-    borderColor: "rgba(255,215,0,0.3)",
+    borderColor: p.goldBorder,
   },
   questClearText: {
     fontSize: 14,
     fontWeight: "bold" as const,
-    color: "#FFD700",
+    color: p.gold,
   },
 
   // リセットボタン

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import Svg, { Rect, Path, Circle, G, Defs, LinearGradient, Stop } from "react-native-svg";
 import { rf } from "../lib/responsive";
+import { useTheme, type Palette } from "../theme";
 import { useReducedMotion } from "../lib/useReducedMotion";
 import type { Level } from "../lib/levels";
 import CharacterSvg from "./CharacterSvg";
@@ -25,6 +26,8 @@ type Props = {
 const { width } = Dimensions.get("window");
 
 export default function LevelUpModal({ visible, prevLevel, newLevel, onClose }: Props) {
+  const { palette } = useTheme();
+  const styles = useMemo(() => createStyles(palette), [palette]);
   const flash = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.3)).current;
   const textFade = useRef(new Animated.Value(0)).current;
@@ -276,104 +279,106 @@ function PixelBanner({ text }: { text: string }) {
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  flash: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#FFFFFF",
-  },
-  content: {
-    backgroundColor: "#1a1a2e",
-    borderRadius: 20,
-    padding: 24,
-    marginHorizontal: 24,
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#FFD700",
-  },
-  sparkle: {
-    position: "absolute",
-    width: 24,
-    height: 24,
-  },
-  compareRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-    marginBottom: 16,
-  },
-  compareItem: {
-    alignItems: "center",
-  },
-  compareLabel: {
-    fontSize: 11,
-    color: "#999",
-    marginBottom: 4,
-  },
-  prevCharacter: {
-    opacity: 0.5,
-  },
-  newCharacter: {
-    // full opacity by default
-  },
-  compareLevelText: {
-    fontSize: 12,
-    color: "#888",
-    marginTop: 4,
-  },
-  newLevelText: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#FFD700",
-    marginTop: 4,
-  },
-  arrowWrap: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 4,
-  },
-  infoBox: {
-    backgroundColor: "rgba(255,215,0,0.1)",
-    borderRadius: 12,
-    padding: 16,
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 16,
-    borderWidth: 1.5,
-    borderColor: "rgba(255,215,0,0.3)",
-  },
-  newTitle: {
-    fontSize: rf(20),
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    marginBottom: 4,
-  },
-  newAppearance: {
-    fontSize: rf(14),
-    color: "#FFD700",
-    marginBottom: 8,
-  },
-  newGreeting: {
-    fontSize: 13,
-    color: "#CCC",
-    fontStyle: "italic",
-  },
-  closeButton: {
-    backgroundColor: "#FFD700",
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: "center",
-    width: "100%",
-  },
-  closeText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1a1a2e",
-  },
-});
+function createStyles(p: Palette) {
+  return StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: p.overlay,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    flash: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: p.white,
+    },
+    content: {
+      backgroundColor: p.surface,
+      borderRadius: 20,
+      padding: 24,
+      marginHorizontal: 24,
+      alignItems: "center",
+      borderWidth: 1.5,
+      borderColor: p.goldBorder,
+    },
+    sparkle: {
+      position: "absolute",
+      width: 24,
+      height: 24,
+    },
+    compareRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 12,
+      marginBottom: 16,
+    },
+    compareItem: {
+      alignItems: "center",
+    },
+    compareLabel: {
+      fontSize: 11,
+      color: p.textMuted,
+      marginBottom: 4,
+    },
+    prevCharacter: {
+      opacity: 0.5,
+    },
+    newCharacter: {
+      // full opacity by default
+    },
+    compareLevelText: {
+      fontSize: 12,
+      color: p.textMuted,
+      marginTop: 4,
+    },
+    newLevelText: {
+      fontSize: 14,
+      fontWeight: "bold",
+      color: p.gold,
+      marginTop: 4,
+    },
+    arrowWrap: {
+      justifyContent: "center",
+      alignItems: "center",
+      marginHorizontal: 4,
+    },
+    infoBox: {
+      backgroundColor: p.goldLight,
+      borderRadius: 12,
+      padding: 16,
+      width: "100%",
+      alignItems: "center",
+      marginBottom: 16,
+      borderWidth: 1.5,
+      borderColor: p.goldBorder,
+    },
+    newTitle: {
+      fontSize: rf(20),
+      fontWeight: "bold",
+      color: p.textStrong,
+      marginBottom: 4,
+    },
+    newAppearance: {
+      fontSize: rf(14),
+      color: p.gold,
+      marginBottom: 8,
+    },
+    newGreeting: {
+      fontSize: 13,
+      color: p.textMuted,
+      fontStyle: "italic",
+    },
+    closeButton: {
+      backgroundColor: p.gold,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: "center",
+      width: "100%",
+    },
+    closeText: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: p.white,
+    },
+  });
+}
