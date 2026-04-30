@@ -69,8 +69,11 @@ UPDATE otetsudai_stock_prices
 -- ============================================
 UPDATE otetsudai_stock_prices
   SET name_ja = '稲妻の車',
-      description_kids = '電気で走る車の商会'
+      description_kids = '電気で走る車の商会',
+      icon = '⚡'
   WHERE symbol = 'TSLA';
+-- 注: TSLA と 7203.T(Toyota=🚗) の icon 被りを解消するため、
+-- TSLA は ⚡ (稲妻の車の名前と整合) に変更
 
 -- ============================================
 -- 6. 大通信塔の symbol を 9984.T (SoftBank Group) → 9432.T (NTT) に変更
