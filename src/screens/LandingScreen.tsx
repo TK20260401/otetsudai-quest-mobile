@@ -39,7 +39,7 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
     if (measured) return;
     const containerWidth = e.nativeEvent.layout.width;
     // RubyText の1行での推定幅（フォントサイズ × 文字数の概算）
-    // 「クエストをクリアして、金貨をかせごう！」= 18文字
+    // 「クエストをクリアして、コロを集めよう！」= 18文字
     const fontSize = isSmallScreen ? 13 : rf(13);
     const estimatedWidth = 18 * fontSize * 0.85;
     setSubtitleWrap(estimatedWidth > containerWidth);
@@ -55,7 +55,7 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
     >
       <AccessibilityToggle />
       <View style={[styles.hero, isTablet && { maxWidth: 480, alignSelf: "center", width: "100%" }]}>
-        <View style={styles.heroRow} accessibilityLabel="Job Saga">
+        <View style={styles.heroRow} accessibilityLabel="JOB SAGA">
           <PixelHeroSvg type="warrior" size={isSmallScreen ? 48 : 64} animated mode="walk" />
           <PixelHeroSvg type="mage" size={isSmallScreen ? 48 : 64} animated mode="walk" />
         </View>
@@ -64,16 +64,16 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
           adjustsFontSizeToFit
           numberOfLines={1}
         >
-          Job Saga
+          JOB SAGA
         </Text>
         <View style={styles.subtitleWrap} onLayout={onSubtitleLayout}>
           {subtitleWrap ? (
             <>
               <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["クエストをクリアして、"]} rubySize={6} />
-              <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={[["金貨", "きんか"], "をかせごう！"]} rubySize={6} />
+              <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["コロを", ["集", "あつ"], "めよう！"]} rubySize={6} />
             </>
           ) : (
-            <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["クエストをクリアして、", ["金貨", "きんか"], "をかせごう！"]} rubySize={6} />
+            <RubyText style={[styles.subtitle, isSmallScreen && { fontSize: 13 }]} parts={["クエストをクリアして、コロを", ["集", "あつ"], "めよう！"]} rubySize={6} />
           )}
         </View>
 
@@ -100,7 +100,16 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
               accessibilityRole="button"
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <RubyText style={{ fontSize: 12, color: palette.textMuted }} parts={["おうちのひと（", ["冒険団長", "ぼうけんだんちょう"], "モード）"]} rubySize={5} />
+              <RubyText
+                style={{
+                  fontSize: 14,
+                  color: palette.textMuted,
+                  textDecorationLine: "underline",
+                  textDecorationColor: palette.textMuted,
+                }}
+                parts={["おうちのひと（", ["冒険団長", "ぼうけんだんちょう"], "モード）"]}
+                rubySize={5}
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -110,24 +119,24 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
             <View style={[styles.featureIcon, { backgroundColor: palette.walletSpend }]}>
               <PixelCoinIcon size={16} />
             </View>
-            <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["使", "つか"], "う"]} rubySize={7} />
-            <AutoRubyText text="物を買う" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={4} />
+            <RubyText style={[styles.featureTitle, { color: palette.walletSpendText }]} parts={[["取引", "とりひき"]]} rubySize={7} />
+            <AutoRubyText text="欲しい物を仕入れる" style={[styles.featureDesc, { color: palette.walletSpendText }]} rubySize={4} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletSaveBg, borderColor: palette.walletSaveBorder }]}>
             <View style={[styles.featureIcon, { backgroundColor: palette.walletSave }]}>
               <PixelPiggyIcon size={16} />
             </View>
-            <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["貯", "た"], "める"]} rubySize={7} />
-            <AutoRubyText text="夢を叶える" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
+            <RubyText style={[styles.featureTitle, { color: palette.walletSaveText }]} parts={[["金庫", "きんこ"]]} rubySize={7} />
+            <AutoRubyText text="夢を叶える宝箱" style={[styles.featureDesc, { color: palette.walletSaveText }]} rubySize={4} />
           </View>
 
           <View style={[styles.featureCard, { backgroundColor: palette.walletInvestBg, borderColor: palette.walletInvestBorder }]}>
             <View style={[styles.featureIcon, { backgroundColor: palette.walletInvest }]}>
               <PixelSeedlingIcon size={16} />
             </View>
-            <RubyText style={[styles.featureTitle, { color: palette.walletInvestText }]} parts={[["増", "ふ"], "やす"]} rubySize={7} />
-            <AutoRubyText text="お金が育つ" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={4} />
+            <RubyText style={[styles.featureTitle, { color: palette.walletInvestText }]} parts={[["錬成", "れんせい"]]} rubySize={7} />
+            <AutoRubyText text="お宝を大きく育てる" style={[styles.featureDesc, { color: palette.walletInvestText }]} rubySize={4} />
           </View>
         </View>
       </View>

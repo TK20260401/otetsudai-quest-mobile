@@ -1540,7 +1540,20 @@ export default function ChildDashboardScreen({
                 <AutoRubyText text="クエストをクリアすると ここに きろくされるよ！" style={[styles.emptyText, { paddingVertical: 4, fontSize: 12 }]} rubySize={6} />
               </View>
             ) : transactions.length === 0 ? null : (
-              transactions.map((tx) => (
+              transactions.map((tx) => {
+                const desc = tx.description || tx.type;
+                const trimmed = desc.trim();
+                const hasApproval = trimmed.endsWith(" 承認");
+                const main = hasApproval ? trimmed.slice(0, -3).trim() : trimmed;
+                const spaceIdx = main.indexOf(" ");
+                let line1 = main;
+                let line2 = hasApproval ? "承認" : "";
+                if (spaceIdx !== -1) {
+                  line1 = main.slice(0, spaceIdx);
+                  const verb = main.slice(spaceIdx + 1).trim();
+                  line2 = hasApproval ? `承認 ${verb}` : verb;
+                }
+                return (
                 <TouchableOpacity
                   key={tx.id}
                   style={styles.historyItem}
@@ -1559,8 +1572,18 @@ export default function ChildDashboardScreen({
                       adjustsFontSizeToFit
                       minimumFontScale={0.7}
                     >
-                      {tx.description || tx.type}
+                      {line1}
                     </Text>
+                    {line2 ? (
+                      <Text
+                        style={styles.historyDescSub}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                        minimumFontScale={0.7}
+                      >
+                        {line2}
+                      </Text>
+                    ) : null}
                     <Text style={styles.historyDate}>
                       {new Date(tx.created_at).toLocaleDateString("ja-JP")}
                     </Text>
@@ -1578,7 +1601,8 @@ export default function ChildDashboardScreen({
                     {tx.amount}
                   </Text>
                 </TouchableOpacity>
-              ))
+                );
+              })
             )}
           </View>
         )}
@@ -2535,7 +2559,8 @@ function createStyles(p: Palette) {
   },
   historyType: { marginRight: 10, width: 28, alignItems: "center" as const, justifyContent: "center" as const },
   historyInfo: { flex: 1 },
-  historyDesc: { fontSize: 12, color: p.textStrong },
+  historyDesc: { fontSize: 13, fontWeight: "bold" as const, color: p.textStrong },
+  historyDescSub: { fontSize: 11, color: p.textBase, marginTop: 1 },
   historyDate: { fontSize: 11, color: p.textMuted, marginTop: 2 },
   historyAmount: { fontSize: 16, fontWeight: "bold" },
 

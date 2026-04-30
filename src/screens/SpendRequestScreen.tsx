@@ -198,7 +198,7 @@ export default function SpendRequestScreen({
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <PixelCoinIcon size={20} />
               <AutoRubyText
-                text={`手持ちコイン: ${spendingBalance.toLocaleString()}コロ`}
+                text={`手持ちコロ: ${spendingBalance.toLocaleString()}コロ`}
                 style={styles.balanceText}
                 rubySize={7}
               />

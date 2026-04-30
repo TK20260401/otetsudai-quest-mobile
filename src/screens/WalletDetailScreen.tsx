@@ -159,16 +159,39 @@ export default function WalletDetailScreen({
   function txTypeName(type: string): string {
     switch (type) {
       case "earn":
-        return "かせいだ";
+        return "クエスト報酬";
       case "spend":
-        return "つかった";
+        return "取引";
       case "save":
-        return "ためた";
+        return "金庫";
       case "invest":
-        return "ふやした";
+        return "錬成";
       default:
         return type;
     }
+  }
+
+  /**
+   * 冒険ログの description を 2 行に分割
+   * - 1 行目: 名詞 (タイトルの最初の半角スペース前)
+   * - 2 行目: 承認 + 動詞 (末尾「承認」を 2 行目先頭に移動)
+   * 例: "泡モンスター 討伐作戦 承認" → { line1: "泡モンスター", line2: "承認 討伐作戦" }
+   */
+  function splitDescription(desc: string): { line1: string; line2: string } {
+    const trimmed = desc.trim();
+    const hasApproval = trimmed.endsWith(" 承認");
+    const main = hasApproval ? trimmed.slice(0, -3).trim() : trimmed;
+    const spaceIdx = main.indexOf(" ");
+    if (spaceIdx === -1) {
+      // 単一トークン: 1 行目のみ
+      return { line1: main, line2: hasApproval ? "承認" : "" };
+    }
+    const noun = main.slice(0, spaceIdx);
+    const verb = main.slice(spaceIdx + 1).trim();
+    return {
+      line1: noun,
+      line2: hasApproval ? `承認 ${verb}` : verb,
+    };
   }
 
   function txAmountColor(type: string): string {
@@ -571,28 +594,36 @@ export default function WalletDetailScreen({
 
           {/* Transaction list */}
           {filteredTransactions.length > 0 ? (
-            filteredTransactions.map((tx) => (
-              <View key={tx.id} style={styles.historyItem}>
-                <View style={styles.historyType}><TxTypeIcon type={tx.type} /></View>
-                <View style={styles.historyInfo}>
-                  <Text style={styles.historyDesc}>
-                    {tx.description || txTypeName(tx.type)}
-                  </Text>
-                  <Text style={styles.historyDate}>
-                    {new Date(tx.created_at).toLocaleDateString("ja-JP")}
+            filteredTransactions.map((tx) => {
+              const { line1, line2 } = splitDescription(tx.description || txTypeName(tx.type));
+              return (
+                <View key={tx.id} style={styles.historyItem}>
+                  <View style={styles.historyType}><TxTypeIcon type={tx.type} /></View>
+                  <View style={styles.historyInfo}>
+                    <Text style={styles.historyDesc} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                      {line1}
+                    </Text>
+                    {line2 ? (
+                      <Text style={styles.historyDescSub} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                        {line2}
+                      </Text>
+                    ) : null}
+                    <Text style={styles.historyDate}>
+                      {new Date(tx.created_at).toLocaleDateString("ja-JP")}
+                    </Text>
+                  </View>
+                  <Text
+                    style={[
+                      styles.historyAmount,
+                      { color: txAmountColor(tx.type) },
+                    ]}
+                  >
+                    {tx.type === "earn" ? "+" : "-"}
+                    {tx.amount.toLocaleString()}
                   </Text>
                 </View>
-                <Text
-                  style={[
-                    styles.historyAmount,
-                    { color: txAmountColor(tx.type) },
-                  ]}
-                >
-                  {tx.type === "earn" ? "+" : "-"}
-                  {tx.amount.toLocaleString()}
-                </Text>
-              </View>
-            ))
+              );
+            })
           ) : (
             <Text style={styles.emptyHint}>まだ履歴がないよ</Text>
           )}
@@ -947,8 +978,14 @@ function createStyles(p: Palette) {
       flex: 1,
     },
     historyDesc: {
-      fontSize: 14,
+      fontSize: 13,
+      fontWeight: "bold" as const,
       color: p.textStrong,
+    },
+    historyDescSub: {
+      fontSize: 11,
+      color: p.textBase,
+      marginTop: 1,
     },
     historyDate: {
       fontSize: 11,
