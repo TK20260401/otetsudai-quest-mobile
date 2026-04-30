@@ -967,11 +967,8 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelDoorIcon size={14} />
-                <View style={{ alignItems: "center" }}>
-                  <Text style={styles.backText}>もどる</Text>
-                  <Text style={styles.backHint}>(まえへ)</Text>
-                </View>
+                <PixelDoorIcon size={12} />
+                <Text style={styles.backText}>もどる</Text>
               </View>
             </TouchableOpacity>
             <RubyText style={styles.label} parts={[["冒険団", "ぼうけんだん"], "を", ["選", "えら"], "んでね"]} rubySize={6} />
@@ -993,11 +990,8 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelDoorIcon size={14} />
-                <View style={{ alignItems: "center" }}>
-                  <Text style={styles.backText}>{selectedFamily?.name}</Text>
-                  <Text style={styles.backHint}>(まえへ)</Text>
-                </View>
+                <PixelDoorIcon size={12} />
+                <Text style={styles.backText}>{selectedFamily?.name}</Text>
               </View>
             </TouchableOpacity>
             <RubyText style={styles.label} parts={[["冒険者", "ぼうけんしゃ"], "を", ["選", "えら"], "びます"]} rubySize={6} />
@@ -1029,11 +1023,8 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelDoorIcon size={14} />
-                <View style={{ alignItems: "center" }}>
-                  <Text style={styles.backText}>{selectedUser?.name}</Text>
-                  <Text style={styles.backHint}>(まえへ)</Text>
-                </View>
+                <PixelDoorIcon size={12} />
+                <Text style={styles.backText}>{selectedUser?.name}</Text>
               </View>
             </TouchableOpacity>
             <RubyText style={styles.label} parts={["PINを", ["入", "い"], "れてね 🔑"]} rubySize={6} />
@@ -1254,16 +1245,16 @@ function createStyles(p: Palette) {
       alignSelf: "flex-start",
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 8,
+      gap: 4,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 6,
       borderWidth: 1.5,
       borderColor: p.primary,
       backgroundColor: p.background,
     } as const,
     backText: {
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: "bold",
       color: p.textMuted,
     },

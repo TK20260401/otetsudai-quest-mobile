@@ -196,19 +196,16 @@ export default function WalletDetailScreen({
           accessibilityLabel="おうちに もどる"
         >
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-            <PixelHouseIcon size={16} />
-            <View style={{ alignItems: "center" }}>
-              <Text style={styles.backText}>もどる</Text>
-              <Text style={styles.backHint}>(TOPへ)</Text>
-            </View>
+            <PixelHouseIcon size={14} />
+            <Text style={styles.backText}>もどる</Text>
           </View>
         </TouchableOpacity>
         <View style={styles.headerTitleGroup}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <View style={{ width: 22, height: 22, alignItems: "center", justifyContent: "center" }}>
-              <PixelCoinIcon size={22} />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
+              <PixelCoinIcon size={28} />
             </View>
-            <RubyText style={styles.headerTitle} parts={[["金", "きん"], ["庫", "こ"]]} rubySize={7} />
+            <RubyText style={styles.headerTitle} parts={[["金", "きん"], ["庫", "こ"]]} rubySize={9} />
           </View>
           <Text
             style={styles.headerTotalAmount}
@@ -650,25 +647,18 @@ function createStyles(p: Palette) {
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 8,
+      gap: 4,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 6,
       borderWidth: 1.5,
       borderColor: p.primary,
       backgroundColor: p.background,
     },
     backText: {
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: "bold",
       color: p.textMuted,
-    },
-    backHint: {
-      fontSize: 9,
-      fontWeight: "600",
-      color: p.textMuted,
-      opacity: 0.7,
-      marginTop: -1,
     },
     headerTitleGroup: {
       flexDirection: "row",
@@ -682,8 +672,8 @@ function createStyles(p: Palette) {
       color: p.accent,
     },
     headerTitle: {
-      fontSize: rf(18),
-      fontWeight: "bold",
+      fontSize: rf(24),
+      fontWeight: "800",
       color: p.primaryDark,
       textAlign: "center",
     },

@@ -282,16 +282,13 @@ export default function InvestScreen({
           accessibilityRole="button"
         >
           <PixelHouseIcon size={16} />
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.backText}>もどる</Text>
-            <Text style={styles.backHint}>(TOPへ)</Text>
-          </View>
+          <Text style={styles.backText}>もどる</Text>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
-          <View style={{ width: 18, height: 18, alignItems: "center", justifyContent: "center" }}>
-            <PixelSeedlingIcon size={18} />
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1, justifyContent: "center" }}>
+          <View style={{ width: 24, height: 24, alignItems: "center", justifyContent: "center" }}>
+            <PixelSeedlingIcon size={24} />
           </View>
-          <RubyText style={styles.headerTitle} parts={[["錬", "れん"], ["成", "せい"]]} rubySize={6} />
+          <RubyText style={styles.headerTitle} parts={[["錬", "れん"], ["成", "せい"]]} rubySize={8} />
         </View>
       </View>
 
@@ -329,7 +326,7 @@ export default function InvestScreen({
             ) : (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelRefreshIcon size={12} />
-                <AutoRubyText text="最新価格に更新" style={styles.syncButtonText} rubySize={4} />
+                <AutoRubyText text="お宝相場を更新" style={styles.syncButtonText} rubySize={4} />
               </View>
             )}
           </TouchableOpacity>
@@ -345,8 +342,8 @@ export default function InvestScreen({
                 <PixelSeedlingIcon size={16} />
                 <AutoRubyText text="錬成の基本" style={styles.tipTitle} rubySize={6} />
               </View>
-              <AutoRubyText text="お宝は「お店の主人になる」しるし。" style={styles.tipText} rubySize={5} />
-              <AutoRubyText text="お店が大繁盛すると、お宝の値段が上がる！" style={styles.tipText} rubySize={5} />
+              <AutoRubyText text="お宝は「冒険商会の主人になる」しるし。" style={styles.tipText} rubySize={5} />
+              <AutoRubyText text="冒険商会が大繁盛すると、お宝の値段が上がる！" style={styles.tipText} rubySize={5} />
               <AutoRubyText text="🐢 急がずじっくり育てるのがコツ！" style={styles.tipText} rubySize={5} />
               <AutoRubyText text="すぐ手放さないで、じっくり育てよう。" style={styles.tipText} rubySize={5} />
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
@@ -446,10 +443,7 @@ export default function InvestScreen({
               >
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
                   <PixelDoorIcon size={14} />
-                  <View style={{ alignItems: "center" }}>
-                    <Text style={styles.lockBackText}>もどる</Text>
-                    <Text style={styles.backHint}>(まえへ)</Text>
-                  </View>
+                  <Text style={styles.lockBackText}>もどる</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -673,17 +667,17 @@ function createStyles(p: Palette) {
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 6,
-      paddingHorizontal: 14,
-      paddingVertical: 8,
-      borderRadius: 8,
+      gap: 4,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 6,
       backgroundColor: p.background,
       borderWidth: 1.5,
       borderColor: p.primary,
     },
-    backText: { fontSize: 14, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 12, fontWeight: "bold", color: p.textMuted },
     backHint: { fontSize: 9, fontWeight: "600", color: p.textMuted, opacity: 0.7, marginTop: -1 },
-    headerTitle: { fontSize: rf(18), fontWeight: "bold", color: p.primaryDark, flexShrink: 1 },
+    headerTitle: { fontSize: rf(24), fontWeight: "800", color: p.primaryDark, flexShrink: 1 },
 
     scrollContent: { padding: 16, paddingBottom: 140 },
 
