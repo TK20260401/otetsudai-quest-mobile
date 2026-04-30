@@ -260,16 +260,22 @@ export default function InvestScreen({
     if (text.length <= 8) {
       return { line1: text, line2: "" };
     }
-    const noIdx = text.indexOf("の");
-    // 文字列の先頭近く(最初の 12 文字以内)に「の」があればそこで分割
-    if (noIdx !== -1 && noIdx < 12) {
-      return { line1: text.slice(0, noIdx + 1), line2: text.slice(noIdx + 1) };
-    }
-    // 「江戸」は短く 1 行に収まるため対象から除外（江戸全部盛り を不要に分割しない）
-    const prefixes = ["ロケットシティ", "サムライタウン", "テクノ"];
-    for (const p of prefixes) {
-      if (text.startsWith(p) && text.length > p.length) {
-        return { line1: p, line2: text.slice(p.length) };
+    // 既知の地域名プレフィックスのみ分割対象（順序: 長い物から）
+    // 「江戸」は短く 1 行に収まるため除外
+    const geoNames = [
+      "ロケットシティ",
+      "サムライタウン",
+      "テクノロジー",
+      "テクノ",
+    ];
+    for (const g of geoNames) {
+      // 「ロケットシティの〜」のように の が続く場合は の まで line1 に含める
+      if (text.startsWith(g + "の") && text.length > g.length + 1) {
+        return { line1: g + "の", line2: text.slice(g.length + 1) };
+      }
+      // 「ロケットシティ勇者30」のように の が無い場合は地域名で分割
+      if (text.startsWith(g) && text.length > g.length) {
+        return { line1: g, line2: text.slice(g.length) };
       }
     }
     return { line1: text, line2: "" };
