@@ -20,7 +20,25 @@ UPDATE otetsudai_stock_prices
   WHERE symbol = '9432.T';
 
 -- ============================================
+-- 3. 銀行 → 黄金商会（世界観優先のリネーム）
+--   description_kids 内の「銀行」を「黄金商会」に置換
+-- ============================================
+UPDATE otetsudai_stock_prices
+  SET description_kids = REPLACE(description_kids, '銀行', '黄金商会')
+  WHERE description_kids LIKE '%銀行%';
+
+-- ============================================
+-- 4. 銘柄名 内の 大金庫 → 大宝庫（8306.T MUFG）
+--   既存「金貨の大金庫」→「金貨の大宝庫」
+-- ============================================
+UPDATE otetsudai_stock_prices
+  SET name_ja = REPLACE(name_ja, '大金庫', '大宝庫')
+  WHERE name_ja LIKE '%大金庫%';
+
+-- ============================================
 -- 確認用
 -- ============================================
 -- SELECT symbol, name_ja, description_kids FROM otetsudai_stock_prices
--- WHERE symbol = '9432.T' OR description_kids LIKE '%検索%';
+-- WHERE symbol = '9432.T'
+--    OR description_kids LIKE '%検索%'
+--    OR description_kids LIKE '%黄金商会%';
