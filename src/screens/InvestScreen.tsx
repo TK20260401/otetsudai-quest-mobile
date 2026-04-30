@@ -379,7 +379,10 @@ export default function InvestScreen({
               </View>
               <AutoRubyText text="お宝は「冒険商会の主人になる」しるし。" style={styles.tipText} rubySize={5} />
               <AutoRubyText text="冒険商会が大繁盛すると、お宝の値段が上がる！" style={styles.tipText} rubySize={5} />
-              <AutoRubyText text="🐢 急がずじっくり育てるのがコツ！" style={styles.tipText} rubySize={5} />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <PixelHourglassIcon size={14} />
+                <AutoRubyText text="急がずじっくり育てるのがコツ！" style={styles.tipText} rubySize={5} />
+              </View>
               <AutoRubyText text="すぐ手放さないで、じっくり育てよう。" style={styles.tipText} rubySize={5} />
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelTargetIcon size={14} />
