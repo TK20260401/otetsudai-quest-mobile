@@ -214,13 +214,15 @@ export default function ChildDashboardScreen({
       supabase
         .from("otetsudai_transactions")
         .select("*")
+        .eq("child_id", childId)
+        .is("dismissed_at", null)
         .order("created_at", { ascending: false })
         .limit(20),
       supabase
         .from("otetsudai_badges")
         .select("*")
         .eq("child_id", childId),
-      // Recent approvals with stamp/message（未返信のみ表示）
+      // Recent approvals with stamp/message（未返信かつ未 dismiss のみ表示）
       supabase
         .from("otetsudai_task_logs")
         .select("id, approval_stamp, approval_message, child_reaction_at, child_reaction_stamp, child_reaction_message, task:otetsudai_tasks(title)")
@@ -228,6 +230,7 @@ export default function ChildDashboardScreen({
         .eq("status", "approved")
         .not("approval_stamp", "is", null)
         .is("child_reaction_at", null)
+        .is("child_dismissed_at", null)
         .order("approved_at", { ascending: false })
         .limit(5),
       // つかうリクエスト状況
@@ -511,17 +514,34 @@ export default function ChildDashboardScreen({
     setTimeout(() => setRefreshDoneAt(null), 1500);
   }
 
-  // 団長とのやりとり（task_log）をタップでクリア — 楽観的UI更新後にDB更新
+  // 団長とのやりとり（task_log 返信済）をタップでクリア — 楽観的UI更新後にDB更新
   async function dismissRepliedMessage(logId: string) {
     setRepliedMessages((prev) => prev.filter((m: any) => m.id !== logId));
     const { error } = await supabase
       .from("otetsudai_task_logs")
       .update({ child_dismissed_at: new Date().toISOString() })
       .eq("id", logId);
-    if (error) {
-      // 失敗時は再取得して整合
-      loadData();
-    }
+    if (error) loadData();
+  }
+
+  // 承認通知（task_log 未返信）をタップでクリア
+  async function dismissStampNotif(logId: string) {
+    setStampNotifs((prev) => prev.filter((s) => s.id !== logId));
+    const { error } = await supabase
+      .from("otetsudai_task_logs")
+      .update({ child_dismissed_at: new Date().toISOString() })
+      .eq("id", logId);
+    if (error) loadData();
+  }
+
+  // 冒険ログ取引行をタップでクリア
+  async function dismissTransaction(txId: string) {
+    setTransactions((prev) => prev.filter((t: any) => t.id !== txId));
+    const { error } = await supabase
+      .from("otetsudai_transactions")
+      .update({ dismissed_at: new Date().toISOString() })
+      .eq("id", txId);
+    if (error) loadData();
   }
 
   // パーティチャットメッセージをタップでクリア — 受信側のみ
@@ -532,15 +552,13 @@ export default function ChildDashboardScreen({
       .update({ dismissed_by_recipient_at: new Date().toISOString() })
       .eq("id", messageId)
       .eq("recipient_id", childId);
-    if (error) {
-      loadData();
-    }
+    if (error) loadData();
   }
 
   // 3pot 間の振替（銀行/証券の入出金モデル）
   async function handleTransfer(from: PotType, to: PotType, amount: number) {
     if (!wallet) throw new Error("ウォレットが ありません");
-    if (from === to) throw new Error("同じところには移しかえできません");
+    if (from === to) throw new Error("同じところには移せません");
     if (amount <= 0) throw new Error("0コロより おおきく");
 
     const balanceMap = {
@@ -567,7 +585,7 @@ export default function ChildDashboardScreen({
       wallet_id: wallet.id,
       type: txTypeMap[to],
       amount,
-      description: `${labelMap[from]} → ${labelMap[to]} 移しかえ`,
+      description: `${labelMap[from]} → ${labelMap[to]} 移す`,
     });
 
     await loadData();
@@ -1067,7 +1085,14 @@ export default function ChildDashboardScreen({
             {stampNotifs.map((s) => {
               const stampDef = s.stamp ? getStampById(s.stamp) : null;
               return (
-                <View key={s.id} style={styles.stampNotif}>
+                <TouchableOpacity
+                  key={s.id}
+                  style={styles.stampNotif}
+                  activeOpacity={0.6}
+                  onPress={() => dismissStampNotif(s.id)}
+                  accessibilityLabel="承認通知を閉じる"
+                  accessibilityHint="タップでこの通知を非表示にします"
+                >
                   {stampDef && (
                     <View style={styles.stampNotifSvgWrap}>
                       <StampSvg id={stampDef.id} size={32} />
@@ -1085,8 +1110,9 @@ export default function ChildDashboardScreen({
                         「{s.message}」
                       </Text>
                     )}
+                    <Text style={styles.dismissHint}>タップで閉じる</Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               );
             })}
           </RpgCard>
@@ -1516,12 +1542,24 @@ export default function ChildDashboardScreen({
               </View>
             ) : transactions.length === 0 ? null : (
               transactions.map((tx) => (
-                <View key={tx.id} style={styles.historyItem}>
+                <TouchableOpacity
+                  key={tx.id}
+                  style={styles.historyItem}
+                  activeOpacity={0.6}
+                  onPress={() => dismissTransaction(tx.id)}
+                  accessibilityLabel="取引行を閉じる"
+                  accessibilityHint="タップでこの行を非表示にします"
+                >
                   <View style={styles.historyType}>
                     {tx.type === "earn" ? <PixelCoinIcon size={20} /> : tx.type === "spend" ? <PixelCartIcon size={20} /> : tx.type === "save" ? <PixelPiggyIcon size={20} /> : <PixelChartIcon size={20} />}
                   </View>
                   <View style={styles.historyInfo}>
-                    <Text style={styles.historyDesc}>
+                    <Text
+                      style={styles.historyDesc}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                      minimumFontScale={0.7}
+                    >
                       {tx.description || tx.type}
                     </Text>
                     <Text style={styles.historyDate}>
@@ -1540,7 +1578,7 @@ export default function ChildDashboardScreen({
                     {tx.type === "earn" ? "+" : "-"}
                     {tx.amount}
                   </Text>
-                </View>
+                </TouchableOpacity>
               ))
             )}
           </View>
@@ -2498,7 +2536,7 @@ function createStyles(p: Palette) {
   },
   historyType: { marginRight: 10, width: 28, alignItems: "center" as const, justifyContent: "center" as const },
   historyInfo: { flex: 1 },
-  historyDesc: { fontSize: 14, color: p.textStrong },
+  historyDesc: { fontSize: 12, color: p.textStrong },
   historyDate: { fontSize: 11, color: p.textMuted, marginTop: 2 },
   historyAmount: { fontSize: 16, fontWeight: "bold" },
 
