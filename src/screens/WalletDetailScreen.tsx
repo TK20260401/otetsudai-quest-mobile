@@ -195,8 +195,8 @@ export default function WalletDetailScreen({
           style={styles.backButton}
           accessibilityLabel="おうちに もどる"
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-            <PixelHouseIcon size={14} />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+            <PixelHouseIcon size={12} />
             <Text style={styles.backText}>もどる</Text>
           </View>
         </TouchableOpacity>
@@ -647,16 +647,16 @@ function createStyles(p: Palette) {
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 6,
-      borderWidth: 1.5,
+      gap: 3,
+      paddingHorizontal: 7,
+      paddingVertical: 3,
+      borderRadius: 5,
+      borderWidth: 1,
       borderColor: p.primary,
       backgroundColor: p.background,
     },
     backText: {
-      fontSize: 12,
+      fontSize: 10,
       fontWeight: "bold",
       color: p.textMuted,
     },
@@ -665,6 +665,8 @@ function createStyles(p: Palette) {
       alignItems: "center",
       gap: 10,
       flexShrink: 1,
+      flex: 1,
+      justifyContent: "center",
     },
     headerTotalAmount: {
       fontSize: rf(22),
@@ -672,8 +674,8 @@ function createStyles(p: Palette) {
       color: p.accent,
     },
     headerTitle: {
-      fontSize: rf(24),
-      fontWeight: "800",
+      fontSize: rf(28),
+      fontWeight: "900",
       color: p.primaryDark,
       textAlign: "center",
     },
@@ -956,7 +958,7 @@ function createStyles(p: Palette) {
     },
     loadingEmoji: { fontSize: 48, marginBottom: 12 },
     loadingText: { color: p.textMuted, marginTop: 12, fontSize: 14 },
-    headerSpacer: { width: 80 },
+    headerSpacer: { width: 56 },
     bottomSpacer: { height: 40 },
     treeSection: {
       alignItems: "center" as const,

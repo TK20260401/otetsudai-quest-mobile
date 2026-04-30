@@ -614,7 +614,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
                 <>
                   {/* 冒険団メンバー管理画面 */}
                   <TouchableOpacity style={styles.backButton} onPress={() => { setManagingFamily(null); setFamilyMembers([]); }}>
-                    <PixelDoorIcon size={14} /><Text style={styles.backText}>冒険団一覧に戻る</Text>
+                    <PixelDoorIcon size={12} /><Text style={styles.backText}>もどる</Text>
                   </TouchableOpacity>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 8, marginBottom: 12 }}>
                     <PixelHouseIcon size={18} />
@@ -1245,16 +1245,16 @@ function createStyles(p: Palette) {
       alignSelf: "flex-start",
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 6,
-      borderWidth: 1.5,
+      gap: 3,
+      paddingHorizontal: 7,
+      paddingVertical: 3,
+      borderRadius: 5,
+      borderWidth: 1,
       borderColor: p.primary,
       backgroundColor: p.background,
     } as const,
     backText: {
-      fontSize: 12,
+      fontSize: 10,
       fontWeight: "bold",
       color: p.textMuted,
     },

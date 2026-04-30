@@ -272,8 +272,14 @@ export default function InvestScreen({
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      {/* Header */}
+      {/* Header — タイトル絶対配置で完全中央揃え、戻るボタンは左に重ね配置 */}
       <View style={styles.header}>
+        <View style={styles.headerCenter} pointerEvents="none">
+          <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
+            <PixelSeedlingIcon size={28} />
+          </View>
+          <RubyText style={styles.headerTitle} parts={[["錬", "れん"], ["成", "せい"]]} rubySize={9} />
+        </View>
         <TouchableOpacity
           onPress={() => navigation.navigate("ChildDashboard", { childId })}
           style={styles.backButton}
@@ -281,15 +287,9 @@ export default function InvestScreen({
           accessibilityLabel="おうちにもどる"
           accessibilityRole="button"
         >
-          <PixelHouseIcon size={16} />
+          <PixelHouseIcon size={12} />
           <Text style={styles.backText}>もどる</Text>
         </TouchableOpacity>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flex: 1, justifyContent: "center" }}>
-          <View style={{ width: 24, height: 24, alignItems: "center", justifyContent: "center" }}>
-            <PixelSeedlingIcon size={24} />
-          </View>
-          <RubyText style={styles.headerTitle} parts={[["錬", "れん"], ["成", "せい"]]} rubySize={8} />
-        </View>
       </View>
 
       <ScrollView
@@ -472,7 +472,7 @@ export default function InvestScreen({
                 accessibilityRole="button"
               >
                 <PixelHouseIcon size={16} />
-                <Text style={styles.backText}>とじる</Text>
+                <Text style={styles.backText}>もどる</Text>
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
                 <PixelSeedlingIcon size={18} />
@@ -654,6 +654,7 @@ function createStyles(p: Palette) {
     loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
 
     header: {
+      position: "relative" as const,
       flexDirection: "row",
       alignItems: "center",
       paddingHorizontal: 12,
@@ -663,21 +664,33 @@ function createStyles(p: Palette) {
       borderBottomColor: p.border,
       gap: 10,
       backgroundColor: p.background,
+      minHeight: 56,
+    },
+    headerCenter: {
+      position: "absolute" as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      gap: 8,
     },
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 4,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 6,
+      gap: 3,
+      paddingHorizontal: 7,
+      paddingVertical: 3,
+      borderRadius: 5,
       backgroundColor: p.background,
-      borderWidth: 1.5,
+      borderWidth: 1,
       borderColor: p.primary,
     },
-    backText: { fontSize: 12, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 10, fontWeight: "bold", color: p.textMuted },
     backHint: { fontSize: 9, fontWeight: "600", color: p.textMuted, opacity: 0.7, marginTop: -1 },
-    headerTitle: { fontSize: rf(24), fontWeight: "800", color: p.primaryDark, flexShrink: 1 },
+    headerTitle: { fontSize: rf(28), fontWeight: "900", color: p.primaryDark, flexShrink: 1, textAlign: "center" as const },
 
     scrollContent: { padding: 16, paddingBottom: 140 },
 
