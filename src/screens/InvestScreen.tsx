@@ -576,6 +576,9 @@ export default function InvestScreen({
                       </View>
                       <View style={styles.stockPriceCol}>
                         <Text style={styles.stockPrice}>{formatPrice(stock)}</Text>
+                        {stock.currency === "USD" && (
+                          <Text style={styles.stockOverseaHint}>海の向こうのコロ</Text>
+                        )}
                         {stock.change_percent !== 0 && (
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
                             {stock.change_percent >= 0 ? <PixelChartIcon size={12} /> : <PixelChartDownIcon size={12} />}
@@ -849,6 +852,7 @@ function createStyles(p: Palette) {
     stockDesc: { fontSize: 12, color: p.textMuted, marginTop: 2 },
     stockPriceCol: { alignItems: "flex-end" },
     stockPrice: { fontSize: 11, fontWeight: "bold" as const, color: p.textStrong },
+    stockOverseaHint: { fontSize: 8, color: p.textMuted, marginTop: 1, fontStyle: "italic" as const },
     stockChange: { fontSize: 9, fontWeight: "600" as const, marginTop: 1 },
     emptyStockText: { fontSize: 13, color: p.textMuted, textAlign: "center", paddingVertical: 16 },
 
