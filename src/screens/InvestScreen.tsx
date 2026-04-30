@@ -561,19 +561,20 @@ export default function InvestScreen({
                       <Text style={styles.stockIcon}>{stock.icon}</Text>
                       <View style={styles.flex1}>
                         <View style={{ flexDirection: "column", gap: 2 }}>
-                          <Text style={styles.stockName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
-                            {stock.name_ja || stock.name}
-                          </Text>
+                          <AutoRubyText
+                            text={stock.name_ja || stock.name}
+                            style={styles.stockName}
+                            rubySize={4}
+                            noWrap
+                          />
                           <Text style={styles.stockSymbol}>{stock.symbol}</Text>
                         </View>
-                        <Text
+                        <AutoRubyText
+                          text={stock.description_kids}
                           style={styles.stockDesc}
-                          numberOfLines={1}
-                          adjustsFontSizeToFit
-                          minimumFontScale={0.65}
-                        >
-                          {stock.description_kids}
-                        </Text>
+                          rubySize={4}
+                          noWrap
+                        />
                       </View>
                       <View style={styles.stockPriceCol}>
                         <Text style={styles.stockPrice}>{formatPrice(stock)}</Text>
@@ -843,14 +844,14 @@ function createStyles(p: Palette) {
     stockCardSelected: {
       borderColor: p.walletInvestBorder,
     },
-    stockIcon: { fontSize: 28 },
+    stockIcon: { fontSize: 24 },
     stockNameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-    stockName: { fontSize: rf(13), fontWeight: "bold", color: p.textStrong, flexShrink: 1 },
+    stockName: { fontSize: rf(15), fontWeight: "bold" as const, color: p.textStrong, flexShrink: 1 },
     stockSymbol: { fontSize: 10, color: p.textMuted },
-    stockDesc: { fontSize: 11, color: p.textMuted, marginTop: 2, lineHeight: 16 },
+    stockDesc: { fontSize: 12, color: p.textMuted, marginTop: 2 },
     stockPriceCol: { alignItems: "flex-end" },
-    stockPrice: { fontSize: 12, fontWeight: "bold", color: p.textStrong },
-    stockChange: { fontSize: 10, fontWeight: "600", marginTop: 1 },
+    stockPrice: { fontSize: 11, fontWeight: "bold" as const, color: p.textStrong },
+    stockChange: { fontSize: 9, fontWeight: "600" as const, marginTop: 1 },
     emptyStockText: { fontSize: 13, color: p.textMuted, textAlign: "center", paddingVertical: 16 },
 
     amountInput: {
