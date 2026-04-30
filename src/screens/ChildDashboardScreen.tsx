@@ -823,7 +823,7 @@ export default function ChildDashboardScreen({
             parts={[["冒", "ぼう"], ["険", "けん"]]}
             rubySize={7}
             noWrap
-            rubyColor="rgba(255,255,200,0.7)"
+            rubyColor="#fff"
           />
           <Text style={styles.quickNavSub} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>クエストへ</Text>
           <RubyText style={styles.quickNavHint} parts={["クエストに", ["挑戦", "ちょうせん"]]} rubySize={4} noWrap />
@@ -847,7 +847,7 @@ export default function ChildDashboardScreen({
             parts={[["取", "とり"], ["引", "ひき"]]}
             rubySize={7}
             noWrap
-            rubyColor="rgba(255,255,200,0.7)"
+            rubyColor="#fff"
           />
           <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
             {(wallet?.spending_balance ?? 0).toLocaleString()}コロ
@@ -873,7 +873,7 @@ export default function ChildDashboardScreen({
             parts={[["金", "きん"], ["庫", "こ"]]}
             rubySize={7}
             noWrap
-            rubyColor="rgba(255,255,200,0.7)"
+            rubyColor="#fff"
           />
           <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
             {(wallet?.saving_balance ?? 0).toLocaleString()}コロ
@@ -899,7 +899,7 @@ export default function ChildDashboardScreen({
             parts={[["錬", "れん"], ["成", "せい"]]}
             rubySize={7}
             noWrap
-            rubyColor="rgba(255,255,200,0.7)"
+            rubyColor="#fff"
           />
           <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
             {(wallet?.invest_balance ?? 0).toLocaleString()}コロ
