@@ -335,7 +335,7 @@ export default function InvestScreen({
         {/* Portfolio */}
         {portfolios.length === 0 ? (
           <View style={styles.emptyCard}>
-            <AutoRubyText text="まだお宝はないよ。" style={styles.emptyText} rubySize={5} />
+            <RubyText parts={["まだお", ["宝", "たから"], "はないよ。"]} style={styles.emptyText} rubySize={5} />
             <AutoRubyText text="「冒険ショップへ！」ボタンで始めよう！" style={styles.emptyText} rubySize={5} />
             <View style={styles.tipCard}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
