@@ -46,6 +46,19 @@ UPDATE otetsudai_stock_prices
   WHERE symbol = '1306.T';
 
 -- ============================================
+-- 7. typo 修正 + 馬車 → 車（ロケットシティ銘柄）
+--   - 箸れスニーカー → 走れスニーカー (誤変換: 箸→走)
+--   - 稲妻の馬車 → 稲妻の車 (子供向けに馬車を車へ)
+-- ============================================
+UPDATE otetsudai_stock_prices
+  SET name_ja = REPLACE(name_ja, '箸れ', '走れ')
+  WHERE name_ja LIKE '%箸れ%';
+
+UPDATE otetsudai_stock_prices
+  SET name_ja = REPLACE(name_ja, '稲妻の馬車', '稲妻の車')
+  WHERE name_ja LIKE '%稲妻の馬車%';
+
+-- ============================================
 -- 6. 大通信塔の symbol を 9984.T (SoftBank Group) → 9432.T (NTT) に変更
 --   ユーザー指示: 「NTTを更新します」(NTT 9432.T を本来の大通信塔として登録)
 --   旧 9984.T のレコードはそのままシンボルだけ書き換えるため、name/description は維持
