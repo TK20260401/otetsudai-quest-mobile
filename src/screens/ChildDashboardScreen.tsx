@@ -214,7 +214,6 @@ export default function ChildDashboardScreen({
       supabase
         .from("otetsudai_transactions")
         .select("*")
-        .eq("child_id", childId)
         .is("dismissed_at", null)
         .order("created_at", { ascending: false })
         .limit(20),
