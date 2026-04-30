@@ -707,7 +707,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
                               <PixelFamilyIcon size={18} />
                             )}
                             <Text style={styles.familyName}>
-                              {m.name}（{m.role === "child" ? "子供" : "親"}）
+                              {m.name}（{m.role === "child" ? "子供" : "団長"}）
                             </Text>
                           </View>
                           <PixelPencilIcon size={14} />

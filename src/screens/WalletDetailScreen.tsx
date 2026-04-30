@@ -140,10 +140,10 @@ export default function WalletDetailScreen({
 
   const filterTabs: { label: string; value: string; parts: (string | [string, string])[] }[] = [
     { label: "全部", value: "all", parts: [["全部", "ぜんぶ"]] as [string, string][] },
-    { label: "稼ぐ", value: "earn", parts: [["稼", "かせ"], "ぐ"] as (string | [string, string])[] },
-    { label: "使う", value: "spend", parts: [["使", "つか"], "う"] as (string | [string, string])[] },
-    { label: "貯める", value: "save", parts: [["貯", "た"], "める"] as (string | [string, string])[] },
-    { label: "増やす", value: "invest", parts: [["増", "ふ"], "やす"] as (string | [string, string])[] },
+    { label: "冒険", value: "earn", parts: [["冒険", "ぼうけん"]] as (string | [string, string])[] },
+    { label: "取引", value: "spend", parts: [["取引", "とりひき"]] as (string | [string, string])[] },
+    { label: "金庫", value: "save", parts: [["金庫", "きんこ"]] as (string | [string, string])[] },
+    { label: "錬成", value: "invest", parts: [["錬成", "れんせい"]] as (string | [string, string])[] },
   ];
 
   function TxTypeIcon({ type }: { type: string }) {
@@ -216,7 +216,7 @@ export default function WalletDetailScreen({
             numberOfLines={1}
             accessibilityLabel={`ぜんぶで ${total.toLocaleString()}えん`}
           >
-            {total.toLocaleString()}円
+            {total.toLocaleString()}コロ
           </Text>
         </View>
         <View style={styles.headerSpacer} />
@@ -243,7 +243,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletSpendBg,
               },
             ]}
-            accessibilityLabel={`つかう ${spending}円`}
+            accessibilityLabel={`取引 ${spending}コロ`}
             onPress={() => navigation.navigate("SpendRequest", {
               childId,
               walletId,
@@ -262,7 +262,7 @@ export default function WalletDetailScreen({
             >
               {spending.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint}>しょうにんと とりひき</Text>
+            <Text style={styles.pocketHint}>商人と取引</Text>
           </TouchableOpacity>
 
           {/* ためる → 貯金目標セクション */}
@@ -274,7 +274,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletSaveBg,
               },
             ]}
-            accessibilityLabel={`ためる ${saving}円`}
+            accessibilityLabel={`金庫 ${saving}コロ`}
             onPress={() => setShowGoalModal(true)}
           >
             <View style={styles.pocketIconBox}><PixelPiggyIcon size={20} /></View>
@@ -289,7 +289,7 @@ export default function WalletDetailScreen({
             >
               {saving.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint}>たからを しまう</Text>
+            <Text style={styles.pocketHint}>宝を仕舞う</Text>
           </TouchableOpacity>
 
           {/* ふやす → Invest */}
@@ -301,7 +301,7 @@ export default function WalletDetailScreen({
                 backgroundColor: palette.walletInvestBg,
               },
             ]}
-            accessibilityLabel={`ふやす ${invest}円`}
+            accessibilityLabel={`錬成 ${invest}コロ`}
             onPress={() => navigation.navigate("Invest", {
               childId,
               investBalance: wallet?.invest_balance ?? 0,
@@ -319,7 +319,7 @@ export default function WalletDetailScreen({
             >
               {invest.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint}>お金を そだてる</Text>
+            <Text style={styles.pocketHint}>コロを育てる</Text>
           </TouchableOpacity>
         </View>
 
@@ -329,11 +329,11 @@ export default function WalletDetailScreen({
           <View style={styles.treeInfo}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelTreeIcon size={18} />
-              <RubyText parts={[["増", "ふ"], "やすの", ["木", "き"], `: ${getStage(invest).label}`]} style={styles.treeLabel} rubySize={6} />
+              <RubyText parts={[["錬成", "れんせい"], "の", ["木", "き"], `: ${getStage(invest).label}`]} style={styles.treeLabel} rubySize={6} />
             </View>
             {getStage(invest).next && (
               <AutoRubyText
-                text={`次の成長まで あと ${(getStage(invest).next! - invest).toLocaleString()}円`}
+                text={`次の成長まであと${(getStage(invest).next! - invest).toLocaleString()}コロ`}
                 style={styles.treeProgress}
                 rubySize={5}
               />
@@ -358,7 +358,7 @@ export default function WalletDetailScreen({
                 spendingBalance: wallet?.spending_balance ?? 0,
               })
             }
-            accessibilityLabel="つかうリクエストを おくる"
+            accessibilityLabel="取引リクエストを送る"
             activeOpacity={0.8}
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
@@ -390,7 +390,7 @@ export default function WalletDetailScreen({
           <View style={styles.section}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCartIcon size={18} />
-              <AutoRubyText text="つかうリクエスト" style={styles.sectionTitle} rubySize={7} />
+              <AutoRubyText text="取引リクエスト" style={styles.sectionTitle} rubySize={7} />
             </View>
             {recentSpendRequests.map((req) => {
               if (req.status === "pending") {
@@ -408,7 +408,7 @@ export default function WalletDetailScreen({
                     </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
-                      {req.amount.toLocaleString()}円
+                      {req.amount.toLocaleString()}コロ
                     </Text>
                   </View>
                 );
@@ -431,7 +431,7 @@ export default function WalletDetailScreen({
                     </View>
                     <Text style={styles.requestPurpose}>{req.purpose}</Text>
                     <Text style={styles.requestAmount}>
-                      {req.amount.toLocaleString()}円
+                      {req.amount.toLocaleString()}コロ
                     </Text>
                   </View>
                 );
@@ -455,7 +455,7 @@ export default function WalletDetailScreen({
                       </Text>
                     )}
                     <Text style={styles.requestAmount}>
-                      {req.amount.toLocaleString()}円
+                      {req.amount.toLocaleString()}コロ
                     </Text>
                   </View>
                 );
@@ -502,7 +502,7 @@ export default function WalletDetailScreen({
                     </View>
                     <View style={styles.goalAmountRow}>
                       <Text style={styles.goalAmountText}>
-                        {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} 円
+                        {saving.toLocaleString()} / {goal.target_amount.toLocaleString()} コロ
                       </Text>
                       <Text style={styles.goalPctText}>{pct}%</Text>
                     </View>
@@ -520,7 +520,7 @@ export default function WalletDetailScreen({
                 <Text style={styles.goalTitle}>{goal.title}</Text>
               </View>
               <Text style={styles.goalAmountText}>
-                {goal.target_amount.toLocaleString()} 円 達成！
+                {goal.target_amount.toLocaleString()} コロ 達成！
               </Text>
             </View>
           ))}

@@ -100,7 +100,7 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
               accessibilityRole="button"
               hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             >
-              <RubyText style={{ fontSize: 12, color: palette.textMuted }} parts={["おうちのひと（", ["親", "おや"], "モード）"]} rubySize={5} />
+              <RubyText style={{ fontSize: 12, color: palette.textMuted }} parts={["おうちのひと（", ["冒険団長", "ぼうけんだんちょう"], "モード）"]} rubySize={5} />
             </TouchableOpacity>
           )}
         </View>

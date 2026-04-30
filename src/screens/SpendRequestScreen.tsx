@@ -104,7 +104,7 @@ export default function SpendRequestScreen({
 
           <View style={styles.confirmCard}>
             <AutoRubyText
-              text="使う金額"
+              text="取引金額"
               style={styles.confirmLabel}
               rubySize={7}
             />

@@ -215,7 +215,7 @@ export default function InvestScreen({
     }
     const amountNum = parseInt(amount);
     if (!amountNum || amountNum < 100) {
-      setOrderError("100円 以上 入力してね");
+      setOrderError("100コロ以上入力してね");
       return;
     }
     if (amountNum > investBalance) {
@@ -420,11 +420,11 @@ export default function InvestScreen({
             <View style={styles.lockCard}>
               <PixelShieldIcon size={48} />
               <Text style={styles.lockTitle}>
-                おうちの ひとが ひつよう！
+                冒険団長が必要！
               </Text>
               <Text style={styles.lockDesc}>
-                「ふやす」は おうちの ひとが{"\n"}
-                さんかすると つかえるようになるよ
+                「錬成」は冒険団長が{"\n"}
+                参加すると使えるようになるよ
               </Text>
               <RpgButton
                 tier="gold"
@@ -604,7 +604,7 @@ export default function InvestScreen({
                   {/* Amount input */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={["いくら ", ["投資", "とうし"], "する？（", ["円", "えん"], "）"]}
+                    parts={["いくら", ["錬成", "れんせい"], "する？（コロ）"]}
                     rubySize={5}
                   />
                   <TextInput
@@ -618,7 +618,7 @@ export default function InvestScreen({
                       setTimeout(() => orderScrollRef.current?.scrollToEnd({ animated: true }), 400);
                     }}
                   />
-                  <AutoRubyText text="100円から投資できるよ" style={styles.amountHint} rubySize={4} />
+                  <AutoRubyText text="100コロから錬成できるよ" style={styles.amountHint} rubySize={4} />
 
                   {orderError ? (
                     <Text style={styles.errorText}>{orderError}</Text>
@@ -633,7 +633,7 @@ export default function InvestScreen({
                       <Text style={styles.orderButtonText}>送り中...</Text>
                     ) : (
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                        <AutoRubyText text="親に お願いする" style={styles.orderButtonText} />
+                        <AutoRubyText text="団長にお願いする" style={styles.orderButtonText} />
                         <PixelChartIcon size={18} />
                       </View>
                     )}
@@ -641,7 +641,7 @@ export default function InvestScreen({
 
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <PixelLightbulbIcon size={14} />
-                    <AutoRubyText text="買いたい株がないときは、おうちの人に相談してね" style={styles.orderHint} rubySize={4} />
+                    <AutoRubyText text="買いたい株がないときは、団長に相談してね" style={styles.orderHint} rubySize={4} />
                   </View>
                 </>
               )}

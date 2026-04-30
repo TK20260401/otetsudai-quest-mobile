@@ -119,7 +119,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
 
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
             <PixelLetterIcon size={22} />
-            <AutoRubyText text="親からのメッセージ" style={styles.header} rubySize={6} noWrap />
+            <AutoRubyText text="冒険団長からのメッセージ" style={styles.header} rubySize={6} noWrap />
           </View>
 
           {/* 親メッセージ表示 */}
@@ -195,7 +195,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             style={styles.textInput}
             value={message}
             onChangeText={setMessage}
-            placeholder="親に一言！（入力しなくてもOK）"
+            placeholder="団長に一言！（入力しなくてもOK）"
             placeholderTextColor={palette.textPlaceholder}
             multiline
             maxLength={100}
@@ -209,7 +209,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
             style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}
             onPress={handleSend}
             disabled={!canSend || sending}
-            accessibilityLabel={sending ? "送信中" : "親にメッセージを送る"}
+            accessibilityLabel={sending ? "送信中" : "団長にメッセージを送る"}
             accessibilityRole="button"
           >
             {sending ? (

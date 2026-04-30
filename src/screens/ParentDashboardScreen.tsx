@@ -1295,7 +1295,7 @@ export default function ParentDashboardScreen({
                           { borderColor: palette.walletSpendBorder },
                         ]}
                       >
-                        <Text style={styles.walletLabel}>使う</Text>
+                        <Text style={styles.walletLabel}>取引</Text>
                         <Text
                           style={[
                             styles.walletAmount,
@@ -1311,7 +1311,7 @@ export default function ParentDashboardScreen({
                           { borderColor: palette.walletSaveBorder },
                         ]}
                       >
-                        <Text style={styles.walletLabel}>貯める</Text>
+                        <Text style={styles.walletLabel}>金庫</Text>
                         <Text
                           style={[
                             styles.walletAmount,
@@ -1327,7 +1327,7 @@ export default function ParentDashboardScreen({
                           { borderColor: palette.walletInvestBorder },
                         ]}
                       >
-                        <Text style={styles.walletLabel}>増やす</Text>
+                        <Text style={styles.walletLabel}>錬成</Text>
                         <Text
                           style={[
                             styles.walletAmount,
@@ -1341,9 +1341,9 @@ export default function ParentDashboardScreen({
                   )}
                   {w && (
                     <Text style={styles.ratioText}>
-                      割合: 使う{" "}
+                      割合: 取引{" "}
                       {100 - (w.save_ratio ?? 0) - (w.invest_ratio ?? 0)}% /
-                      貯める {w.save_ratio ?? 0}% / 増やす{" "}
+                      金庫 {w.save_ratio ?? 0}% / 錬成{" "}
                       {w.invest_ratio ?? 0}%
                     </Text>
                   )}

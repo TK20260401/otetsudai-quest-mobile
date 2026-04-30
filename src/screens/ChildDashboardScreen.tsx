@@ -181,7 +181,7 @@ export default function ChildDashboardScreen({
       setProposalTitle("");
       setProposalReason("");
       setProposalReward("");
-      alert("送信しました！", "親がクエストを確認するよ！");
+      alert("送信しました！", "冒険団長がクエストを確認するよ！");
       loadData();
     } catch {
       alert("エラー", "送信に失敗しました");
@@ -510,7 +510,7 @@ export default function ChildDashboardScreen({
   // 3pot 間の振替（銀行/証券の入出金モデル）
   async function handleTransfer(from: PotType, to: PotType, amount: number) {
     if (!wallet) throw new Error("ウォレットが ありません");
-    if (from === to) throw new Error("おなじ ところには ふりかえできません");
+    if (from === to) throw new Error("同じところには移しかえできません");
     if (amount <= 0) throw new Error("0コロより おおきく");
 
     const balanceMap = {
@@ -531,13 +531,13 @@ export default function ChildDashboardScreen({
       .eq("id", wallet.id);
     if (walletErr) throw walletErr;
 
-    const labelMap = { spending: "つかう", saving: "ためる", invest: "ふやす" } as const;
+    const labelMap = { spending: "取引", saving: "金庫", invest: "錬成" } as const;
     const txTypeMap = { spending: "spend", saving: "save", invest: "invest" } as const;
     await supabase.from("otetsudai_transactions").insert({
       wallet_id: wallet.id,
       type: txTypeMap[to],
       amount,
-      description: `${labelMap[from]} → ${labelMap[to]} ふりかえ`,
+      description: `${labelMap[from]} → ${labelMap[to]} 移しかえ`,
     });
 
     await loadData();
@@ -791,7 +791,7 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("SpendRequest", { childId, walletId: wallet.id, spendingBalance: wallet.spending_balance });
           }}
-          accessibilityLabel="つかう画面へ"
+          accessibilityLabel="取引画面へ"
           accessibilityRole="button"
         >
           <View style={styles.quickNavIconBox}><PixelCartIcon size={24} /></View>
@@ -817,7 +817,7 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("WalletDetail", { childId, walletId: wallet.id });
           }}
-          accessibilityLabel="ためる画面へ"
+          accessibilityLabel="金庫画面へ"
           accessibilityRole="button"
         >
           <View style={styles.quickNavIconBox}><PixelPiggyIcon size={24} /></View>
@@ -843,7 +843,7 @@ export default function ChildDashboardScreen({
             if (!wallet) return;
             navigation.navigate("Invest", { childId, walletId: wallet.id, investBalance: wallet.invest_balance });
           }}
-          accessibilityLabel="ふやす画面へ"
+          accessibilityLabel="錬成画面へ"
           accessibilityRole="button"
         >
           <View style={styles.quickNavIconBox}><PixelChartIcon size={24} /></View>
@@ -906,9 +906,9 @@ export default function ChildDashboardScreen({
           onPress={() => setTransferVisible(true)}
           disabled={!wallet}
           activeOpacity={0.7}
-          accessibilityLabel="おかねを うつす"
+          accessibilityLabel="コロを移す"
           accessibilityRole="button"
-          accessibilityHint="つかう・ためる・ふやすの あいだで おかねを うつします"
+          accessibilityHint="取引・金庫・錬成の間でコロを移します"
         >
           <PixelCoinIcon size={18} />
           <View style={{ flex: 1 }}>
@@ -1033,7 +1033,7 @@ export default function ChildDashboardScreen({
         {/* Stamp Notifications */}
         {stampNotifs.length > 0 && (
           <RpgCard tier="gold" style={{ marginHorizontal: 12, marginTop: 12 }}>
-            <RubyText style={styles.sectionTitle} parts={[["親", "おや"], "からのメッセージ"]} />
+            <RubyText style={styles.sectionTitle} parts={[["冒険団長", "ぼうけんだんちょう"], "からのメッセージ"]} />
             {stampNotifs.map((s) => {
               const stampDef = s.stamp ? getStampById(s.stamp) : null;
               return (
@@ -1388,6 +1388,12 @@ export default function ChildDashboardScreen({
                               <PixelCoinIcon size={12} />
                               <Text style={styles.priceUpText}>↑</Text>
                             </View>
+                            <RubyText
+                              style={styles.priceUpHint}
+                              parts={[["値上", "ねあ"], "げ"]}
+                              rubySize={4}
+                              noWrap
+                            />
                           </AnimatedButton>
                         )}
                       </View>
@@ -1400,7 +1406,7 @@ export default function ChildDashboardScreen({
               <View style={styles.emptyCard}>
                 <PixelMapIcon size={40} />
                 <AutoRubyText text="クエストが まだないよ" style={[styles.emptyText, { paddingVertical: 0, fontWeight: "bold" }]} rubySize={7} />
-                <AutoRubyText text="親に たのんで クエストを つくってもらおう！" style={styles.emptyHint} rubySize={6} />
+                <AutoRubyText text="冒険団長に頼んでクエストを作ってもらおう！" style={styles.emptyHint} rubySize={6} />
               </View>
             )}
 
@@ -1429,7 +1435,7 @@ export default function ChildDashboardScreen({
             {/* 返信済みメッセージ履歴 */}
             {repliedMessages.length > 0 && (
               <View style={styles.repliedSection}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={18} /><RubyText style={styles.repliedTitle} parts={[["親", "おや"], "との やりとり"]} /></View>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelChatIcon size={18} /><RubyText style={styles.repliedTitle} parts={[["団長", "だんちょう"], "とのやりとり"]} /></View>
                 {repliedMessages.map((log: any) => {
                   const cStamp = log.child_reaction_stamp
                     ? getChildStampById(log.child_reaction_stamp)
@@ -1442,7 +1448,7 @@ export default function ChildDashboardScreen({
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelTargetIcon size={14} /><AutoRubyText text={log.task?.title ?? ""} style={styles.repliedTaskName} rubySize={5} noWrap /></View>
                       {pStamp && (
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
-                          <Text style={styles.repliedParent}>おや: </Text>
+                          <Text style={styles.repliedParent}>団長: </Text>
                           <StampSvg id={pStamp.id} size={20} />
                           <Text style={styles.repliedParent}>
                             {pStamp.label}
@@ -1451,7 +1457,7 @@ export default function ChildDashboardScreen({
                         </View>
                       )}
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
-                        <Text style={styles.repliedChild}>じぶん: </Text>
+                        <Text style={styles.repliedChild}>自分: </Text>
                         {cStamp && <StampSvg id={cStamp.id} size={20} />}
                         <Text style={styles.repliedChild}>
                           {cStamp ? cStamp.label : ""}
@@ -1648,11 +1654,11 @@ export default function ChildDashboardScreen({
           <View style={styles.nudgeCard}>
             <Text style={styles.nudgeEmoji}>{"\u{1F31F}"}</Text>
             <Text style={styles.nudgeTitle}>
-              おうちの ひとを よんでみない？
+              冒険団長を呼んでみない？
             </Text>
             <Text style={styles.nudgeDesc}>
-              おうちの ひとが さんかすると{"\n"}
-              「ふやす」が つかえるようになるよ！
+              冒険団長が参加すると{"\n"}
+              「錬成」が使えるようになるよ！
             </Text>
             <RpgButton
               tier="gold"
@@ -1719,7 +1725,7 @@ export default function ChildDashboardScreen({
             showsVerticalScrollIndicator
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelLightbulbIcon size={20} /><RubyText style={styles.proposalModalTitle} parts={[["自分", "じぶん"], "でクエストを ", ["作", "つく"], "る"]} rubySize={6} /></View>
-            <RubyText style={[styles.proposalModalSub, { marginBottom: 0 }]} parts={[["親", "おや"], "に"]} rubySize={5} />
+            <RubyText style={[styles.proposalModalSub, { marginBottom: 0 }]} parts={[["団長", "だんちょう"], "に"]} rubySize={5} />
             <RubyText style={styles.proposalModalSub} parts={[["新", "あたら"], "しいクエストを", ["出", "だ"], "そう！"]} rubySize={5} />
 
             <RubyText
@@ -2440,6 +2446,7 @@ function createStyles(p: Palette) {
     justifyContent: "center" as const,
   },
   priceUpText: { fontSize: 14 },
+  priceUpHint: { fontSize: 8, color: p.textMuted, marginTop: 2, textAlign: "center" as const },
 
   // History
   historyItem: {

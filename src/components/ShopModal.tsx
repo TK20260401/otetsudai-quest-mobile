@@ -119,7 +119,7 @@ export default function ShopModal({
           </TouchableOpacity>
         </View>
         <AutoRubyText
-          text={`「使う」のお金: ${spendingBalance.toLocaleString()}コロ`}
+          text={`「取引」のコロ: ${spendingBalance.toLocaleString()}コロ`}
           style={styles.subtitle}
           rubySize={6}
         />
