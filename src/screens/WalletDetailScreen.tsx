@@ -460,11 +460,11 @@ export default function WalletDetailScreen({
           </View>
         )}
 
-        {/* ── 5. Savings Goals Section ── */}
+        {/* ── 5. Savings Goals Section (= お宝マップ) ── */}
         <View style={styles.section}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <PixelPiggyIcon size={18} />
-            <RubyText parts={[["貯金", "ちょきん"], ["目標", "もくひょう"]]} style={styles.sectionTitle} rubySize={7} />
+            <Text style={styles.sectionTitle}>お宝マップ</Text>
           </View>
 
           {/* Unachieved goals */}
