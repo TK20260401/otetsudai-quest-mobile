@@ -615,9 +615,17 @@ export default function InvestScreen({
                       <View style={styles.stockPriceCol}>
                         <Text style={styles.stockPrice}>{formatPrice(stock)}</Text>
                         {stock.currency === "USD" ? (
-                          <Text style={styles.stockOverseaHint}>海の向こうのコロ(ドル)</Text>
+                          <AutoRubyText
+                            text="海の向こうのコロ(ドル)"
+                            style={styles.stockOverseaHint}
+                            rubySize={3}
+                          />
                         ) : (
-                          <Text style={styles.stockOverseaHint}>サムライタウンのコロ(円)</Text>
+                          <AutoRubyText
+                            text="サムライタウンのコロ(円)"
+                            style={styles.stockOverseaHint}
+                            rubySize={3}
+                          />
                         )}
                         {stock.change_percent !== 0 && (
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
@@ -887,7 +895,7 @@ function createStyles(p: Palette) {
     },
     stockIcon: { fontSize: 24 },
     stockNameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-    stockName: { fontSize: rf(13), fontWeight: "bold" as const, color: p.textStrong, flexShrink: 1 },
+    stockName: { fontSize: rf(12), fontWeight: "bold" as const, color: p.textStrong, flexShrink: 1 },
     stockSymbol: { fontSize: 9, color: p.textMuted },
     stockDesc: { fontSize: 10, color: p.textMuted, marginTop: 2 },
     stockPriceCol: { alignItems: "flex-end" },
