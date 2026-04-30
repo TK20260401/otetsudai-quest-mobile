@@ -38,9 +38,9 @@ type Portfolio = {
 const SYNC_COOLDOWN_MS = 5 * 60 * 1000;
 
 const CATEGORIES = [
-  { key: "index", label: "インデックス", desc: "初めての人におすすめ" },
-  { key: "jp_stock", label: "🇯🇵 日本", desc: "" },
-  { key: "us_stock", label: "🇺🇸 アメリカ", desc: "" },
+  { key: "index", label: "よくばり", desc: "冒険デビューに ぴったり！" },
+  { key: "jp_stock", label: "🇯🇵 サムライタウン", desc: "" },
+  { key: "us_stock", label: "🇺🇸 ロケットシティ", desc: "" },
 ] as const;
 
 export default function InvestScreen({
@@ -210,7 +210,7 @@ export default function InvestScreen({
 
   async function handleOrder() {
     if (!selected) {
-      setOrderError("銘柄を 選んでね");
+      setOrderError("お宝を選んでね");
       return;
     }
     const amountNum = parseInt(amount);
@@ -219,7 +219,7 @@ export default function InvestScreen({
       return;
     }
     if (amountNum > investBalance) {
-      setOrderError(`残高が 足りないよ（残り ¥${investBalance.toLocaleString()}）`);
+      setOrderError(`冒険資金が足りないよ（残り ${investBalance.toLocaleString()}コロ）`);
       return;
     }
 
@@ -250,10 +250,10 @@ export default function InvestScreen({
   }
 
   function formatPrice(stock: StockPrice): string {
-    if (stock.price_jpy > 0) return `¥${stock.price_jpy.toLocaleString()}`;
+    if (stock.price_jpy > 0) return `${stock.price_jpy.toLocaleString()}コロ`;
     if (stock.price > 0) {
-      if (stock.currency === "JPY") return `¥${stock.price.toLocaleString()}`;
-      return `$${stock.price.toLocaleString()}`;
+      if (stock.currency === "JPY") return `${stock.price.toLocaleString()}コロ`;
+      return `${stock.price.toLocaleString()}コロ`;
     }
     return "—";
   }
@@ -307,8 +307,8 @@ export default function InvestScreen({
       >
         {/* Balance */}
         <View style={styles.balanceCard}>
-          <RubyText style={styles.balanceLabel} parts={[["増", "ふ"], "やすウォレット"]} rubySize={4} />
-          <Text style={styles.balanceAmount}>¥{investBalance.toLocaleString()}</Text>
+          <RubyText style={styles.balanceLabel} parts={[["冒険", "ぼうけん"], ["資金", "しきん"]]} rubySize={4} />
+          <Text style={styles.balanceAmount}>{investBalance.toLocaleString()}コロ</Text>
           {lastSync && (
             <Text style={styles.lastSyncText}>
               最終更新: {new Date(lastSync).toLocaleString("ja-JP")}
@@ -338,20 +338,20 @@ export default function InvestScreen({
         {/* Portfolio */}
         {portfolios.length === 0 ? (
           <View style={styles.emptyCard}>
-            <AutoRubyText text="まだ投資はありません。" style={styles.emptyText} rubySize={5} />
-            <AutoRubyText text="「株を買いたい！」ボタンで始めよう！" style={styles.emptyText} rubySize={5} />
+            <AutoRubyText text="まだお宝はないよ。" style={styles.emptyText} rubySize={5} />
+            <AutoRubyText text="「冒険ショップへ！」ボタンで始めよう！" style={styles.emptyText} rubySize={5} />
             <View style={styles.tipCard}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelSeedlingIcon size={16} />
-                <AutoRubyText text="投資の基本" style={styles.tipTitle} rubySize={6} />
+                <AutoRubyText text="錬成の基本" style={styles.tipTitle} rubySize={6} />
               </View>
-              <AutoRubyText text="株は「お店の一部を持つ」こと。" style={styles.tipText} rubySize={5} />
-              <AutoRubyText text="お店が頑張ると、株の値段が上がる！" style={styles.tipText} rubySize={5} />
-              <AutoRubyText text="🐢 長く持つのがコツ！" style={styles.tipText} rubySize={5} />
-              <AutoRubyText text="すぐ売らないで、じっくり育てよう。" style={styles.tipText} rubySize={5} />
+              <AutoRubyText text="お宝は「お店の主人になる」しるし。" style={styles.tipText} rubySize={5} />
+              <AutoRubyText text="お店が大繁盛すると、お宝の値段が上がる！" style={styles.tipText} rubySize={5} />
+              <AutoRubyText text="🐢 急がずじっくり育てるのがコツ！" style={styles.tipText} rubySize={5} />
+              <AutoRubyText text="すぐ手放さないで、じっくり育てよう。" style={styles.tipText} rubySize={5} />
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelTargetIcon size={14} />
-                <AutoRubyText text="まずは1つ選んでみよう！" style={styles.tipText} rubySize={5} />
+                <AutoRubyText text="まずは1つ仕入れてみよう！" style={styles.tipText} rubySize={5} />
               </View>
             </View>
           </View>
@@ -361,7 +361,7 @@ export default function InvestScreen({
               <PixelBarChartIcon size={16} />
               <RubyText
                 style={styles.sectionTitle}
-                parts={[["保有", "ほゆう"], ["銘柄", "めいがら"]]}
+                parts={[["手持", "ても"], "ちのお", ["宝", "たから"]]}
                 rubySize={5}
               />
             </View>
@@ -372,12 +372,12 @@ export default function InvestScreen({
                   <View style={styles.portfolioLeft}>
                     <Text style={styles.portfolioName}>{p.name}</Text>
                     <Text style={styles.portfolioSub}>
-                      {p.symbol} ・ {p.shares.toFixed(2)}かぶ
+                      {p.symbol} ・ {p.shares.toFixed(2)}個
                     </Text>
                   </View>
                   <View style={styles.portfolioRight}>
                     <Text style={styles.portfolioValue}>
-                      ¥{(p.current_value || 0).toLocaleString()}
+                      {(p.current_value || 0).toLocaleString()}コロ
                     </Text>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
                       {isUp ? <PixelChartIcon size={14} /> : <PixelChartDownIcon size={14} />}
@@ -387,7 +387,7 @@ export default function InvestScreen({
                           { color: isUp ? palette.walletInvest : palette.red },
                         ]}
                       >
-                        ¥{Math.abs(gain).toLocaleString()} ({percent})
+                        {Math.abs(gain).toLocaleString()}コロ ({percent})
                       </Text>
                     </View>
                   </View>
@@ -403,7 +403,7 @@ export default function InvestScreen({
         <TouchableOpacity style={styles.buyButton} onPress={openOrderModal}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <PixelSeedlingIcon size={20} />
-            <AutoRubyText text="株を買いたい！" style={styles.buyButtonText} rubySize={5} />
+            <AutoRubyText text="冒険ショップへ！" style={styles.buyButtonText} rubySize={5} />
           </View>
         </TouchableOpacity>
       </View>
@@ -482,7 +482,7 @@ export default function InvestScreen({
               </TouchableOpacity>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center" }}>
                 <PixelSeedlingIcon size={18} />
-                <RubyText style={styles.headerTitle} parts={[["株", "かぶ"], "を", ["買", "か"], "う"]} rubySize={6} />
+                <RubyText style={styles.headerTitle} parts={[["冒険", "ぼうけん"], "ショップ"]} rubySize={6} />
               </View>
             </View>
 
@@ -502,14 +502,14 @@ export default function InvestScreen({
                 <>
                   {/* Balance */}
                   <View style={styles.orderBalanceCard}>
-                    <RubyText style={styles.orderBalanceLabel} parts={[["増", "ふ"], "やすウォレット ", ["残高", "ざんだか"]]} rubySize={4} />
-                    <Text style={styles.orderBalanceAmount}>¥{investBalance.toLocaleString()}</Text>
+                    <RubyText style={styles.orderBalanceLabel} parts={[["冒険", "ぼうけん"], ["資金", "しきん"]]} rubySize={4} />
+                    <Text style={styles.orderBalanceAmount}>{investBalance.toLocaleString()}コロ</Text>
                   </View>
 
                   {/* Category tabs */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={["カテゴリを", ["選", "えら"], "ぼう"]}
+                    parts={[["冒険先", "ぼうけんさき"], "を", ["選", "えら"], "ぼう"]}
                     rubySize={4}
                   />
                   <View style={styles.categoryRow}>
@@ -549,7 +549,7 @@ export default function InvestScreen({
                   {/* Stock list */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={[["銘柄", "めいがら"], "を", ["選", "えら"], "ぼう"]}
+                    parts={["トレジャーハント"]}
                     rubySize={4}
                   />
                   {filteredStocks.map((stock) => (
@@ -598,7 +598,7 @@ export default function InvestScreen({
                     </TouchableOpacity>
                   ))}
                   {filteredStocks.length === 0 && (
-                    <AutoRubyText text="このカテゴリの銘柄はありません" style={styles.emptyStockText} rubySize={5} />
+                    <AutoRubyText text="この冒険先にはお宝がないよ" style={styles.emptyStockText} rubySize={5} />
                   )}
 
                   {/* Amount input */}
@@ -641,7 +641,7 @@ export default function InvestScreen({
 
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                     <PixelLightbulbIcon size={14} />
-                    <AutoRubyText text="買いたい株がないときは、団長に相談してね" style={styles.orderHint} rubySize={4} />
+                    <AutoRubyText text="気になるお宝がないときは、団長に相談してね" style={styles.orderHint} rubySize={4} />
                   </View>
                 </>
               )}
