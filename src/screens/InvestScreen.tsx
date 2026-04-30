@@ -576,8 +576,10 @@ export default function InvestScreen({
                       </View>
                       <View style={styles.stockPriceCol}>
                         <Text style={styles.stockPrice}>{formatPrice(stock)}</Text>
-                        {stock.currency === "USD" && (
-                          <Text style={styles.stockOverseaHint}>海の向こうのコロ</Text>
+                        {stock.currency === "USD" ? (
+                          <Text style={styles.stockOverseaHint}>海の向こうのコロ(ドル)</Text>
+                        ) : (
+                          <Text style={styles.stockOverseaHint}>サムライタウンのコロ(円)</Text>
                         )}
                         {stock.change_percent !== 0 && (
                           <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
@@ -847,12 +849,12 @@ function createStyles(p: Palette) {
     },
     stockIcon: { fontSize: 24 },
     stockNameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-    stockName: { fontSize: rf(15), fontWeight: "bold" as const, color: p.textStrong, flexShrink: 1 },
-    stockSymbol: { fontSize: 10, color: p.textMuted },
-    stockDesc: { fontSize: 12, color: p.textMuted, marginTop: 2 },
+    stockName: { fontSize: rf(13), fontWeight: "bold" as const, color: p.textStrong, flexShrink: 1 },
+    stockSymbol: { fontSize: 9, color: p.textMuted },
+    stockDesc: { fontSize: 10, color: p.textMuted, marginTop: 2 },
     stockPriceCol: { alignItems: "flex-end" },
     stockPrice: { fontSize: 11, fontWeight: "bold" as const, color: p.textStrong },
-    stockOverseaHint: { fontSize: 8, color: p.textMuted, marginTop: 1, fontStyle: "italic" as const },
+    stockOverseaHint: { fontSize: 7, color: p.textMuted, marginTop: 1, fontStyle: "italic" as const },
     stockChange: { fontSize: 9, fontWeight: "600" as const, marginTop: 1 },
     emptyStockText: { fontSize: 13, color: p.textMuted, textAlign: "center", paddingVertical: 16 },
 
