@@ -249,6 +249,27 @@ export default function InvestScreen({
     }, 2000);
   }
 
+  /**
+   * 銘柄名/説明文を地域プレフィックス境界で 2 行に分割。
+   * - 「の」が見つかればその直後で改行（「サムライタウンの精鋭225」→「サムライタウンの」/「精鋭225」）
+   * - なければ既知地域名（ロケットシティ/サムライタウン/テクノ/江戸）の直後で改行
+   * - どれもなければ 1 行のまま
+   */
+  function splitGeoPrefix(text: string): { line1: string; line2: string } {
+    const noIdx = text.indexOf("の");
+    // 文字列の先頭近く(最初の 12 文字以内)に「の」があればそこで分割
+    if (noIdx !== -1 && noIdx < 12) {
+      return { line1: text.slice(0, noIdx + 1), line2: text.slice(noIdx + 1) };
+    }
+    const prefixes = ["ロケットシティ", "サムライタウン", "テクノ", "江戸"];
+    for (const p of prefixes) {
+      if (text.startsWith(p) && text.length > p.length) {
+        return { line1: p, line2: text.slice(p.length) };
+      }
+    }
+    return { line1: text, line2: "" };
+  }
+
   function formatPrice(stock: StockPrice): string {
     if (stock.price_jpy > 0) return `${stock.price_jpy.toLocaleString()}コロ`;
     if (stock.price > 0) {
@@ -561,18 +582,30 @@ export default function InvestScreen({
                       <Text style={styles.stockIcon}>{stock.icon}</Text>
                       <View style={styles.flex1}>
                         <View style={{ flexDirection: "column", gap: 2 }}>
-                          <AutoRubyText
-                            text={stock.name_ja || stock.name}
-                            style={styles.stockName}
-                            rubySize={4}
-                          />
+                          {(() => {
+                            const { line1, line2 } = splitGeoPrefix(stock.name_ja || stock.name);
+                            return (
+                              <>
+                                <AutoRubyText text={line1} style={styles.stockName} rubySize={4} />
+                                {line2 ? (
+                                  <AutoRubyText text={line2} style={styles.stockName} rubySize={4} />
+                                ) : null}
+                              </>
+                            );
+                          })()}
                           <Text style={styles.stockSymbol}>{stock.symbol}</Text>
                         </View>
-                        <AutoRubyText
-                          text={stock.description_kids}
-                          style={styles.stockDesc}
-                          rubySize={4}
-                        />
+                        {(() => {
+                          const { line1, line2 } = splitGeoPrefix(stock.description_kids);
+                          return (
+                            <View style={{ marginTop: 2 }}>
+                              <AutoRubyText text={line1} style={styles.stockDesc} rubySize={4} />
+                              {line2 ? (
+                                <AutoRubyText text={line2} style={styles.stockDesc} rubySize={4} />
+                              ) : null}
+                            </View>
+                          );
+                        })()}
                       </View>
                       <View style={styles.stockPriceCol}>
                         <Text style={styles.stockPrice}>{formatPrice(stock)}</Text>
