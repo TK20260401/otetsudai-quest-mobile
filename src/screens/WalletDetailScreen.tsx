@@ -289,7 +289,7 @@ export default function WalletDetailScreen({
             >
               {saving.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint}>宝を仕舞う</Text>
+            <Text style={styles.pocketHint}>宝をしまう</Text>
           </TouchableOpacity>
 
           {/* ふやす → Invest */}

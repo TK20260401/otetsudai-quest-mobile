@@ -831,7 +831,7 @@ export default function ChildDashboardScreen({
           <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
             {(wallet?.saving_balance ?? 0).toLocaleString()}コロ
           </Text>
-          <RubyText style={styles.quickNavHint} parts={[["宝", "たから"], "を", ["仕舞", "しま"], "う"]} rubySize={4} noWrap />
+          <RubyText style={styles.quickNavHint} parts={[["宝", "たから"], "をしまう"]} rubySize={4} noWrap />
         </TouchableOpacity>
 
         {/* 錬成 */}
@@ -1390,7 +1390,7 @@ export default function ChildDashboardScreen({
                             </View>
                             <RubyText
                               style={styles.priceUpHint}
-                              parts={[["値上", "ねあ"], "げ"]}
+                              parts={["お", ["願", "ねが"], "い"]}
                               rubySize={4}
                               noWrap
                             />
