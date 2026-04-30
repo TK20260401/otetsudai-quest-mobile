@@ -37,22 +37,26 @@ UPDATE otetsudai_stock_prices
   WHERE name_ja LIKE '%大金庫%';
 
 -- ============================================
--- 5. 江戸全部盛り(1306.T → ^TPX): TOPIX 指数本体に切替
---   1306.T は ETF 連動型で 394円表示だったが、ユーザーは指数本体(3,722等)を希望
---   Stooq 経由で ^TPX (TOPIX 指数) を取得するよう Edge Function 側で実装済み
+-- 5. 江戸全部盛り: 1306.T (TOPIX ETF) を維持
+--   一時 ^TPX (TOPIX 指数) に切替したが、Stooq 経由でも安定取得できず
+--   ETF 価格(394円) のまま運用するためロールバック。Edge Function 側の
+--   Stooq フォールバックは将来の指数銘柄追加用に残置。
 -- ============================================
+-- (旧 UPDATE は無効化。再実行時に ^TPX → 1306.T 復元するセーフティガード)
 UPDATE otetsudai_stock_prices
-  SET symbol = '^TPX'
-  WHERE symbol = '1306.T';
+  SET symbol = '1306.T'
+  WHERE symbol = '^TPX';
 
 -- ============================================
 -- 7. typo 修正 + 馬車 → 車（ロケットシティ銘柄）
 --   - 箸れスニーカー → 走れスニーカー (誤変換: 箸→走)
 --   - 稲妻の馬車 → 稲妻の車 (子供向けに馬車を車へ)
 -- ============================================
+-- 注: NKE は実際の DB 値が 'はしれスニーカー'(全ひらがな) だったため、
+-- REPLACE('箸れ','走れ') では空振り。直接 SET で漢字へ書き換える:
 UPDATE otetsudai_stock_prices
-  SET name_ja = REPLACE(name_ja, '箸れ', '走れ')
-  WHERE name_ja LIKE '%箸れ%';
+  SET name_ja = '走れスニーカー'
+  WHERE symbol = 'NKE';
 
 UPDATE otetsudai_stock_prices
   SET name_ja = REPLACE(name_ja, '稲妻の馬車', '稲妻の車')
