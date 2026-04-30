@@ -195,13 +195,14 @@ export default function ParentDashboardScreen({
     setPriceRequests(allTasks.filter((t: Task) => t.proposal_status === "pending" && t.proposed_reward && t.is_active));
     setQuestProposals(allTasks.filter((t: Task) => !t.is_active && t.proposal_status === "pending" && t.created_by !== session?.userId));
 
-    // 最近の承認済みログ（子ども返信確認用）
+    // 最近の承認済みログ（子ども返信確認用） — 子供が dismiss したものは親側も非表示
     if (childIds.length > 0) {
       const { data: approvedData } = await supabase
         .from("otetsudai_task_logs")
         .select("*, task:otetsudai_tasks(title, reward_amount), child:child_id(name)")
         .in("child_id", childIds)
         .eq("status", "approved")
+        .is("child_dismissed_at", null)
         .order("approved_at", { ascending: false })
         .limit(10);
       setRecentApproved(approvedData || []);
@@ -263,6 +264,8 @@ export default function ParentDashboardScreen({
           .from("otetsudai_family_messages")
           .select("*, sender:otetsudai_users!sender_id(*), recipient:otetsudai_users!recipient_id(*)")
           .eq("family_id", fid)
+          // 受信者(主に子供)が dismiss したものは親側も非表示
+          .is("dismissed_by_recipient_at", null)
           .order("created_at", { ascending: false })
           .limit(20),
       ]);
