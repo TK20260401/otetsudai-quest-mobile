@@ -59,6 +59,16 @@ UPDATE otetsudai_stock_prices
   WHERE name_ja LIKE '%稲妻の馬車%';
 
 -- ============================================
+-- 7-2. TSLA (Tesla): name_ja = 'Tesla'(英語) のままなので直接 SET
+--   既存: name_ja='Tesla', description_kids='でんきじどうしゃの かいしゃ'
+--   → 世界観統一・漢字+ルビ対応の名称に上書き
+-- ============================================
+UPDATE otetsudai_stock_prices
+  SET name_ja = '稲妻の車',
+      description_kids = '電気で走る車の商会'
+  WHERE symbol = 'TSLA';
+
+-- ============================================
 -- 6. 大通信塔の symbol を 9984.T (SoftBank Group) → 9432.T (NTT) に変更
 --   ユーザー指示: 「NTTを更新します」(NTT 9432.T を本来の大通信塔として登録)
 --   旧 9984.T のレコードはそのままシンボルだけ書き換えるため、name/description は維持
