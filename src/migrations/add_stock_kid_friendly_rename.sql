@@ -37,6 +37,26 @@ UPDATE otetsudai_stock_prices
   WHERE name_ja LIKE '%大金庫%';
 
 -- ============================================
+-- 5. 江戸全部盛り(1306.T → ^TPX): TOPIX 指数本体に切替
+--   1306.T は ETF 連動型で 394円表示だったが、ユーザーは指数本体(3,722等)を希望
+--   Stooq 経由で ^TPX (TOPIX 指数) を取得するよう Edge Function 側で実装済み
+-- ============================================
+UPDATE otetsudai_stock_prices
+  SET symbol = '^TPX'
+  WHERE symbol = '1306.T';
+
+-- ============================================
+-- 6. 大通信塔の symbol を 9984.T (SoftBank Group) → 9432.T (NTT) に変更
+--   ユーザー指示: 「NTTを更新します」(NTT 9432.T を本来の大通信塔として登録)
+--   旧 9984.T のレコードはそのままシンボルだけ書き換えるため、name/description は維持
+--   (大通信塔 / メッセージを交換する商会)
+-- ============================================
+UPDATE otetsudai_stock_prices
+  SET symbol = '9432.T',
+      name = 'NTT'
+  WHERE symbol = '9984.T';
+
+-- ============================================
 -- 確認用
 -- ============================================
 -- SELECT symbol, name_ja, description_kids FROM otetsudai_stock_prices
