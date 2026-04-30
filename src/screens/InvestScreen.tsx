@@ -561,16 +561,19 @@ export default function InvestScreen({
                       <Text style={styles.stockIcon}>{stock.icon}</Text>
                       <View style={styles.flex1}>
                         <View style={{ flexDirection: "column", gap: 2 }}>
-                          <Text style={styles.stockName}>
+                          <Text style={styles.stockName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
                             {stock.name_ja || stock.name}
                           </Text>
                           <Text style={styles.stockSymbol}>{stock.symbol}</Text>
                         </View>
-                        <AutoRubyText
-                          text={stock.description_kids}
+                        <Text
                           style={styles.stockDesc}
-                          rubySize={4}
-                        />
+                          numberOfLines={1}
+                          adjustsFontSizeToFit
+                          minimumFontScale={0.65}
+                        >
+                          {stock.description_kids}
+                        </Text>
                       </View>
                       <View style={styles.stockPriceCol}>
                         <Text style={styles.stockPrice}>{formatPrice(stock)}</Text>

@@ -188,8 +188,14 @@ export default function WalletDetailScreen({
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      {/* Header — 金庫=中央(絶対配置)、もどる=左、505コロ=右 */}
       <View style={styles.header}>
+        <View style={styles.headerCenter} pointerEvents="none">
+          <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
+            <PixelCoinIcon size={28} />
+          </View>
+          <RubyText style={styles.headerTitle} parts={[["金", "きん"], ["庫", "こ"]]} rubySize={9} />
+        </View>
         <TouchableOpacity
           onPress={() => navigation.navigate("ChildDashboard", { childId })}
           style={styles.backButton}
@@ -200,23 +206,15 @@ export default function WalletDetailScreen({
             <Text style={styles.backText}>もどる</Text>
           </View>
         </TouchableOpacity>
-        <View style={styles.headerTitleGroup}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <View style={{ width: 28, height: 28, alignItems: "center", justifyContent: "center" }}>
-              <PixelCoinIcon size={28} />
-            </View>
-            <RubyText style={styles.headerTitle} parts={[["金", "きん"], ["庫", "こ"]]} rubySize={9} />
-          </View>
-          <Text
-            style={styles.headerTotalAmount}
-            adjustsFontSizeToFit
-            numberOfLines={1}
-            accessibilityLabel={`ぜんぶで ${total.toLocaleString()}えん`}
-          >
-            {total.toLocaleString()}コロ
-          </Text>
-        </View>
-        <View style={styles.headerSpacer} />
+        <View style={{ flex: 1 }} />
+        <Text
+          style={styles.headerTotalAmount}
+          adjustsFontSizeToFit
+          numberOfLines={1}
+          accessibilityLabel={`ぜんぶで ${total.toLocaleString()}コロ`}
+        >
+          {total.toLocaleString()}コロ
+        </Text>
       </View>
 
       <ScrollView
@@ -259,7 +257,7 @@ export default function WalletDetailScreen({
             >
               {spending.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint}>商人と取引</Text>
+            <Text style={styles.pocketHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>商人と取引</Text>
           </TouchableOpacity>
 
           {/* ためる → 貯金目標セクション */}
@@ -286,7 +284,7 @@ export default function WalletDetailScreen({
             >
               {saving.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint}>宝をしまう</Text>
+            <Text style={styles.pocketHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>宝をしまう</Text>
           </TouchableOpacity>
 
           {/* ふやす → Invest */}
@@ -316,7 +314,7 @@ export default function WalletDetailScreen({
             >
               {invest.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint}>コロを育てる</Text>
+            <Text style={styles.pocketHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>コロを育てる</Text>
           </TouchableOpacity>
         </View>
 
@@ -360,7 +358,7 @@ export default function WalletDetailScreen({
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelCartIcon size={18} />
-              <RubyText parts={[["使", "つか"], "いたい！"]} style={styles.spendRequestButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
+              <RubyText parts={[["取引", "とりひき"], "！"]} style={styles.spendRequestButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -377,7 +375,7 @@ export default function WalletDetailScreen({
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
               <PixelChartIcon size={18} />
-              <RubyText parts={[["増", "ふ"], "やす！"]} style={styles.investButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
+              <RubyText parts={[["錬成", "れんせい"], "！"]} style={styles.investButtonText} rubySize={5} noWrap rubyColor="rgba(255,255,255,0.6)" />
             </View>
           </TouchableOpacity>
         </View>
@@ -523,16 +521,16 @@ export default function WalletDetailScreen({
           ))}
 
           {savingGoals.length === 0 && (
-            <AutoRubyText text="まだ貯金目標がないよ" style={[styles.emptyHint, { textAlign: "left" }]} rubySize={7} />
+            <AutoRubyText text="まだお宝マップがないよ" style={[styles.emptyHint, { textAlign: "left" }]} rubySize={7} />
           )}
 
           <TouchableOpacity
             style={styles.addGoalButton}
             onPress={() => setShowGoalModal(true)}
-            accessibilityLabel="ちょきん目標をつくる"
+            accessibilityLabel="お宝マップを作る"
           >
             <AutoRubyText
-              text="＋ 目標をつくる"
+              text="＋ お宝マップを作る"
               style={styles.addGoalText}
               rubySize={7}
             />
@@ -543,7 +541,7 @@ export default function WalletDetailScreen({
         <View style={styles.section}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <PixelScrollIcon size={18} />
-            <AutoRubyText text="履歴" style={styles.sectionTitle} rubySize={7} />
+            <AutoRubyText text="冒険ログ" style={styles.sectionTitle} rubySize={7} />
           </View>
 
           {/* Filter tabs */}
@@ -634,8 +632,8 @@ function createStyles(p: Palette) {
 
     // Header
     header: {
+      position: "relative" as const,
       flexDirection: "row",
-      justifyContent: "space-between",
       alignItems: "center",
       paddingHorizontal: 12,
       paddingTop: 8,
@@ -643,6 +641,8 @@ function createStyles(p: Palette) {
       backgroundColor: p.background,
       borderBottomWidth: 1.5,
       borderBottomColor: p.border,
+      minHeight: 56,
+      gap: 8,
     },
     backButton: {
       flexDirection: "row",
@@ -668,8 +668,19 @@ function createStyles(p: Palette) {
       flex: 1,
       justifyContent: "center",
     },
+    headerCenter: {
+      position: "absolute" as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      gap: 8,
+    },
     headerTotalAmount: {
-      fontSize: rf(22),
+      fontSize: 12,
       fontWeight: "bold",
       color: p.accent,
     },
