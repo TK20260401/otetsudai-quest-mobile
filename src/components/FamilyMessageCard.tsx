@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useTheme, type Palette } from "../theme";
 import { rf } from "../lib/responsive";
 import { getFamilyStampById } from "../lib/family-stamps";
@@ -11,6 +11,8 @@ import StampSvg from "./StampSvg";
 type Props = {
   messages: FamilyMessage[];
   currentUserId: string;
+  /** 受信側のメッセージをタップで非表示にするコールバック (id を渡す) */
+  onDismiss?: (id: string) => void;
 };
 
 /**
@@ -28,7 +30,7 @@ function timeAgo(dateStr: string): string {
   return `${days}[日|にち][前|まえ]`;
 }
 
-export default function FamilyMessageCard({ messages, currentUserId }: Props) {
+export default function FamilyMessageCard({ messages, currentUserId, onDismiss }: Props) {
   const { palette } = useTheme();
   const styles = useMemo(() => createStyles(palette), [palette]);
 
@@ -52,12 +54,24 @@ export default function FamilyMessageCard({ messages, currentUserId }: Props) {
         const senderIcon = msg.sender?.icon ?? "👤";
         const recipientName = msg.recipient?.name ?? "?";
         const recipientIcon = msg.recipient?.icon ?? "👤";
+        // 自分が受信者で onDismiss が渡されていればタップ可能
+        const canDismiss = !!onDismiss && msg.recipient_id === currentUserId;
+
+        const RowWrapper: any = canDismiss ? TouchableOpacity : View;
+        const rowProps: any = canDismiss
+          ? {
+              activeOpacity: 0.6,
+              onPress: () => onDismiss?.(msg.id),
+              accessibilityHint: "タップでこのメッセージを非表示にします",
+            }
+          : {};
 
         return (
-          <View
+          <RowWrapper
             key={msg.id}
             style={[styles.msgRow, isMine && styles.msgRowMine]}
             accessibilityLabel={`${senderName}から${recipientName}へ ${stamp?.label ?? ""} ${msg.message ?? ""}`}
+            {...rowProps}
           >
             {/* アバター */}
             <View style={styles.avatarCol}>
@@ -94,8 +108,11 @@ export default function FamilyMessageCard({ messages, currentUserId }: Props) {
 
               {/* 時間 */}
               <RubyStr text={timeAgo(msg.created_at)} style={styles.timeText} rubySize={4} />
+              {canDismiss && (
+                <Text style={styles.dismissHint}>タップで閉じる</Text>
+              )}
             </View>
-          </View>
+          </RowWrapper>
         );
       })}
     </View>
@@ -208,6 +225,13 @@ function createStyles(p: Palette) {
       color: p.textMuted,
       textAlign: "right",
       marginTop: 4,
+    },
+    dismissHint: {
+      fontSize: 9,
+      color: p.textMuted,
+      textAlign: "right",
+      marginTop: 2,
+      fontStyle: "italic",
     },
   });
 }

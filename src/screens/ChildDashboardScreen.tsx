@@ -381,13 +381,14 @@ export default function ChildDashboardScreen({
     }));
     setUnreadLogs(unread);
 
-    // 返信済みメッセージ履歴
+    // 返信済みメッセージ履歴（child_dismissed_at が NULL のもののみ表示）
     const { data: replied } = await supabase
       .from("otetsudai_task_logs")
       .select("id, approval_stamp, approval_message, child_reaction_stamp, child_reaction_message, child_reaction_at, task:otetsudai_tasks(title, reward_amount)")
       .eq("child_id", childId)
       .eq("status", "approved")
       .not("child_reaction_at", "is", null)
+      .is("child_dismissed_at", null)
       .order("child_reaction_at", { ascending: false })
       .limit(10);
     setRepliedMessages(replied || []);
@@ -411,6 +412,9 @@ export default function ChildDashboardScreen({
         .from("otetsudai_family_messages")
         .select("*, sender:otetsudai_users!sender_id(*), recipient:otetsudai_users!recipient_id(*)")
         .eq("family_id", session.familyId)
+        // 受信者が当該子供 かつ dismissed されたものは除外
+        // 自分発信のもの、他者→他者のもの、受信側で未dismissのものは表示
+        .or(`recipient_id.neq.${childId},dismissed_by_recipient_at.is.null`)
         .order("created_at", { ascending: false })
         .limit(20),
     ]);
@@ -505,6 +509,32 @@ export default function ChildDashboardScreen({
     setRefreshing(false);
     setRefreshDoneAt(Date.now());
     setTimeout(() => setRefreshDoneAt(null), 1500);
+  }
+
+  // 団長とのやりとり（task_log）をタップでクリア — 楽観的UI更新後にDB更新
+  async function dismissRepliedMessage(logId: string) {
+    setRepliedMessages((prev) => prev.filter((m: any) => m.id !== logId));
+    const { error } = await supabase
+      .from("otetsudai_task_logs")
+      .update({ child_dismissed_at: new Date().toISOString() })
+      .eq("id", logId);
+    if (error) {
+      // 失敗時は再取得して整合
+      loadData();
+    }
+  }
+
+  // パーティチャットメッセージをタップでクリア — 受信側のみ
+  async function dismissFamilyMessage(messageId: string) {
+    setFamilyMessages((prev) => prev.filter((m) => m.id !== messageId));
+    const { error } = await supabase
+      .from("otetsudai_family_messages")
+      .update({ dismissed_by_recipient_at: new Date().toISOString() })
+      .eq("id", messageId)
+      .eq("recipient_id", childId);
+    if (error) {
+      loadData();
+    }
   }
 
   // 3pot 間の振替（銀行/証券の入出金モデル）
@@ -1102,7 +1132,7 @@ export default function ChildDashboardScreen({
 
         {/* ファミリースタンプリレー */}
         <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
-          <FamilyMessageCard messages={familyMessages} currentUserId={childId} />
+          <FamilyMessageCard messages={familyMessages} currentUserId={childId} onDismiss={dismissFamilyMessage} />
           <AnimatedButton
             onPress={() => setStampSendVisible(true)}
             style={styles.stampRelayBtn}
@@ -1444,7 +1474,14 @@ export default function ChildDashboardScreen({
                     ? getStampById(log.approval_stamp)
                     : null;
                   return (
-                    <View key={log.id} style={styles.repliedCard}>
+                    <TouchableOpacity
+                      key={log.id}
+                      style={styles.repliedCard}
+                      activeOpacity={0.6}
+                      onPress={() => dismissRepliedMessage(log.id)}
+                      accessibilityLabel="やりとりを閉じる"
+                      accessibilityHint="タップでこのやりとりを非表示にします"
+                    >
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}><PixelTargetIcon size={14} /><AutoRubyText text={log.task?.title ?? ""} style={styles.repliedTaskName} rubySize={5} noWrap /></View>
                       {pStamp && (
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
@@ -1464,7 +1501,8 @@ export default function ChildDashboardScreen({
                           {log.child_reaction_message ? ` 「${log.child_reaction_message}」` : ""}
                         </Text>
                       </View>
-                    </View>
+                      <Text style={styles.dismissHint}>タップで閉じる</Text>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -2563,6 +2601,13 @@ function createStyles(p: Palette) {
   repliedChild: {
     fontSize: 12,
     color: p.primaryDark,
+  },
+  dismissHint: {
+    fontSize: 9,
+    color: p.textMuted,
+    textAlign: "right" as const,
+    marginTop: 4,
+    fontStyle: "italic" as const,
   },
 
   // クエストクリア反応バナー
