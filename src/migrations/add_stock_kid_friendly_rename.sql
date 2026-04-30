@@ -80,6 +80,14 @@ UPDATE otetsudai_stock_prices
   WHERE symbol = '9984.T';
 
 -- ============================================
+-- 8. お店 → 商会 (MCD/SBUX 等)
+--   description_kids 内の「お店」を世界観統一の「商会」へ
+-- ============================================
+UPDATE otetsudai_stock_prices
+  SET description_kids = REPLACE(description_kids, 'お店', '商会')
+  WHERE description_kids LIKE '%お店%';
+
+-- ============================================
 -- 確認用
 -- ============================================
 -- SELECT symbol, name_ja, description_kids FROM otetsudai_stock_prices
