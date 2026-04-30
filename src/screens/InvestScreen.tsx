@@ -565,7 +565,6 @@ export default function InvestScreen({
                             text={stock.name_ja || stock.name}
                             style={styles.stockName}
                             rubySize={4}
-                            noWrap
                           />
                           <Text style={styles.stockSymbol}>{stock.symbol}</Text>
                         </View>
@@ -573,7 +572,6 @@ export default function InvestScreen({
                           text={stock.description_kids}
                           style={styles.stockDesc}
                           rubySize={4}
-                          noWrap
                         />
                       </View>
                       <View style={styles.stockPriceCol}>
