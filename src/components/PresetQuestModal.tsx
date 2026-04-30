@@ -55,13 +55,13 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
           <View style={styles.header}>
             <RubyText
               style={styles.title}
-              parts={["クエストを ", ["選", "えら"], "ぼう"]}
-              rubySize={5}
+              parts={["クエストを", ["選", "えら"], "ぼう"]}
+              rubySize={6}
             />
             <TouchableOpacity
               onPress={onClose}
               style={styles.closeBtn}
-              accessibilityLabel="閉じる"
+              accessibilityLabel="とじる"
               accessibilityRole="button"
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
@@ -69,7 +69,7 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.subtitle}>タップすると、クエストデプロイの下書きになるよ</Text>
+          <RubyText style={styles.subtitle} parts={["タップすると、クエストデプロイの", ["下書", "したが"], "きになるよ"]} rubySize={4} />
 
           <ScrollView
             style={styles.list}
@@ -90,12 +90,10 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
                     <Icon size={28} />
                   </View>
                   <View style={styles.itemText}>
-                    <Text style={styles.mainTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-                      {q.mainTitle}
-                    </Text>
+                    <AutoRubyText text={q.mainTitle} style={styles.mainTitle} rubySize={5} noWrap />
                     <AutoRubyText text={q.subLabel} style={styles.subLabel} rubySize={5} noWrap />
                   </View>
-                  <Text style={styles.reward}>¥{q.suggestedReward}</Text>
+                  <Text style={styles.reward}>{q.suggestedReward}コロ</Text>
                 </TouchableOpacity>
               );
             })}
@@ -104,19 +102,17 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
             <TouchableOpacity
               style={[styles.item, styles.customItem]}
               onPress={handleSelectCustom}
-              accessibilityLabel="その他。自分で考えてオリジナルクエストを作る"
+              accessibilityLabel="そのた。じぶんでかんがえてオリジナルクエストをつくる"
               accessibilityRole="button"
             >
               <View style={styles.iconWrap}>
                 <PixelPencilIcon size={24} />
               </View>
               <View style={styles.itemText}>
-                <Text style={[styles.mainTitle, styles.customMainTitle]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-                  その他
-                </Text>
-                <AutoRubyText text="自分で考える" style={styles.subLabel} rubySize={5} noWrap />
+                <RubyText style={[styles.mainTitle, styles.customMainTitle]} parts={["その", ["他", "た"]]} rubySize={5} noWrap />
+                <RubyText style={styles.subLabel} parts={[["自分", "じぶん"], "で", ["考", "かんが"], "える"]} rubySize={5} noWrap />
               </View>
-              <AutoRubyText text="作る" style={[styles.reward, styles.customReward]} rubySize={5} noWrap />
+              <RubyText style={[styles.reward, styles.customReward]} parts={[["作る", "      つく"]]} rubySize={5} noWrap />
             </TouchableOpacity>
           </ScrollView>
         </View>
