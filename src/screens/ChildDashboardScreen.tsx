@@ -511,14 +511,14 @@ export default function ChildDashboardScreen({
   async function handleTransfer(from: PotType, to: PotType, amount: number) {
     if (!wallet) throw new Error("ウォレットが ありません");
     if (from === to) throw new Error("おなじ ところには ふりかえできません");
-    if (amount <= 0) throw new Error("0円より おおきく");
+    if (amount <= 0) throw new Error("0コロより おおきく");
 
     const balanceMap = {
       spending: wallet.spending_balance,
       saving: wallet.saving_balance,
       invest: wallet.invest_balance,
     };
-    if (amount > balanceMap[from]) throw new Error(`${balanceMap[from].toLocaleString()}円までだよ`);
+    if (amount > balanceMap[from]) throw new Error(`${balanceMap[from].toLocaleString()}コロまでだよ`);
 
     const next = { ...balanceMap, [from]: balanceMap[from] - amount, [to]: balanceMap[to] + amount };
     const { error: walletErr } = await supabase
@@ -779,7 +779,7 @@ export default function ChildDashboardScreen({
             rubyColor="rgba(255,255,200,0.7)"
           />
           <Text style={styles.quickNavSub} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>クエストへ</Text>
-          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>クエストに ちょうせん</Text>
+          <RubyText style={styles.quickNavHint} parts={["クエストに", ["挑戦", "ちょうせん"]]} rubySize={4} noWrap />
         </TouchableOpacity>
 
         {/* つかう */}
@@ -803,9 +803,9 @@ export default function ChildDashboardScreen({
             rubyColor="rgba(255,255,200,0.7)"
           />
           <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-            {(wallet?.spending_balance ?? 0).toLocaleString()}円
+            {(wallet?.spending_balance ?? 0).toLocaleString()}コロ
           </Text>
-          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>しょうにんと とりひき</Text>
+          <RubyText style={styles.quickNavHint} parts={[["商人", "しょうにん"], "と", ["取引", "とりひき"]]} rubySize={4} noWrap />
         </TouchableOpacity>
 
         {/* 金庫 */}
@@ -829,9 +829,9 @@ export default function ChildDashboardScreen({
             rubyColor="rgba(255,255,200,0.7)"
           />
           <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-            {(wallet?.saving_balance ?? 0).toLocaleString()}円
+            {(wallet?.saving_balance ?? 0).toLocaleString()}コロ
           </Text>
-          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>たからを しまう</Text>
+          <RubyText style={styles.quickNavHint} parts={[["宝", "たから"], "を", ["仕舞", "しま"], "う"]} rubySize={4} noWrap />
         </TouchableOpacity>
 
         {/* 錬成 */}
@@ -855,9 +855,9 @@ export default function ChildDashboardScreen({
             rubyColor="rgba(255,255,200,0.7)"
           />
           <Text style={styles.quickNavAmount} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-            {(wallet?.invest_balance ?? 0).toLocaleString()}円
+            {(wallet?.invest_balance ?? 0).toLocaleString()}コロ
           </Text>
-          <Text style={styles.quickNavHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>お金を そだてる</Text>
+          <RubyText style={styles.quickNavHint} parts={["コロを", ["育", "そだ"], "てる"]} rubySize={4} noWrap />
         </TouchableOpacity>
       </View>
 
@@ -893,7 +893,7 @@ export default function ChildDashboardScreen({
             {!refreshing && !refreshDoneAt && (
               <RubyText
                 style={styles.refreshBtnHint}
-                parts={["（", ["最新", "さいしん"], "の", ["持", "も"], "ちものに する）"]}
+                parts={["（", ["最新", "さいしん"], "の", ["持", "も"], "ち", ["物", "もの"], "にする）"]}
                 rubySize={5}
                 noWrap
               />
@@ -913,7 +913,7 @@ export default function ChildDashboardScreen({
           <PixelCoinIcon size={18} />
           <View style={{ flex: 1 }}>
             <RubyText style={styles.refreshBtnLabel} parts={[["移", "うつ"], "す"]} rubySize={6} noWrap />
-            <RubyText style={styles.refreshBtnHint} parts={["（おかねを ", ["移動", "いどう"], "する）"]} rubySize={5} noWrap />
+            <RubyText style={styles.refreshBtnHint} parts={["（コロを", ["移動", "いどう"], "する）"]} rubySize={5} noWrap />
           </View>
         </TouchableOpacity>
       </View>
@@ -969,17 +969,17 @@ export default function ChildDashboardScreen({
               }}
               onManage={() => setPetManageVisible(true)}
             />
-            <View style={{ flexDirection: "row", gap: 6, marginTop: 4 }}>
-              <TouchableOpacity onPress={() => setShopVisible(true)} style={styles.shopBtn}>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                  <PixelShopIcon size={14} />
-                  <Text style={styles.shopBtnText}>ショップ</Text>
-                </View>
-              </TouchableOpacity>
+            <View style={{ flexDirection: "column", gap: 6, marginTop: 4 }}>
               <TouchableOpacity onPress={() => setPetEncyclopediaVisible(true)} style={styles.shopBtn}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                   <PixelStarIcon size={14} />
                   <RubyText style={styles.shopBtnText} parts={[["図鑑", "ずかん"]]} rubySize={4} noWrap />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setShopVisible(true)} style={styles.shopBtn}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <PixelShopIcon size={14} />
+                  <Text style={styles.shopBtnText}>ショップ</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -1022,7 +1022,7 @@ export default function ChildDashboardScreen({
             />
             {levelInfo.next ? (
               <View style={{ marginTop: 4 }}>
-                <AutoRubyText text={`次のレベルまであと${levelInfo.remaining.toLocaleString()}円`} style={styles.levelNext} rubySize={5} noWrap />
+                <AutoRubyText text={`次のレベルまであと${levelInfo.remaining.toLocaleString()}コロ`} style={styles.levelNext} rubySize={5} noWrap />
               </View>
             ) : (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}><AutoRubyText text="最高レベル 達成！" style={[styles.levelNext, { color: palette.accent, fontWeight: "bold" }]} rubySize={6} /><PixelConfettiIcon size={16} /></View>
@@ -1077,7 +1077,7 @@ export default function ChildDashboardScreen({
                 <Text style={styles.weeklyStatValue}>
                   ¥{weeklySummary.earned.toLocaleString()}
                 </Text>
-                <AutoRubyText text="稼いだ" style={styles.weeklyStatLabel} rubySize={5} />
+                <AutoRubyText text="クエスト報酬" style={styles.weeklyStatLabel} rubySize={5} />
               </View>
               {weeklySummary.streak > 0 && (
                 <View style={styles.colCenter}>
@@ -1130,7 +1130,7 @@ export default function ChildDashboardScreen({
                 </View>
                 <View style={styles.flex1}>
                   <Text style={styles.spendStatusText} numberOfLines={1}>
-                    {req.purpose} — {req.amount}円
+                    {req.purpose} — {req.amount}コロ
                   </Text>
                   <Text style={styles.spendStatusLabel}>
                     {req.status === "pending"
@@ -1279,7 +1279,7 @@ export default function ChildDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
                               <AutoRubyText
-                                text={`${task.reward_amount}円`}
+                                text={`${task.reward_amount}コロ`}
                                 style={styles.specialQuestReward}
                                 rubySize={6}
                               />
@@ -1343,7 +1343,7 @@ export default function ChildDashboardScreen({
                             <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
                               <PixelCoinIcon size={14} />
                               <AutoRubyText
-                                text={`${task.reward_amount}円`}
+                                text={`${task.reward_amount}コロ`}
                                 style={styles.questReward}
                                 rubySize={6}
                               />
@@ -1757,7 +1757,7 @@ export default function ChildDashboardScreen({
 
             <RubyText
               style={styles.proposalLabel}
-              parts={[["報酬", "ほうしゅう"], "リクエスト（", "円", "）"]}
+              parts={[["報酬", "ほうしゅう"], "リクエスト（コロ）"]}
               rubySize={5}
               noWrap
             />

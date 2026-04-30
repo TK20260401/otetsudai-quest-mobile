@@ -18,7 +18,7 @@ const TREE_ORDER: { key: string; condition: string }[] = [
   { key: "first_task", condition: "1回クエストクリア" },
   { key: "streak_3", condition: "3日連続クリア" },
   { key: "earned_1000", condition: "合計 1,000コロ" },
-  { key: "saving_master", condition: "貯金目標 達成" },
+  { key: "saving_master", condition: "お宝マップ 達成" },
   { key: "quest_master", condition: "50回クリア" },
 ];
 

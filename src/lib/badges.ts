@@ -21,8 +21,8 @@ export const BADGE_DEFINITIONS: Record<
   },
   saving_master: {
     emoji: "🐷",
-    label: "貯金マスター",
-    description: "貯金目標達成！",
+    label: "お宝コレクター",
+    description: "お宝マップ達成！",
   },
   quest_master: {
     emoji: "🏆",

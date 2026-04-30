@@ -180,7 +180,8 @@ function createStyles(palette: Palette) {
       color: palette.textMuted,
     },
     characterWrap: {
-      position: "relative",
+      alignItems: "center",
+      gap: 2,
     },
     characterBg: {
       width: 48,
@@ -192,11 +193,8 @@ function createStyles(palette: Palette) {
       justifyContent: "center",
     },
     lvBadge: {
-      position: "absolute",
-      bottom: -4,
-      right: -4,
       borderRadius: 6,
-      paddingHorizontal: 4,
+      paddingHorizontal: 6,
       paddingVertical: 1,
       borderWidth: 1.5,
       borderColor: palette.primary,

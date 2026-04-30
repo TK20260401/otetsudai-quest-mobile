@@ -312,10 +312,14 @@ function createStyles(palette: Palette) {
       fontWeight: "bold",
       color: palette.accent,
       marginTop: 2,
+      textDecorationLine: "underline",
+      textDecorationColor: palette.accent,
     },
     petType: {
       fontSize: 8,
       color: palette.textMuted,
+      textDecorationLine: "underline",
+      textDecorationColor: palette.textMuted,
     },
   });
 }
