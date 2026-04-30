@@ -282,11 +282,14 @@ export default function InvestScreen({
   }
 
   function formatPrice(stock: StockPrice): string {
-    if (stock.price_jpy > 0) return `${stock.price_jpy.toLocaleString()}コロ`;
-    if (stock.price > 0) {
-      if (stock.currency === "JPY") return `${stock.price.toLocaleString()}コロ`;
-      return `${stock.price.toLocaleString()}コロ`;
+    // USD 銘柄は原価をドル表記（$516 等）
+    if (stock.currency === "USD") {
+      if (stock.price > 0) return `$${stock.price.toLocaleString()}`;
+      return "—";
     }
+    // JPY 銘柄はコロ表記
+    if (stock.price_jpy > 0) return `${stock.price_jpy.toLocaleString()}コロ`;
+    if (stock.price > 0) return `${stock.price.toLocaleString()}コロ`;
     return "—";
   }
 
