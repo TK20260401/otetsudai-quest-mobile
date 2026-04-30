@@ -256,12 +256,17 @@ export default function InvestScreen({
    * - どれもなければ 1 行のまま
    */
   function splitGeoPrefix(text: string): { line1: string; line2: string } {
+    // 短い文字列は分割せず 1 行（江戸のお宝全部 など）
+    if (text.length <= 8) {
+      return { line1: text, line2: "" };
+    }
     const noIdx = text.indexOf("の");
     // 文字列の先頭近く(最初の 12 文字以内)に「の」があればそこで分割
     if (noIdx !== -1 && noIdx < 12) {
       return { line1: text.slice(0, noIdx + 1), line2: text.slice(noIdx + 1) };
     }
-    const prefixes = ["ロケットシティ", "サムライタウン", "テクノ", "江戸"];
+    // 「江戸」は短く 1 行に収まるため対象から除外（江戸全部盛り を不要に分割しない）
+    const prefixes = ["ロケットシティ", "サムライタウン", "テクノ"];
     for (const p of prefixes) {
       if (text.startsWith(p) && text.length > p.length) {
         return { line1: p, line2: text.slice(p.length) };
@@ -638,7 +643,7 @@ export default function InvestScreen({
                   {/* Amount input */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={["いくら", ["錬成", "れんせい"], "する？（コロ）"]}
+                    parts={[["何", "なん"], "コロ", ["錬成", "れんせい"], "する？"]}
                     rubySize={5}
                   />
                   <TextInput
