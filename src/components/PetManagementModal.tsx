@@ -99,13 +99,12 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        {/* 「1」と「匹」の segment 境界で marginHorizontal:-1 × 2 = -2px の
-            重なりが半角「1」の幅とほぼ同じになり「1」が「匹」と重なって見える問題。
-            ペアを ["1匹", "いっぴき"] に拡張して segment 境界を「のは」と「だけです」
-            の外にだけ置けば、「1匹」内部は単一 Text → View 分割なし → 重なりゼロ。 */}
+        {/* 「1」と「匹」の segment 境界 -2px 重なり対策でペア化。
+            ルビは「ひき」のみ ("いっぴき" だとルビ幅 24pt > 漢字幅 19pt で
+            縦距離が他と異なって見える)。"ひき" なら 12pt < 19pt で他のルビと同条件。 */}
         <View style={{ alignItems: "center" }}>
           <RubyText
-            parts={["アクティブにできるのは", ["1匹", "いっぴき"], "だけです"]}
+            parts={["アクティブにできるのは", ["1匹", "ひき"], "だけです"]}
             style={styles.subtitle}
             rubySize={6}
             noWrap
