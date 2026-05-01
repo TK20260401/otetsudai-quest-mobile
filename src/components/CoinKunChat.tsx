@@ -63,8 +63,12 @@ export default function CoinKunChat({ role }: { role: Role }) {
   const isDragging = useRef(false);
 
   const panResponder = useMemo(() => PanResponder.create({
+    // Capture 系も true: モーダル内の ScrollView/KeyboardAvoidingView 等が
+    // FAB の gesture を奪うのを防ぎ、どこでも自由にドラッグ可能にする
     onStartShouldSetPanResponder: () => true,
+    onStartShouldSetPanResponderCapture: () => true,
     onMoveShouldSetPanResponder: (_, gs) => Math.abs(gs.dx) > 5 || Math.abs(gs.dy) > 5,
+    onMoveShouldSetPanResponderCapture: (_, gs) => Math.abs(gs.dx) > 5 || Math.abs(gs.dy) > 5,
     onPanResponderGrant: () => {
       isDragging.current = false;
       pan.extractOffset();
@@ -273,7 +277,8 @@ function createStyles(p: Palette) {
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.5,
       shadowRadius: 8,
-      elevation: 8,
+      elevation: 999,
+      zIndex: 999,
       borderWidth: 1.5,
       borderColor: p.goldBorder,
     },
