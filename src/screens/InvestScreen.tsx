@@ -759,94 +759,94 @@ export default function InvestScreen({
               )}
             </ScrollView>
           </KeyboardAvoidingView>
-        </SafeAreaView>
-      </Modal>
 
-      {/* リクエストモーダル: リストにない銘柄を団長にお願い */}
-      <Modal
-        visible={requestVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setRequestVisible(false)}
-      >
-        <KeyboardAvoidingView
-          style={styles.requestOverlay}
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-          <TouchableOpacity
-            style={styles.requestBackdrop}
-            activeOpacity={1}
-            onPress={() => {
-              Keyboard.dismiss();
-              setRequestVisible(false);
-            }}
-          />
-          <View style={styles.requestSheet}>
-            <RubyText
-              style={styles.requestTitle}
-              parts={[["団長", "だんちょう"], "に", ["銘柄", "めいがら"], "を", ["相談", "そうだん"]]}
-              rubySize={6}
-            />
-            <AutoRubyText
-              text="ほしいお宝のシンボル（例: SPYD）と、なんで欲しいかを書いてね"
-              style={styles.requestSubtitle}
-              rubySize={4}
-            />
-
-            <AutoRubyText text="シンボル" style={styles.requestLabel} rubySize={4} />
-            <TextInput
-              style={styles.requestInput}
-              value={requestSymbol}
-              onChangeText={setRequestSymbol}
-              placeholder="例: SPYD"
-              placeholderTextColor={palette.textPlaceholder}
-              autoCapitalize="characters"
-              autoCorrect={false}
-            />
-
-            <AutoRubyText text="理由（書かなくてもOK）" style={styles.requestLabel} rubySize={4} />
-            <TextInput
-              style={[styles.requestInput, styles.requestInputMulti]}
-              value={requestReason}
-              onChangeText={setRequestReason}
-              placeholder="例: アメリカの高配当ETFが気になる"
-              placeholderTextColor={palette.textPlaceholder}
-              multiline
-              numberOfLines={3}
-            />
-
-            {requestError ? (
-              <AutoRubyText text={requestError} style={styles.errorText} rubySize={4} />
-            ) : null}
-            {requestSuccess ? (
-              <AutoRubyText text="送ったよ！団長からの返事を待ってね" style={styles.requestSuccess} rubySize={4} />
-            ) : null}
-
-            <View style={styles.requestButtonRow}>
+          {/* リクエストモーダル: 注文モーダル内にネストして表示確実化 */}
+          <Modal
+            visible={requestVisible}
+            animationType="slide"
+            transparent
+            onRequestClose={() => setRequestVisible(false)}
+          >
+            <KeyboardAvoidingView
+              style={styles.requestOverlay}
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+            >
               <TouchableOpacity
-                style={styles.requestCancelButton}
+                style={styles.requestBackdrop}
+                activeOpacity={1}
                 onPress={() => {
                   Keyboard.dismiss();
                   setRequestVisible(false);
                 }}
-                disabled={requestLoading}
-              >
-                <AutoRubyText text="やめる" style={styles.requestCancelText} rubySize={4} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.requestSendButton, requestLoading && styles.orderButtonDisabled]}
-                onPress={handleSendRequest}
-                disabled={requestLoading || requestSuccess}
-              >
-                {requestLoading ? (
-                  <ActivityIndicator color="#1a0f2e" />
-                ) : (
-                  <AutoRubyText text="送信" style={styles.requestSendText} rubyColor="#1a0f2e" rubySize={4} />
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </KeyboardAvoidingView>
+              />
+              <View style={styles.requestSheet}>
+                <RubyText
+                  style={styles.requestTitle}
+                  parts={[["団長", "だんちょう"], "に", ["銘柄", "めいがら"], "を", ["相談", "そうだん"]]}
+                  rubySize={6}
+                />
+                <AutoRubyText
+                  text="ほしいお宝のシンボル（例: SPYD）と、なんで欲しいかを書いてね"
+                  style={styles.requestSubtitle}
+                  rubySize={4}
+                />
+
+                <AutoRubyText text="シンボル" style={styles.requestLabel} rubySize={4} />
+                <TextInput
+                  style={styles.requestInput}
+                  value={requestSymbol}
+                  onChangeText={setRequestSymbol}
+                  placeholder="例: SPYD"
+                  placeholderTextColor={palette.textPlaceholder}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                />
+
+                <AutoRubyText text="理由(書かなくてもOK)" style={styles.requestLabel} rubySize={4} />
+                <TextInput
+                  style={[styles.requestInput, styles.requestInputMulti]}
+                  value={requestReason}
+                  onChangeText={setRequestReason}
+                  placeholder="例: アメリカの高配当ETFが気になる"
+                  placeholderTextColor={palette.textPlaceholder}
+                  multiline
+                  numberOfLines={3}
+                />
+
+                {requestError ? (
+                  <AutoRubyText text={requestError} style={styles.errorText} rubySize={4} />
+                ) : null}
+                {requestSuccess ? (
+                  <AutoRubyText text="送ったよ！団長からの返事を待ってね" style={styles.requestSuccess} rubySize={4} />
+                ) : null}
+
+                <View style={styles.requestButtonRow}>
+                  <TouchableOpacity
+                    style={styles.requestCancelButton}
+                    onPress={() => {
+                      Keyboard.dismiss();
+                      setRequestVisible(false);
+                    }}
+                    disabled={requestLoading}
+                  >
+                    <AutoRubyText text="やめる" style={styles.requestCancelText} rubySize={4} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.requestSendButton, requestLoading && styles.orderButtonDisabled]}
+                    onPress={handleSendRequest}
+                    disabled={requestLoading || requestSuccess}
+                  >
+                    {requestLoading ? (
+                      <ActivityIndicator color="#1a0f2e" />
+                    ) : (
+                      <AutoRubyText text="送信" style={styles.requestSendText} rubyColor="#1a0f2e" rubySize={4} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </KeyboardAvoidingView>
+          </Modal>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
