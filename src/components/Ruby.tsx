@@ -139,16 +139,16 @@ export function RubyText({
   const scaledRuby = rubySize * fontScaleValue;
   const tight = tightStyle(style, palette.textStrong, fontScaleValue);
   const rs = rubyStyle(scaledRuby, rubyColor ?? palette.rubyColor);
+  const hiddenRs = [rs, { opacity: 0 }];
   const gap = rubyGap(scaledRuby);
   return (
     <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
           <View key={i} style={layoutStyles.center}>
-            {/* ルビ行の高さ分だけ透明ドットで確保 */}
-            <View style={layoutStyles.rubyZero}>
-              <Text style={[rs, { opacity: 0 }]} numberOfLines={1}>.</Text>
-            </View>
+            {/* ルビなし segment にも同じ縦構造の placeholder を入れて
+                ルビあり segment と高さを揃える (混在時の波打ち防止) */}
+            <Text style={hiddenRs} numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1.3}>.</Text>
             <Text
               style={[tight, { marginTop: gap }]}
               numberOfLines={noWrap ? 1 : undefined}
@@ -162,17 +162,16 @@ export function RubyText({
           </View>
         ) : (
           <View key={i} style={layoutStyles.center}>
-            {/* ルビを幅0コンテナに入れ、レイアウト幅に影響させない */}
-            <View style={layoutStyles.rubyZero}>
-              <Text
-                style={rubyVisible ? rs : [rs, { opacity: 0 }]}
-                numberOfLines={1}
-                allowFontScaling
-                maxFontSizeMultiplier={1.3}
-              >
-                {rubyVisible ? part[1] : "."}
-              </Text>
-            </View>
+            <Text
+              style={rubyVisible ? rs : hiddenRs}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.6}
+              allowFontScaling
+              maxFontSizeMultiplier={1.3}
+            >
+              {rubyVisible ? part[1] : "."}
+            </Text>
             <Text
               style={[tight, { marginTop: gap }]}
               numberOfLines={noWrap ? 1 : undefined}
