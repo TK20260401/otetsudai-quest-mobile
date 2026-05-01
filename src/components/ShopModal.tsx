@@ -119,16 +119,35 @@ export default function ShopModal({
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
         </View>
-        <AutoRubyText
-          text={`「取引」のコロ: ${spendingBalance.toLocaleString()}コロ`}
-          style={styles.subtitle}
-          rubySize={6}
-        />
-        <AutoRubyText
-          text="買って装備すると、名前の横に称号がつくよ"
-          style={styles.shopHint}
-          rubySize={5}
-        />
+        {/* WalletDetail.pocketHint と同じパターン:
+            親 View で中央寄せ + Text style はテキスト系のみ
+            (paddingHorizontal を Text に流すと各 segment に padding が入って巨大隙間が出る) */}
+        <View style={styles.subtitleWrap}>
+          <RubyText
+            parts={["「", ["取引", "とりひき"], `」のコロ: ${spendingBalance.toLocaleString()}コロ`]}
+            style={styles.subtitle}
+            rubySize={6}
+            noWrap
+          />
+        </View>
+        <View style={styles.shopHintWrap}>
+          <RubyText
+            parts={[
+              ["買", "か"],
+              "って",
+              ["装備", "そうび"],
+              "すると、",
+              ["名前", "なまえ"],
+              "の",
+              ["横", "よこ"],
+              "に",
+              ["称号", "しょうごう"],
+              "がつくよ",
+            ]}
+            style={styles.shopHint}
+            rubySize={5}
+          />
+        </View>
 
         {toast && (
           <View
@@ -265,20 +284,24 @@ function createStyles(p: Palette) {
       fontSize: 16,
       color: p.textStrong,
     },
-    subtitle: {
-      fontSize: 12,
-      color: p.textMuted,
-      textAlign: "center",
+    subtitleWrap: {
+      alignItems: "center",
       paddingHorizontal: 16,
       paddingTop: 8,
       paddingBottom: 2,
     },
+    subtitle: {
+      fontSize: 12,
+      color: p.textMuted,
+    },
+    shopHintWrap: {
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingBottom: 8,
+    },
     shopHint: {
       fontSize: 10,
       color: p.textMuted,
-      textAlign: "center",
-      paddingHorizontal: 16,
-      paddingBottom: 8,
     },
     toast: {
       marginHorizontal: 12,

@@ -65,7 +65,7 @@ function tightStyle(style: any, defaultColor: string, scale: number): TextStyle 
  *  rubyZero(width:0) 構造ではルビが幅に寄与しないが column 高さに寄与する。
  *  -2 だと kanji が rubyZero 高さ内に食い込みルビと重なるため 0 に変更。 */
 function rubyGap(_rubySize: number): number {
-  return 0;
+  return -1;
 }
 
 /** ルビテキストのスタイル — palette.rubyColor を使いダーク/ライト両対応
@@ -374,6 +374,7 @@ const RUBY_DICT: [string, string][] = [
   ["救", "すく"], ["運命", "うんめい"], ["操", "あやつ"],
   ["不足", "ふそく"], ["外", "はず"],
   ["取引", "とりひき"], ["引", "ひ"], ["者", "もの"],
+  ["横", "よこ"],
 ].sort((a, b) => b[0].length - a[0].length) as [string, string][];
 
 // ひらがな→漢字の逆引き辞書（ひらがなテキストを漢字＋ルビに変換）
@@ -454,7 +455,7 @@ const layoutStyles = StyleSheet.create({
   center: {
     alignItems: "center",
     // Text segment 間の glyph side bearing 由来の隙間を相殺
-    marginHorizontal: -1.5,
+    marginHorizontal: -1,
   },
   rubyZero: {
     width: 0,
