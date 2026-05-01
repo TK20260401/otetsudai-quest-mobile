@@ -820,12 +820,18 @@ export default function InvestScreen({
                     rubySize={6}
                   />
                 )}
-                <AutoRubyText
-                  text={
+                <RubyText
+                  parts={[
+                    ["欲", "ほ"], "しいお", ["宝", "たから"], "のシンボル (",
+                    ["例", "れい"], ": ",
                     activeCategory === "us_stock"
-                      ? "ほしいお宝のシンボル(例: NVDA = エヌビディア)と、なんで欲しいかを書いてね"
-                      : "ほしいお宝のシンボル(例: 7974.T = 任天堂)と、なんで欲しいかを書いてね"
-                  }
+                      ? "NVDA = エヌビディア"
+                      : activeCategory === "jp_stock"
+                        ? "7974.T = 任天堂"
+                        : "SPYD",
+                    ") と、", ["何", "なん"], "で", ["欲", "ほ"], "しいかを",
+                    ["書", "か"], "いてね",
+                  ]}
                   style={styles.requestSubtitle}
                   rubySize={4}
                 />
@@ -835,13 +841,23 @@ export default function InvestScreen({
                   style={styles.requestInput}
                   value={requestSymbol}
                   onChangeText={setRequestSymbol}
-                  placeholder={activeCategory === "us_stock" ? "例: NVDA (エヌビディア)" : "例: 7974.T (任天堂)"}
+                  placeholder={
+                    activeCategory === "us_stock"
+                      ? "例: NVDA (エヌビディア)"
+                      : activeCategory === "jp_stock"
+                        ? "例: 7974.T (任天堂)"
+                        : "例: SPYD"
+                  }
                   placeholderTextColor={palette.textPlaceholder}
                   autoCapitalize="characters"
                   autoCorrect={false}
                 />
 
-                <AutoRubyText text="理由(書かなくてもOK)" style={styles.requestLabel} rubySize={4} />
+                <RubyText
+                  parts={[["理由", "りゆう"], "(", ["書", "か"], "かなくてもOK)"]}
+                  style={styles.requestLabel}
+                  rubySize={4}
+                />
                 <TextInput
                   style={[styles.requestInput, styles.requestInputMulti]}
                   value={requestReason}
@@ -849,7 +865,9 @@ export default function InvestScreen({
                   placeholder={
                     activeCategory === "us_stock"
                       ? "例: AIチップで有名だから"
-                      : "例: 任天堂のゲームが好きだから"
+                      : activeCategory === "jp_stock"
+                        ? "例: 任天堂のゲームが好きだから"
+                        : "例: 毎月コロがもらえるアメリカのお宝の詰め合わせ"
                   }
                   placeholderTextColor={palette.textPlaceholder}
                   multiline
