@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
+import { Pressable, Text, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   useAccessibility,
@@ -83,13 +83,14 @@ function PillButton({
   palette: ReturnType<typeof useTheme>["palette"];
 }) {
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
-      style={[
+      style={({ pressed }) => [
         styles.pill,
         {
           backgroundColor: active ? palette.accent : palette.surfaceMuted,
           borderColor: active ? palette.accentDark : palette.border,
+          opacity: pressed ? 0.7 : 1,
         },
       ]}
       accessibilityLabel={a11yLabel}
@@ -103,7 +104,7 @@ function PillButton({
       >
         {label}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
