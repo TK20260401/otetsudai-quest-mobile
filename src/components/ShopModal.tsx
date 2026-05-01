@@ -119,13 +119,13 @@ export default function ShopModal({
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
         </View>
-        <RubyText
-          parts={["「", ["取引", "とりひき"], `」のコロ: ${spendingBalance.toLocaleString()}コロ`]}
+        <AutoRubyText
+          text={`「取引」のコロ: ${spendingBalance.toLocaleString()}コロ`}
           style={styles.subtitle}
           rubySize={6}
         />
-        <RubyText
-          parts={[["買", "か"], "って", ["装備", "そうび"], "すると、", ["名前", "なまえ"], "の", ["横", "よこ"], "に", ["称号", "しょうごう"], "がつくよ"]}
+        <AutoRubyText
+          text="買って装備すると、名前の横に称号がつくよ"
           style={styles.shopHint}
           rubySize={5}
         />

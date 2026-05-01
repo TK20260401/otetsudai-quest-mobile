@@ -139,16 +139,14 @@ export function RubyText({
   const rs = rubyStyle(scaledRuby, rubyColor ?? palette.rubyColor);
   const hiddenRs = [rs, { opacity: 0 }];
   const gap = rubyGap(scaledRuby);
+  const rubyHeight = scaledRuby + 2;
   return (
     <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <View key={i} style={layoutStyles.center}>
-            <Text style={hiddenRs} numberOfLines={1} allowFontScaling maxFontSizeMultiplier={1.3}>
-              .
-            </Text>
+          <View key={i} style={layoutStyles.segment}>
             <Text
-              style={[tight, { marginTop: gap }]}
+              style={[tight, { marginTop: rubyHeight }]}
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
@@ -159,9 +157,12 @@ export function RubyText({
             </Text>
           </View>
         ) : (
-          <View key={i} style={layoutStyles.center}>
+          <View key={i} style={layoutStyles.segment}>
             <Text
-              style={rubyVisible ? rs : hiddenRs}
+              style={[
+                rubyVisible ? rs : [rs, { opacity: 0 }],
+                layoutStyles.rubyAbsolute,
+              ]}
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.6}
@@ -171,7 +172,7 @@ export function RubyText({
               {rubyVisible ? part[1] : "."}
             </Text>
             <Text
-              style={[tight, { marginTop: gap }]}
+              style={[tight, { marginTop: rubyHeight }]}
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
