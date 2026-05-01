@@ -837,42 +837,66 @@ export default function InvestScreen({
                 />
 
                 <AutoRubyText text="シンボル" style={styles.requestLabel} rubySize={4} />
-                <TextInput
-                  style={styles.requestInput}
-                  value={requestSymbol}
-                  onChangeText={setRequestSymbol}
-                  placeholder={
-                    activeCategory === "us_stock"
-                      ? "例: NVDA (エヌビディア)"
-                      : activeCategory === "jp_stock"
-                        ? "例: 7974.T (任天堂)"
-                        : "例: SPYD"
-                  }
-                  placeholderTextColor={palette.textPlaceholder}
-                  autoCapitalize="characters"
-                  autoCorrect={false}
-                />
+                <View style={styles.inputWrap}>
+                  <TextInput
+                    style={styles.requestInput}
+                    value={requestSymbol}
+                    onChangeText={setRequestSymbol}
+                    placeholder=""
+                    autoCapitalize="characters"
+                    autoCorrect={false}
+                  />
+                  {!requestSymbol && (
+                    <View pointerEvents="none" style={styles.placeholderOverlay}>
+                      <RubyText
+                        parts={
+                          activeCategory === "us_stock"
+                            ? [["例", "れい"], ": NVDA (エヌビディア)"]
+                            : activeCategory === "jp_stock"
+                              ? [["例", "れい"], ": 7974.T (", ["任天堂", "にんてんどう"], ")"]
+                              : [["例", "れい"], ": SPYD"]
+                        }
+                        style={styles.placeholderText}
+                        rubySize={3}
+                        noWrap
+                      />
+                    </View>
+                  )}
+                </View>
 
                 <RubyText
                   parts={[["理由", "りゆう"], "(", ["書", "か"], "かなくてもOK)"]}
                   style={styles.requestLabel}
                   rubySize={4}
                 />
-                <TextInput
-                  style={[styles.requestInput, styles.requestInputMulti]}
-                  value={requestReason}
-                  onChangeText={setRequestReason}
-                  placeholder={
-                    activeCategory === "us_stock"
-                      ? "例: AIチップで有名だから"
-                      : activeCategory === "jp_stock"
-                        ? "例: 任天堂のゲームが好きだから"
-                        : "例: 毎月コロがもらえるアメリカのお宝の詰め合わせ"
-                  }
-                  placeholderTextColor={palette.textPlaceholder}
-                  multiline
-                  numberOfLines={3}
-                />
+                <View style={styles.inputWrap}>
+                  <TextInput
+                    style={[styles.requestInput, styles.requestInputMulti]}
+                    value={requestReason}
+                    onChangeText={setRequestReason}
+                    placeholder=""
+                    multiline
+                    numberOfLines={3}
+                  />
+                  {!requestReason && (
+                    <View pointerEvents="none" style={styles.placeholderOverlayMulti}>
+                      <RubyText
+                        parts={
+                          activeCategory === "us_stock"
+                            ? [["例", "れい"], ": AIチップで", ["有名", "ゆうめい"], "だから"]
+                            : activeCategory === "jp_stock"
+                              ? [["例", "れい"], ": ", ["任天堂", "にんてんどう"], "のゲームが", ["好", "す"], "きだから"]
+                              : [
+                                  ["例", "れい"], ": ", ["毎月", "まいつき"], "コロがもらえるアメリカのお",
+                                  ["宝", "たから"], "の", ["詰", "つ"], "め", ["合", "あ"], "わせ",
+                                ]
+                        }
+                        style={styles.placeholderText}
+                        rubySize={3}
+                      />
+                    </View>
+                  )}
+                </View>
 
                 {requestError ? (
                   <AutoRubyText text={requestError} style={styles.errorText} rubySize={4} />
@@ -1222,6 +1246,27 @@ function createStyles(p: Palette) {
     requestInputMulti: {
       minHeight: 70,
       textAlignVertical: "top" as const,
+    },
+    inputWrap: {
+      position: "relative" as const,
+    },
+    placeholderOverlay: {
+      position: "absolute" as const,
+      left: 12,
+      right: 12,
+      top: 0,
+      bottom: 0,
+      justifyContent: "center" as const,
+    },
+    placeholderOverlayMulti: {
+      position: "absolute" as const,
+      left: 12,
+      right: 12,
+      top: 12,
+    },
+    placeholderText: {
+      fontSize: rf(14),
+      color: p.textPlaceholder,
     },
     requestSuccess: {
       fontSize: rf(12),
