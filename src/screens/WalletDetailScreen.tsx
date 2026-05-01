@@ -274,7 +274,6 @@ export default function WalletDetailScreen({
               style={styles.pocketLabel}
               parts={[["取引", "とりひき"]]}
               rubySize={7}
-              rubyColor="rgba(255,255,255,0.6)"
             />
             <Text
               style={[styles.pocketAmount, { color: palette.walletSpend }]}
@@ -284,8 +283,7 @@ export default function WalletDetailScreen({
             <RubyText
               style={styles.pocketHint}
               parts={[["商人", "しょうにん"], "と", ["取引", "とりひき"]]}
-              rubySize={4}
-              rubyColor="rgba(255,255,255,0.55)"
+              rubySize={6}
               noWrap
             />
           </TouchableOpacity>
@@ -307,7 +305,6 @@ export default function WalletDetailScreen({
               style={styles.pocketLabel}
               parts={[["金庫", "きんこ"]]}
               rubySize={7}
-              rubyColor="rgba(255,255,255,0.6)"
             />
             <Text
               style={[styles.pocketAmount, { color: palette.walletSave }]}
@@ -317,8 +314,7 @@ export default function WalletDetailScreen({
             <RubyText
               style={styles.pocketHint}
               parts={[["宝", "たから"], "をしまう"]}
-              rubySize={4}
-              rubyColor="rgba(255,255,255,0.55)"
+              rubySize={6}
               noWrap
             />
           </TouchableOpacity>
@@ -343,7 +339,6 @@ export default function WalletDetailScreen({
               style={styles.pocketLabel}
               parts={[["錬成", "れんせい"]]}
               rubySize={7}
-              rubyColor="rgba(255,255,255,0.6)"
             />
             <Text
               style={[styles.pocketAmount, { color: palette.walletInvest }]}
@@ -353,8 +348,7 @@ export default function WalletDetailScreen({
             <RubyText
               style={styles.pocketHint}
               parts={["コロを", ["育", "そだ"], "てる"]}
-              rubySize={4}
-              rubyColor="rgba(255,255,255,0.55)"
+              rubySize={6}
               noWrap
             />
           </TouchableOpacity>
@@ -784,8 +778,10 @@ function createStyles(p: Palette) {
     pocketLabel: {
       fontSize: 12,
       color: p.textMuted,
+      // ルビが上の SVG アイコンに被らないように余白を確保 (ルビは漢字の上に
+      // 約 6-8px 出っ張るため、marginTop も含めて 8 + 14 ≒ 22 程度必要)
+      marginTop: 22,
       marginBottom: 2,
-      lineHeight: 20,
     },
     pocketAmount: {
       fontSize: 16,
@@ -794,7 +790,8 @@ function createStyles(p: Palette) {
     pocketHint: {
       fontSize: 9,
       color: p.textMuted,
-      marginTop: 4,
+      // 上のラベル/数字とルビが被らないように余白増
+      marginTop: 10,
       textAlign: "center",
     },
     // 3SVGアイコンの寸法差を 20×20 固定枠で吸収
