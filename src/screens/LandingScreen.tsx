@@ -17,6 +17,7 @@ import RpgButton from "../components/RpgButton";
 import AccessibilityToggle from "../components/AccessibilityToggle";
 import LegalModal from "../components/LegalModal";
 import { TERMS, PRIVACY } from "../lib/legal-texts";
+import CoinKunChat from "../components/CoinKunChat";
 
 type Props = {
   onSignup?: () => void;
@@ -168,6 +169,7 @@ export default function LandingScreen({ onSignup, onLogin, onParentLogin }: Prop
         updated={PRIVACY.updated}
         sections={PRIVACY.sections}
       />
+      <CoinKunChat role="guest" />
     </View>
   );
 }
