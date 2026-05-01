@@ -61,20 +61,20 @@ function tightStyle(style: any, defaultColor: string, scale: number): TextStyle 
   } as TextStyle;
 }
 
-/** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み）
- *  -4 でさらに密着 (旧-2 では離れて見えるとの指摘) */
+/** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み） */
 function rubyGap(_rubySize: number): number {
-  return -4;
+  return -2;
 }
 
 /** ルビテキストのスタイル — palette.rubyColor を使いダーク/ライト両対応
- *  marginBottom: -2 で漢字に密着（iOS検証済み。lineHeight/translateYは効かない） */
+ *  marginBottom: -1 で漢字に近接（iOS検証済み。lineHeight/translateYは効かない）
+ *  -2以上にすると iOS でルビが漢字に重なって読めなくなる */
 function rubyStyle(size: number, color: string): TextStyle {
   return {
     fontSize: size,
     color,
     textAlign: "center",
-    marginBottom: -2,
+    marginBottom: -1,
     includeFontPadding: false,
   } as TextStyle;
 }
@@ -452,5 +452,8 @@ const layoutStyles = StyleSheet.create({
   },
   center: {
     alignItems: "center",
+    // segment 間に発生する微小な視覚的隙間を相殺する負の水平マージン
+    // (RubyText が character segment 毎に View を作る構造由来の gap)
+    marginHorizontal: -0.5,
   },
 });

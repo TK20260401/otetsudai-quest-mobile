@@ -210,7 +210,7 @@ export default function ShopModal({
                           onPress={() => handleBuy(item.id, item.price)}
                           disabled={busy === item.id || !canAfford || !walletId}
                         >
-                          {busy === item.id ? "..." : canAfford ? "買う" : "コロ不足"}
+                          {busy === item.id ? "..." : canAfford ? <RubyText parts={[["買", "か"], "う"]} rubySize={5} noWrap /> : <RubyText parts={["コロ", ["不足", "ふそく"]]} rubySize={5} noWrap />}
                         </RpgButton>
                       )}
                     </View>
@@ -222,7 +222,7 @@ export default function ShopModal({
 
           <View style={{ marginTop: 12 }}>
             <RpgButton tier="silver" size="md" onPress={onClose}>
-              閉じる
+              とじる
             </RpgButton>
           </View>
         </ScrollView>
