@@ -81,6 +81,14 @@ export default function InvestScreen({
   const [orderLoading, setOrderLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
+  // Request modal (リストにない銘柄を団長にリクエスト)
+  const [requestVisible, setRequestVisible] = useState(false);
+  const [requestSymbol, setRequestSymbol] = useState("");
+  const [requestReason, setRequestReason] = useState("");
+  const [requestLoading, setRequestLoading] = useState(false);
+  const [requestError, setRequestError] = useState("");
+  const [requestSuccess, setRequestSuccess] = useState(false);
+
   useEffect(() => {
     checkHasParent();
     loadData();
@@ -244,6 +252,44 @@ export default function InvestScreen({
       setOrderVisible(false);
       loadData();
     }, 2000);
+  }
+
+  // リストにない銘柄を団長にリクエスト送信
+  async function handleSendRequest() {
+    const sym = requestSymbol.trim().toUpperCase();
+    if (!sym) {
+      setRequestError("シンボルを入力してね");
+      return;
+    }
+    setRequestLoading(true);
+    try {
+      const session = await getSession();
+      if (!session?.familyId) {
+        setRequestError("家族情報が見つからないよ");
+        return;
+      }
+      const messageBody = `📈 銘柄リクエスト: ${sym}${requestReason ? `\n理由: ${requestReason}` : ""}`;
+      const { error } = await supabase.from("otetsudai_messages").insert({
+        family_id: session.familyId,
+        from_user_id: session.userId,
+        to_user_id: null,
+        message: messageBody,
+      });
+      if (error) {
+        setRequestError("送れませんでした。もう一度 試してね");
+        return;
+      }
+      setRequestSuccess(true);
+      setTimeout(() => {
+        setRequestVisible(false);
+        setRequestSuccess(false);
+        setRequestSymbol("");
+        setRequestReason("");
+        setRequestError("");
+      }, 1800);
+    } finally {
+      setRequestLoading(false);
+    }
   }
 
   /**
@@ -700,15 +746,107 @@ export default function InvestScreen({
                     )}
                   </TouchableOpacity>
 
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <TouchableOpacity
+                    style={styles.requestLink}
+                    onPress={() => setRequestVisible(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel="リストにないお宝を団長にお願いする"
+                  >
                     <PixelLightbulbIcon size={14} />
-                    <AutoRubyText text="気になるお宝がないときは、団長に相談してね" style={styles.orderHint} rubySize={4} />
-                  </View>
+                    <AutoRubyText text="リストにないお宝を団長にお願い" style={styles.requestLinkText} rubySize={4} />
+                  </TouchableOpacity>
                 </>
               )}
             </ScrollView>
           </KeyboardAvoidingView>
         </SafeAreaView>
+      </Modal>
+
+      {/* リクエストモーダル: リストにない銘柄を団長にお願い */}
+      <Modal
+        visible={requestVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setRequestVisible(false)}
+      >
+        <KeyboardAvoidingView
+          style={styles.requestOverlay}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <TouchableOpacity
+            style={styles.requestBackdrop}
+            activeOpacity={1}
+            onPress={() => {
+              Keyboard.dismiss();
+              setRequestVisible(false);
+            }}
+          />
+          <View style={styles.requestSheet}>
+            <RubyText
+              style={styles.requestTitle}
+              parts={[["団長", "だんちょう"], "に", ["銘柄", "めいがら"], "を", ["相談", "そうだん"]]}
+              rubySize={6}
+            />
+            <AutoRubyText
+              text="ほしいお宝のシンボル（例: SPYD）と、なんで欲しいかを書いてね"
+              style={styles.requestSubtitle}
+              rubySize={4}
+            />
+
+            <AutoRubyText text="シンボル" style={styles.requestLabel} rubySize={4} />
+            <TextInput
+              style={styles.requestInput}
+              value={requestSymbol}
+              onChangeText={setRequestSymbol}
+              placeholder="例: SPYD"
+              placeholderTextColor={palette.textPlaceholder}
+              autoCapitalize="characters"
+              autoCorrect={false}
+            />
+
+            <AutoRubyText text="理由（書かなくてもOK）" style={styles.requestLabel} rubySize={4} />
+            <TextInput
+              style={[styles.requestInput, styles.requestInputMulti]}
+              value={requestReason}
+              onChangeText={setRequestReason}
+              placeholder="例: アメリカの高配当ETFが気になる"
+              placeholderTextColor={palette.textPlaceholder}
+              multiline
+              numberOfLines={3}
+            />
+
+            {requestError ? (
+              <AutoRubyText text={requestError} style={styles.errorText} rubySize={4} />
+            ) : null}
+            {requestSuccess ? (
+              <AutoRubyText text="送ったよ！団長からの返事を待ってね" style={styles.requestSuccess} rubySize={4} />
+            ) : null}
+
+            <View style={styles.requestButtonRow}>
+              <TouchableOpacity
+                style={styles.requestCancelButton}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setRequestVisible(false);
+                }}
+                disabled={requestLoading}
+              >
+                <AutoRubyText text="やめる" style={styles.requestCancelText} rubySize={4} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.requestSendButton, requestLoading && styles.orderButtonDisabled]}
+                onPress={handleSendRequest}
+                disabled={requestLoading || requestSuccess}
+              >
+                {requestLoading ? (
+                  <ActivityIndicator color="#1a0f2e" />
+                ) : (
+                  <AutoRubyText text="送信" style={styles.requestSendText} rubyColor="#1a0f2e" rubySize={4} />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -950,6 +1088,109 @@ function createStyles(p: Palette) {
     },
 
     orderHint: { fontSize: 10, color: p.textMuted, textAlign: "center", marginTop: 12, lineHeight: 16 },
+
+    // Request link & modal (リストにない銘柄を団長にお願い)
+    requestLink: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 4,
+      paddingVertical: 10,
+      paddingHorizontal: 8,
+      marginTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: p.border,
+    },
+    requestLinkText: {
+      fontSize: rf(12),
+      color: p.primary,
+      textDecorationLine: "underline" as const,
+      fontWeight: "600",
+    },
+    requestOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.45)",
+      justifyContent: "flex-end",
+    },
+    requestBackdrop: { ...StyleSheet.absoluteFillObject },
+    requestSheet: {
+      backgroundColor: p.background,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      paddingHorizontal: 20,
+      paddingTop: 20,
+      paddingBottom: 28,
+      gap: 8,
+    },
+    requestTitle: {
+      fontSize: rf(18),
+      fontWeight: "900",
+      color: p.textStrong,
+      marginBottom: 4,
+    },
+    requestSubtitle: {
+      fontSize: rf(12),
+      color: p.textMuted,
+      marginBottom: 8,
+      lineHeight: 18,
+    },
+    requestLabel: {
+      fontSize: rf(12),
+      color: p.textStrong,
+      fontWeight: "700",
+      marginTop: 6,
+    },
+    requestInput: {
+      borderWidth: 1.5,
+      borderColor: p.border,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: rf(14),
+      color: p.textStrong,
+      backgroundColor: p.surface,
+    },
+    requestInputMulti: {
+      minHeight: 70,
+      textAlignVertical: "top" as const,
+    },
+    requestSuccess: {
+      fontSize: rf(12),
+      color: p.walletInvest,
+      textAlign: "center" as const,
+      marginTop: 4,
+      fontWeight: "700",
+    },
+    requestButtonRow: {
+      flexDirection: "row",
+      gap: 8,
+      marginTop: 14,
+    },
+    requestCancelButton: {
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 12,
+      borderWidth: 1.5,
+      borderColor: p.border,
+      alignItems: "center",
+    },
+    requestCancelText: {
+      fontSize: rf(14),
+      color: p.textMuted,
+      fontWeight: "700",
+    },
+    requestSendButton: {
+      flex: 1.5,
+      paddingVertical: 12,
+      borderRadius: 12,
+      backgroundColor: p.walletInvest,
+      alignItems: "center",
+    },
+    requestSendText: {
+      fontSize: rf(14),
+      color: "#1a0f2e",
+      fontWeight: "900",
+    },
 
     // Lock modal
     lockOverlay: {
