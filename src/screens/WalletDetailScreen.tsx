@@ -441,9 +441,9 @@ export default function WalletDetailScreen({
                   >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <PixelHourglassIcon size={16} />
-                      <Text style={styles.requestStatus}>しんせいちゅう</Text>
+                      <AutoRubyText text="申請中" style={styles.requestStatus} rubySize={5} />
                     </View>
-                    <Text style={styles.requestPurpose}>{req.purpose}</Text>
+                    <AutoRubyText text={req.purpose} style={styles.requestPurpose} rubySize={5} />
                     <Text style={styles.requestAmount}>
                       {req.amount.toLocaleString()}コロ
                     </Text>
@@ -464,9 +464,9 @@ export default function WalletDetailScreen({
                   >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <PixelCheckIcon size={16} />
-                      <Text style={styles.requestStatus}>しょうにんずみ おかねをまってね</Text>
+                      <AutoRubyText text="承認済 お金を待ってね" style={styles.requestStatus} rubySize={5} />
                     </View>
-                    <Text style={styles.requestPurpose}>{req.purpose}</Text>
+                    <AutoRubyText text={req.purpose} style={styles.requestPurpose} rubySize={5} />
                     <Text style={styles.requestAmount}>
                       {req.amount.toLocaleString()}コロ
                     </Text>
@@ -484,12 +484,10 @@ export default function WalletDetailScreen({
                   >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                       <PixelCrossIcon size={16} />
-                      <Text style={styles.requestStatus}>きょかされませんでした</Text>
+                      <AutoRubyText text="許可されませんでした" style={styles.requestStatus} rubySize={5} />
                     </View>
                     {req.reject_reason && (
-                      <Text style={styles.requestReason}>
-                        りゆう: {req.reject_reason}
-                      </Text>
+                      <AutoRubyText text={`理由: ${req.reject_reason}`} style={styles.requestReason} rubySize={5} />
                     )}
                     <Text style={styles.requestAmount}>
                       {req.amount.toLocaleString()}コロ
@@ -506,7 +504,7 @@ export default function WalletDetailScreen({
         <View style={styles.section}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
             <PixelPiggyIcon size={18} />
-            <Text style={styles.sectionTitle}>お宝マップ</Text>
+            <AutoRubyText text="お宝マップ" style={styles.sectionTitle} rubySize={6} />
           </View>
 
           {/* Unachieved goals */}
@@ -520,7 +518,7 @@ export default function WalletDetailScreen({
                 : 0;
             return (
               <View key={goal.id} style={styles.goalCard}>
-                <Text style={styles.goalTitle}>{goal.title}</Text>
+                <AutoRubyText text={goal.title} style={styles.goalTitle} rubySize={5} />
                 {pct >= 100 ? (
                   <SavingGoalMilestone
                     show={pct >= 100}
@@ -554,11 +552,13 @@ export default function WalletDetailScreen({
             <View key={goal.id} style={styles.goalCardAchieved}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
                 <PixelCheckIcon size={16} />
-                <Text style={styles.goalTitle}>{goal.title}</Text>
+                <AutoRubyText text={goal.title} style={styles.goalTitle} rubySize={5} />
               </View>
-              <Text style={styles.goalAmountText}>
-                {goal.target_amount.toLocaleString()} コロ 達成！
-              </Text>
+              <AutoRubyText
+                text={`${goal.target_amount.toLocaleString()} コロ 達成！`}
+                style={styles.goalAmountText}
+                rubySize={4}
+              />
             </View>
           ))}
 
@@ -619,13 +619,9 @@ export default function WalletDetailScreen({
                 <View key={tx.id} style={styles.historyItem}>
                   <View style={styles.historyType}><TxTypeIcon type={tx.type} /></View>
                   <View style={styles.historyInfo}>
-                    <Text style={styles.historyDesc} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-                      {line1}
-                    </Text>
+                    <AutoRubyText text={line1} style={styles.historyDesc} rubySize={4} noWrap />
                     {line2 ? (
-                      <Text style={styles.historyDescSub} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
-                        {line2}
-                      </Text>
+                      <AutoRubyText text={line2} style={styles.historyDescSub} rubySize={4} noWrap />
                     ) : null}
                     <Text style={styles.historyDate}>
                       {new Date(tx.created_at).toLocaleDateString("ja-JP")}
@@ -644,7 +640,7 @@ export default function WalletDetailScreen({
               );
             })
           ) : (
-            <Text style={styles.emptyHint}>まだ履歴がないよ</Text>
+            <AutoRubyText text="まだ履歴がないよ" style={styles.emptyHint} rubySize={5} />
           )}
         </View>
 
