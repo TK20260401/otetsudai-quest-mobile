@@ -575,7 +575,7 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
                 onPress={() => { setIsSignUp(!isSignUp); setError(""); setAdminEmail(""); setAdminPassword(""); }}
               >
                 <Text style={styles.switchAuthText}>
-                  {isSignUp ? "ログインに戻る" : "アカウント作成"}
+                  {isSignUp ? "ログインにもどる" : "アカウント作成"}
                 </Text>
               </TouchableOpacity>
 

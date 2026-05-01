@@ -135,7 +135,7 @@ export default function SpendRequestScreen({
               accessibilityLabel="もどる"
             >
               <AutoRubyText
-                text="← 戻る"
+                text="← もどる"
                 style={styles.confirmBackBtnText}
                 rubySize={7}
               />
@@ -178,7 +178,7 @@ export default function SpendRequestScreen({
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <PixelHouseIcon size={12} />
-              <AutoRubyText text="← 戻る" style={styles.backText} rubySize={5} noWrap />
+              <AutoRubyText text="← もどる" style={styles.backText} rubySize={5} noWrap />
             </View>
           </TouchableOpacity>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center", marginTop: -4 }}>
