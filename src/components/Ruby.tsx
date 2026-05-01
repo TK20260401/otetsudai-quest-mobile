@@ -367,11 +367,14 @@ export function AutoRubyText({
   style,
   rubySize = 8,
   noWrap = false,
+  rubyColor,
 }: {
   text: string;
   style?: any;
   rubySize?: number;
   noWrap?: boolean;
+  /** ルビ文字色を明示指定（明るい背景上で視認性を確保したい時に使用） */
+  rubyColor?: string;
 }) {
   if (!text) return null;
   const parts: (string | [string, string])[] = [];
@@ -407,7 +410,7 @@ export function AutoRubyText({
       remaining = remaining.slice(1);
     }
   }
-  return <RubyText parts={parts} style={style} rubySize={rubySize} noWrap={noWrap} />;
+  return <RubyText parts={parts} style={style} rubySize={rubySize} noWrap={noWrap} rubyColor={rubyColor} />;
 }
 
 const layoutStyles = StyleSheet.create({

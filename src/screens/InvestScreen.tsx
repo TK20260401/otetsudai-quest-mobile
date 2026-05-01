@@ -680,7 +680,7 @@ export default function InvestScreen({
                   <AutoRubyText text="100コロから錬成できるよ" style={styles.amountHint} rubySize={4} />
 
                   {orderError ? (
-                    <Text style={styles.errorText}>{orderError}</Text>
+                    <AutoRubyText text={orderError} style={styles.errorText} rubySize={5} />
                   ) : null}
 
                   <TouchableOpacity
@@ -692,7 +692,7 @@ export default function InvestScreen({
                       <Text style={styles.orderButtonText}>送り中...</Text>
                     ) : (
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                        <AutoRubyText text="団長にお願いする" style={styles.orderButtonText} />
+                        <AutoRubyText text="団長にお願いする" style={styles.orderButtonText} rubyColor="#1a0f2e" />
                         <PixelChartIcon size={18} />
                       </View>
                     )}
