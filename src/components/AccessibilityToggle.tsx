@@ -42,15 +42,10 @@ export default function AccessibilityToggle() {
     setFontScale(next);
   };
 
+  // 順序を ハイコン → 字 → ルビ に変更:
+  // ルビボタンが効かない問題の診断 (位置依存か、コード固有か)
   return (
     <View style={[styles.container, { top: insets.top + 4 }]}>
-      <PillButton
-        active={rubyVisible}
-        label={`ルビ ${rubyVisible ? "ON" : "OFF"}`}
-        onPress={() => setRubyVisible(!rubyVisible)}
-        a11yLabel={`ルビ表示 ${rubyVisible ? "オン" : "オフ"}`}
-        palette={palette}
-      />
       <PillButton
         active={monochrome}
         label={`ハイコントラスト ${monochrome ? "ON" : "OFF"}`}
@@ -63,6 +58,13 @@ export default function AccessibilityToggle() {
         label={`字 ${FONT_SCALE_LABELS[fontScale]}`}
         onPress={cycleFontScale}
         a11yLabel={`文字の大きさ ${FONT_SCALE_LABELS[fontScale]} (倍率 ${FONT_SCALE_VALUES[fontScale]})`}
+        palette={palette}
+      />
+      <PillButton
+        active={rubyVisible}
+        label={`ルビ ${rubyVisible ? "ON" : "OFF"}`}
+        onPress={() => setRubyVisible(!rubyVisible)}
+        a11yLabel={`ルビ表示 ${rubyVisible ? "オン" : "オフ"}`}
         palette={palette}
       />
     </View>
