@@ -703,7 +703,7 @@ function createStyles(p: Palette) {
       backgroundColor: p.background,
     },
     backText: {
-      fontSize: 10,
+      fontSize: 11,
       fontWeight: "bold",
       color: p.textMuted,
     },

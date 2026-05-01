@@ -175,7 +175,7 @@ function createStyles(palette: Palette) {
       borderColor: palette.primary,
     },
     backText: {
-      fontSize: 8,
+      fontSize: 11,
       fontWeight: "bold",
       color: palette.textMuted,
     },

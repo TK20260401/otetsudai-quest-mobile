@@ -603,7 +603,7 @@ function createStyles(p: Palette) {
     },
     skipText: {
       ...linkStyles(p).linkTextMuted,
-      fontSize: rf(13),
+      fontSize: 11,
     },
   });
 }

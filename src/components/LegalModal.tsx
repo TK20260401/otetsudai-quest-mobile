@@ -209,7 +209,7 @@ function createStyles(p: Palette) {
       alignItems: "center",
     },
     backBtnText: {
-      fontSize: 15,
+      fontSize: 11,
       fontWeight: "700",
       color: p.primary,
     },

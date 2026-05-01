@@ -996,7 +996,7 @@ function createStyles(p: Palette) {
       borderWidth: 1,
       borderColor: p.primary,
     },
-    backText: { fontSize: 10, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 11, fontWeight: "bold", color: p.textMuted },
     backHint: { fontSize: 9, fontWeight: "600", color: p.textMuted, opacity: 0.7, marginTop: -1 },
     headerTitle: { fontSize: rf(28), fontWeight: "900", color: p.primaryDark, flexShrink: 1, textAlign: "center" as const },
 
@@ -1371,7 +1371,7 @@ function createStyles(p: Palette) {
     },
     lockBackText: {
       ...linkStyles(p).linkTextMuted,
-      fontSize: rf(13),
+      fontSize: 11,
     },
   });
 }
