@@ -945,7 +945,7 @@ export default function ChildDashboardScreen({
               <View style={styles.refreshBtnHintWrap}>
                 <RubyText
                   style={styles.refreshBtnHint}
-                  parts={["（", ["最新", "さいしん"], "の", ["持ち物", "もちもの"], "にする）"]}
+                  parts={["（", ["最新の", "さいしん"], ["持", "も"], "ち", ["物", "もの"], "にする）"]}
                   rubySize={5}
                   noWrap
                 />
