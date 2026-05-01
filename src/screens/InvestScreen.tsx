@@ -722,11 +722,17 @@ export default function InvestScreen({
                   />
                   <AutoRubyText
                     text={
-                      (selected?.category ?? activeCategory) === "us_stock"
+                      // 通貨で判定: USD は必ず 1 株単位 (DIA/QQQ/SPY 等の USD index も含む)
+                      // 「よくばり」カテゴリには JPY(1306.T/1321.T) と USD(DIA/QQQ/SPY) が混在
+                      selected?.currency === "USD"
                         ? "お宝1つ分から (高め)"
-                        : (selected?.category ?? activeCategory) === "jp_stock"
+                        : selected?.category === "jp_stock"
                           ? "100コロから (かけらOK)"
-                          : "100コロから"
+                          : !selected && activeCategory === "us_stock"
+                            ? "お宝1つ分から (高め)"
+                            : !selected && activeCategory === "jp_stock"
+                              ? "100コロから (かけらOK)"
+                              : "100コロから"
                     }
                     style={styles.amountHint}
                     rubySize={4}
