@@ -749,17 +749,22 @@ export default function InvestScreen({
                   >
                     {orderLoading ? (
                       <Text style={styles.orderButtonText}>送り中...</Text>
-                    ) : (
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                        <AutoRubyText
-                          text={selected ? `${selected.name_ja || selected.name}を錬成する` : "お宝を選んでね"}
-                          style={styles.orderButtonText}
-                          rubyColor="#1a0f2e"
-                          noWrap
-                        />
-                        {selected ? <PixelChartIcon size={18} /> : null}
-                      </View>
-                    )}
+                    ) : (() => {
+                      const buttonText = selected ? `${selected.name_ja || selected.name}を錬成する` : "お宝を選んでね";
+                      // 長い銘柄名(例: ロケットシティ大冒険500を錬成する=17字)は枠に収まらないためフォント縮小
+                      const isLong = buttonText.length > 12;
+                      return (
+                        <View style={styles.orderButtonInner}>
+                          <AutoRubyText
+                            text={buttonText}
+                            style={[styles.orderButtonText, isLong && { fontSize: rf(14) }]}
+                            rubyColor="#1a0f2e"
+                            noWrap
+                          />
+                          {selected ? <PixelChartIcon size={isLong ? 14 : 18} /> : null}
+                        </View>
+                      );
+                    })()}
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -1089,8 +1094,16 @@ function createStyles(p: Palette) {
       backgroundColor: p.walletInvest,
       borderRadius: 16,
       paddingVertical: 16,
+      paddingHorizontal: 12,
       alignItems: "center",
       marginTop: 16,
+    },
+    orderButtonInner: {
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      gap: 4,
+      flexShrink: 1,
     },
     orderButtonDisabled: { opacity: 0.5 },
     orderButtonText: {
