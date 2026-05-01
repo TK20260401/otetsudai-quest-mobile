@@ -209,10 +209,7 @@ export default function InvestScreen({
   const filteredStocks = stocks.filter((s) => s.category === activeCategory);
 
   async function handleOrder() {
-    if (!selected) {
-      setOrderError("お宝を選んでね");
-      return;
-    }
+    if (!selected) return;
     const amountNum = parseInt(amount);
     if (!amountNum || amountNum < 100) {
       setOrderError("100コロ以上入力してね");
@@ -684,16 +681,21 @@ export default function InvestScreen({
                   ) : null}
 
                   <TouchableOpacity
-                    style={[styles.orderButton, orderLoading && styles.orderButtonDisabled]}
+                    style={[styles.orderButton, (orderLoading || !selected) && styles.orderButtonDisabled]}
                     onPress={handleOrder}
-                    disabled={orderLoading}
+                    disabled={orderLoading || !selected}
                   >
                     {orderLoading ? (
                       <Text style={styles.orderButtonText}>送り中...</Text>
                     ) : (
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                        <AutoRubyText text="団長にお願いする" style={styles.orderButtonText} rubyColor="#1a0f2e" />
-                        <PixelChartIcon size={18} />
+                        <AutoRubyText
+                          text={selected ? `${selected.name_ja || selected.name}を錬成する` : "お宝を選んでね"}
+                          style={styles.orderButtonText}
+                          rubyColor="#1a0f2e"
+                          noWrap
+                        />
+                        {selected ? <PixelChartIcon size={18} /> : null}
                       </View>
                     )}
                   </TouchableOpacity>
