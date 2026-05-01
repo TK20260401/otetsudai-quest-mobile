@@ -17,6 +17,7 @@ import RpgButton from "./RpgButton";
 import { PixelGiftIcon } from "./PixelIcons";
 import { useTheme, type Palette } from "../theme";
 import { RubyText } from "./Ruby";
+import CoinKunChat from "./CoinKunChat";
 
 type Props = {
   visible: boolean;
@@ -156,6 +157,7 @@ export default function DailyLoginModal({ visible, onClose, childId, walletId, o
           )}
         </Pressable>
       </Pressable>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

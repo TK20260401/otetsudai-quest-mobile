@@ -27,6 +27,7 @@ import { PixelPawIcon, PixelStarIcon } from "./PixelIcons";
 import RpgCard from "./RpgCard";
 import { AutoRubyText } from "./Ruby";
 import PetEncyclopediaModal from "./PetEncyclopediaModal";
+import CoinKunChat from "./CoinKunChat";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -263,6 +264,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
         onClose={() => setEncyclopediaOpen(false)}
         childId={childId}
       />
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

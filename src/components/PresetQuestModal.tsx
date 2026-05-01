@@ -14,6 +14,7 @@ import { useTheme } from "../theme";
 import { RubyText, AutoRubyText } from "./Ruby";
 import { PixelPencilIcon } from "./PixelIcons";
 import { PRESET_QUESTS, type PresetQuest } from "../data/presetQuests";
+import CoinKunChat from "./CoinKunChat";
 
 type Props = {
   visible: boolean;
@@ -117,6 +118,7 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
           </ScrollView>
         </View>
       </View>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

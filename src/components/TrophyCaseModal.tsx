@@ -15,6 +15,7 @@ import type { Badge } from "../lib/types";
 import RpgCard from "./RpgCard";
 import RpgButton from "./RpgButton";
 import { PixelTrophyIcon } from "./PixelIcons";
+import CoinKunChat from "./CoinKunChat";
 import { useTheme, type Palette } from "../theme";
 
 type Props = {
@@ -128,6 +129,7 @@ export default function TrophyCaseModal({ visible, onClose, childId }: Props) {
           </View>
         </ScrollView>
       </View>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

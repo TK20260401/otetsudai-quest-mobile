@@ -20,6 +20,7 @@ import SavingGoalMilestone from "../components/SavingGoalMilestone";
 import type { Wallet, Transaction, SpendRequest, SavingGoal } from "../lib/types";
 import MoneyTree, { getStage } from "../components/MoneyTree";
 import { PixelChestOpenIcon, PixelCoinIcon, PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelTreeIcon, PixelConfettiIcon, PixelHourglassIcon, PixelCheckIcon, PixelCrossIcon, PixelScrollIcon, PixelHouseIcon } from "../components/PixelIcons";
+import CoinKunChat from "../components/CoinKunChat";
 
 export default function WalletDetailScreen({
   route,
@@ -642,6 +643,7 @@ export default function WalletDetailScreen({
           loadData();
         }}
       />
+      <CoinKunChat role="child" />
     </SafeAreaView>
   );
 }

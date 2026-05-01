@@ -21,6 +21,7 @@ import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import { PixelLetterIcon, PixelTargetIcon, PixelCoinIcon } from "./PixelIcons";
 import { AutoRubyText } from "./Ruby";
 import StampSvg from "./StampSvg";
+import CoinKunChat from "./CoinKunChat";
 
 type UnreadLog = {
   id: string;
@@ -238,6 +239,7 @@ export default function ChildReactionModal({ logs, onAllDone, onSkip }: Props) {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

@@ -19,6 +19,7 @@ import {
   type PurchaseRecord,
 } from "../lib/shop";
 import RpgButton from "./RpgButton";
+import CoinKunChat from "./CoinKunChat";
 import { PixelShopIcon } from "./PixelIcons";
 import { AutoRubyText } from "./Ruby";
 import { useTheme, type Palette, linkStyles } from "../theme";
@@ -230,6 +231,7 @@ export default function ShopModal({
           </View>
         </ScrollView>
       </View>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

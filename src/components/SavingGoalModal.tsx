@@ -17,6 +17,7 @@ import { useKeyboardHeight } from "../lib/useKeyboardHeight";
 import { useAppAlert } from "./AppAlert";
 import { AutoRubyText, RubyText } from "./Ruby";
 import { PixelPiggyIcon, PixelWarningIcon } from "./PixelIcons";
+import CoinKunChat from "./CoinKunChat";
 
 type Props = {
   visible: boolean;
@@ -142,6 +143,7 @@ export default function SavingGoalModal({ visible, childId, onClose, onCreated }
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

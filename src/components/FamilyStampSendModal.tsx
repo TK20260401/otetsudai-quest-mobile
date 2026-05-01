@@ -21,6 +21,7 @@ import type { User } from "../lib/types";
 import { PixelLetterIcon } from "./PixelIcons";
 import StampSvg from "./StampSvg";
 import * as Haptics from "expo-haptics";
+import CoinKunChat from "./CoinKunChat";
 
 type Props = {
   visible: boolean;
@@ -253,6 +254,7 @@ export default function FamilyStampSendModal({
           </View>
         </KeyboardAvoidingView>
       </View>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

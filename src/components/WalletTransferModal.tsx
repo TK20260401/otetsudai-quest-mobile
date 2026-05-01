@@ -17,6 +17,7 @@ import { RubyText } from "./Ruby";
 import { PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelCoinIcon, PixelCrossIcon } from "./PixelIcons";
 import * as Haptics from "expo-haptics";
 import type { Wallet } from "../lib/types";
+import CoinKunChat from "./CoinKunChat";
 
 export type PotType = "spending" | "saving" | "invest";
 
@@ -255,6 +256,7 @@ export default function WalletTransferModal({ visible, onClose, wallet, onConfir
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }

@@ -941,11 +941,15 @@ export default function InvestScreen({
                 </View>
               </View>
             </KeyboardAvoidingView>
+            {/* リクエストモーダル内コインくん */}
+            <CoinKunChat role="child" />
           </Modal>
+          {/* 注文モーダル内コインくん */}
+          <CoinKunChat role="child" />
         </SafeAreaView>
       </Modal>
 
-      {/* AIアシスタント コインくん (FAB ドラッグ可、買いかた等の質問対応) */}
+      {/* 画面ルートのコインくん (モーダル非表示時用) */}
       <CoinKunChat role="child" />
     </SafeAreaView>
   );

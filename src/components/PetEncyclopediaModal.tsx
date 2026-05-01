@@ -6,6 +6,7 @@ import { PixelCrossIcon, PixelStarIcon } from "./PixelIcons";
 import PetSvg from "./PetSvg";
 import { PET_TYPE_INFO, type GrowthStage } from "../lib/pets";
 import { getEncyclopedia, getDiscoveryBadge, type EncyclopediaEntry } from "../lib/pet-encyclopedia";
+import CoinKunChat from "./CoinKunChat";
 
 type Props = {
   visible: boolean;
@@ -148,6 +149,7 @@ export default function PetEncyclopediaModal({ visible, onClose, childId }: Prop
           />
         </View>
       </View>
+      <CoinKunChat role="child" />
     </Modal>
   );
 }
