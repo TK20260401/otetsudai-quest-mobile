@@ -544,10 +544,13 @@ useEffect(() => {
           >
             <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
               <TouchableOpacity
-                onPress={() => setOrderVisible(false)}
+                onPress={() => {
+                  setOrderVisible(false);
+                  navigation.navigate("ChildDashboard", { childId });
+                }}
                 style={styles.backButton}
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                accessibilityLabel="閉じる"
+                accessibilityLabel="もどる"
                 accessibilityRole="button"
               >
                 <PixelHouseIcon size={16} />
