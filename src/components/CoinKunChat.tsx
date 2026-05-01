@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  PanResponder,
   Animated,
   Dimensions,
 } from "react-native";
+import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PixelCoinIcon, PixelChatIcon, PixelCrossIcon } from "./PixelIcons";
 import { useTheme, type Palette } from "../theme";
@@ -56,40 +56,65 @@ export default function CoinKunChat({ role }: { role: Role }) {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
-  // ドラッグ移動用
+  // ドラッグ移動用 (react-native-gesture-handler でネイティブレベルの
+  // ジェスチャー優先順位を確保。RCTScrollView の垂直スクロールと競合しない)
   const { width: screenW, height: screenH } = Dimensions.get("window");
-  const fabSize = 56;
+  const fabSize = 58;
   const pan = useRef(new Animated.ValueXY({ x: screenW - fabSize - 16, y: screenH - fabSize - 20 - (insets.bottom || 0) })).current;
   const isDragging = useRef(false);
 
-  const panResponder = useMemo(() => PanResponder.create({
-    // 全てのフェーズで responder を獲得し、どんなコンテキスト
-     // (ScrollView/KAV/Modal/モーダル入れ子) 内でも安定してドラッグ可能にする
-    onStartShouldSetPanResponder: () => true,
-    onStartShouldSetPanResponderCapture: () => true,
-    onMoveShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponderCapture: () => true,
-    onPanResponderTerminationRequest: () => false, // 親が responder を奪うのを拒否
-    onShouldBlockNativeResponder: () => true,
-    onPanResponderGrant: () => {
-      isDragging.current = false;
-      pan.extractOffset();
-    },
-    onPanResponderMove: (_, gs) => {
-      // 3px超で drag 判定 (誤タップでチャットが開くのを抑える代わりに
-       // 細かい移動も drag として認識)
-      if (Math.abs(gs.dx) > 3 || Math.abs(gs.dy) > 3) {
-        isDragging.current = true;
-      }
-      Animated.event([null, { dx: pan.x, dy: pan.y }], { useNativeDriver: false })(_, gs);
-    },
-    onPanResponderRelease: () => {
-      pan.flattenOffset();
-      if (!isDragging.current) {
-        setOpen(true);
-      }
-    },
-  }), [pan]);
+  const handleStart = useCallback(() => {
+    isDragging.current = false;
+    pan.extractOffset();
+  }, [pan]);
+
+  const handleUpdate = useCallback((tx: number, ty: number) => {
+    if (Math.abs(tx) > 3 || Math.abs(ty) > 3) {
+      isDragging.current = true;
+    }
+    pan.x.setValue(tx);
+    pan.y.setValue(ty);
+  }, [pan]);
+
+  const handleEnd = useCallback(() => {
+    pan.flattenOffset();
+    if (!isDragging.current) {
+      setOpen(true);
+    }
+  }, [pan]);
+
+  // PanGesture で xy 並進、min distance 0 にして即時反応、
+  // simultaneousWithExternalGesture は同時認識を許可するが、
+  // shouldCancelWhenOutside=false でドラッグ中の追従を維持
+  const dragGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onStart(() => {
+          handleStart();
+        })
+        .onUpdate((e) => {
+          handleUpdate(e.translationX, e.translationY);
+        })
+        .onEnd(() => {
+          handleEnd();
+        })
+        .runOnJS(true),
+    [handleStart, handleUpdate, handleEnd]
+  );
+
+  // タップで chat open (drag と区別: タップは onUpdate 来ない)
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap().onEnd(() => {
+        if (!isDragging.current) setOpen(true);
+      }).runOnJS(true),
+    []
+  );
+
+  const composedGesture = useMemo(
+    () => Gesture.Race(dragGesture, tapGesture),
+    [dragGesture, tapGesture]
+  );
 
   const isChild = role === "child";
   const suggestions =
@@ -136,20 +161,22 @@ export default function CoinKunChat({ role }: { role: Role }) {
   return (
     <>
       {/* フローティングボタン（ドラッグ移動可能） */}
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[
-          styles.fab,
-          {
-            backgroundColor: accentColor,
-            transform: pan.getTranslateTransform(),
-          },
-        ]}
-        accessibilityLabel="AIアシスタント"
-        accessibilityRole="button"
-      >
-        {isChild ? <PixelCoinIcon size={26} /> : <PixelChatIcon size={26} />}
-      </Animated.View>
+      <GestureDetector gesture={composedGesture}>
+        <Animated.View
+          style={[
+            styles.fab,
+            {
+              backgroundColor: accentColor,
+              transform: pan.getTranslateTransform(),
+            },
+          ]}
+          accessibilityLabel="AIアシスタント"
+          accessibilityRole="button"
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+        >
+          {isChild ? <PixelCoinIcon size={28} /> : <PixelChatIcon size={28} />}
+        </Animated.View>
+      </GestureDetector>
 
       {/* チャットモーダル */}
       <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
@@ -272,9 +299,9 @@ function createStyles(p: Palette) {
       position: "absolute",
       top: 0,
       left: 0,
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      width: 58,
+      height: 58,
+      borderRadius: 29,
       alignItems: "center",
       justifyContent: "center",
       shadowColor: p.black,

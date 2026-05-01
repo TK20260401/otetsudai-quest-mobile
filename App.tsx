@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { AppAlertProvider } from "./src/components/AppAlert";
@@ -35,17 +36,19 @@ export default function App() {
   if (!loaded) return null;
 
   return (
-    <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleTouch}>
-      <SafeAreaProvider>
-        <AccessibilityProvider initial={initial}>
-          <ThemeProvider initial="forest">
-            <AppAlertProvider>
-              <StatusBar style="dark" />
-              <AppNavigator />
-            </AppAlertProvider>
-          </ThemeProvider>
-        </AccessibilityProvider>
-      </SafeAreaProvider>
-    </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleTouch}>
+        <SafeAreaProvider>
+          <AccessibilityProvider initial={initial}>
+            <ThemeProvider initial="forest">
+              <AppAlertProvider>
+                <StatusBar style="dark" />
+                <AppNavigator />
+              </AppAlertProvider>
+            </ThemeProvider>
+          </AccessibilityProvider>
+        </SafeAreaProvider>
+      </View>
+    </GestureHandlerRootView>
   );
 }

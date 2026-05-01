@@ -281,7 +281,13 @@ export default function WalletDetailScreen({
             >
               {spending.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>商人と取引</Text>
+            <RubyText
+              style={styles.pocketHint}
+              parts={[["商人", "しょうにん"], "と", ["取引", "とりひき"]]}
+              rubySize={4}
+              rubyColor="rgba(255,255,255,0.55)"
+              noWrap
+            />
           </TouchableOpacity>
 
           {/* ためる → 貯金目標セクション */}
@@ -308,7 +314,13 @@ export default function WalletDetailScreen({
             >
               {saving.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>宝をしまう</Text>
+            <RubyText
+              style={styles.pocketHint}
+              parts={[["宝", "たから"], "をしまう"]}
+              rubySize={4}
+              rubyColor="rgba(255,255,255,0.55)"
+              noWrap
+            />
           </TouchableOpacity>
 
           {/* ふやす → Invest */}
@@ -338,7 +350,13 @@ export default function WalletDetailScreen({
             >
               {invest.toLocaleString()}
             </Text>
-            <Text style={styles.pocketHint} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>コロを育てる</Text>
+            <RubyText
+              style={styles.pocketHint}
+              parts={["コロを", ["育", "そだ"], "てる"]}
+              rubySize={4}
+              rubyColor="rgba(255,255,255,0.55)"
+              noWrap
+            />
           </TouchableOpacity>
         </View>
 
