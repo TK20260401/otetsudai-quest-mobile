@@ -99,12 +99,16 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        <AutoRubyText
-          text="アクティブにできるのは1匹だけです"
-          style={styles.subtitle}
-          rubySize={6}
-          noWrap
-        />
+        {/* WalletDetail.pocketHint (商人と取引等) と同じパターン:
+            RubyText 明示パーツ + 親 View で中央寄せ */}
+        <View style={{ alignItems: "center" }}>
+          <RubyText
+            parts={["アクティブにできるのは1", ["匹", "ひき"], "だけです"]}
+            style={styles.subtitle}
+            rubySize={6}
+            noWrap
+          />
+        </View>
 
         <TouchableOpacity
           onPress={() => setEncyclopediaOpen(true)}
@@ -312,8 +316,7 @@ function createStyles(p: Palette) {
     subtitle: {
       fontSize: 12,
       color: p.textMuted,
-      textAlign: "center",
-      paddingHorizontal: 16,
+      // textAlign: "center" は外す (親 View で alignItems:center で中央寄せ)
       paddingVertical: 8,
     },
     encyclopediaBtn: {
