@@ -61,9 +61,11 @@ function tightStyle(style: any, defaultColor: string, scale: number): TextStyle 
   } as TextStyle;
 }
 
-/** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み） */
+/** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み）
+ *  rubyZero(width:0) 構造ではルビが幅に寄与しないが column 高さに寄与する。
+ *  -2 だと kanji が rubyZero 高さ内に食い込みルビと重なるため 0 に変更。 */
 function rubyGap(_rubySize: number): number {
-  return -2;
+  return 0;
 }
 
 /** ルビテキストのスタイル — palette.rubyColor を使いダーク/ライト両対応
@@ -137,16 +139,18 @@ export function RubyText({
   const scaledRuby = rubySize * fontScaleValue;
   const tight = tightStyle(style, palette.textStrong, fontScaleValue);
   const rs = rubyStyle(scaledRuby, rubyColor ?? palette.rubyColor);
-  const hiddenRs = [rs, { opacity: 0 }];
   const gap = rubyGap(scaledRuby);
-  const rubyHeight = scaledRuby - 2;
   return (
     <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
         typeof part === "string" ? (
-          <View key={i} style={layoutStyles.segment}>
+          <View key={i} style={layoutStyles.center}>
+            {/* ルビ行の高さ分だけ透明ドットで確保 */}
+            <View style={layoutStyles.rubyZero}>
+              <Text style={[rs, { opacity: 0 }]} numberOfLines={1}>.</Text>
+            </View>
             <Text
-              style={[tight, { marginTop: rubyHeight }]}
+              style={[tight, { marginTop: gap }]}
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
@@ -157,22 +161,20 @@ export function RubyText({
             </Text>
           </View>
         ) : (
-          <View key={i} style={layoutStyles.segment}>
+          <View key={i} style={layoutStyles.center}>
+            {/* ルビを幅0コンテナに入れ、レイアウト幅に影響させない */}
+            <View style={layoutStyles.rubyZero}>
+              <Text
+                style={rubyVisible ? rs : [rs, { opacity: 0 }]}
+                numberOfLines={1}
+                allowFontScaling
+                maxFontSizeMultiplier={1.3}
+              >
+                {rubyVisible ? part[1] : "."}
+              </Text>
+            </View>
             <Text
-              style={[
-                rubyVisible ? rs : [rs, { opacity: 0 }],
-                layoutStyles.rubyAbsolute,
-              ]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.6}
-              allowFontScaling
-              maxFontSizeMultiplier={1.3}
-            >
-              {rubyVisible ? part[1] : "."}
-            </Text>
-            <Text
-              style={[tight, { marginTop: rubyHeight }]}
+              style={[tight, { marginTop: gap }]}
               numberOfLines={noWrap ? 1 : undefined}
               adjustsFontSizeToFit={noWrap}
               minimumFontScale={noWrap ? 0.7 : undefined}
@@ -453,16 +455,8 @@ const layoutStyles = StyleSheet.create({
   center: {
     alignItems: "center",
   },
-  segment: {
-    overflow: "visible" as any,
-    // iOS の Text glyph side bearing が segment 間に約 2-3px の隙間を生むため
-    // 負の水平 margin で相殺 (-1.5px → 隣接 segment が 3px 重なる)
-    marginHorizontal: -1.5,
-  },
-  rubyAbsolute: {
-    position: "absolute" as any,
-    top: 0,
-    left: 0,
-    right: 0,
+  rubyZero: {
+    width: 0,
+    alignItems: "center" as const,
   },
 });
