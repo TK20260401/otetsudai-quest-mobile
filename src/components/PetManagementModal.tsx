@@ -99,7 +99,12 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.subtitle}>アクティブにできるのは1匹だけです</Text>
+        <AutoRubyText
+          text="アクティブにできるのは1匹だけです"
+          style={styles.subtitle}
+          rubySize={6}
+          noWrap
+        />
 
         <TouchableOpacity
           onPress={() => setEncyclopediaOpen(true)}
