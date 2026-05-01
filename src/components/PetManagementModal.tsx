@@ -99,16 +99,12 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        {/* RubyText の View 分割が segment 間隙を生むため、単一 Text 内に
-            nested Text で 小さい inline ルビ「(ひき)」を入れる。
-            ・親 Text: 12pt 黒
-            ・nested Text: 6pt rubyColor、括弧付きで 匹 の直後にインライン表示
-            これで隙間ゼロ + ルビ視認の両立を実現。 */}
-        <Text style={styles.subtitle}>
-          アクティブにできるのは1匹
-          <Text style={{ fontSize: 6, color: palette.rubyColor }}>(ひき)</Text>
-          だけです
-        </Text>
+        <AutoRubyText
+          text="アクティブにできるのは1匹だけです"
+          style={styles.subtitle}
+          rubySize={6}
+          noWrap
+        />
 
         <TouchableOpacity
           onPress={() => setEncyclopediaOpen(true)}

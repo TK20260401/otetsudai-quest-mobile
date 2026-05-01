@@ -452,8 +452,14 @@ const layoutStyles = StyleSheet.create({
   },
   center: {
     alignItems: "center",
-    // segment 間に発生する微小な視覚的隙間を相殺する負の水平マージン
-    // (RubyText が character segment 毎に View を作る構造由来の gap)
-    marginHorizontal: -0.5,
+  },
+  segment: {
+    overflow: "visible" as any,
+  },
+  rubyAbsolute: {
+    position: "absolute" as any,
+    top: 0,
+    left: 0,
+    right: 0,
   },
 });
