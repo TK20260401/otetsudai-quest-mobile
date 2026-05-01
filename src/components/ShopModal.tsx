@@ -21,7 +21,7 @@ import {
 import RpgButton from "./RpgButton";
 import CoinKunChat from "./CoinKunChat";
 import { PixelShopIcon } from "./PixelIcons";
-import { AutoRubyText } from "./Ruby";
+import { AutoRubyText, RubyText } from "./Ruby";
 import { useTheme, type Palette, linkStyles } from "../theme";
 
 type Props = {
@@ -119,13 +119,13 @@ export default function ShopModal({
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
         </View>
-        <AutoRubyText
-          text={`「取引」のコロ: ${spendingBalance.toLocaleString()}コロ`}
+        <RubyText
+          parts={["「", ["取引", "とりひき"], `」のコロ: ${spendingBalance.toLocaleString()}コロ`]}
           style={styles.subtitle}
           rubySize={6}
         />
-        <AutoRubyText
-          text="買って装備すると、名前の横に称号がつくよ"
+        <RubyText
+          parts={[["買", "か"], "って", ["装備", "そうび"], "すると、", ["名前", "なまえ"], "の", ["横", "よこ"], "に", ["称号", "しょうごう"], "がつくよ"]}
           style={styles.shopHint}
           rubySize={5}
         />
@@ -185,12 +185,8 @@ export default function ShopModal({
                   >
                     <Text style={styles.itemEmoji}>{item.emoji}</Text>
                     <View style={styles.itemInfo}>
-                      <Text style={[styles.itemLabel, { color: rc.text }]} numberOfLines={1}>
-                        {item.label}
-                      </Text>
-                      <Text style={styles.itemDesc} numberOfLines={1}>
-                        {item.description}
-                      </Text>
+                      <AutoRubyText style={[styles.itemLabel, { color: rc.text }]} text={item.label} rubySize={5} noWrap />
+                      <AutoRubyText style={styles.itemDesc} text={item.description} rubySize={4} noWrap />
                       <Text style={[styles.itemMeta, { color: rc.text }]}>
                         {item.rarity.toUpperCase()} ・ {item.price}コロ
                       </Text>
@@ -330,7 +326,7 @@ function createStyles(p: Palette) {
       minWidth: 0,
     },
     itemLabel: {
-      fontSize: 14,
+      fontSize: 13,
       fontWeight: "bold",
     },
     itemDesc: {

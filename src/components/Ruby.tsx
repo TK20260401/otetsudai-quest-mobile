@@ -61,9 +61,10 @@ function tightStyle(style: any, defaultColor: string, scale: number): TextStyle 
   } as TextStyle;
 }
 
-/** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み） */
+/** ルビと漢字の間隔 — 全サイズ統一（iOS検証済み）
+ *  -4 でさらに密着 (旧-2 では離れて見えるとの指摘) */
 function rubyGap(_rubySize: number): number {
-  return -2;
+  return -4;
 }
 
 /** ルビテキストのスタイル — palette.rubyColor を使いダーク/ライト両対応
@@ -73,7 +74,7 @@ function rubyStyle(size: number, color: string): TextStyle {
     fontSize: size,
     color,
     textAlign: "center",
-    marginBottom: -1,
+    marginBottom: -2,
     includeFontPadding: false,
   } as TextStyle;
 }
@@ -360,6 +361,18 @@ const RUBY_DICT: [string, string][] = [
   ["任天堂", "にんてんどう"],
   // SPYD 理由ハイブリッド「毎月コロがもらえるアメリカのお宝の詰め合わせ」用
   ["詰", "つ"], ["合", "あ"],
+  // ショップ称号・説明文用
+  ["冒険者", "ぼうけんしゃ"], ["駆", "か"],
+  ["賢者", "けんじゃ"], ["炎", "ほのお"],
+  ["魔導士", "まどうし"], ["雷", "かみなり"],
+  ["戦士", "せんし"], ["氷", "こおり"],
+  ["騎士", "きし"], ["竜", "りゅう"], ["末裔", "まつえい"],
+  ["星", "ほし"], ["時間", "じかん"],
+  ["一歩", "いっぽ"], ["知恵", "ちえ"], ["授", "さず"],
+  ["冷", "つめ"], ["眼差", "まなざ"], ["血", "ち"],
+  ["救", "すく"], ["運命", "うんめい"], ["操", "あやつ"],
+  ["不足", "ふそく"], ["外", "はず"],
+  ["取引", "とりひき"], ["引", "ひ"], ["者", "もの"],
 ].sort((a, b) => b[0].length - a[0].length) as [string, string][];
 
 // ひらがな→漢字の逆引き辞書（ひらがなテキストを漢字＋ルビに変換）

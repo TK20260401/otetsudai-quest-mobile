@@ -16,14 +16,14 @@ export type ShopItem = {
 };
 
 export const SHOP_ITEMS: ShopItem[] = [
-  { id: "rookie",     label: "駆け出し冒険者", description: "はじめの一歩！",       price: 50,  rarity: "common",    emoji: "🎒" },
-  { id: "forest_sage", label: "森の賢者",      description: "森の知恵をさずかった", price: 100, rarity: "common",    emoji: "🌲" },
+  { id: "rookie",     label: "駆け出し冒険者", description: "初めの一歩！",         price: 50,  rarity: "common",    emoji: "🎒" },
+  { id: "forest_sage", label: "森の賢者",      description: "森の知恵を授かった",   price: 100, rarity: "common",    emoji: "🌲" },
   { id: "fire_mage",  label: "炎の魔導士",    description: "めらめら 燃える！",   price: 150, rarity: "rare",      emoji: "🔥" },
   { id: "thunder",    label: "雷の戦士",      description: "ピカッ！ドカン！",     price: 150, rarity: "rare",      emoji: "⚡" },
-  { id: "ice_knight", label: "氷の騎士",      description: "つめたい まなざし",   price: 200, rarity: "rare",      emoji: "❄️" },
-  { id: "dragon",     label: "竜の末裔",      description: "ドラゴンの血を ひく者", price: 300, rarity: "epic",      emoji: "🐉" },
-  { id: "hero",       label: "星の勇者",      description: "せかいを すくう運命",   price: 400, rarity: "epic",      emoji: "⭐" },
-  { id: "time",       label: "時の旅人",      description: "じかんを あやつる",   price: 500, rarity: "legendary", emoji: "⏳" },
+  { id: "ice_knight", label: "氷の騎士",      description: "冷たい 眼差し",       price: 200, rarity: "rare",      emoji: "❄️" },
+  { id: "dragon",     label: "竜の末裔",      description: "竜の血を引く者",       price: 300, rarity: "epic",      emoji: "🐉" },
+  { id: "hero",       label: "星の勇者",      description: "世界を救う運命",       price: 400, rarity: "epic",      emoji: "⭐" },
+  { id: "time",       label: "時の旅人",      description: "時間を操る",           price: 500, rarity: "legendary", emoji: "⏳" },
 ];
 
 export type PurchaseRecord = {
