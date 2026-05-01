@@ -942,12 +942,14 @@ export default function ChildDashboardScreen({
               noWrap
             />
             {!refreshing && !refreshDoneAt && (
-              <RubyText
-                style={styles.refreshBtnHint}
-                parts={["（", ["最新", "さいしん"], "の", ["持", "も"], "ち", ["物", "もの"], "にする）"]}
-                rubySize={5}
-                noWrap
-              />
+              <View style={styles.refreshBtnHintWrap}>
+                <RubyText
+                  style={styles.refreshBtnHint}
+                  parts={["（", ["最新", "さいしん"], "の", ["持ち物", "もちもの"], "にする）"]}
+                  rubySize={5}
+                  noWrap
+                />
+              </View>
             )}
           </View>
         </TouchableOpacity>
@@ -964,7 +966,9 @@ export default function ChildDashboardScreen({
           <PixelCoinIcon size={18} />
           <View style={{ flex: 1 }}>
             <RubyText style={styles.refreshBtnLabel} parts={[["移", "うつ"], "す"]} rubySize={6} noWrap />
-            <RubyText style={styles.refreshBtnHint} parts={["（コロを", ["移動", "いどう"], "する）"]} rubySize={5} noWrap />
+            <View style={styles.refreshBtnHintWrap}>
+              <RubyText style={styles.refreshBtnHint} parts={["（コロを", ["移動", "いどう"], "する）"]} rubySize={5} noWrap />
+            </View>
           </View>
         </TouchableOpacity>
       </View>
@@ -2158,11 +2162,12 @@ function createStyles(p: Palette) {
     fontWeight: "700" as const,
     color: p.textBase,
   },
+  refreshBtnHintWrap: {
+    marginTop: 2,
+  },
   refreshBtnHint: {
     fontSize: 6,
     color: p.textMuted,
-    marginTop: 2,
-    lineHeight: 9,
   },
   quickNavBtn: {
     flexBasis: "23%" as any,
