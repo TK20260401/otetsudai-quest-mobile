@@ -99,11 +99,13 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        {/* WalletDetail.pocketHint (商人と取引等) と同じパターン:
-            RubyText 明示パーツ + 親 View で中央寄せ */}
+        {/* 「1」と「匹」の segment 境界で marginHorizontal:-1 × 2 = -2px の
+            重なりが半角「1」の幅とほぼ同じになり「1」が「匹」と重なって見える問題。
+            ペアを ["1匹", "いっぴき"] に拡張して segment 境界を「のは」と「だけです」
+            の外にだけ置けば、「1匹」内部は単一 Text → View 分割なし → 重なりゼロ。 */}
         <View style={{ alignItems: "center" }}>
           <RubyText
-            parts={["アクティブにできるのは1", ["匹", "ひき"], "だけです"]}
+            parts={["アクティブにできるのは", ["1匹", "いっぴき"], "だけです"]}
             style={styles.subtitle}
             rubySize={6}
             noWrap
