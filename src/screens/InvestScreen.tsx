@@ -801,13 +801,31 @@ export default function InvestScreen({
                 }}
               />
               <View style={styles.requestSheet}>
-                <RubyText
-                  style={styles.requestTitle}
-                  parts={[["団長", "だんちょう"], "に", ["銘柄", "めいがら"], "を", ["相談", "そうだん"]]}
-                  rubySize={6}
-                />
+                {activeCategory === "jp_stock" ? (
+                  <RubyText
+                    style={styles.requestTitle}
+                    parts={["サムライタウンの", ["団長", "だんちょう"], "に", ["銘柄", "めいがら"], "を", ["相談", "そうだん"]]}
+                    rubySize={6}
+                  />
+                ) : activeCategory === "us_stock" ? (
+                  <RubyText
+                    style={styles.requestTitle}
+                    parts={["ロケットシティの", ["団長", "だんちょう"], "に", ["銘柄", "めいがら"], "を", ["相談", "そうだん"]]}
+                    rubySize={6}
+                  />
+                ) : (
+                  <RubyText
+                    style={styles.requestTitle}
+                    parts={[["団長", "だんちょう"], "に", ["銘柄", "めいがら"], "を", ["相談", "そうだん"]]}
+                    rubySize={6}
+                  />
+                )}
                 <AutoRubyText
-                  text="ほしいお宝のシンボル（例: SPYD）と、なんで欲しいかを書いてね"
+                  text={
+                    activeCategory === "us_stock"
+                      ? "ほしいお宝のシンボル(例: NVDA = エヌビディア)と、なんで欲しいかを書いてね"
+                      : "ほしいお宝のシンボル(例: 7974.T = 任天堂)と、なんで欲しいかを書いてね"
+                  }
                   style={styles.requestSubtitle}
                   rubySize={4}
                 />
@@ -817,7 +835,7 @@ export default function InvestScreen({
                   style={styles.requestInput}
                   value={requestSymbol}
                   onChangeText={setRequestSymbol}
-                  placeholder="例: SPYD"
+                  placeholder={activeCategory === "us_stock" ? "例: NVDA (エヌビディア)" : "例: 7974.T (任天堂)"}
                   placeholderTextColor={palette.textPlaceholder}
                   autoCapitalize="characters"
                   autoCorrect={false}
@@ -828,7 +846,11 @@ export default function InvestScreen({
                   style={[styles.requestInput, styles.requestInputMulti]}
                   value={requestReason}
                   onChangeText={setRequestReason}
-                  placeholder="例: アメリカの高配当ETFが気になる"
+                  placeholder={
+                    activeCategory === "us_stock"
+                      ? "例: AIチップで有名だから"
+                      : "例: 任天堂のゲームが好きだから"
+                  }
                   placeholderTextColor={palette.textPlaceholder}
                   multiline
                   numberOfLines={3}
