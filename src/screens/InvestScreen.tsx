@@ -219,12 +219,20 @@ export default function InvestScreen({
   async function handleOrder() {
     if (!selected) return;
     const amountNum = parseInt(amount);
-    if (!amountNum || amountNum < 100) {
-      setOrderError("100コロ以上入力してね");
+    if (!amountNum || amountNum < 1) {
+      setOrderError("コロを入力してね");
+      return;
+    }
+    // USD銘柄は1株単位 → 1株分のコロが最低額
+    // JPY銘柄(jp_stock/index)は100コロ最低 (単元未満OK)
+    const sharePrice = Math.ceil(selected.price_jpy || 0);
+    const minAmount = selected.currency === "USD" ? sharePrice : 100;
+    if (amountNum < minAmount) {
+      setOrderError(`コロが足りないよ (お宝1つは ${minAmount.toLocaleString()}コロ)`);
       return;
     }
     if (amountNum > investBalance) {
-      setOrderError(`冒険資金が足りないよ（残り ${investBalance.toLocaleString()}コロ）`);
+      setOrderError(`冒険資金が足りないよ (残り ${investBalance.toLocaleString()}コロ)`);
       return;
     }
 
@@ -706,7 +714,7 @@ export default function InvestScreen({
                   {/* Amount input */}
                   <RubyText
                     style={styles.orderLabel}
-                    parts={[["何", "なん"], "コロ", ["錬成", "れんせい"], "する？"]}
+                    parts={[["何", "なん"], "コロでお", ["宝", "たから"], "を", ["錬成", "れんせい"], "する？"]}
                     rubySize={5}
                   />
                   <TextInput
@@ -722,17 +730,19 @@ export default function InvestScreen({
                   />
                   <AutoRubyText
                     text={
-                      // 通貨で判定: USD は必ず 1 株単位 (DIA/QQQ/SPY 等の USD index も含む)
-                      // 「よくばり」カテゴリには JPY(1306.T/1321.T) と USD(DIA/QQQ/SPY) が混在
-                      selected?.currency === "USD"
-                        ? "お宝1つ分から (高め)"
-                        : selected?.category === "jp_stock"
-                          ? "100コロから (かけらOK)"
-                          : !selected && activeCategory === "us_stock"
-                            ? "お宝1つ分から (高め)"
-                            : !selected && activeCategory === "jp_stock"
-                              ? "100コロから (かけらOK)"
-                              : "100コロから"
+                      // 銘柄選択時は 1 株分のコロを動的表示 (子供がいくら必要か理解できるように)
+                      selected
+                        ? selected.currency === "USD"
+                          ? `お宝1つ ≈ ${Math.ceil(selected.price_jpy || 0).toLocaleString()}コロ (1つから)`
+                          : selected.category === "jp_stock"
+                            ? `お宝1つ ≈ ${Math.ceil(selected.price_jpy || 0).toLocaleString()}コロ (100コロからかけらOK)`
+                            : `お宝1つ ≈ ${Math.ceil(selected.price_jpy || 0).toLocaleString()}コロ (100コロから)`
+                        : // 未選択時はタブごとのデフォルト
+                          activeCategory === "us_stock"
+                          ? "お宝1つ分から (高め)"
+                          : activeCategory === "jp_stock"
+                            ? "100コロから (かけらOK)"
+                            : "100コロから"
                     }
                     style={styles.amountHint}
                     rubySize={4}
