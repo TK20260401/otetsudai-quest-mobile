@@ -178,7 +178,7 @@ export default function SpendRequestScreen({
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <PixelHouseIcon size={12} />
-              <AutoRubyText text="もどる" style={styles.backText} rubySize={5} noWrap />
+              <Text style={styles.backText}>もどる</Text>
             </View>
           </TouchableOpacity>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1, justifyContent: "center", marginTop: -4 }}>
