@@ -35,20 +35,22 @@ export default function App() {
 
   if (!loaded) return null;
 
+  // 注: onStartShouldSetResponderCapture を root に置くと
+  // GestureHandlerRootView 配下の TouchableOpacity の onPress が発火しなくなる
+  // ケースがある。AccessibilityToggle のボタンが効かなくなる原因。
+  // 自動ログアウトのタッチ検知は AppNavigator 側に委譲するため、ここでは外す。
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }} onStartShouldSetResponderCapture={handleTouch}>
-        <SafeAreaProvider>
-          <AccessibilityProvider initial={initial}>
-            <ThemeProvider initial="forest">
-              <AppAlertProvider>
-                <StatusBar style="dark" />
-                <AppNavigator />
-              </AppAlertProvider>
-            </ThemeProvider>
-          </AccessibilityProvider>
-        </SafeAreaProvider>
-      </View>
+    <GestureHandlerRootView style={{ flex: 1 }} onStartShouldSetResponderCapture={handleTouch}>
+      <SafeAreaProvider>
+        <AccessibilityProvider initial={initial}>
+          <ThemeProvider initial="forest">
+            <AppAlertProvider>
+              <StatusBar style="dark" />
+              <AppNavigator />
+            </AppAlertProvider>
+          </ThemeProvider>
+        </AccessibilityProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
