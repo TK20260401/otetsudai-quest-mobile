@@ -720,7 +720,17 @@ export default function InvestScreen({
                       setTimeout(() => orderScrollRef.current?.scrollToEnd({ animated: true }), 400);
                     }}
                   />
-                  <AutoRubyText text="100コロから錬成できるよ" style={styles.amountHint} rubySize={4} />
+                  <AutoRubyText
+                    text={
+                      (selected?.category ?? activeCategory) === "us_stock"
+                        ? "お宝1つ分から (高め)"
+                        : (selected?.category ?? activeCategory) === "jp_stock"
+                          ? "100コロから (かけらOK)"
+                          : "100コロから"
+                    }
+                    style={styles.amountHint}
+                    rubySize={4}
+                  />
 
                   {orderError ? (
                     <AutoRubyText text={orderError} style={styles.errorText} rubySize={5} />
