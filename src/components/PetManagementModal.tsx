@@ -99,10 +99,11 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        {/* 「1」と「匹」の segment 境界 -2px 重なり対策でペア化。
-            ルビは「ひき」のみ ("いっぴき" だとルビ幅 24pt > 漢字幅 19pt で
-            縦距離が他と異なって見える)。"ひき" なら 12pt < 19pt で他のルビと同条件。 */}
-        <View style={{ alignItems: "center" }}>
+        {/* paddingVertical を outer に移動。
+            subtitle に paddingVertical:8 があると tightStyle で除去されず
+            inner Text に流入し、ルビ Text 上下に 8px の空白ができて
+            漢字-ルビ距離が遠く見える (ShopModal paddingHorizontal:16 と同パターン)。 */}
+        <View style={styles.subtitleWrap}>
           <RubyText
             parts={["アクティブにできるのは", ["1匹", "ひき"], "だけです"]}
             style={styles.subtitle}
@@ -314,11 +315,13 @@ function createStyles(p: Palette) {
       fontSize: 16,
       color: p.textStrong,
     },
+    subtitleWrap: {
+      alignItems: "center",
+      paddingVertical: 8,
+    },
     subtitle: {
       fontSize: 12,
       color: p.textMuted,
-      // textAlign: "center" は外す (親 View で alignItems:center で中央寄せ)
-      paddingVertical: 8,
     },
     encyclopediaBtn: {
       flexDirection: "row" as const,
