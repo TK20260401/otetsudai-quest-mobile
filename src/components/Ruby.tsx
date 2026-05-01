@@ -67,8 +67,7 @@ function rubyGap(_rubySize: number): number {
 }
 
 /** ルビテキストのスタイル — palette.rubyColor を使いダーク/ライト両対応
- *  marginBottom: -1 で漢字に近接（iOS検証済み。lineHeight/translateYは効かない）
- *  -2以上にすると iOS でルビが漢字に重なって読めなくなる */
+ *  marginBottom: -1 で漢字に近接（iOS検証済み。lineHeight/translateYは効かない） */
 function rubyStyle(size: number, color: string): TextStyle {
   return {
     fontSize: size,

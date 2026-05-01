@@ -188,7 +188,7 @@ export default function ShopModal({
                       <AutoRubyText style={[styles.itemLabel, { color: rc.text }]} text={item.label} rubySize={5} noWrap />
                       <AutoRubyText style={styles.itemDesc} text={item.description} rubySize={4} noWrap />
                       <Text style={[styles.itemMeta, { color: rc.text }]}>
-                        {item.rarity.toUpperCase()} ・ {item.price}コロ
+                        {item.rarity.toUpperCase()}{"\n"}{item.price}コロ
                       </Text>
                     </View>
                     <View style={styles.itemAction}>
@@ -326,7 +326,7 @@ function createStyles(p: Palette) {
       minWidth: 0,
     },
     itemLabel: {
-      fontSize: 13,
+      fontSize: 14,
       fontWeight: "bold",
     },
     itemDesc: {

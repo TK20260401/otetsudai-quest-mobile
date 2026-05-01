@@ -99,12 +99,10 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           </TouchableOpacity>
         </View>
 
-        <AutoRubyText
-          text="アクティブにできるのは1匹だけです"
-          style={styles.subtitle}
-          rubySize={6}
-          noWrap
-        />
+        {/* RubyText 内部の View 分割が segment 間に視覚的隙間を生む構造由来の
+            問題があるため、この短い subtitle のみ プレーン Text にして
+            匹(ひき) のルビは省略 (子供は 1匹 = 1ぴき と読める想定) */}
+        <Text style={styles.subtitle}>アクティブにできるのは1匹だけです</Text>
 
         <TouchableOpacity
           onPress={() => setEncyclopediaOpen(true)}
