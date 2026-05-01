@@ -753,7 +753,7 @@ export default function InvestScreen({
                     accessibilityLabel="リストにないお宝を団長にお願いする"
                   >
                     <PixelLightbulbIcon size={14} />
-                    <AutoRubyText text="リストにないお宝を団長にお願い" style={styles.requestLinkText} rubySize={4} />
+                    <AutoRubyText text="リストにないお宝を団長にお願いする" style={styles.requestLinkText} rubySize={4} />
                   </TouchableOpacity>
                 </>
               )}
