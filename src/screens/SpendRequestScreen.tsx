@@ -17,6 +17,7 @@ import { AutoRubyText, RubyText } from "../components/Ruby";
 import { useAppAlert } from "../components/AppAlert";
 import { PixelCoinIcon, PixelHouseIcon } from "../components/PixelIcons";
 import ShakeView from "../components/ShakeView";
+import CoinKunChat from "../components/CoinKunChat";
 
 const NUM_KEYS = [
   { label: "1", value: "1", a11y: "いち" },
@@ -155,6 +156,7 @@ export default function SpendRequestScreen({
             </TouchableOpacity>
           </View>
         </View>
+        <CoinKunChat role="child" />
       </SafeAreaView>
     );
   }
@@ -268,6 +270,7 @@ export default function SpendRequestScreen({
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
+      <CoinKunChat role="child" />
     </SafeAreaView>
   );
 }
