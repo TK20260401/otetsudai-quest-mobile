@@ -56,8 +56,10 @@ export default function CoinKunChat({ role }: { role: Role }) {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
-  // ドラッグ移動用 (react-native-gesture-handler でネイティブレベルの
-  // ジェスチャー優先順位を確保。RCTScrollView の垂直スクロールと競合しない)
+  // ドラッグ移動用 — react-native-gesture-handler でネイティブレベルの
+  // ジェスチャー優先順位を確保。iOS UIScrollView の canCancelContentTouches
+  // (vertical scroll に強制で touch を奪う仕様) を回避するため、
+  // JS の PanResponder ではなく native gesture-handler を使う必要がある。
   const { width: screenW, height: screenH } = Dimensions.get("window");
   const fabSize = 58;
   const pan = useRef(new Animated.ValueXY({ x: screenW - fabSize - 16, y: screenH - fabSize - 20 - (insets.bottom || 0) })).current;
@@ -83,9 +85,7 @@ export default function CoinKunChat({ role }: { role: Role }) {
     }
   }, [pan]);
 
-  // PanGesture で xy 並進、min distance 0 にして即時反応、
-  // simultaneousWithExternalGesture は同時認識を許可するが、
-  // shouldCancelWhenOutside=false でドラッグ中の追従を維持
+  // PanGesture で xy 並進。runOnJS で JS callback として扱う
   const dragGesture = useMemo(
     () =>
       Gesture.Pan()
@@ -102,12 +102,14 @@ export default function CoinKunChat({ role }: { role: Role }) {
     [handleStart, handleUpdate, handleEnd]
   );
 
-  // タップで chat open (drag と区別: タップは onUpdate 来ない)
+  // タップで chat open。drag が始まったら tap は発火しない (Race の挙動)
   const tapGesture = useMemo(
     () =>
-      Gesture.Tap().onEnd(() => {
-        if (!isDragging.current) setOpen(true);
-      }).runOnJS(true),
+      Gesture.Tap()
+        .onEnd(() => {
+          if (!isDragging.current) setOpen(true);
+        })
+        .runOnJS(true),
     []
   );
 
