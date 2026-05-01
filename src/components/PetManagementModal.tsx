@@ -25,7 +25,7 @@ import PetSvg from "./PetSvg";
 import RpgButton from "./RpgButton";
 import { PixelPawIcon, PixelStarIcon } from "./PixelIcons";
 import RpgCard from "./RpgCard";
-import { AutoRubyText } from "./Ruby";
+import { AutoRubyText, RubyText } from "./Ruby";
 import PetEncyclopediaModal from "./PetEncyclopediaModal";
 import CoinKunChat from "./CoinKunChat";
 import { useTheme, type Palette } from "../theme";
@@ -92,18 +92,17 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
           <TouchableOpacity
             onPress={onClose}
             style={styles.closeBtn}
-            accessibilityLabel="ペットずかんを閉じる"
+            accessibilityLabel="ペットずかんをとじる"
             accessibilityRole="button"
           >
             <Text style={styles.closeText}>✕</Text>
           </TouchableOpacity>
         </View>
 
-        <AutoRubyText
-          text="アクティブにできるのは1匹だけ！"
+        <RubyText
+          parts={["アクティブにできるのは1", ["匹", "ひき"], "だけです"]}
           style={styles.subtitle}
           rubySize={6}
-          noWrap
         />
 
         <TouchableOpacity
@@ -198,16 +197,19 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                           />
                         </TouchableOpacity>
                       )}
-                      <Text style={styles.petType}>
-                        {info.nameJa} ・{" "}
-                        {pet.growth_stage === "egg"
-                          ? "卵"
-                          : pet.growth_stage === "baby"
-                            ? "赤ちゃん"
-                            : pet.growth_stage === "child"
-                              ? "子ども"
-                              : "大人"}
-                      </Text>
+                      <AutoRubyText
+                        text={`${info.nameJa} ・ ${
+                          pet.growth_stage === "egg"
+                            ? "卵"
+                            : pet.growth_stage === "baby"
+                              ? "赤ちゃん"
+                              : pet.growth_stage === "child"
+                                ? "子ども"
+                                : "大人"
+                        }`}
+                        style={styles.petType}
+                        rubySize={4}
+                      />
                       <View style={styles.progressTrack}>
                         <View
                           style={[
@@ -220,11 +222,15 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
                           ]}
                         />
                       </View>
-                      <Text style={styles.progressLabel}>
-                        {pet.growth_stage === "egg"
-                          ? `あと ${Math.max(0, HATCH_QUESTS_REQUIRED - pet.quests_since_acquired)} クエストで孵る`
-                          : `幸せ ${happiness}％ ・ ごはん ${pet.fed_count}回`}
-                      </Text>
+                      <AutoRubyText
+                        text={
+                          pet.growth_stage === "egg"
+                            ? `あと ${Math.max(0, HATCH_QUESTS_REQUIRED - pet.quests_since_acquired)} クエストで孵る`
+                            : `幸せ ${happiness}％ ・ ごはん ${pet.fed_count}回`
+                        }
+                        style={styles.progressLabel}
+                        rubySize={4}
+                      />
                     </View>
                   </View>
                   <View style={{ marginTop: 8 }}>
@@ -254,7 +260,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
 
           <View style={{ marginTop: 12 }}>
             <RpgButton tier="silver" size="md" onPress={onClose}>
-              閉じる
+              とじる
             </RpgButton>
           </View>
         </ScrollView>
