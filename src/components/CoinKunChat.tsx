@@ -23,6 +23,8 @@ type Message = { role: "user" | "assistant"; content: string };
 
 const CHILD_SUGGESTIONS = [
   "クエストのコツをおしえて",
+  "お宝の買いかたをおしえて",
+  "コロが足りないときは？",
   "貯金ってなに？",
   "バッジをあつめたい！",
   "ごほうびの使いかた",

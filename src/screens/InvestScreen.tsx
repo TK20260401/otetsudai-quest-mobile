@@ -23,6 +23,7 @@ import type { StockPrice } from "../lib/types";
 import { PixelSeedlingIcon, PixelChartIcon, PixelChartDownIcon, PixelHourglassIcon, PixelRefreshIcon, PixelLightbulbIcon, PixelTargetIcon, PixelBarChartIcon, PixelDoorIcon, PixelHouseIcon, PixelCrossIcon, PixelShieldIcon } from "../components/PixelIcons";
 import RpgButton from "../components/RpgButton";
 import { getSession } from "../lib/session";
+import CoinKunChat from "../components/CoinKunChat";
 
 type Portfolio = {
   id: string;
@@ -943,6 +944,9 @@ export default function InvestScreen({
           </Modal>
         </SafeAreaView>
       </Modal>
+
+      {/* AIアシスタント コインくん (FAB ドラッグ可、買いかた等の質問対応) */}
+      <CoinKunChat role="child" />
     </SafeAreaView>
   );
 }
