@@ -934,7 +934,7 @@ export default function ChildDashboardScreen({
             <RubyText
               style={styles.refreshBtnLabel}
               parts={refreshing
-                ? [["点検", "てんけん"], "ちゅう..."]
+                ? [["点検中", "てんけんちゅう"], "..."]
                 : refreshDoneAt
                 ? [["点検", "てんけん"], "しました ✨"]
                 : [["点検", "てんけん"]]}

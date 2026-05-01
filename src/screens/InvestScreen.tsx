@@ -72,8 +72,6 @@ export default function InvestScreen({
 
   // Order modal
   const [orderVisible, setOrderVisible] = useState(false);
-  // 初回訪問時に銘柄一覧を自動表示したかどうか（リピート自動オープンを防止）
-  const [autoOpened, setAutoOpened] = useState(false);
   const [stocks, setStocks] = useState<StockPrice[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>("index");
   const [selected, setSelected] = useState<StockPrice | null>(null);
@@ -110,16 +108,7 @@ export default function InvestScreen({
     }
   }
 
-  // 初回訪問＆ポートフォリオ空なら、銘柄一覧モーダルを自動表示。
-  // 子供が迷わずに株画面（カテゴリタブ＋銘柄リスト）を見られるようにする。
-  useEffect(() => {
-    if (!loading && !autoOpened && portfolios.length === 0) {
-      setAutoOpened(true);
-      openOrderModal();
-    }
-  }, [loading, autoOpened, portfolios.length]);
-
-  useEffect(() => {
+useEffect(() => {
     if (cooldownRemain <= 0) return;
     const timer = setInterval(() => {
       setCooldownRemain((prev) => {
