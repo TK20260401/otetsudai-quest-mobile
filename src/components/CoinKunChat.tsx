@@ -63,18 +63,22 @@ export default function CoinKunChat({ role }: { role: Role }) {
   const isDragging = useRef(false);
 
   const panResponder = useMemo(() => PanResponder.create({
-    // Capture 系も true: モーダル内の ScrollView/KeyboardAvoidingView 等が
-    // FAB の gesture を奪うのを防ぎ、どこでも自由にドラッグ可能にする
+    // 全てのフェーズで responder を獲得し、どんなコンテキスト
+     // (ScrollView/KAV/Modal/モーダル入れ子) 内でも安定してドラッグ可能にする
     onStartShouldSetPanResponder: () => true,
     onStartShouldSetPanResponderCapture: () => true,
-    onMoveShouldSetPanResponder: (_, gs) => Math.abs(gs.dx) > 5 || Math.abs(gs.dy) > 5,
-    onMoveShouldSetPanResponderCapture: (_, gs) => Math.abs(gs.dx) > 5 || Math.abs(gs.dy) > 5,
+    onMoveShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponderCapture: () => true,
+    onPanResponderTerminationRequest: () => false, // 親が responder を奪うのを拒否
+    onShouldBlockNativeResponder: () => true,
     onPanResponderGrant: () => {
       isDragging.current = false;
       pan.extractOffset();
     },
     onPanResponderMove: (_, gs) => {
-      if (Math.abs(gs.dx) > 5 || Math.abs(gs.dy) > 5) {
+      // 3px超で drag 判定 (誤タップでチャットが開くのを抑える代わりに
+       // 細かい移動も drag として認識)
+      if (Math.abs(gs.dx) > 3 || Math.abs(gs.dy) > 3) {
         isDragging.current = true;
       }
       Animated.event([null, { dx: pan.x, dy: pan.y }], { useNativeDriver: false })(_, gs);
