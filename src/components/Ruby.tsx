@@ -139,7 +139,7 @@ export function RubyText({
   const rs = rubyStyle(scaledRuby, rubyColor ?? palette.rubyColor);
   const hiddenRs = [rs, { opacity: 0 }];
   const gap = rubyGap(scaledRuby);
-  const rubyHeight = scaledRuby + 2;
+  const rubyHeight = scaledRuby - 2;
   return (
     <View style={noWrap ? layoutStyles.textRowNoWrap : layoutStyles.textRow}>
       {parts.map((part, i) =>
@@ -455,6 +455,9 @@ const layoutStyles = StyleSheet.create({
   },
   segment: {
     overflow: "visible" as any,
+    // iOS の Text glyph side bearing が segment 間に約 2-3px の隙間を生むため
+    // 負の水平 margin で相殺 (-1.5px → 隣接 segment が 3px 重なる)
+    marginHorizontal: -1.5,
   },
   rubyAbsolute: {
     position: "absolute" as any,
