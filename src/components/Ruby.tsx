@@ -454,6 +454,8 @@ const layoutStyles = StyleSheet.create({
   },
   center: {
     alignItems: "center",
+    // Text segment 間の glyph side bearing 由来の隙間を相殺
+    marginHorizontal: -0.5,
   },
   rubyZero: {
     width: 0,
