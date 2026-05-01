@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { useTheme, type Palette } from "../theme";
-import { RubyText } from "./Ruby";
+import { RubyText, AutoRubyText } from "./Ruby";
 import { PixelCrossIcon, PixelStarIcon } from "./PixelIcons";
 import PetSvg from "./PetSvg";
 import { PET_TYPE_INFO, type GrowthStage } from "../lib/pets";
@@ -103,7 +103,7 @@ export default function PetEncyclopediaModal({ visible, onClose, childId }: Prop
                             type={entry.petType}
                             stage={entry.highestStage as GrowthStage}
                             size={44}
-                            animated={false}
+                            animated
                           />
                         </View>
                       ) : (
@@ -114,7 +114,7 @@ export default function PetEncyclopediaModal({ visible, onClose, childId }: Prop
                     </View>
                     {discovered ? (
                       <>
-                        <Text style={styles.cellName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{info.nameJa}</Text>
+                        <AutoRubyText text={info.nameJa} style={styles.cellName} rubySize={4} noWrap />
                         <RubyText
                           style={styles.cellStage}
                           parts={STAGE_LABEL_PARTS[entry.highestStage as GrowthStage]}

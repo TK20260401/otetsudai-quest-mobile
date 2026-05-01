@@ -247,10 +247,10 @@ const PET_DATA: Record<string, Record<string, PetPixelData>> = {
 };
 
 const STAGE_IDLE_TYPE: Record<GrowthStage, IdleAnimationType> = {
-  egg: "pulse",
-  baby: "bounce",
+  egg: "bob",
+  baby: "bob",
   child: "bob",
-  adult: "breathe",
+  adult: "bob",
 };
 
 export default function PetSvg({ type, stage, happiness = 100, size = 48, animated = false }: Props) {
@@ -274,7 +274,7 @@ export default function PetSvg({ type, stage, happiness = 100, size = 48, animat
   const duration = happiness < 30 ? ((baseDuration ?? getDefaultIdleDuration(idleType)) * 2) : baseDuration;
 
   return (
-    <IdleAnimationWrapper type={idleType} duration={duration}>
+    <IdleAnimationWrapper type={idleType} duration={duration} forceAnimate>
       {svg}
     </IdleAnimationWrapper>
   );

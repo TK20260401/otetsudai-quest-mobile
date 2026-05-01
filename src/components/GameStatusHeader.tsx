@@ -65,7 +65,7 @@ export default function GameStatusHeader({
         {/* ミニキャラ + Lvバッジ */}
         <View style={styles.characterWrap}>
           <View style={styles.characterBg}>
-            <CharacterSvg level={level} mood="active" size={40} />
+            <CharacterSvg level={level} mood="active" size={40} animated />
           </View>
           <View style={styles.lvBadge}>
             <Text style={styles.lvText}>Lv.{level}</Text>

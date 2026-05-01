@@ -23,6 +23,8 @@ type Props = {
   paused?: boolean;
   /** "subtle" = duration 2x for background/non-focus elements */
   intensity?: "normal" | "subtle";
+  /** true にすると OS の「視差効果を減らす」を無視してアニメーションする */
+  forceAnimate?: boolean;
   children: ReactNode;
 };
 
@@ -31,9 +33,10 @@ export default function IdleAnimationWrapper({
   duration,
   paused = false,
   intensity = "normal",
+  forceAnimate = false,
   children,
 }: Props) {
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReducedMotion() && !forceAnimate;
   const anim = useRef(new Animated.Value(0)).current;
   const loopRef = useRef<Animated.CompositeAnimation | null>(null);
 

@@ -54,7 +54,7 @@ export default function CharacterSvg({ level, mood, size = 120, animated = false
 
   if (mode === "walk") {
     return (
-      <IdleAnimationWrapper type="bob" duration={0.25}>
+      <IdleAnimationWrapper type="bob" duration={0.25} forceAnimate>
         {renderBody(legOff, armOff)}
       </IdleAnimationWrapper>
     );
@@ -62,7 +62,7 @@ export default function CharacterSvg({ level, mood, size = 120, animated = false
 
   // idle: 足踏み+腕振り + breathe
   return (
-    <IdleAnimationWrapper type="breathe" duration={3}>
+    <IdleAnimationWrapper type="breathe" duration={3} forceAnimate>
       {renderBody(legOff, armOff)}
     </IdleAnimationWrapper>
   );
