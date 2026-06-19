@@ -14,7 +14,6 @@ import { useTheme } from "../theme";
 import { RubyText, AutoRubyText } from "./Ruby";
 import { PixelPencilIcon } from "./PixelIcons";
 import { PRESET_QUESTS, type PresetQuest } from "../data/presetQuests";
-import CoinKunChat from "./CoinKunChat";
 
 type Props = {
   visible: boolean;
@@ -56,13 +55,13 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
           <View style={styles.header}>
             <RubyText
               style={styles.title}
-              parts={["クエストを", ["選", "えら"], "ぼう"]}
-              rubySize={6}
+              parts={["クエストを ", ["選", "えら"], "ぼう"]}
+              rubySize={5}
             />
             <TouchableOpacity
               onPress={onClose}
               style={styles.closeBtn}
-              accessibilityLabel="とじる"
+              accessibilityLabel="閉じる"
               accessibilityRole="button"
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
@@ -70,7 +69,7 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
             </TouchableOpacity>
           </View>
 
-          <RubyText style={styles.subtitle} parts={["タップすると、クエストデプロイの", ["下書", "したが"], "きになるよ"]} rubySize={4} />
+          <Text style={styles.subtitle}>タップすると、クエストデプロイの下書きになるよ</Text>
 
           <ScrollView
             style={styles.list}
@@ -91,10 +90,12 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
                     <Icon size={28} />
                   </View>
                   <View style={styles.itemText}>
-                    <AutoRubyText text={q.mainTitle} style={styles.mainTitle} rubySize={5} noWrap />
+                    <Text style={styles.mainTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                      {q.mainTitle}
+                    </Text>
                     <AutoRubyText text={q.subLabel} style={styles.subLabel} rubySize={5} noWrap />
                   </View>
-                  <Text style={styles.reward}>{q.suggestedReward}コロ</Text>
+                  <Text style={styles.reward}>¥{q.suggestedReward}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -103,22 +104,23 @@ export default function PresetQuestModal({ visible, onClose, onSelect, onSelectC
             <TouchableOpacity
               style={[styles.item, styles.customItem]}
               onPress={handleSelectCustom}
-              accessibilityLabel="そのた。じぶんでかんがえてオリジナルクエストをつくる"
+              accessibilityLabel="その他。自分で考えてオリジナルクエストを作る"
               accessibilityRole="button"
             >
               <View style={styles.iconWrap}>
                 <PixelPencilIcon size={24} />
               </View>
               <View style={styles.itemText}>
-                <RubyText style={[styles.mainTitle, styles.customMainTitle]} parts={["その", ["他", "た"]]} rubySize={5} noWrap />
-                <RubyText style={styles.subLabel} parts={[["自分", "じぶん"], "で", ["考", "かんが"], "える"]} rubySize={5} noWrap />
+                <Text style={[styles.mainTitle, styles.customMainTitle]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+                  その他
+                </Text>
+                <AutoRubyText text="自分で考える" style={styles.subLabel} rubySize={5} noWrap />
               </View>
-              <RubyText style={[styles.reward, styles.customReward]} parts={[["作る", "      つく"]]} rubySize={5} noWrap />
+              <AutoRubyText text="作る" style={[styles.reward, styles.customReward]} rubySize={5} noWrap />
             </TouchableOpacity>
           </ScrollView>
         </View>
       </View>
-      <CoinKunChat role="child" />
     </Modal>
   );
 }
@@ -174,7 +176,7 @@ function createStyles(p: ReturnType<typeof useTheme>["palette"]) {
       padding: 12,
       gap: 12,
       borderRadius: 12,
-      borderWidth: 1.5,
+      borderWidth: 1,
       borderColor: p.border,
       backgroundColor: p.surfaceMuted,
       marginBottom: 8,

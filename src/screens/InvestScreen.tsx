@@ -363,8 +363,11 @@ useEffect(() => {
           accessibilityLabel="おうちにもどる"
           accessibilityRole="button"
         >
-          <PixelHouseIcon size={12} />
-          <Text style={styles.backText}>もどる</Text>
+          <PixelHouseIcon size={16} />
+          <View style={{ alignItems: "center" }}>
+            <Text style={styles.backText}>もどる</Text>
+            <Text style={styles.backHint}>(TOPへ)</Text>
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -522,7 +525,10 @@ useEffect(() => {
               >
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6, justifyContent: "center" }}>
                   <PixelDoorIcon size={14} />
-                  <Text style={styles.lockBackText}>もどる</Text>
+                  <View style={{ alignItems: "center" }}>
+                    <Text style={styles.lockBackText}>もどる</Text>
+                    <Text style={styles.backHint}>(まえへ)</Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             </View>
@@ -988,7 +994,7 @@ function createStyles(p: Palette) {
       borderWidth: 1,
       borderColor: p.primary,
     },
-    backText: { fontSize: 11, fontWeight: "bold", color: p.textMuted },
+    backText: { fontSize: 14, fontWeight: "bold", color: p.textMuted },
     backHint: { fontSize: 9, fontWeight: "600", color: p.textMuted, opacity: 0.7, marginTop: -1 },
     headerTitle: { fontSize: rf(28), fontWeight: "900", color: p.primaryDark, flexShrink: 1, textAlign: "center" as const },
 

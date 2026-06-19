@@ -267,7 +267,7 @@ export default function PetManagementModal({ visible, onClose, childId, onChange
 
           <View style={{ marginTop: 12 }}>
             <RpgButton tier="silver" size="md" onPress={onClose}>
-              とじる
+              閉じる
             </RpgButton>
           </View>
         </ScrollView>

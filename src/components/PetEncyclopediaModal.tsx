@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Modal, View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { useTheme, type Palette } from "../theme";
-import { RubyText, AutoRubyText } from "./Ruby";
+import { RubyText } from "./Ruby";
 import { PixelCrossIcon, PixelStarIcon } from "./PixelIcons";
 import PetSvg from "./PetSvg";
 import { PET_TYPE_INFO, type GrowthStage } from "../lib/pets";
 import { getEncyclopedia, getDiscoveryBadge, type EncyclopediaEntry } from "../lib/pet-encyclopedia";
-import CoinKunChat from "./CoinKunChat";
 
 type Props = {
   visible: boolean;
@@ -103,7 +102,7 @@ export default function PetEncyclopediaModal({ visible, onClose, childId }: Prop
                             type={entry.petType}
                             stage={entry.highestStage as GrowthStage}
                             size={44}
-                            animated
+                            animated={false}
                           />
                         </View>
                       ) : (
@@ -114,7 +113,7 @@ export default function PetEncyclopediaModal({ visible, onClose, childId }: Prop
                     </View>
                     {discovered ? (
                       <>
-                        <AutoRubyText text={info.nameJa} style={styles.cellName} rubySize={4} noWrap />
+                        <Text style={styles.cellName} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>{info.nameJa}</Text>
                         <RubyText
                           style={styles.cellStage}
                           parts={STAGE_LABEL_PARTS[entry.highestStage as GrowthStage]}
@@ -149,7 +148,6 @@ export default function PetEncyclopediaModal({ visible, onClose, childId }: Prop
           />
         </View>
       </View>
-      <CoinKunChat role="child" />
     </Modal>
   );
 }
@@ -169,7 +167,7 @@ function createStyles(p: Palette) {
       maxHeight: "90%",
       backgroundColor: p.surface,
       borderRadius: 16,
-      borderWidth: 1.5,
+      borderWidth: 2,
       borderColor: p.primary,
       padding: 16,
       gap: 10,
@@ -208,7 +206,7 @@ function createStyles(p: Palette) {
       paddingVertical: 8,
       paddingHorizontal: 10,
       alignItems: "center" as const,
-      borderWidth: 1.5,
+      borderWidth: 1,
       borderColor: p.border,
     },
     statLabel: {
@@ -247,7 +245,7 @@ function createStyles(p: Palette) {
       width: "31%",
       aspectRatio: 0.7,
       borderRadius: 12,
-      borderWidth: 1.5,
+      borderWidth: 2,
       padding: 6,
       alignItems: "center" as const,
       justifyContent: "center" as const,
@@ -286,7 +284,7 @@ function createStyles(p: Palette) {
       backgroundColor: p.surfaceMuted,
       alignItems: "center" as const,
       justifyContent: "center" as const,
-      borderWidth: 1.5,
+      borderWidth: 1,
       borderColor: p.border,
     },
     silhouetteTextWrap: {

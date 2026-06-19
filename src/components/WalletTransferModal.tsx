@@ -17,7 +17,6 @@ import { RubyText } from "./Ruby";
 import { PixelCartIcon, PixelPiggyIcon, PixelChartIcon, PixelCoinIcon, PixelCrossIcon } from "./PixelIcons";
 import * as Haptics from "expo-haptics";
 import type { Wallet } from "../lib/types";
-import CoinKunChat from "./CoinKunChat";
 
 export type PotType = "spending" | "saving" | "invest";
 
@@ -256,7 +255,6 @@ export default function WalletTransferModal({ visible, onClose, wallet, onConfir
           </View>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-      <CoinKunChat role="child" />
     </Modal>
   );
 }
@@ -266,7 +264,7 @@ function createStyles(p: Palette) {
     flex1: { flex: 1 },
     overlay: { flex: 1, backgroundColor: p.overlay },
     scrollContent: { flexGrow: 1, alignItems: "center", justifyContent: "center", padding: 16, paddingBottom: 32 },
-    card: { width: "100%", maxWidth: 420, backgroundColor: p.surface, borderRadius: 14, borderWidth: 1.5, borderColor: p.primary, padding: 16, gap: 8, position: "relative" as const },
+    card: { width: "100%", maxWidth: 420, backgroundColor: p.surface, borderRadius: 14, borderWidth: 2, borderColor: p.primary, padding: 16, gap: 8, position: "relative" as const },
     closeBtnTopRight: {
       position: "absolute" as const,
       top: 8,
@@ -283,22 +281,22 @@ function createStyles(p: Palette) {
     title: { fontSize: 16, fontWeight: "700", color: p.textStrong, flex: 1 },
     section: { fontSize: 12, fontWeight: "700", color: p.textBase, marginTop: 6 },
     potRow: { flexDirection: "row", gap: 6 },
-    potBtn: { flex: 1, alignItems: "center", paddingVertical: 10, paddingHorizontal: 4, borderRadius: 10, borderWidth: 1.5, gap: 2 },
+    potBtn: { flex: 1, alignItems: "center", paddingVertical: 10, paddingHorizontal: 4, borderRadius: 10, borderWidth: 2, gap: 2 },
     potLabel: { fontSize: 12, fontWeight: "700" },
     potBalance: { fontSize: 11, fontWeight: "600", marginTop: 2 },
     presetRow: { flexDirection: "row", gap: 6, flexWrap: "wrap" },
-    presetBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1.5, borderColor: p.border, backgroundColor: p.surfaceMuted },
+    presetBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: p.border, backgroundColor: p.surfaceMuted },
     presetText: { fontSize: 12, fontWeight: "700", color: p.textBase },
     amountRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
-    amountInput: { flex: 1, fontSize: 18, fontWeight: "700", color: p.textStrong, backgroundColor: p.surfaceMuted, borderWidth: 1.5, borderColor: p.border, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, textAlign: "right" },
+    amountInput: { flex: 1, fontSize: 18, fontWeight: "700", color: p.textStrong, backgroundColor: p.surfaceMuted, borderWidth: 1, borderColor: p.border, borderRadius: 8, paddingHorizontal: 10, paddingVertical: 6, textAlign: "right" },
     amountUnit: { fontSize: 16, fontWeight: "700", color: p.textBase },
-    kbDoneBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1.5, borderColor: p.primaryDark, backgroundColor: p.primary },
+    kbDoneBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: p.primaryDark, backgroundColor: p.primary },
     kbDoneText: { fontSize: 13, fontWeight: "800", color: p.white },
     errorText: { fontSize: 11, color: p.red, marginTop: 4 },
     actions: { flexDirection: "row", gap: 8, marginTop: 12 },
-    cancelBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1.5, borderColor: p.border, backgroundColor: p.surfaceMuted, alignItems: "center" },
+    cancelBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1, borderColor: p.border, backgroundColor: p.surfaceMuted, alignItems: "center" },
     cancelText: { fontSize: 13, fontWeight: "700", color: p.textMuted },
-    confirmBtn: { flex: 2, paddingVertical: 10, borderRadius: 8, borderWidth: 1.5, borderColor: p.primaryDark, backgroundColor: p.primary, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 6 },
+    confirmBtn: { flex: 2, paddingVertical: 10, borderRadius: 8, borderWidth: 2, borderColor: p.primaryDark, backgroundColor: p.primary, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 6 },
     confirmText: { fontSize: 14, fontWeight: "800", color: p.white },
   });
 }

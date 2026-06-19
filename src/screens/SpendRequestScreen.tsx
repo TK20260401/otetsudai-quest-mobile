@@ -174,7 +174,7 @@ export default function SpendRequestScreen({
             style={styles.backButton}
             onPress={() => navigation.navigate("ChildDashboard", { childId })}
             accessibilityRole="button"
-            accessibilityLabel="もどる"
+            accessibilityLabel="戻る"
           >
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <PixelHouseIcon size={12} />

@@ -967,8 +967,11 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelDoorIcon size={12} />
-                <Text style={styles.backText}>もどる</Text>
+                <PixelDoorIcon size={14} />
+                <View style={{ alignItems: "center" }}>
+                  <Text style={styles.backText}>もどる</Text>
+                  <Text style={styles.backHint}>(まえへ)</Text>
+                </View>
               </View>
             </TouchableOpacity>
             <RubyText style={styles.label} parts={[["冒険団", "ぼうけんだん"], "を", ["選", "えら"], "んでね"]} rubySize={6} />
@@ -990,8 +993,11 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelDoorIcon size={12} />
-                <Text style={styles.backText}>{selectedFamily?.name}</Text>
+                <PixelDoorIcon size={14} />
+                <View style={{ alignItems: "center" }}>
+                  <Text style={styles.backText}>{selectedFamily?.name}</Text>
+                  <Text style={styles.backHint}>(まえへ)</Text>
+                </View>
               </View>
             </TouchableOpacity>
             <RubyText style={styles.label} parts={[["冒険者", "ぼうけんしゃ"], "を", ["選", "えら"], "びます"]} rubySize={6} />
@@ -1023,8 +1029,11 @@ export default function LoginScreen({ onLoginSuccess, mode, onBack, onRecover }:
           <>
             <TouchableOpacity style={styles.backButton} onPress={goBack}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <PixelDoorIcon size={12} />
-                <Text style={styles.backText}>{selectedUser?.name}</Text>
+                <PixelDoorIcon size={14} />
+                <View style={{ alignItems: "center" }}>
+                  <Text style={styles.backText}>{selectedUser?.name}</Text>
+                  <Text style={styles.backHint}>(まえへ)</Text>
+                </View>
               </View>
             </TouchableOpacity>
             <RubyText style={styles.label} parts={["PINを", ["入", "い"], "れてね 🔑"]} rubySize={6} />

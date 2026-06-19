@@ -225,9 +225,12 @@ export default function WalletDetailScreen({
           style={styles.backButton}
           accessibilityLabel="おうちに もどる"
         >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
-            <PixelHouseIcon size={12} />
-            <Text style={styles.backText}>もどる</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <PixelHouseIcon size={16} />
+            <View style={{ alignItems: "center" }}>
+              <Text style={styles.backText}>もどる</Text>
+              <Text style={styles.backHint}>(TOPへ)</Text>
+            </View>
           </View>
         </TouchableOpacity>
         <View style={{ flex: 1 }} />
@@ -272,7 +275,7 @@ export default function WalletDetailScreen({
             <View style={styles.pocketIconBox}><PixelCartIcon size={20} /></View>
             <RubyText
               style={styles.pocketLabel}
-              parts={[["取引", "とりひき"]]}
+              parts={[["取", "とり"], ["引", "ひき"]]}
               rubySize={7}
             />
             <Text
@@ -303,7 +306,7 @@ export default function WalletDetailScreen({
             <View style={styles.pocketIconBox}><PixelPiggyIcon size={20} /></View>
             <RubyText
               style={styles.pocketLabel}
-              parts={[["金庫", "きんこ"]]}
+              parts={[["金", "きん"], ["庫", "こ"]]}
               rubySize={7}
             />
             <Text
@@ -337,7 +340,7 @@ export default function WalletDetailScreen({
             <View style={styles.pocketIconBox}><PixelChartIcon size={20} /></View>
             <RubyText
               style={styles.pocketLabel}
-              parts={[["錬成", "れんせい"]]}
+              parts={[["錬", "れん"], ["成", "せい"]]}
               rubySize={7}
             />
             <Text
@@ -688,18 +691,25 @@ function createStyles(p: Palette) {
     backButton: {
       flexDirection: "row",
       alignItems: "center",
-      gap: 3,
-      paddingHorizontal: 7,
-      paddingVertical: 3,
-      borderRadius: 5,
-      borderWidth: 1,
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1.5,
       borderColor: p.primary,
       backgroundColor: p.background,
     },
     backText: {
-      fontSize: 11,
+      fontSize: 14,
       fontWeight: "bold",
       color: p.textMuted,
+    },
+    backHint: {
+      fontSize: 9,
+      fontWeight: "600",
+      color: p.textMuted,
+      opacity: 0.7,
+      marginTop: -1,
     },
     headerTitleGroup: {
       flexDirection: "row",
@@ -721,7 +731,7 @@ function createStyles(p: Palette) {
       gap: 8,
     },
     headerTotalAmount: {
-      fontSize: 12,
+      fontSize: rf(22),
       fontWeight: "bold",
       color: p.accent,
     },
